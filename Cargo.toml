@@ -1,0 +1,29 @@
+[workspace]
+members = [
+    "punicore_logger",
+]
+resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+authors = ["wuliya <3369906077@qq.com>"]
+license = "LGPL-3.0-only"
+readme = "README.md"
+homepage = "https://github.com/PuniCore/core"
+repository = "https://github.com/PuniCore/core"
+edition = "2024"
+
+[workspace.dependencies]
+chrono = { version = "0.4" }
+log = { version = "0.4.27" }
+
+[workspace.lints.clippy]
+uninlined_format_args = "allow"
+
+[profile.release]
+lto = "thin"
+panic = "abort"
+incremental = false
+
+[profile.dev]
+incremental = true
