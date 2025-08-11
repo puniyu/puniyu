@@ -1,9 +1,9 @@
-use owo_colors::OwoColorize;
 use chrono_tz::Asia::Shanghai;
+use owo_colors::OwoColorize;
 use std::fmt;
 use tracing::Subscriber;
 use tracing_appender::rolling::{RollingFileAppender, Rotation};
-use tracing_subscriber::{filter::LevelFilter, layer::SubscriberExt, Layer, registry::LookupSpan, fmt::{FormatEvent, FormatFields}};
+use tracing_subscriber::{filter::LevelFilter, fmt::{FormatEvent, FormatFields}, layer::SubscriberExt, registry::LookupSpan, Layer};
 
 pub struct LoggerOptions {
     /// 日志等级
@@ -44,12 +44,11 @@ impl LoggerOptions {
     }
 }
 
-struct PrefixFormatter {
-    show_target: bool,
+struct Formatter {
     color: bool,
 }
 
-impl<S, N> FormatEvent<S, N> for PrefixFormatter
+impl<S, N> FormatEvent<S, N> for Formatter
 where
     S: Subscriber + for<'a> LookupSpan<'a>,
     N: for<'a> FormatFields<'a> + 'static,
@@ -86,16 +85,6 @@ where
             write!(writer, "[{: <7}] ", logger_level)?;
         }
 
-
-        if self.show_target {
-            if self.color {
-                write!(writer, "[{}] ", event.metadata().target().purple())?;
-            } else {
-                write!(writer, "[{}] ", event.metadata().target())?;
-            }
-        }
-
-
         ctx.format_fields(writer.by_ref(), event)?;
         writeln!(writer)
     }
@@ -113,11 +102,8 @@ pub fn log_init(options: Option<LoggerOptions>) {
         LevelFilter::TRACE => LevelFilter::TRACE,
     };
 
-    let show_target = matches!(logger_level, LevelFilter::DEBUG | LevelFilter::TRACE);
-
-    // 创建控制台日志层
     let console_subscriber = tracing_subscriber::fmt::layer()
-        .event_format(PrefixFormatter { show_target, color: true })
+        .event_format(Formatter { color: true })
         .with_filter(logger_level);
 
     let mut layers = vec![console_subscriber.boxed()];
@@ -135,7 +121,7 @@ pub fn log_init(options: Option<LoggerOptions>) {
 
 
         let file_subscriber = tracing_subscriber::fmt::layer()
-            .event_format(PrefixFormatter { show_target: true, color: false })
+            .event_format(Formatter { color: false })
             .with_writer(file_appender)
             .with_ansi(false)
             .with_filter(logger_level);
@@ -146,6 +132,8 @@ pub fn log_init(options: Option<LoggerOptions>) {
     let subscriber = tracing_subscriber::registry()
         .with(layers);
 
-    tracing::subscriber::set_global_default(subscriber).unwrap();
-    tracing_log::LogTracer::init().unwrap();
+    if tracing::subscriber::set_global_default(subscriber).is_err() || tracing_log::LogTracer::init().is_err(){
+        return;
+    }
+
 }

@@ -66,6 +66,12 @@
   "packages": {
     "punicore_logger": {
       "release-type": "rust"
+    },
+    "punicore_core": {
+      "release-type": "rust"
+    },
+    "punicore_utils": {
+      "release-type": "rust"
     }
   },
   "commit-search-depth": 50

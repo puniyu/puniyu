@@ -1,0 +1,20 @@
+[package]
+name = "punicore"
+version = "0.1.0"
+authors.workspace = true
+license.workspace = true
+readme.workspace = true
+homepage.workspace = true
+repository.workspace = true
+edition.workspace = true
+
+[dependencies]
+log = { workspace = true }
+punicore_utils = { path = "../punicore_utils" }
+
+[lints]
+workspace = true
+
+[[bin]]
+name = "punicore"
+path = "src/main.rs"

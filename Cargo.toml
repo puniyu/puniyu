@@ -1,6 +1,6 @@
 [workspace]
-members = [
-    "punicore_logger",
+members = [ "punicore", "punicore_core",
+    "punicore_logger", "punicore_utils",
 ]
 resolver = "2"
 
@@ -16,6 +16,7 @@ edition = "2024"
 [workspace.dependencies]
 chrono = { version = "0.4" }
 log = { version = "0.4.27" }
+
 
 [workspace.lints.clippy]
 uninlined_format_args = "allow"
