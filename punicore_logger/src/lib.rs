@@ -3,7 +3,13 @@ use owo_colors::OwoColorize;
 use std::fmt;
 use tracing::Subscriber;
 use tracing_appender::rolling::{RollingFileAppender, Rotation};
-use tracing_subscriber::{filter::LevelFilter, fmt::{FormatEvent, FormatFields}, layer::SubscriberExt, registry::LookupSpan, Layer};
+use tracing_subscriber::{
+    filter::LevelFilter,
+    fmt::{FormatEvent, FormatFields},
+    layer::SubscriberExt,
+    registry::LookupSpan,
+    Layer,
+};
 
 pub struct LoggerOptions {
     /// 日志等级
@@ -119,7 +125,6 @@ pub fn log_init(options: Option<LoggerOptions>) {
             .build(&log_dir)
             .unwrap();
 
-
         let file_subscriber = tracing_subscriber::fmt::layer()
             .event_format(Formatter { color: false })
             .with_writer(file_appender)
@@ -129,11 +134,11 @@ pub fn log_init(options: Option<LoggerOptions>) {
         layers.push(file_subscriber.boxed());
     }
 
-    let subscriber = tracing_subscriber::registry()
-        .with(layers);
+    let subscriber = tracing_subscriber::registry().with(layers);
 
-    if tracing::subscriber::set_global_default(subscriber).is_err() || tracing_log::LogTracer::init().is_err(){
+    if tracing::subscriber::set_global_default(subscriber).is_err()
+        || tracing_log::LogTracer::init().is_err()
+    {
         return;
     }
-
 }

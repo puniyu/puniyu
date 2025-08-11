@@ -10,7 +10,7 @@ edition.workspace = true
 
 [dependencies]
 log = { workspace = true }
-punicore_utils = { path = "../punicore_utils" }
+punicore_core = { path = "../punicore_core" }
 
 [lints]
 workspace = true

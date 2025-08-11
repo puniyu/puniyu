@@ -1,4 +1,6 @@
-use punicore_utils::system::system_info::{get_bot_info, get_cpu_info, get_disk_info, get_memory_info, get_system_info};
+use punicore_utils::system::system_info::{
+    get_bot_info, get_cpu_info, get_disk_info, get_memory_info, get_system_info,
+};
 
 #[test]
 fn get_system_info_test() {
@@ -66,12 +68,20 @@ fn get_disk_info_test() {
         assert!(disk.free_space >= 0.0);
         assert!(disk.usage >= 0.0 && disk.usage <= 100.0);
 
-        assert!(disk.total_space >= disk.used_space,
-                "Disk {}: total space ({:.2}) should be >= used space ({:.2})",
-                disk.name, disk.total_space, disk.used_space);
-        assert!(disk.total_space >= disk.free_space,
-                "Disk {}: total space ({:.2}) should be >= free space ({:.2})",
-                disk.name, disk.total_space, disk.free_space);
+        assert!(
+            disk.total_space >= disk.used_space,
+            "Disk {}: total space ({:.2}) should be >= used space ({:.2})",
+            disk.name,
+            disk.total_space,
+            disk.used_space
+        );
+        assert!(
+            disk.total_space >= disk.free_space,
+            "Disk {}: total space ({:.2}) should be >= free space ({:.2})",
+            disk.name,
+            disk.total_space,
+            disk.free_space
+        );
     }
 }
 
@@ -84,4 +94,3 @@ fn get_bot_info_test() {
     assert!(bot_info.used_memory >= 0.0);
     assert!(bot_info.memory_usage >= 0.0 && bot_info.memory_usage <= 100.0);
 }
-

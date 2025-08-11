@@ -1,6 +1,6 @@
+use punicore_logger::{log_init, LoggerOptions};
 use tracing::level_filters::LevelFilter;
 use tracing_log::log;
-use punicore_logger::{log_init, LoggerOptions};
 
 #[test]
 fn log_info() {

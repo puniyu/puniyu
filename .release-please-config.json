@@ -64,6 +64,9 @@
     }
   ],
   "packages": {
+    "punicore": {
+      "release-type": "rust"
+    },
     "punicore_logger": {
       "release-type": "rust"
     },

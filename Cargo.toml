@@ -1,6 +1,9 @@
 [workspace]
-members = [ "punicore", "punicore_core",
-    "punicore_logger", "punicore_utils",
+members = [
+    "punicore",
+    "punicore_core",
+    "punicore_logger",
+    "punicore_utils",
 ]
 resolver = "2"
 

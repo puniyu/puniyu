@@ -13,7 +13,7 @@ use rust_decimal::prelude::*;
 /// 格式化后的f32数值
 ///
 /// # 示例
-/// use punicore_utils::utils::number::format_to_decimal; 
+/// use punicore_utils::utils::number::format_to_decimal;
 /// let result = format_to_decimal(3.14159f64, 2);
 ///
 pub fn format_to_f32<T>(value: T, decimals: u32) -> f32

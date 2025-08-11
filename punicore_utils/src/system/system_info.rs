@@ -90,7 +90,12 @@ pub fn get_system_info() -> SystemInfo {
     let memory = get_memory_info();
     let disk = get_disk_info();
     let bot = get_bot_info();
-    SystemInfo { cpu, memory, disk, bot }
+    SystemInfo {
+        cpu,
+        memory,
+        disk,
+        bot,
+    }
 }
 
 /// 获取CPU信息
@@ -154,7 +159,6 @@ pub fn get_memory_info() -> MemoryInfo {
     let total_memory = system.total_memory() / 1024 / 1024;
     let used_memory = system.used_memory() / 1024 / 1024;
     let free_memory = system.free_memory() / 1024 / 1024;
-
 
     let total_memory_f32 = format_to_f32(total_memory as f32, 2);
     let used_memory_f32 = format_to_f32(used_memory as f32, 2);
@@ -221,7 +225,6 @@ pub fn get_disk_info() -> DiskInfo {
         0.0
     };
 
-
     DiskInfo {
         total_disk_space: format_to_f32(total_disk_space, 2),
         total_used_space: format_to_f32(total_used_space, 2),
@@ -257,7 +260,6 @@ pub fn get_bot_info() -> BotInfo {
     } else {
         0.0
     };
-
 
     let memory_usage = format_to_f32(used_memory, 2);
     let used_memory_formatted = format_to_f32(used_memory, 2);

@@ -1,3 +1,2 @@
-mod logger;
 mod bot;
-
+pub mod logger;
