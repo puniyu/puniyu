@@ -1,4 +1,4 @@
-use punicore_utils::utils::number::{format_to_f32, format_to_f64};
+use puniyu_utils::utils::number::{format_to_f32, format_to_f64};
 #[test]
 fn format_to_f32_test() {
     // 测试f64转f32并保留2位小数

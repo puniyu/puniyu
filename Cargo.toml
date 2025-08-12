@@ -1,9 +1,9 @@
 [workspace]
 members = [
-    "punicore",
-    "punicore_core",
-    "punicore_logger",
-    "punicore_utils",
+    "puniyu",
+    "puniyu_core",
+    "puniyu_logger",
+    "puniyu_utils",
 ]
 resolver = "2"
 
@@ -12,13 +12,14 @@ version = "0.1.0"
 authors = ["wuliya <3369906077@qq.com>"]
 license = "LGPL-3.0-only"
 readme = "README.md"
-homepage = "https://github.com/PuniCore/core"
-repository = "https://github.com/PuniCore/core"
+homepage = "https://github.com/Puniyu/core"
+repository = "https://github.com/Puniyu/core"
 edition = "2024"
 
 [workspace.dependencies]
 chrono = { version = "0.4" }
 log = { version = "0.4.27" }
+tokio = { version = "1.47.1", features = ["full"] }
 
 
 [workspace.lints.clippy]

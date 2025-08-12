@@ -4,11 +4,11 @@ use std::fmt;
 use tracing::Subscriber;
 use tracing_appender::rolling::{RollingFileAppender, Rotation};
 use tracing_subscriber::{
+    Layer,
     filter::LevelFilter,
     fmt::{FormatEvent, FormatFields},
     layer::SubscriberExt,
     registry::LookupSpan,
-    Layer,
 };
 
 pub struct LoggerOptions {
@@ -66,9 +66,9 @@ where
         event: &tracing::Event<'_>,
     ) -> fmt::Result {
         let prefix = if self.color {
-            "[Puni]".magenta().to_string()
+            "[PuniYu]".magenta().to_string()
         } else {
-            "[Puni]".to_string()
+            "[PuniYu]".to_string()
         };
         write!(writer, "{} ", prefix)?;
 
@@ -119,7 +119,7 @@ pub fn log_init(options: Option<LoggerOptions>) {
         let _ = std::fs::create_dir_all(&log_dir);
         let file_appender = RollingFileAppender::builder()
             .rotation(Rotation::DAILY)
-            .filename_prefix("puni")
+            .filename_prefix("puniyu")
             .filename_suffix("log")
             .max_log_files(options.retention_days.unwrap_or(7) as usize)
             .build(&log_dir)

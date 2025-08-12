@@ -1,5 +1,5 @@
 [package]
-name = "punicore_core"
+name = "puniyu_utils"
 version = "0.1.0"
 authors.workspace = true
 license.workspace = true
@@ -9,8 +9,8 @@ repository.workspace = true
 edition.workspace = true
 
 [dependencies]
-punicore_logger = { path = "../punicore_logger" }
-tracing = { version = "0.1.41" }
+rust_decimal = { version = "1.37.2" }
+puniyu_system_info = { version = "0.3.0" }
 
 [lints]
 workspace = true

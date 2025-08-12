@@ -1,5 +1,5 @@
 [package]
-name = "punicore"
+name = "puniyu"
 version = "0.1.0"
 authors.workspace = true
 license.workspace = true
@@ -10,7 +10,6 @@ edition.workspace = true
 
 [dependencies]
 log = { workspace = true }
-punicore_core = { path = "../punicore_core" }
 
 [lints]
 workspace = true

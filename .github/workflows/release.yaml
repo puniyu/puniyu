@@ -5,11 +5,11 @@ on:
       - main
     paths:
       - 'Cargo.toml'
-      - 'punicore_logger/*'
+      - 'puniyu_logger/*'
   pull_request_target:
     paths:
       - 'Cargo.toml'
-      - 'punicore_logger/*'
+      - 'puniyu_logger/*'
   workflow_dispatch:
 
 
@@ -21,7 +21,7 @@ jobs:
   release:
     runs-on: ubuntu-latest
     outputs:
-      logger: ${{ steps.release.outputs['punicore_logger--release_created'] }}
+      logger: ${{ steps.release.outputs['puniyu_logger--release_created'] }}
     steps:
       - name: 获取token
         uses: actions/create-github-app-token@v2
@@ -29,12 +29,6 @@ jobs:
         with:
           app-id: ${{ secrets.APP_ID }}
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
-
-      - name: 获取用户ID
-        id: get-user-id
-        run: echo "user-id=$(gh api "/users/${{ steps.app-token.outputs.app-slug }}[bot]" --jq .id)" >> "$GITHUB_OUTPUT"
-        env:
-          GH_TOKEN: ${{ steps.app-token.outputs.token }}
 
       - name: 运行 release-please-action
         id: release-please

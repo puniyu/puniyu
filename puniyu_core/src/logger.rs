@@ -1,4 +1,4 @@
-use punicore_logger::{log_init, LoggerOptions};
+use puniyu_logger::{LoggerOptions, log_init};
 use std::sync::Once;
 use tracing::level_filters::LevelFilter;
 
