@@ -1,5 +1,8 @@
-use std::{process};
-use puniyu_system_info::{CpuInfo, HostInfo, DiskInfo, MemoryInfo, get_disk_info, get_memory_info, get_host_info, get_cpu_info, get_procss_info};
+use puniyu_system_info::{
+    CpuInfo, DiskInfo, HostInfo, MemoryInfo, get_cpu_info, get_disk_info, get_host_info,
+    get_memory_info, get_process_info,
+};
+use std::process;
 
 #[derive(Debug)]
 pub struct SystemInfo {
@@ -68,8 +71,7 @@ pub fn get_process_pid() -> u32 {
 /// * [BotStatusInfo] - Bot状态信息
 ///
 pub fn get_bot_info() -> BotStatusInfo {
-    let process = get_procss_info();
-
+    let process = get_process_info();
     BotStatusInfo {
         pid: process.pid.as_u32(),
         cpu_usage: process.cpu_usage,
