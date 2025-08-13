@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 pub struct FaceElement {
     /// 元素类型
     #[serde(rename = "type")]
-    pub r#type: &'static str,
+    pub r#type: String,
     /// 表情元素id
     pub id: u64,
     /// 是否为大表情
@@ -25,7 +25,7 @@ impl FaceElement {
     /// * `FaceElement` - 表情元素
     pub fn new(id: u64, is_big: Option<bool>) -> Self {
         Self {
-            r#type: "face",
+            r#type: "face".to_string(),
             id,
             is_big,
         }

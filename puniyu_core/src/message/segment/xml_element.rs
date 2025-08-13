@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 pub struct XmlElement {
     /// json元素类型
     #[serde(rename = "type")]
-    pub r#type: &'static str,
+    pub r#type: String,
     /// Xml数据，未序列化
     pub data: String,
 }
@@ -22,7 +22,7 @@ impl XmlElement {
     /// * `JsonElement` - json元素
     pub fn new(data: String) -> Self {
         Self {
-            r#type: "json",
+            r#type: "xml".to_string(),
             data,
         }
     }

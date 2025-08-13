@@ -6,7 +6,7 @@ use std::path::PathBuf;
 pub struct RecordElement {
     /// 元素类型
     #[serde(rename = "type")]
-    r#type: &'static str,
+    r#type: String,
     /// 语言元素
     ///  - 语音网络url
     ///  - 语音绝对路径
@@ -29,7 +29,7 @@ impl RecordElement {
     /// * `RecordElement` - 语音元素
     pub fn new(file: Result<String, PathBuf>) -> Self {
         Self {
-            r#type: "record",
+            r#type: "record".to_string(),
             file,
         }
     }

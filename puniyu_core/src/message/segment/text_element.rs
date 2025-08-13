@@ -5,9 +5,9 @@ use serde::{Deserialize, Serialize};
 pub struct TextElement {
     /// 文本元素类型
     #[serde(rename = "type")]
-    r#type: &'static str,
+    pub r#type: String,
     /// 文本元素内容
-    text: String,
+    pub text: String,
 }
 impl TextElement {
     /// 创建一个文本元素
@@ -21,7 +21,7 @@ impl TextElement {
     /// * `TextElement` - 文本元素
     pub fn new(text: String) -> Self {
         Self {
-            r#type: "text",
+            r#type: "text".to_string(),
             text,
         }
     }

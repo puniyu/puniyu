@@ -16,7 +16,7 @@ pub enum MusicPlatform {
 pub struct MusicElement {
     /// 元素类型
     #[serde(rename = "type")]
-    r#type: &'static str,
+    r#type: String,
     /// 音乐数据
     /// 自动展开
     #[serde(flatten)]
@@ -55,7 +55,7 @@ pub enum MusicData {
 pub struct CustomMusicElement {
     /// 元素类型
     #[serde(rename = "type")]
-    r#type: &'static str,
+    r#type: String,
     /// 音乐平台
     platform: MusicPlatform,
     /// 跳转链接
@@ -83,7 +83,7 @@ impl MusicElement {
     /// * `MusicElement` - 音乐元素
     fn new_standard(platform: MusicPlatform, id: impl Into<String>) -> Self {
         Self {
-            r#type: "music",
+            r#type: "music".to_string(),
             data: MusicData::Standard {
                 platform,
                 id: id.into(),
@@ -112,7 +112,7 @@ impl MusicElement {
         pic: impl Into<String>,
     ) -> Self {
         Self {
-            r#type: "music",
+            r#type: "music".to_string(),
             data: MusicData::Custom {
                 platform: MusicPlatform::Custom,
                 url: url.into(),

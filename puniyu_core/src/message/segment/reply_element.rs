@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 pub struct ReplyElement {
     /// 元素类型
     #[serde(rename = "type")]
-    r#type: &'static str,
+    r#type: String,
     /// 回复元素id
     #[serde(rename = "messageId")]
     message_id: u64,
@@ -21,7 +21,7 @@ impl ReplyElement {
     /// * `ReplyElement` - 回复元素
     pub fn new(message_id: u64) -> Self {
         Self {
-            r#type: "reply",
+            r#type: "reply".to_string(),
             message_id,
         }
     }

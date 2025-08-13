@@ -1,11 +1,12 @@
 use serde::{Deserialize, Serialize};
+use std::borrow::Cow;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct AtElement {
     /// at元素类型
     #[serde(rename = "type")]
-    pub r#type: &'static str,
+    pub r#type: String,
     /// at元素目标id
     pub target_id: String,
     /// at元素目标名称
@@ -28,7 +29,7 @@ impl AtElement {
     /// * `AtElement` - at元素
     pub fn new(target_id: String, name: Option<String>) -> Self {
         Self {
-            r#type: "at",
+            r#type: "at".to_string(),
             target_id,
             name,
         }

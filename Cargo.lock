@@ -822,6 +822,7 @@ dependencies = [
 name = "puniyu_core"
 version = "0.1.0"
 dependencies = [
+ "log",
  "puniyu_logger",
  "puniyu_system_info",
  "serde",
