@@ -5,11 +5,19 @@ on:
       - main
     paths:
       - 'Cargo.toml'
+      - 'puniyu/*'
+      - 'puniyu_core/*'
       - 'puniyu_logger/*'
+      - 'puniyu_utils/**'
+      - 'puniyu_plugin/*'
   pull_request_target:
     paths:
       - 'Cargo.toml'
+      - 'puniyu/*'
+      - 'puniyu_core/*'
       - 'puniyu_logger/*'
+      - 'puniyu_utils/**'
+      - 'puniyu_plugin/*'
   workflow_dispatch:
 
 

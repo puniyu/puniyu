@@ -11,9 +11,12 @@ edition.workspace = true
 [dependencies]
 rust_decimal = { version = "1.37.2" }
 puniyu_system_info = { version = "0.4" }
-git2 = { version = "0.20.2" }
 log = { workspace = true }
 tokio = { workspace = true }
+toml = { version = "0.9.5" }
+serde = { workspace = true }
+serde_json = { workspace = true }
+serde_yaml = { version = "0.9.34" }
 
 [lints]
 workspace = true

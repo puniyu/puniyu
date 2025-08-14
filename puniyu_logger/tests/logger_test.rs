@@ -32,7 +32,7 @@ fn log_trace() {
 
 #[test]
 fn log_with_options() {
-    let options = LoggerOptions::new(LevelFilter::INFO)
+    let options = LoggerOptions::new("info")
         .with_file_logging(true)
         .with_log_directory("logs".to_string())
         .with_retention_days(7);

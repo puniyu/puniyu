@@ -2,7 +2,8 @@
 members = [
     "puniyu",
     "puniyu_core",
-    "puniyu_logger", "puniyu_plugin",
+    "puniyu_logger",
+    "puniyu_plugin",
     "puniyu_utils",
 ]
 resolver = "2"

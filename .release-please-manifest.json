@@ -1,6 +1,7 @@
 {
-  "punicore": "0.1.0",
-  "punicore_logger": "0.1.0",
-  "punicore_core": "0.1.0",
-  "punicore_utils": "0.1.0"
+  "puniyu": "0.1.0",
+  "puniyu_core": "0.1.0",
+  "puniyu_plugin": "0.1.0",
+  "puniyu_utils": "0.1.0",
+  "puniyu_logger": "0.1.0"
 }

@@ -64,16 +64,19 @@
     }
   ],
   "packages": {
-    "punicore": {
+    "puniyu": {
       "release-type": "rust"
     },
-    "punicore_logger": {
+    "puniyu_core": {
+      "release-type": "rust"
+    },    
+    "puniyu_plugin": {
       "release-type": "rust"
     },
-    "punicore_core": {
+    "puniyu_utils": {
       "release-type": "rust"
     },
-    "punicore_utils": {
+    "puniyu_logger": {
       "release-type": "rust"
     }
   },

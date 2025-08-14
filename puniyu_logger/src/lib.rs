@@ -1,19 +1,23 @@
 use chrono_tz::Asia::Shanghai;
 use owo_colors::OwoColorize;
 use std::fmt;
+use std::sync::OnceLock;
 use tracing::Subscriber;
 use tracing_appender::rolling::{RollingFileAppender, Rotation};
+use tracing_subscriber::reload::{self, Handle};
 use tracing_subscriber::{
-    Layer,
+    Layer, Registry,
     filter::LevelFilter,
     fmt::{FormatEvent, FormatFields},
     layer::SubscriberExt,
     registry::LookupSpan,
 };
 
+static RELOAD_HANDLE: OnceLock<Handle<LevelFilter, Registry>> = OnceLock::new();
+
 pub struct LoggerOptions {
     /// 日志等级
-    pub level: LevelFilter,
+    pub level: String,
     /// 是否启用文件日志记录
     pub enable_file_logging: bool,
     /// 日志文件保存路径
@@ -24,9 +28,9 @@ pub struct LoggerOptions {
 
 impl LoggerOptions {
     /// 创建新的日志配置选项
-    pub fn new(level: LevelFilter) -> Self {
+    pub fn new(level: &str) -> Self {
         Self {
-            level,
+            level: level.to_string(),
             enable_file_logging: false,
             log_directory: None,
             retention_days: None,
@@ -97,20 +101,16 @@ where
 }
 
 pub fn log_init(options: Option<LoggerOptions>) {
-    let options = options.unwrap_or_else(|| LoggerOptions::new(LevelFilter::INFO));
+    let options = options.unwrap_or_else(|| LoggerOptions::new("info"));
 
-    let logger_level = match options.level {
-        LevelFilter::OFF => LevelFilter::OFF,
-        LevelFilter::ERROR => LevelFilter::ERROR,
-        LevelFilter::WARN => LevelFilter::WARN,
-        LevelFilter::INFO => LevelFilter::INFO,
-        LevelFilter::DEBUG => LevelFilter::DEBUG,
-        LevelFilter::TRACE => LevelFilter::TRACE,
-    };
+    let logger_level = parse_log_level(&options.level);
+
+    let (filter, reload_handle) = reload::Layer::new(logger_level);
+    RELOAD_HANDLE.set(reload_handle).unwrap();
 
     let console_subscriber = tracing_subscriber::fmt::layer()
         .event_format(Formatter { color: true })
-        .with_filter(logger_level);
+        .with_filter(filter);
 
     let mut layers = vec![console_subscriber.boxed()];
 
@@ -138,7 +138,22 @@ pub fn log_init(options: Option<LoggerOptions>) {
 
     if tracing::subscriber::set_global_default(subscriber).is_err()
         || tracing_log::LogTracer::init().is_err()
-    {
-        return;
+    {}
+}
+
+pub fn set_log_level(level: String) {
+    let logger_level = parse_log_level(&level);
+    let handle = RELOAD_HANDLE.get().unwrap();
+    handle.modify(|filter| *filter = logger_level).unwrap();
+}
+
+fn parse_log_level(level: &str) -> LevelFilter {
+    match level.to_lowercase().as_str() {
+        "trace" => LevelFilter::TRACE,
+        "debug" => LevelFilter::DEBUG,
+        "info" => LevelFilter::INFO,
+        "warn" => LevelFilter::WARN,
+        "error" => LevelFilter::ERROR,
+        _ => LevelFilter::INFO,
     }
 }
