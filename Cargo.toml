@@ -2,13 +2,12 @@
 members = [
     "puniyu",
     "puniyu_core",
-    "puniyu_logger",
+    "puniyu_logger", "puniyu_plugin",
     "puniyu_utils",
 ]
 resolver = "2"
 
 [workspace.package]
-version = "0.1.0"
 authors = ["wuliya <3369906077@qq.com>"]
 license = "LGPL-3.0-only"
 readme = "README.md"

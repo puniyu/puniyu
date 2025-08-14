@@ -1,1 +1,4 @@
-pub mod segment;
+mod element;
+mod segment;
+
+pub use segment::{Segment, music};

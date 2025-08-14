@@ -1,40 +1,261 @@
-use serde::{Deserialize, Serialize};
+pub mod music;
 
-mod at_element;
-pub use at_element::AtElement as at;
-mod face_element;
-pub use face_element::FaceElement as face;
-mod file_element;
-pub use file_element::FileElement as file;
-mod image_element;
-pub use image_element::ImageElement as image;
-mod json_element;
-pub use json_element::JsonElement as json;
-mod music_element;
-pub use music_element::MusicElement as music;
-mod record_element;
-pub use record_element::RecordElement as record;
-mod reply_element;
-pub use reply_element::ReplyElement as reply;
-mod text_element;
-pub use text_element::TextElement as text;
-mod video_element;
-pub use video_element::VideoElement as video;
-mod xml_element;
-pub use xml_element::XmlElement as xml;
+use super::element::{
+    AtElement, FaceElement, FileElement, ImageElement, JsonElement, MusicElement, RecordElement,
+    ReplyElement, TextElement, VideoElement, XmlElement,
+};
+use music::{CustomMusicOptions, MusicData, MusicPlatform};
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-/// 消息元素
-pub enum Element {
-    At(at_element::AtElement),
-    Face(face_element::FaceElement),
-    File(file_element::FileElement),
-    Image(image_element::ImageElement),
-    Json(json_element::JsonElement),
-    Music(music_element::MusicElement),
-    Record(record_element::RecordElement),
-    Reply(reply_element::ReplyElement),
-    Text(text_element::TextElement),
-    Video(video_element::VideoElement),
-    Xml(xml_element::XmlElement),
+pub struct Segment {
+    /// at元素
+    pub at: AtElement,
+    /// 表情元素
+    pub face: FaceElement,
+    /// 文件元素
+    pub file: FileElement,
+    /// 图片元素
+    pub image: ImageElement,
+    /// json元素
+    pub json: JsonElement,
+    /// 语音元素
+    pub record: RecordElement,
+    /// 回复元素
+    pub reply: ReplyElement,
+    /// 文本元素
+    pub text: TextElement,
+    /// 视频元素
+    pub video: VideoElement,
+    /// xml元素
+    pub xml: XmlElement,
+}
+impl Segment {
+    /// 创建一个at元素
+    ///
+    /// # 参数
+    ///
+    /// * `target_id`
+    ///     - at元素目标id
+    ///     - 艾特所有成员=all
+    ///     - 艾特在线成员=online
+    ///
+    /// # 返回值
+    ///
+    /// * `AtElement` - at元素
+    pub fn at(target_id: String) -> AtElement {
+        AtElement {
+            r#type: "at".to_string(),
+            target_id,
+            name: None,
+        }
+    }
+
+    /// 创建一个表情元素
+    ///
+    /// # 参数
+    ///
+    /// * `id` - 表情元素id
+    ///
+    /// # 返回值
+    ///
+    /// * `FaceElement` - 表情元素
+    pub fn face(id: Option<u64>) -> FaceElement {
+        FaceElement {
+            r#type: "face".to_string(),
+            id,
+            is_big: Some(false),
+        }
+    }
+
+    /// 创建一个文件元素
+    ///
+    /// # 参数
+    ///
+    /// * `file`
+    ///  - 文件网络url
+    ///  - 文件绝对路径
+    ///  - base64
+    ///
+    /// # 返回值
+    ///
+    /// * `FileElement` - 文件元素
+    pub fn file(file: String) -> FileElement {
+        FileElement {
+            r#type: "file".to_string(),
+            file,
+        }
+    }
+
+    /// 创建一个图片元素
+    ///
+    /// # 参数
+    ///
+    /// * `url` - 图片网络url
+    ///
+    /// # 返回值
+    ///
+    /// * `ImageElement` - 图片元素
+    pub fn image(file: String) -> ImageElement {
+        ImageElement {
+            r#type: "image".to_string(),
+            file,
+        }
+    }
+
+    /// 创建一个json元素
+    ///
+    /// # 参数
+    ///
+    /// * `data` - Json数据，未序列化
+    ///
+    /// # 返回值
+    ///
+    /// * `JsonElement` - json元素
+    pub fn json(data: String) -> JsonElement {
+        JsonElement {
+            r#type: "json".to_string(),
+            data,
+        }
+    }
+
+    /// 创建一个音乐元素
+    ///
+    /// TODO: 后面会删除，这个不应该作为core, 或者换一种实现方法
+    ///
+    /// 默认音乐平台为QQ
+    ///
+    /// # 参数
+    ///
+    /// * `id` - 音乐元素id
+    ///
+    /// # 返回值
+    ///
+    /// * `MusicElement` - 音乐元素
+    pub fn music(id: String) -> MusicElement {
+        let data = MusicData::Standard {
+            platform: MusicPlatform::QQ,
+            id,
+        };
+        MusicElement {
+            r#type: "music".to_string(),
+            data,
+        }
+    }
+
+    /// 创建一个自定义音乐元素
+    ///
+    /// # 参数
+    ///
+    /// * `options` - 自定义音乐元素选项
+    ///
+    /// # 字段
+    ///
+    /// * `url` - 跳转链接
+    /// * `audio` - 音乐音频链接
+    /// * `title` - 标题
+    /// * `author` - 歌手
+    /// * `pic` - 封面链接
+    ///
+    /// # 返回值
+    ///
+    /// * `MusicElement` - 自定义音乐元素
+    pub fn custom_music(options: CustomMusicOptions) -> MusicElement {
+        let data = MusicData::Custom {
+            platform: MusicPlatform::Custom,
+            url: options.url,
+            audio: options.audio,
+            title: options.title,
+            author: options.author,
+            pic: options.pic,
+        };
+        MusicElement {
+            r#type: "music".to_string(),
+            data,
+        }
+    }
+
+    /// 创建一个语音元素
+    ///
+    /// # 参数
+    ///
+    /// * `file`
+    ///  - 语音网络url
+    ///  - 语音绝对路径
+    ///  - base64
+    ///
+    /// # 返回值
+    ///
+    /// * `RecordElement` - 语音元素
+    pub fn record(file: String) -> RecordElement {
+        RecordElement {
+            r#type: "record".to_string(),
+            file,
+        }
+    }
+
+    /// 创建一个回复元素
+    ///
+    /// # 参数
+    ///
+    /// * `message_id` - 回复元素id
+    ///
+    /// # 返回值
+    ///
+    /// * `ReplyElement` - 回复元素
+    pub fn reply(message_id: String) -> ReplyElement {
+        ReplyElement {
+            r#type: "reply".to_string(),
+            message_id,
+        }
+    }
+
+    /// 创建一个文本元素
+    ///
+    /// # 参数
+    ///
+    /// * `text` - 文本元素内容
+    ///
+    /// # 返回值
+    ///
+    /// * `TextElement` - 文本元素
+    pub fn text(text: String) -> TextElement {
+        TextElement {
+            r#type: "text".to_string(),
+            text,
+        }
+    }
+
+    /// 创建一个视频元素
+    ///
+    /// # 参数
+    ///
+    /// * `file` - 视频元素id
+    ///  - 视频网络url
+    ///  - 视频绝对路径
+    ///  - base64
+    ///
+    /// # 返回值
+    ///
+    /// * `VideoElement` - 视频元素
+    pub fn video(file: String) -> VideoElement {
+        VideoElement {
+            r#type: "video".to_string(),
+            file,
+        }
+    }
+
+    /// 创建一个xml元素
+    ///
+    /// # 参数
+    ///
+    /// * `data` - Xml数据，未序列化
+    ///
+    /// # 返回值
+    ///
+    /// * `XmlElement` - xml元素
+    pub fn xml(data: String) -> XmlElement {
+        XmlElement {
+            r#type: "xml".to_string(),
+            data,
+        }
+    }
 }
