@@ -1,8 +1,5 @@
-use log::LevelFilter;
-use puniyu_core::logger;
+use puniyu_core::system::system_info::get_memory_info;
 fn main() {
-    logger::init_logger("info".to_string(), None);
-    log::info!("hello world");
-    logger::set_log_level("debug".to_string());
-    log::debug!("hello world");
+    let sys = get_memory_info();
+    println!("{:?}", sys);
 }

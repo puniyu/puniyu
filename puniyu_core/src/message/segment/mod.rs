@@ -4,7 +4,7 @@ use super::element::{
     AtElement, FaceElement, FileElement, ImageElement, JsonElement, MusicElement, RecordElement,
     ReplyElement, TextElement, VideoElement, XmlElement,
 };
-use music::{CustomMusicOptions, MusicData, MusicPlatform};
+use music::MusicData;
 
 pub struct Segment {
     /// at元素
@@ -119,58 +119,26 @@ impl Segment {
 
     /// 创建一个音乐元素
     ///
-    /// TODO: 后面会删除，这个不应该作为core, 或者换一种实现方法
     ///
     /// 默认音乐平台为QQ
     ///
     /// # 参数
     ///
-    /// * `id` - 音乐元素id
+    /// * `music_id` - 音乐元素id，如果需要自定义音乐平台，此参数请传入url再调用custom
     ///
     /// # 返回值
     ///
     /// * `MusicElement` - 音乐元素
-    pub fn music(id: String) -> MusicElement {
+    pub fn music(music_id: String) -> MusicElement {
         let data = MusicData::Standard {
-            platform: MusicPlatform::QQ,
-            id,
+            platform: String::new(),
+            id: music_id,
         };
         MusicElement {
             r#type: "music".to_string(),
             data,
         }
-    }
-
-    /// 创建一个自定义音乐元素
-    ///
-    /// # 参数
-    ///
-    /// * `options` - 自定义音乐元素选项
-    ///
-    /// # 字段
-    ///
-    /// * `url` - 跳转链接
-    /// * `audio` - 音乐音频链接
-    /// * `title` - 标题
-    /// * `author` - 歌手
-    /// * `pic` - 封面链接
-    ///
-    /// # 返回值
-    ///
-    /// * `MusicElement` - 自定义音乐元素
-    pub fn custom_music(options: CustomMusicOptions) -> MusicElement {
-        let data = MusicData::Custom {
-            platform: MusicPlatform::Custom,
-            url: options.url,
-            audio: options.audio,
-            title: options.title,
-            author: options.author,
-            pic: options.pic,
-        };
-        MusicElement {
-            r#type: "music".to_string(),
-            data,
-        }
+        .qq()
     }
 
     /// 创建一个语音元素

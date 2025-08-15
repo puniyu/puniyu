@@ -15,5 +15,5 @@ puniyu_core = { path = "../puniyu_core" }
 workspace = true
 
 [[bin]]
-name = "punicore"
+name = "puniyu"
 path = "src/main.rs"

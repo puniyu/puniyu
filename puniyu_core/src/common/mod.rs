@@ -1,4 +1,4 @@
-use puniyu_system_info::get_process_info;
+use puniyu_utils::system::system_info::get_process_info;
 use std::{thread, time::Duration};
 
 /// 等待一段时间

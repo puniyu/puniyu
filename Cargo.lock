@@ -582,7 +582,6 @@ version = "0.1.0"
 dependencies = [
  "log",
  "puniyu_logger",
- "puniyu_system_info",
  "puniyu_utils",
  "serde",
  "serde_json",
@@ -611,9 +610,9 @@ dependencies = [
 
 [[package]]
 name = "puniyu_system_info"
-version = "0.4.0"
+version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0015794c246e3b76799950c26870ec742a3e207d4c2e7c1a03e4c476c971af59"
+checksum = "05ee45dc3c70a8d091292de47c2e23be80e153e7695f9b8bb4a028a2d3888b5a"
 dependencies = [
  "chrono",
  "rust_decimal",

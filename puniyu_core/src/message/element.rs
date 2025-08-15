@@ -1,4 +1,4 @@
-use crate::message::segment::music::{CustomMusicOptions, MusicData, MusicPlatform};
+use super::music::{CustomMusicOptions, MusicData, MusicPlatform};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -108,7 +108,7 @@ impl MusicElement {
     pub fn qq(mut self) -> Self {
         if let MusicData::Standard { id, .. } = self.data {
             self.data = MusicData::Standard {
-                platform: MusicPlatform::QQ,
+                platform: MusicPlatform::QQ.to_platform_string(),
                 id,
             };
         }
@@ -119,7 +119,7 @@ impl MusicElement {
     pub fn net_ease(mut self) -> Self {
         if let MusicData::Standard { id, .. } = self.data {
             self.data = MusicData::Standard {
-                platform: MusicPlatform::NetEase,
+                platform: MusicPlatform::NetEase.to_platform_string(),
                 id,
             };
         }
@@ -130,7 +130,7 @@ impl MusicElement {
     pub fn migu(mut self) -> Self {
         if let MusicData::Standard { id, .. } = self.data {
             self.data = MusicData::Standard {
-                platform: MusicPlatform::MiGu,
+                platform: MusicPlatform::MiGu.to_platform_string(),
                 id,
             };
         }
@@ -141,7 +141,7 @@ impl MusicElement {
     pub fn kugou(mut self) -> Self {
         if let MusicData::Standard { id, .. } = self.data {
             self.data = MusicData::Standard {
-                platform: MusicPlatform::KuGou,
+                platform: MusicPlatform::KuGou.to_platform_string(),
                 id,
             };
         }
@@ -152,7 +152,7 @@ impl MusicElement {
     pub fn kuwo(mut self) -> Self {
         if let MusicData::Standard { id, .. } = self.data {
             self.data = MusicData::Standard {
-                platform: MusicPlatform::Kuwo,
+                platform: MusicPlatform::Kuwo.to_platform_string(),
                 id,
             };
         }
@@ -161,9 +161,14 @@ impl MusicElement {
 
     /// 创建自定义音乐元素
     pub fn custom(mut self, options: CustomMusicOptions) -> Self {
+        // 只会拿到Standard的id并作为url
+        let music_id = match self.data {
+            MusicData::Standard { id, .. } => id,
+            MusicData::Custom { url, .. } => url,
+        };
         self.data = MusicData::Custom {
-            platform: MusicPlatform::Custom,
-            url: options.url,
+            platform: MusicPlatform::Custom.to_platform_string(),
+            url: music_id,
             audio: options.audio,
             title: options.title,
             author: options.author,

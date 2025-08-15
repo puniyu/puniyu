@@ -10,7 +10,7 @@ edition.workspace = true
 
 [dependencies]
 rust_decimal = { version = "1.37.2" }
-puniyu_system_info = { version = "0.4" }
+puniyu_system_info = { version = "0.5.0" }
 log = { workspace = true }
 tokio = { workspace = true }
 toml = { version = "0.9.5" }
