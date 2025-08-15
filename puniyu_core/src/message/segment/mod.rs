@@ -37,14 +37,14 @@ impl Segment {
     ///     - at元素目标id
     ///     - 艾特所有成员=all
     ///     - 艾特在线成员=online
-    ///
+    ///    当为None则默认为 all
     /// # 返回值
     ///
     /// * `AtElement` - at元素
-    pub fn at(target_id: String) -> AtElement {
+    pub fn at(target_id: Option<String>) -> AtElement {
         AtElement {
             r#type: "at".to_string(),
-            target_id,
+            target_id: target_id.unwrap_or("all".to_string()),
             name: None,
         }
     }
