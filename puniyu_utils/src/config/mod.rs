@@ -5,6 +5,7 @@ pub mod yaml;
 
 use crate::path::CONFIG_DIR;
 use serde::{Deserialize, Serialize};
+use std::path::Path;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BotConfig {
@@ -23,6 +24,25 @@ impl Default for BotConfig {
             log_dir: "logs".to_string(),
             retention_days: 7,
         }
+    }
+}
+
+impl BotConfig {
+    pub fn get() -> Self {
+        toml::read_config::<BotConfig>(CONFIG_DIR.as_path(), "bot")
+            .unwrap_or_else(|_| BotConfig::default())
+    }
+    /// 获取日志等级
+    pub fn logger_level(&self) -> String {
+        Self::get().logger_level
+    }
+    /// 获取日志目录
+    pub fn log_dir(&self) -> String {
+        Self::get().log_dir
+    }
+    /// 获取日志保留天数
+    pub fn retention_days(&self) -> u8 {
+        Self::get().retention_days
     }
 }
 
@@ -49,6 +69,25 @@ impl Default for RedisConfig {
     }
 }
 
+impl RedisConfig {
+    pub fn get() -> Self {
+        toml::read_config::<RedisConfig>(CONFIG_DIR.as_path(), "redis")
+            .unwrap_or_else(|_| RedisConfig::default())
+    }
+    pub fn host(&self) -> String {
+        Self::get().host
+    }
+    pub fn port(&self) -> u16 {
+        Self::get().port
+    }
+    pub fn password(&self) -> String {
+        Self::get().password
+    }
+    pub fn db(&self) -> u8 {
+        Self::get().db
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct Config {
     pub bot: BotConfig,
@@ -68,8 +107,7 @@ impl Config {
     /// let config = Config::bot();
     /// ```
     pub fn bot() -> BotConfig {
-        toml::read_config::<BotConfig>(CONFIG_DIR.as_path(), "bot")
-            .unwrap_or_else(|_| BotConfig::default())
+        BotConfig::get()
     }
 
     /// 获取redis配置
@@ -85,7 +123,6 @@ impl Config {
     /// let config = Config::redis();
     /// ```
     pub fn redis() -> RedisConfig {
-        toml::read_config::<RedisConfig>(CONFIG_DIR.as_path(), "redis")
-            .unwrap_or_else(|_| RedisConfig::default())
+        RedisConfig::get()
     }
 }

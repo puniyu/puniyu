@@ -11,6 +11,8 @@ edition.workspace = true
 [dependencies]
 log = { workspace = true }
 puniyu_core = { path = "../puniyu_core" }
+puniyu_utils = { path = "../puniyu_utils" }
+tokio = { workspace = true }
 [lints]
 workspace = true
 
