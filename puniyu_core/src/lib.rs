@@ -6,6 +6,7 @@ pub mod message;
 mod version;
 pub use core::puniyu::Puniyu as puniyu;
 mod event;
+mod render;
 
 pub use log;
 pub use puniyu_utils::config;

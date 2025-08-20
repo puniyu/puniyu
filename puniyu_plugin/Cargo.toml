@@ -11,6 +11,10 @@ rust-version.workspace = true
 
 [dependencies]
 regex = "1.11.1"
+log = { workspace = true }
+inventory = { version = "0.3.20" }
+tokio-cron-scheduler = { version = "0.14.0" }
+chrono-tz = { version = "0.10.4" }
 
 [lints]
 workspace = true

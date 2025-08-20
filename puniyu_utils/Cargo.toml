@@ -21,6 +21,7 @@ serde_json = { workspace = true }
 serde_yaml = { version = "0.9.34" }
 regex = "1.11.1"
 deadpool-redis = { version = "0.22.0", features = ["rt_tokio_1"] }
+handlebars = "6.3.2"
 
 [lints]
 workspace = true

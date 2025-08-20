@@ -10,8 +10,6 @@ edition.workspace = true
 rust-version.workspace = true
 
 [dependencies]
-puniyu_logger = { path = "../puniyu_logger" }
-puniyu_utils = { path = "../puniyu_utils" }
 tracing = { version = "0.1.41" }
 serde = { workspace = true }
 serde_json = { workspace = true }
@@ -20,6 +18,9 @@ tokio = "1.47.1"
 emitter-rs = { version = "0.0.5" }
 lazy_static = { workspace = true }
 
+puniyu_logger = { path = "../puniyu_logger" }
+puniyu_utils = { path = "../puniyu_utils" }
+puniyu_plugin = { path = "../puniyu_plugin" }
 
 [lints]
 workspace = true

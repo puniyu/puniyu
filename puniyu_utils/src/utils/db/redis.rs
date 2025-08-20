@@ -1,6 +1,6 @@
 use crate::config::Config;
 use deadpool_redis::{Config as DpConfig, Pool, Runtime};
-use redis::{Client, Connection, cmd};
+use redis::cmd;
 use std::process;
 use std::sync::OnceLock;
 
