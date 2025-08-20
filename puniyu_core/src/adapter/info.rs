@@ -104,27 +104,11 @@ pub struct AdapterInfo {
     /// # 示例
     /// `http://127.0.0.1:7000`
     /// `ws://127.0.0.1:7000/ws`
-    /// grpc://127.0.0.1:7001`
+    /// `grpc://127.0.0.1:7001`
     /// `internal://127.0.0.1`
     pub address: String,
     /// 连接时间
     pub connect_time: u32,
     /// 鉴权秘钥
     pub secret: Option<String>,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-/// 账户信息
-pub struct AccountInfo {
-    /// Bot账号的uin
-    pub uin: String,
-    /// Bot账号的uid
-    pub uid: String,
-    /// Bot的selfId 一般使用此参数即可
-    pub self_id: String,
-    /// Bot账号的昵称
-    pub name: String,
-    /// Bot账号的头像
-    pub avatar: String,
 }

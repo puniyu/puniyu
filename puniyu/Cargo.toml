@@ -7,12 +7,15 @@ readme.workspace = true
 homepage.workspace = true
 repository.workspace = true
 edition.workspace = true
+rust-version.workspace = true
 
 [dependencies]
 log = { workspace = true }
 puniyu_core = { path = "../puniyu_core" }
 puniyu_utils = { path = "../puniyu_utils" }
 tokio = { workspace = true }
+serde = { workspace = true }
+
 [lints]
 workspace = true
 

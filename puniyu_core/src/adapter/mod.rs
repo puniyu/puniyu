@@ -1,5 +1,6 @@
 pub mod info;
-use super::adapter::info::{AccountInfo, AdapterInfo};
+use super::adapter::info::AdapterInfo;
+use super::event::account::AccountInfo;
 
 /// 适配器基类
 /// 开发者需要自行实现开发适配器，部分函数需要开发者自行实现
@@ -29,6 +30,7 @@ pub trait AdapterBase {
     }
 
     /// 打印适配器专属日志
+    /// 不需要开发者实现
     fn logger(&self, msg: &str) {
         log::info!("[Adapter][{}]{}", self.adapter().name, msg);
     }
