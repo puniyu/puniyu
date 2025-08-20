@@ -1,4 +1,8 @@
 use serde::{Deserialize, Serialize};
+use std::sync::atomic::{AtomicU64, Ordering};
+
+/// TODO: 适配器索引
+static ADAPTER_COUNTER: AtomicU64 = AtomicU64::new(0);
 
 /// 适配器平台
 ///
@@ -112,3 +116,6 @@ pub struct AdapterInfo {
     /// 鉴权秘钥
     pub secret: Option<String>,
 }
+
+/// 待实现
+impl AdapterInfo {}

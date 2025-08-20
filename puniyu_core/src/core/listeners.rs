@@ -1,15 +1,15 @@
 use emitter_rs::EventEmitter as Emitter;
 use serde::{Deserialize, Serialize};
-use std::sync::{Arc, Mutex};
+use std::sync::{Arc, RwLock};
 
 pub struct EventEmitter {
-    emitter: Arc<Mutex<Emitter>>,
+    emitter: Arc<RwLock<Emitter>>,
 }
 
 impl EventEmitter {
     pub fn new() -> Self {
         Self {
-            emitter: Arc::new(Mutex::new(Emitter::new())),
+            emitter: Arc::new(RwLock::new(Emitter::new())),
         }
     }
 
@@ -18,7 +18,7 @@ impl EventEmitter {
     where
         T: Serialize,
     {
-        if let Ok(mut emitter) = self.emitter.lock() {
+        if let Ok(mut emitter) = self.emitter.write() {
             emitter.emit(event, data);
         }
     }
@@ -29,7 +29,7 @@ impl EventEmitter {
         F: Fn(T) + 'static + Send + Sync,
         for<'de> T: Deserialize<'de>,
     {
-        if let Ok(mut emitter) = self.emitter.lock() {
+        if let Ok(mut emitter) = self.emitter.write() {
             emitter.on(event, callback);
         }
     }
@@ -40,7 +40,7 @@ impl EventEmitter {
         F: Fn(T) + 'static + Send + Sync,
         for<'de> T: Deserialize<'de>,
     {
-        if let Ok(mut emitter) = self.emitter.lock() {
+        if let Ok(mut emitter) = self.emitter.write() {
             emitter.once(event, callback);
         }
     }
