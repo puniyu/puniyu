@@ -9,7 +9,7 @@ on:
       - 'puniyu_core/*'
       - 'puniyu_logger/*'
       - 'puniyu_utils/**'
-      - 'puniyu_plugin/*'
+      - '../../puniyu_registry/*'
   pull_request_target:
     paths:
       - 'Cargo.toml'
@@ -17,7 +17,7 @@ on:
       - 'puniyu_core/*'
       - 'puniyu_logger/*'
       - 'puniyu_utils/**'
-      - 'puniyu_plugin/*'
+      - '../../puniyu_registry/*'
   workflow_dispatch:
 
 

@@ -1,5 +1,5 @@
 [package]
-name = "puniyu_plugin"
+name = "puniyu_macro"
 version = "0.1.0"
 authors.workspace = true
 license.workspace = true
@@ -9,12 +9,12 @@ repository.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 
+[lib]
+proc-macro = true
+
 [dependencies]
-regex = "1.11.1"
-log = { workspace = true }
-inventory = { version = "0.3.20" }
-tokio-cron-scheduler = { version = "0.14.0" }
-chrono-tz = { version = "0.10.4" }
+quote = { version = "1.0.40" }
+syn = { version = "2.0.106", features = ["full"] }
 
 [lints]
 workspace = true

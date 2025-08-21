@@ -11,13 +11,14 @@ rust-version.workspace = true
 
 [dependencies]
 log = { workspace = true }
-puniyu_core = { path = "../puniyu_core" }
-puniyu_utils = { path = "../puniyu_utils" }
-puniyu_plugin = { path = "../puniyu_plugin" }
-puniyu_logger = { path = "../puniyu_logger" }
 tokio = { workspace = true }
 serde = { workspace = true }
 
+puniyu_core = { path = "../puniyu_core" }
+puniyu_utils = { path = "../puniyu_utils" }
+puniyu_registry = { path = "../puniyu_registry" }
+puniyu_logger = { path = "../puniyu_logger" }
+puniyu_plugin = { path = "../puniyu_plugin_test", package = "puniyu_plugin_test" }
 
 [lints]
 workspace = true

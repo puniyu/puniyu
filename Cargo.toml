@@ -2,8 +2,10 @@
 members = [
     "puniyu",
     "puniyu_core",
-    "puniyu_logger",
-    "puniyu_plugin",
+    "puniyu_logger", 
+    "puniyu_macro", 
+    "puniyu_plugin_test",
+    "puniyu_registry",
     "puniyu_utils",
 ]
 resolver = "2"

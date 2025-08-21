@@ -20,7 +20,7 @@ lazy_static = { workspace = true }
 
 puniyu_logger = { path = "../puniyu_logger" }
 puniyu_utils = { path = "../puniyu_utils" }
-puniyu_plugin = { path = "../puniyu_plugin" }
+puniyu_registry = { path = "../puniyu_registry" }
 
 [lints]
 workspace = true
