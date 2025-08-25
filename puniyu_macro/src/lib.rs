@@ -1,5 +1,8 @@
 use proc_macro::TokenStream;
 use quote::quote;
+use regex::Regex;
+use std::env;
+use std::sync::LazyLock;
 use syn::{
     self, Ident, ItemFn, Token, parse::Parse, parse::ParseStream, parse_macro_input,
     punctuated::Punctuated,
@@ -51,6 +54,8 @@ impl Parse for PluginArgs {
     }
 }
 
+static RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"(^|[-_])([a-z])").unwrap());
+
 #[proc_macro_attribute]
 pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
     let args = parse_macro_input!(args as PluginArgs);
@@ -62,32 +67,46 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
 
     let is_async = fn_sig.asyncness.is_some();
     if !is_async {
-        return syn::Error::new_spanned(
-            fn_sig,
-            "plugin attribute can only be applied to async function",
-        )
-        .to_compile_error()
-        .into();
+        return syn::Error::new_spanned(fn_sig, "插件入口函数必须为async函数")
+            .to_compile_error()
+            .into();
     }
 
-    let crate_name = env!("CARGO_PKG_NAME");
+    let crate_name = match env::var("PLUGIN_NAME") {
+        Ok(name) => name,
+        Err(_) => {
+            return syn::Error::new_spanned(fn_sig, "PLUGIN_NAME未定义")
+                .to_compile_error()
+                .into();
+        }
+    };
 
-    let struct_name_str = fn_name.to_string();
+    let crate_version = match env::var("PLUGIN_VERSION") {
+        Ok(version) => version,
+        Err(_) => {
+            return syn::Error::new_spanned(fn_sig, "PLUGIN_VERSION未定义")
+                .to_compile_error()
+                .into();
+        }
+    };
 
-    let pascal_case_name: String = struct_name_str
-        .split('_')
-        .map(|word| {
-            let mut chars = word.chars();
-            match chars.next() {
-                None => String::new(),
-                Some(first) => first.to_uppercase().collect::<String>() + chars.as_str(),
-            }
-        })
-        .collect();
+    let crate_author = match env::var("PLUGIN_AUTHOR") {
+        Ok(author) => author,
+        Err(_) => {
+            return syn::Error::new_spanned(fn_sig, "PLUGIN_AUTHOR未定义")
+                .to_compile_error()
+                .into();
+        }
+    };
 
-    let struct_name_str = pascal_case_name + "Plugin";
-    let struct_name = Ident::new(&struct_name_str, fn_name.span());
-
+    let rustc_version = match env::var("PLUGIN_RUSTC_VERSION") {
+        Ok(author) => author,
+        Err(_) => {
+            return syn::Error::new_spanned(fn_sig, "PLUGIN_RUSTC_VERSION未定义")
+                .to_compile_error()
+                .into();
+        }
+    };
     let name = match &args.name {
         Some(name) => quote! { #name },
         None => quote! { #crate_name },
@@ -95,15 +114,34 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
 
     let version = match &args.version {
         Some(version) => quote! { #version },
-        None => quote! { env!("CARGO_PKG_VERSION") },
+        None => quote! { #crate_version },
     };
-
     let author = match &args.author {
         Some(author) => quote! { #author },
-        None => quote! { env!("CARGO_PKG_AUTHORS") },
+        None => quote! { #crate_author },
     };
 
-    let rustc_version = quote! { env!("CARGO_PKG_RUST_VERSION") };
+    if !crate_name.starts_with("puniyu_plugin_") {
+        return syn::Error::new_spanned(
+            fn_name,
+            format!("插件名称必须以'puniyu_plugin_'开头，当前为'{}'", crate_name),
+        )
+        .to_compile_error()
+        .into();
+    }
+
+    let plugin_part = if let Some(stripped) = crate_name.strip_prefix("puniyu_plugin_") {
+        stripped
+    } else {
+        &crate_name
+    };
+
+    let pascal_case_name = RE
+        .replace_all(plugin_part, |caps: &regex::Captures| caps[2].to_uppercase())
+        .to_string();
+
+    let struct_name_str = pascal_case_name + "Plugin";
+    let struct_name = Ident::new(&struct_name_str, fn_name.span());
 
     let expanded = quote! {
         pub struct #struct_name;
