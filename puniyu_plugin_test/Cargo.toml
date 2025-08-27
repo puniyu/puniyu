@@ -14,7 +14,7 @@ puniyu_registry = { path = "../puniyu_registry" }
 log = { version = "0.4.27" }
 
 [build-dependencies]
-rustc_version = "0.4"
+puniyu_build = { path = "../puniyu_build" }
 
 [lints]
 workspace = true

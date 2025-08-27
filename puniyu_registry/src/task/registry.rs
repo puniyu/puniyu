@@ -1,39 +1,16 @@
+use super::TaskInfo;
 use chrono_tz::Asia::Shanghai;
 use log::info;
-use std::{future::Future, pin::Pin, time::Instant};
-use tokio_cron_scheduler::{Job, JobBuilder, JobScheduler};
-type TaskFn = fn() -> Pin<Box<dyn Future<Output = ()> + Send + 'static>>;
-#[derive(Debug, Clone)]
+use std::time::Instant;
+use tokio_cron_scheduler::{JobBuilder, JobScheduler};
+
+#[derive(Clone)]
 pub struct TaskRegistry {
-    /// 定时计划名称
-    pub name: &'static str,
-    /// cron表达式
-    pub cron: &'static str,
-    /// 任务函数
-    pub func: TaskFn,
+    /// 任务实例
+    pub task: &'static dyn TaskInfo,
 }
 
 inventory::collect!(TaskRegistry);
-
-/// 注册异步定时任务的宏
-#[macro_export]
-macro_rules! register_task {
-    ($name:expr, $cron:expr, $func:expr) => {
-        const _: () = {
-            inventory::submit! {
-                $crate::registry::TaskRegistry {
-                    name: $name,
-                    cron: $cron,
-                    func: || ::std::boxed::Box::pin(async move {
-                        if let Err(_e) = $func().await {
-                            log::error!("定时任务 {} 执行失败", $name);
-                        }
-                    }),
-                }
-            }
-        };
-    };
-}
 
 /// 这个需要初始化
 pub async fn init_task() -> JobScheduler {
@@ -41,17 +18,19 @@ pub async fn init_task() -> JobScheduler {
 
     let job_futures: Vec<_> = inventory::iter::<TaskRegistry>
         .into_iter()
-        .map(|task| {
+        .map(|task_registry| {
+            let task = task_registry.task;
             let job = JobBuilder::new()
                 .with_timezone(Shanghai)
+                .with_schedule(task.cron())
+                .unwrap()
                 .with_run_async(Box::new(move |_uuid, _lock| {
-                    let name = task.name;
-                    let fnc = task.func;
+                    let name = task.name();
                     Box::pin(async move {
                         let start_time = Instant::now();
                         info!("[定时计划:{}] 开始执行", name);
 
-                        fnc().await;
+                        task.run().await;
 
                         let duration = start_time.elapsed().as_millis();
                         info!("[定时计划:{}] 执行完成，耗时: {}ms", name, duration);

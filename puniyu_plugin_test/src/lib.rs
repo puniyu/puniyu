@@ -1,10 +1,5 @@
-use puniyu_registry::plugin;
-
-#[plugin]
-pub async fn test() {
-    log::info!(
-        "{} v{} 初始化完成",
-        env!("CARGO_PKG_NAME"),
-        env!("CARGO_PKG_VERSION")
-    );
+use puniyu_registry::task;
+#[task(cron = "@yearly")]
+async fn min() {
+    log::info!("test");
 }

@@ -6,6 +6,7 @@ pub trait PluginInfo: Send + Sync + 'static {
     /// 插件版本
     fn version(&self) -> &'static str;
 
+    /// rustc版本
     fn rustc_version(&self) -> &'static str;
 
     // fn description(&self) -> &'static str;

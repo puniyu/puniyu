@@ -1,5 +1,5 @@
 [package]
-name = "puniyu_macro"
+name = "puniyu_build"
 version = "0.1.0"
 authors.workspace = true
 license.workspace = true
@@ -9,15 +9,8 @@ repository.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 
-[lib]
-proc-macro = true
-
 [dependencies]
-quote = { version = "1.0.40" }
-syn = { version = "2.0.106", features = ["full"] }
-regex = { version = "1.11.2" }
-proc-macro2 = { version = "1.0.95" }
-croner = { version = "3.0.0" }
+rustc_version = "0.4.1"
 
 [lints]
 workspace = true

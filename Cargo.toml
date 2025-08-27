@@ -1,6 +1,6 @@
 [workspace]
 members = [
-    "puniyu",
+    "puniyu", "puniyu_build",
     "puniyu_core",
     "puniyu_logger", 
     "puniyu_macro", 

@@ -16,6 +16,7 @@ tokio-cron-scheduler = { version = "0.14.0" }
 chrono-tz = { version = "0.10.4" }
 futures = { version = "0.3.31" }
 inventory = "0.3.21"
+
 puniyu_macro = { path = "../puniyu_macro" }
 
 
