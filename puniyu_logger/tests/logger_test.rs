@@ -1,5 +1,4 @@
-use puniyu_logger::{LoggerOptions, log_init};
-use tracing::level_filters::LevelFilter;
+use puniyu_logger::{LoggerOptions, init as log_init};
 use tracing_log::log;
 
 #[test]

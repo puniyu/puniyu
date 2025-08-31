@@ -3,16 +3,12 @@ use std::sync::OnceLock;
 
 static INIT: OnceLock<()> = OnceLock::new();
 
-/// 初始化日志系统
-pub fn log_init(level: String, log_dir: Option<&str>) {
+pub fn log_init() {
     INIT.get_or_init(|| {
-        let options = LoggerOptions::new(&level)
+        let options = LoggerOptions::new("info")
             .with_file_logging(true)
-            .with_log_directory(log_dir.unwrap_or("logs").to_string())
+            .with_log_directory("logs".to_string())
             .with_retention_days(7);
         logger(Some(options));
     });
 }
-
-pub use log;
-pub use puniyu_logger::set_log_level;

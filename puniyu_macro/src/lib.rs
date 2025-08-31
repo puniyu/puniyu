@@ -1,11 +1,11 @@
 mod utils;
 
-use crate::utils::parse_fields;
+use crate::utils::{get_plugin_name, is_plugin_registered, parse_fields, register_plugin};
+use convert_case::{Case, Casing};
 use croner::Cron;
 use proc_macro::TokenStream;
 use quote::quote;
-use regex::Regex;
-use std::{env, str::FromStr, sync::LazyLock};
+use std::{env, str::FromStr};
 use syn::{
     self, Ident, ItemFn, Token, parse::Parse, parse::ParseStream, parse_macro_input,
     punctuated::Punctuated,
@@ -17,6 +17,7 @@ struct PluginArgs {
     name: Option<syn::LitStr>,
     version: Option<syn::LitStr>,
     author: Option<syn::LitStr>,
+    rustc_version: Option<syn::LitStr>,
 }
 
 impl Parse for PluginArgs {
@@ -32,6 +33,10 @@ impl Parse for PluginArgs {
                 ("name", Self::set_name as FieldSetter<Self>),
                 ("version", Self::set_version as FieldSetter<Self>),
                 ("author", Self::set_author as FieldSetter<Self>),
+                (
+                    "rustc_version",
+                    Self::set_rustc_version as FieldSetter<Self>,
+                ),
             ],
         )
     }
@@ -52,10 +57,44 @@ impl PluginArgs {
         args.author = Some(value);
         Ok(())
     }
+
+    fn set_rustc_version(args: &mut Self, value: syn::LitStr) -> syn::Result<()> {
+        args.rustc_version = Some(value);
+        Ok(())
+    }
 }
 
-static RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"(^|[-_])([a-z])").unwrap());
-
+/// 注册插件
+/// 此宏包含以下检测：
+/// 1. 函数是否为异步函数
+/// 2. 插件名称，插件版本，插件作者
+/// 3. 插件名称是否规范
+/// 4. 插件是否重复注册
+///
+/// # 参数
+///
+/// * `name` - 插件名称
+/// * `version` - 插件版本
+/// * `author` - 插件作者
+/// * `rustc_version` - 插件 rustc 版本，不建议手动设置
+///
+/// # 示例
+/// ## 最小化示例
+/// ```rust
+/// use puniyu_macro::plugin;
+///
+/// #[plugin]
+/// pub async fn hello() {} // 默认会实现一个 log::info!("{} v{} 初始化完成",plugin_name, plugin_version);
+/// ```
+/// ## 完整示例
+/// ```rust
+/// use puniyu_macro::plugin;
+///
+/// #[plugin(name = "puniyu_plugin_hello", version = "0.1.0", author = "wuliya", rustc_version = "1.88.0")]
+/// pub async fn hello() {
+///     println!("hello world");
+/// }
+/// ```
 #[proc_macro_attribute]
 pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
     let args = parse_macro_input!(args as PluginArgs);
@@ -65,6 +104,7 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
     let fn_vis = &input_fn.vis;
     let fn_block = &input_fn.block;
 
+    // 检查函数是否是异步的
     let is_async = fn_sig.asyncness.is_some();
     if !is_async {
         return syn::Error::new_spanned(fn_sig, "诶嘿~杂鱼函数连async都不会用吗？")
@@ -72,83 +112,96 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
             .into();
     }
 
-    let crate_name = match env::var("PLUGIN_NAME") {
-        Ok(name) => name,
-        Err(_) => {
-            return syn::Error::new_spanned(fn_sig, "呜哇~PLUGIN_NAME都没有设置！杂鱼程序员！")
-                .to_compile_error()
-                .into();
-        }
+    // 获取插件名称
+    let plugin_name = match &args.name {
+        Some(name) => name.value(),
+        None => match get_plugin_name(fn_sig) {
+            Ok(name) => name,
+            Err(err) => return err,
+        },
     };
 
-    let crate_version = match env::var("PLUGIN_VERSION") {
-        Ok(version) => version,
-        Err(_) => {
-            return syn::Error::new_spanned(fn_sig, "诶？PLUGIN_VERSION都没设置！笨蛋！")
-                .to_compile_error()
-                .into();
-        }
+    // 获取插件版本
+    let plugin_version = match &args.version {
+        Some(version) => version.value(),
+        None => match env::var("PLUGIN_VERSION") {
+            Ok(version) => version,
+            Err(_) => {
+                return syn::Error::new_spanned(fn_sig, "诶？PLUGIN_VERSION都没设置！笨蛋！")
+                    .to_compile_error()
+                    .into();
+            }
+        },
     };
 
-    let crate_author = match env::var("PLUGIN_AUTHOR") {
-        Ok(author) => author,
-        Err(_) => {
-            return syn::Error::new_spanned(fn_sig, "哼！连PLUGIN_AUTHOR都不设置！杂鱼~")
-                .to_compile_error()
-                .into();
-        }
+    // 获取插件作者
+    let plugin_author = match &args.author {
+        Some(author) => author.value(),
+        None => match env::var("PLUGIN_AUTHOR") {
+            Ok(author) => author,
+            Err(_) => {
+                return syn::Error::new_spanned(fn_sig, "哼！连PLUGIN_AUTHOR都不设置！杂鱼~")
+                    .to_compile_error()
+                    .into();
+            }
+        },
     };
 
-    let rustc_version = match env::var("PLUGIN_RUSTC_VERSION") {
-        Ok(author) => author,
-        Err(_) => {
-            return syn::Error::new_spanned(fn_sig, "呜~PLUGIN_RUSTC_VERSION都忘了！真是的！")
-                .to_compile_error()
-                .into();
-        }
+    // 获取 Rust 编译器版本
+    let rustc_version = match &args.rustc_version {
+        Some(version) => version.value(),
+        None => match env::var("PLUGIN_RUSTC_VERSION") {
+            Ok(version) => version,
+            Err(_) => {
+                return syn::Error::new_spanned(fn_sig, "呜~PLUGIN_RUSTC_VERSION都忘了！真是的！")
+                    .to_compile_error()
+                    .into();
+            }
+        },
     };
+
+    // 注册插件名称，确保唯一性
+    match register_plugin(fn_sig, plugin_name.as_str()) {
+        Ok(_) => {}
+        Err(err) => return err,
+    };
+
+    // 生成插件元信息
     let name = match &args.name {
         Some(name) => quote! { #name },
-        None => quote! { #crate_name },
+        None => quote! { #plugin_name },
     };
 
     let version = match &args.version {
         Some(version) => quote! { #version },
-        None => quote! { #crate_version },
-    };
-    let author = match &args.author {
-        Some(author) => quote! { #author },
-        None => quote! { #crate_author },
+        None => quote! { #plugin_version },
     };
 
-    if !crate_name.starts_with("puniyu_plugin_") {
+    let author = match &args.author {
+        Some(author) => quote! { #author },
+        None => quote! { #plugin_author },
+    };
+
+    // 检查插件名称是否符合命名规则
+    if !plugin_name.starts_with("puniyu_plugin_") {
         return syn::Error::new_spanned(
             fn_name,
             format!(
                 "呜哇~杂鱼插件名！必须用'puniyu_plugin_'开头啦！你这个'{}'是什么啦！",
-                crate_name
+                plugin_name
             ),
         )
         .to_compile_error()
         .into();
     }
 
-    let plugin_part = if let Some(stripped) = crate_name.strip_prefix("puniyu_plugin_") {
-        stripped
-    } else {
-        &crate_name
-    };
+    let struct_name = Ident::new("PluginInfo", fn_name.span());
 
-    let pascal_case_name = RE
-        .replace_all(plugin_part, |caps: &regex::Captures| caps[2].to_uppercase())
-        .to_string();
-
-    let struct_name_str = pascal_case_name + "Plugin";
-    let struct_name = Ident::new(&struct_name_str, fn_name.span());
-
+    // 默认初始化函数
     let init_call = if fn_block.stmts.is_empty() {
         quote! {
             Box::pin(async {
+                ::puniyu_registry::logger::log_init();
                 log::info!(
                     "{} v{} 初始化完成",
                     #name,
@@ -157,15 +210,22 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
             })
         }
     } else {
-        quote! { Box::pin(#fn_name()) }
+        quote! {
+            Box::pin(async {
+                ::puniyu_registry::logger::log_init();
+
+                #fn_name().await
+            })
+        }
     };
 
+    // 生成最终的代码
     let expanded = quote! {
         pub struct #struct_name;
 
         #fn_vis #fn_sig #fn_block
 
-        impl ::puniyu_registry::plugin::PluginInfo for #struct_name {
+        impl ::puniyu_registry::plugin::builder::PluginBuilder for #struct_name {
             fn name(&self) -> &'static str {
                 #name
             }
@@ -182,35 +242,63 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
                 #rustc_version
             }
 
+            fn tasks(&self) -> Vec<Box<dyn ::puniyu_registry::plugin::task::builder::TaskBuilder>> {
+                let plugin_name = self.name();
+                ::puniyu_registry::inventory::iter::<TaskRegistry>
+                    .into_iter()
+                    .filter(|task| task.plugin_name == plugin_name)
+                    .map(|task| (task.builder)())
+                    .collect()
+            }
+
             fn init(&self) -> ::std::pin::Pin<Box<dyn ::std::future::Future<Output = ()> + Send + 'static>> {
                #init_call
             }
         }
+        /// 插件注册表
+        pub struct PluginRegistry {
+            /// 插件构造器
+            builder: fn() -> Box<dyn ::puniyu_registry::plugin::builder::PluginBuilder>,
+        }
+        ::puniyu_registry::inventory::collect!(PluginRegistry);
+
+        /// 定时计划注册表
+        pub struct TaskRegistry {
+            /// 插件名称
+            plugin_name: &'static str,
+            /// 任务构造器
+            builder: fn() -> Box<dyn ::puniyu_registry::plugin::task::builder::TaskBuilder>,
+        }
+        ::puniyu_registry::inventory::collect!(TaskRegistry);
+
+        ::puniyu_registry::inventory::submit! {
+            PluginRegistry {
+                builder: || -> Box<dyn ::puniyu_registry::plugin::builder::PluginBuilder> { Box::new(#struct_name {}) },
+            }
+        }
+
+        #[unsafe(no_mangle)]
+        pub unsafe extern "C" fn plugin_info() -> *mut dyn puniyu_registry::plugin::builder::PluginBuilder {
+            Box::into_raw(Box::new(#struct_name {}))
+        }
+
     };
 
     TokenStream::from(expanded)
 }
-
 struct TaskArgs {
-    name: Option<syn::LitStr>,
     cron: syn::LitStr,
 }
 
 impl Default for TaskArgs {
     fn default() -> Self {
         Self {
-            name: None,
             cron: syn::LitStr::new("", proc_macro2::Span::call_site()),
         }
     }
 }
 
 impl TaskArgs {
-    fn set_name(args: &mut Self, value: syn::LitStr) -> syn::Result<()> {
-        args.name = Some(value);
-        Ok(())
-    }
-
     fn set_cron(args: &mut Self, value: syn::LitStr) -> syn::Result<()> {
         args.cron = value;
         Ok(())
@@ -226,13 +314,7 @@ impl Parse for TaskArgs {
         }
 
         let fields = Punctuated::<syn::MetaNameValue, Token![,]>::parse_terminated(input)?;
-        let args = parse_fields(
-            &fields,
-            &[
-                ("name", Self::set_name as FieldSetter<Self>),
-                ("cron", Self::set_cron as FieldSetter<Self>),
-            ],
-        )?;
+        let args = parse_fields(&fields, &[("cron", Self::set_cron as FieldSetter<Self>)])?;
 
         if args.cron.value().is_empty() {
             return Err(syn::Error::new(
@@ -277,55 +359,55 @@ pub fn task(args: TokenStream, item: TokenStream) -> TokenStream {
             .into();
     }
 
-    let plugin_name = match env::var("PLUGIN_NAME") {
-        Ok(name) => {
-            if let Some(stripped) = name.strip_prefix("puniyu_plugin_") {
-                stripped.to_string()
-            } else {
-                name
-            }
-        }
-        Err(_) => "Unknown".to_string(),
+    let crate_name = match get_plugin_name(fn_sig) {
+        Ok(name) => name,
+        Err(err) => return err,
     };
-    let task_name = match &args.name {
-        Some(name) => quote! { #name },
-        None => {
-            let full_name = format!("{}Plugin:{}", plugin_name, fn_name);
-            quote! { #full_name }
-        }
+
+    if !is_plugin_registered(crate_name.as_str()) {
+        return syn::Error::new_spanned(
+            fn_sig,
+            "哼～♡小杂鱼程序员～先注册插件都不会吗？真是杂鱼呢～♡".to_string(),
+        )
+        .to_compile_error()
+        .into();
     };
 
     let cron_expr = &args.cron;
 
     let struct_name_str = {
         let fn_name_str = fn_name.to_string();
-        let pascal_case_name = RE
-            .replace_all(&fn_name_str, |caps: &regex::Captures| {
-                caps[2].to_uppercase()
-            })
-            .to_string();
+        let pascal_case_name = fn_name_str.to_case(Case::Pascal);
         format!("{}Task", pascal_case_name)
     };
     let struct_name = Ident::new(&struct_name_str, fn_name.span());
 
     let expanded = quote! {
-        pub struct #struct_name;
+    pub struct #struct_name;
 
-        #fn_vis #fn_sig #fn_block
+    #fn_vis #fn_sig #fn_block
 
-        impl ::puniyu_registry::task::TaskInfo for #struct_name {
-            fn name(&self) -> &'static str {
-                #task_name
-            }
-
-            fn cron(&self) -> &'static str {
-                #cron_expr
-            }
-
-            fn run(&self) -> ::std::pin::Pin<Box<dyn ::std::future::Future<Output = ()> + Send + 'static>> {
-                Box::pin(#fn_name())
-            }
+    impl ::puniyu_registry::plugin::task::builder::TaskBuilder for #struct_name {
+        fn name(&self) -> &'static str {
+            stringify!(#fn_name)
         }
+
+        fn cron(&self) -> &'static str {
+            #cron_expr
+        }
+
+        fn run(&self) -> ::std::pin::Pin<Box<dyn ::std::future::Future<Output = ()> + Send + 'static>> {
+            Box::pin(#fn_name())
+        }
+    }
+
+    ::puniyu_registry::inventory::submit! {
+        crate::TaskRegistry  {
+            plugin_name: #crate_name,
+            builder: || -> Box<dyn ::puniyu_registry::plugin::task::builder::TaskBuilder> { Box::new(#struct_name {}) },
+        }
+    }
+
     };
 
     TokenStream::from(expanded)

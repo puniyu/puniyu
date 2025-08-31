@@ -11,7 +11,9 @@ use std::env;
 /// - `PLUGIN_VERSION`: 从 `CARGO_PKG_VERSION` 获取
 /// - `PLUGIN_AUTHOR`: 从 `CARGO_PKG_AUTHORS` 获取
 /// - `PLUGIN_RUSTC_VERSION`: 使用 rustc_version 获取当前 rustc 版本
-pub fn setup() {
+pub fn setup_plugin() {
+    println!("cargo:rerun-if-changed=build.rs");
+    println!("cargo:rerun-if-changed=src/lib.rs");
     println!("cargo:rerun-if-changed=build.rs");
 
     let plugin_name = env::var("CARGO_PKG_NAME").unwrap();

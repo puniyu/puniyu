@@ -1,12 +1,11 @@
 pub mod adapter;
+mod bot;
 pub mod common;
 mod core;
+mod event;
 pub mod logger;
 pub mod message;
 mod version;
-pub use core::puniyu::Puniyu as puniyu;
-mod event;
-mod render;
 
 pub use log;
 pub use puniyu_utils::config;

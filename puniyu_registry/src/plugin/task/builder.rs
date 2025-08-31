@@ -1,7 +1,7 @@
 use std::pin::Pin;
 
 /// 定时任务
-pub trait TaskInfo: Send + Sync {
+pub trait TaskBuilder: Send + Sync + 'static {
     /// 任务名称
     fn name(&self) -> &'static str;
 

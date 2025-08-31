@@ -100,7 +100,7 @@ where
     }
 }
 
-pub fn log_init(options: Option<LoggerOptions>) {
+pub fn init(options: Option<LoggerOptions>) {
     let options = options.unwrap_or_else(|| LoggerOptions::new("info"));
 
     let logger_level = parse_log_level(&options.level);

@@ -1,3 +1,3 @@
 fn main() {
-    puniyu_build::setup();
+    puniyu_build::setup_plugin();
 }

@@ -1,5 +1,8 @@
-use puniyu_registry::task;
-#[task(cron = "@yearly")]
-async fn min() {
-    log::info!("test");
+use log::info;
+use puniyu_registry::plugin;
+
+#[plugin]
+pub async fn min() {
+    info!("min")
 }
+mod task;

@@ -19,6 +19,7 @@ puniyu_utils = { path = "../puniyu_utils" }
 puniyu_registry = { path = "../puniyu_registry" }
 puniyu_logger = { path = "../puniyu_logger" }
 puniyu_plugin = { path = "../puniyu_plugin_test", package = "puniyu_plugin_test" }
+libloading = "0.8.8"
 
 [lints]
 workspace = true

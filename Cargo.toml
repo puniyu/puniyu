@@ -1,9 +1,10 @@
 [workspace]
 members = [
-    "puniyu", "puniyu_build",
+    "puniyu",
     "puniyu_core",
     "puniyu_logger", 
-    "puniyu_macro", 
+    "puniyu_macro",
+    "puniyu_build",
     "puniyu_plugin_test",
     "puniyu_registry",
     "puniyu_utils",
