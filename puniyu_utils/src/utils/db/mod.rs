@@ -1,2 +1,1 @@
-pub mod redis;
-mod sqlite;
+pub mod sqlite;

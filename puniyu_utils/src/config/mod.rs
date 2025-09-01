@@ -5,26 +5,47 @@ pub mod yaml;
 
 use crate::path::CONFIG_DIR;
 use serde::{Deserialize, Serialize};
-use std::path::Path;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct BotConfig {
+pub struct LoggerConfig {
     /// 日志等级
-    pub logger_level: String,
-    /// 日志目录
-    pub log_dir: String,
+    pub level: String,
+    /// 日志路径
+    pub path: String,
     /// 日志保留天数
     pub retention_days: u8,
 }
 
-impl Default for BotConfig {
+impl Default for LoggerConfig {
     fn default() -> Self {
         Self {
-            logger_level: "info".to_string(),
-            log_dir: "logs".to_string(),
+            level: "info".to_string(),
+            path: "logs".to_string(),
             retention_days: 7,
         }
     }
+}
+
+impl LoggerConfig {
+    fn get() -> Self {
+        toml::read_config::<LoggerConfig>(CONFIG_DIR.as_path(), "bot")
+            .unwrap_or_else(|_| LoggerConfig::default())
+    }
+    pub fn level(&self) -> String {
+        Self::get().level
+    }
+    pub fn path(&self) -> String {
+        Self::get().path
+    }
+    pub fn retention_days(&self) -> u8 {
+        Self::get().retention_days
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct BotConfig {
+    /// 日志等级
+    pub logger: LoggerConfig,
 }
 
 impl BotConfig {
@@ -33,16 +54,8 @@ impl BotConfig {
             .unwrap_or_else(|_| BotConfig::default())
     }
     /// 获取日志等级
-    pub fn logger_level(&self) -> String {
-        Self::get().logger_level
-    }
-    /// 获取日志目录
-    pub fn log_dir(&self) -> String {
-        Self::get().log_dir
-    }
-    /// 获取日志保留天数
-    pub fn retention_days(&self) -> u8 {
-        Self::get().retention_days
+    pub fn logger_level(&self) -> LoggerConfig {
+        Self::get().logger
     }
 }
 

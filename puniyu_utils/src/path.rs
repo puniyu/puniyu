@@ -15,7 +15,7 @@ static BASE_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
 /// let config_dir = CONFIG_DIR.as_path();
 /// ```
 pub static CONFIG_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
-    let mut path = BASE_DIR.clone();
+    let mut path = BASE_DIR.to_path_buf();
     path.push("config");
     path
 });

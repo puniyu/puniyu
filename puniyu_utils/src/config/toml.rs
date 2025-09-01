@@ -29,7 +29,7 @@ where
     C: Serialize,
 {
     let full_path = path.join(format!("{}.toml", name));
-    if let Some(parent) = path.parent() {
+    if let Some(parent) = full_path.parent() {
         fs::create_dir_all(parent)?;
     }
     let config_str = to_string_pretty(config)?;

@@ -9,6 +9,7 @@ use std::{error::Error, fs, path::Path};
 ///
 /// `path` 配置文件路径
 /// `name` 配置文件名, 不包含后缀
+/// ```
 pub fn read_config<D>(path: &Path, name: &str) -> Result<D, Box<dyn Error>>
 where
     D: DeserializeOwned,
@@ -26,12 +27,13 @@ where
 /// `path` 配置文件路径
 /// `name` 配置文件名, 不包含后缀
 ///
+///
 pub fn write_config<C>(path: &Path, name: &str, config: &C) -> Result<(), Box<dyn Error>>
 where
     C: Serialize,
 {
     let full_path = path.join(format!("{}.json", name));
-    if let Some(parent) = path.parent() {
+    if let Some(parent) = full_path.parent() {
         fs::create_dir_all(parent)?;
     }
     let config_str = serde_json::to_string_pretty(config)?;
