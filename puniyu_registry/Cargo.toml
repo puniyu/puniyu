@@ -15,10 +15,16 @@ tokio = { version = "1.47.1", features = ["rt"] }
 hashbrown = "0.16.0"
 libloading = "0.8.8"
 thiserror = { version = "2.0.16" }
-puniyu_logger = { path = "../puniyu_logger" }
-puniyu_macro = { path = "../puniyu_macro" }
-log = "0.4.27"
+serde = { version = "1.0.219", features = ["derive"] }
+tracing = "0.1.41"
+regex = "1.11.2"
+futures = "0.3.31"
+emitter-rs = "0.0.5"
 
+
+puniyu_macro = { path = "../puniyu_macro" }
+puniyu_utils = { path = "../puniyu_utils" }
+puniyu_logger = { version = "0.2.2" }
 
 [lints]
 workspace = true

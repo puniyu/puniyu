@@ -1,6 +1,6 @@
 mod utils;
 
-use crate::utils::{get_plugin_name, is_plugin_registered, parse_fields, register_plugin};
+use crate::utils::{get_plugin_name, parse_fields};
 use convert_case::{Case, Casing};
 use croner::Cron;
 use proc_macro::TokenStream;
@@ -69,7 +69,6 @@ impl PluginArgs {
 /// 1. 函数是否为异步函数
 /// 2. 插件名称，插件版本，插件作者
 /// 3. 插件名称是否规范
-/// 4. 插件是否重复注册
 ///
 /// # 参数
 ///
@@ -98,8 +97,20 @@ impl PluginArgs {
 #[proc_macro_attribute]
 pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
     let args = parse_macro_input!(args as PluginArgs);
-    let input_fn = parse_macro_input!(item as ItemFn);
+
+    let input_fn = if let Ok(fn_item) = syn::parse::<ItemFn>(item.clone()) {
+        fn_item
+    } else {
+        return syn::Error::new_spanned(
+            proc_macro2::TokenStream::from(item),
+            "杂鱼！这个宏只能用在函数上，不能用在结构体！笨蛋！",
+        )
+        .to_compile_error()
+        .into();
+    };
+
     let fn_sig = &input_fn.sig;
+
     let fn_name = &input_fn.sig.ident;
     let fn_vis = &input_fn.vis;
     let fn_block = &input_fn.block;
@@ -160,12 +171,6 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
         },
     };
 
-    // 注册插件名称，确保唯一性
-    match register_plugin(fn_sig, plugin_name.as_str()) {
-        Ok(_) => {}
-        Err(err) => return err,
-    };
-
     // 生成插件元信息
     let name = match &args.name {
         Some(name) => quote! { #name },
@@ -201,7 +206,6 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
     let init_call = if fn_block.stmts.is_empty() {
         quote! {
             Box::pin(async {
-                ::puniyu_registry::logger::log_init();
                 log::info!(
                     "{} v{} 初始化完成",
                     #name,
@@ -212,8 +216,6 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
     } else {
         quote! {
             Box::pin(async {
-                ::puniyu_registry::logger::log_init();
-
                 #fn_name().await
             })
         }
@@ -280,6 +282,11 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
         #[unsafe(no_mangle)]
         pub unsafe extern "C" fn plugin_info() -> *mut dyn puniyu_registry::plugin::builder::PluginBuilder {
             Box::into_raw(Box::new(#struct_name {}))
+        }
+
+        #[unsafe(no_mangle)]
+        pub unsafe extern "C" fn setup_logger(logger: &::puniyu_registry::logger::SharedLogger) {
+            ::puniyu_registry::logger::setup_shared_logger(logger);
         }
 
     };
@@ -362,15 +369,6 @@ pub fn task(args: TokenStream, item: TokenStream) -> TokenStream {
     let crate_name = match get_plugin_name(fn_sig) {
         Ok(name) => name,
         Err(err) => return err,
-    };
-
-    if !is_plugin_registered(crate_name.as_str()) {
-        return syn::Error::new_spanned(
-            fn_sig,
-            "哼～♡小杂鱼程序员～先注册插件都不会吗？真是杂鱼呢～♡".to_string(),
-        )
-        .to_compile_error()
-        .into();
     };
 
     let cron_expr = &args.cron;

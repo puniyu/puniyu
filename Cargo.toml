@@ -2,12 +2,11 @@
 members = [
     "puniyu",
     "puniyu_core",
-    "puniyu_logger", 
     "puniyu_macro",
     "puniyu_build",
     "puniyu_plugin_test",
     "puniyu_registry",
-    "puniyu_utils",
+    "puniyu_utils"
 ]
 resolver = "2"
 
@@ -26,7 +25,6 @@ log = { version = "0.4.27" }
 tokio = { version = "1.47.1", features = ["full"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0"}
-lazy_static = { version = "1.5.0" }
 
 
 [workspace.lints.clippy]

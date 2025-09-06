@@ -16,11 +16,9 @@ doctest = false
 [dependencies]
 quote = { version = "1.0.40" }
 syn = { version = "2.0.106", features = ["full"] }
-proc-macro2 = { version = "1.0.95" }
+proc-macro2 = { version = "1.0.101" }
 croner = { version = "3.0.0" }
 convert_case = { version = "0.8.0" }
-once_cell = "1.21.3"
-
 
 
 [lints]

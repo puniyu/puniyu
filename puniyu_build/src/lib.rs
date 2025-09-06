@@ -13,9 +13,8 @@ use std::env;
 /// - `PLUGIN_RUSTC_VERSION`: 使用 rustc_version 获取当前 rustc 版本
 pub fn setup_plugin() {
     println!("cargo:rerun-if-changed=build.rs");
+    println!("cargo:rerun-if-changed=Cargo.toml");
     println!("cargo:rerun-if-changed=src/lib.rs");
-    println!("cargo:rerun-if-changed=build.rs");
-
     let plugin_name = env::var("CARGO_PKG_NAME").unwrap();
     println!("cargo:rustc-env=PLUGIN_NAME={}", plugin_name);
 
@@ -30,4 +29,8 @@ pub fn setup_plugin() {
         "cargo:rustc-env=PLUGIN_RUSTC_VERSION={}",
         plugin_rustc_version
     );
+}
+
+pub fn setup_extend() {
+    println!("cargo:rustc-link-arg=-rdynamic");
 }

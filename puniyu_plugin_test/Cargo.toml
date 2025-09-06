@@ -14,18 +14,11 @@ crate-type = ["cdylib"]
 
 [dependencies]
 puniyu_registry = { path = "../puniyu_registry" }
-puniyu_core = { path = "../puniyu_core" }
 log = "0.4.27"
-puniyu_logger = { path = "../puniyu_logger" }
+
 
 [build-dependencies]
 puniyu_build = { path = "../puniyu_build" }
 
 [lints]
 workspace = true
-
-[profile.release]
-strip = true
-opt-level = "z"
-lto = true
-codegen-units = 1
