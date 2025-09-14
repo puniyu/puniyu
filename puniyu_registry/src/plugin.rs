@@ -1,14 +1,15 @@
 use crate::PluginManager;
-use crate::plugin::{
-    command::Command, manger::PluginInfo, manger::PluginType, task::Task, task::manger::TaskManager,
-};
+use crate::plugin::{command::Command, manger::PluginInfo, task::Task, task::manger::TaskManager};
 use puniyu_utils::path::PLUGIN_DIR;
+use std::pin::Pin;
 
 pub mod builder;
 pub mod command;
 pub mod manger;
 pub mod registry;
 pub mod task;
+
+pub type PluginFuture = Pin<Box<dyn Future<Output = ()> + Send + 'static>>;
 
 #[derive(Debug, Clone)]
 pub struct Plugin {
@@ -34,12 +35,8 @@ pub fn init_plugin() {
             .collect();
 
         let mut manager = PluginManager::new();
-        let plugin_types: Vec<PluginType> = plugins
-            .iter()
-            .map(|plugin_name| PluginType::Dynamic(Box::leak(plugin_name.clone().into_boxed_str())))
-            .collect();
         // 添加到插件注册表
-        manager.add_plugins(plugin_types).unwrap();
+        manager.add_plugins(plugins).unwrap();
         let mut builder = manager.build();
         // 加载全部插件
         builder.load_plugins().await;

@@ -10,14 +10,12 @@ use syn::{
     self, Ident, ItemFn, Token, parse::Parse, parse::ParseStream, parse_macro_input,
     punctuated::Punctuated,
 };
-
 type FieldSetter<T> = fn(&mut T, syn::LitStr) -> syn::Result<()>;
 #[derive(Default)]
 struct PluginArgs {
     name: Option<syn::LitStr>,
     version: Option<syn::LitStr>,
     author: Option<syn::LitStr>,
-    rustc_version: Option<syn::LitStr>,
 }
 
 impl Parse for PluginArgs {
@@ -33,10 +31,6 @@ impl Parse for PluginArgs {
                 ("name", Self::set_name as FieldSetter<Self>),
                 ("version", Self::set_version as FieldSetter<Self>),
                 ("author", Self::set_author as FieldSetter<Self>),
-                (
-                    "rustc_version",
-                    Self::set_rustc_version as FieldSetter<Self>,
-                ),
             ],
         )
     }
@@ -57,11 +51,6 @@ impl PluginArgs {
         args.author = Some(value);
         Ok(())
     }
-
-    fn set_rustc_version(args: &mut Self, value: syn::LitStr) -> syn::Result<()> {
-        args.rustc_version = Some(value);
-        Ok(())
-    }
 }
 
 /// 注册插件
@@ -75,7 +64,6 @@ impl PluginArgs {
 /// * `name` - 插件名称
 /// * `version` - 插件版本
 /// * `author` - 插件作者
-/// * `rustc_version` - 插件 rustc 版本，不建议手动设置
 ///
 /// # 示例
 /// ## 最小化示例
@@ -89,7 +77,7 @@ impl PluginArgs {
 /// ```rust
 /// use puniyu_plugin_derive::plugin;
 ///
-/// #[plugin(name = "puniyu_plugin_hello", version = "0.1.0", author = "wuliya", rustc_version = "1.88.0")]
+/// #[plugin(name = "puniyu_plugin_hello", version = "0.1.0", author = "wuliya")]
 /// pub async fn hello() {
 ///     println!("hello world");
 /// }
@@ -152,19 +140,6 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
             Ok(author) => author,
             Err(_) => {
                 return syn::Error::new_spanned(fn_sig, "哼！连PLUGIN_AUTHOR都不设置！杂鱼~")
-                    .to_compile_error()
-                    .into();
-            }
-        },
-    };
-
-    // 获取 Rust 编译器版本
-    let rustc_version = match &args.rustc_version {
-        Some(version) => version.value(),
-        None => match env::var("PLUGIN_RUSTC_VERSION") {
-            Ok(version) => version,
-            Err(_) => {
-                return syn::Error::new_spanned(fn_sig, "呜~PLUGIN_RUSTC_VERSION都忘了！真是的！")
                     .to_compile_error()
                     .into();
             }
@@ -240,8 +215,8 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
                 #author
             }
 
-            fn rustc_version(&self) -> &'static str {
-                #rustc_version
+            fn abi_version(&self) -> &'static str {
+                ::puniyu_registry::VERSION
             }
 
             fn tasks(&self) -> Vec<Box<dyn ::puniyu_registry::plugin::task::builder::TaskBuilder>> {

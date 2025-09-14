@@ -7,7 +7,7 @@ use std::{
     sync::{Arc, LazyLock, RwLock},
 };
 
-static BOT_CONFIG: LazyLock<Arc<RwLock<BotConfig>>> =
+pub(crate) static BOT_CONFIG: LazyLock<Arc<RwLock<BotConfig>>> =
     LazyLock::new(|| Arc::new(RwLock::new(BotConfig::get())));
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -99,17 +99,5 @@ impl BotConfig {
     pub fn masters(&self) -> Vec<String> {
         let config = BOT_CONFIG.read().unwrap();
         config.masters.clone()
-    }
-
-    /// 重新加载配置文件
-    ///
-    /// # 返回值
-    ///
-    /// 返回重新加载操作的结果
-    pub fn reload() -> Result<(), Error> {
-        let new_config = reload_config("bot").map_err(|_| Error::Read)?;
-        let mut config = BOT_CONFIG.write().map_err(|_| Error::Write)?;
-        *config = new_config;
-        Ok(())
     }
 }

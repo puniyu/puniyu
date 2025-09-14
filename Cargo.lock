@@ -1135,7 +1135,6 @@ name = "puniyu_registry"
 version = "0.1.0"
 dependencies = [
  "chrono-tz",
- "emitter-rs",
  "futures",
  "hashbrown 0.16.0",
  "inventory",

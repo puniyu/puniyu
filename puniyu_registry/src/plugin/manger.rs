@@ -1,8 +1,8 @@
-use super::Plugin;
+use super::{Plugin, PluginFuture};
 use crate::plugin::command::builder::CommandBuilder;
 use crate::plugin::task::builder::TaskBuilder;
 use crate::{
-    error::Plugin as Error, library::PluginLibrary, logger::SharedLogger,
+    VERSION, error::Plugin as Error, library::PluginLibrary, logger::SharedLogger,
     plugin::builder::PluginBuilder, plugin::command::Command, plugin::task::Task,
     plugin::task::manger::TaskManager, utils::execute_tasks,
 };
@@ -15,16 +15,32 @@ use std::{
 
 static LIBRARY: OnceLock<Mutex<PluginLibrary>> = OnceLock::new();
 
-type PluginFuture = Pin<Box<dyn Future<Output = ()> + Send + 'static>>;
 static PLUGIN_INIT: LazyLock<Mutex<HashMap<String, PluginFuture>>> =
     LazyLock::new(|| Mutex::new(HashMap::new()));
 
 /// 定义插件类型枚举
 pub enum PluginType {
     /// 基于文件路径加载的动态库插件
-    Dynamic(&'static str),
+    Path(String),
     /// 静态链接的插件
-    Static(&'static dyn PluginBuilder),
+    Builder(&'static dyn PluginBuilder),
+}
+impl From<&str> for PluginType {
+    fn from(path: &str) -> Self {
+        PluginType::Path(path.to_string())
+    }
+}
+
+impl From<String> for PluginType {
+    fn from(path: String) -> Self {
+        PluginType::Path(path)
+    }
+}
+
+impl From<&'static dyn PluginBuilder> for PluginType {
+    fn from(builder: &'static dyn PluginBuilder) -> Self {
+        PluginType::Builder(builder)
+    }
 }
 
 /// 收集任务
@@ -50,108 +66,11 @@ fn collect_commands(commands: Vec<Box<dyn CommandBuilder>>) -> Vec<Command> {
         .collect()
 }
 
-pub trait AddPlugin {
-    fn add_plugin(&self, manager: &mut PluginManager) -> Result<(), Error>;
-}
-
-impl AddPlugin for PluginType {
-    fn add_plugin(&self, manager: &mut PluginManager) -> Result<(), Error> {
-        match self {
-            PluginType::Dynamic(name) => {
-                let client = LIBRARY.get_or_init(|| Mutex::new(PluginLibrary::new()));
-                let lib = {
-                    let mut library = client.lock().unwrap();
-                    library.load_plugin(name).unwrap();
-                    library.get_plugin(name).unwrap().clone()
-                };
-                unsafe {
-                    let symbol: Symbol<unsafe extern "C" fn() -> *mut dyn PluginBuilder> =
-                        lib.get(b"plugin_info").unwrap();
-                    let plugin = &*symbol();
-                    let set_logger: fn(&SharedLogger) = *lib.get(b"setup_logger").unwrap();
-                    set_logger(&SharedLogger::new());
-                    let plugins = manager.store.get_all_plugins();
-                    if plugins.contains_key(&plugin.name().to_string()) {
-                        return Err(Error::Exists(plugin.name().to_string()));
-                    }
-                    if !plugin.name().starts_with("puniyu_plugin_") {
-                        // 插件名称必须以 `puniyu_plugin_` 开头
-                        return Ok(());
-                    }
-                    let plugin_info = PluginInfo {
-                        name: plugin.name(),
-                        version: plugin.version(),
-                        rustc_version: plugin.rustc_version(),
-                        author: plugin.author(),
-                    };
-                    let tasks = collect_tasks(plugin.tasks());
-                    for task_builder in plugin.tasks() {
-                        TaskManager::register_task(task_builder);
-                    }
-
-                    let commands = collect_commands(plugin.commands());
-                    let plugin_obj = Plugin {
-                        info: plugin_info,
-                        tasks,
-                        commands,
-                    };
-
-                    manager
-                        .store
-                        .insert_plugin(plugin_obj.info.name.to_string(), plugin_obj);
-                    PLUGIN_INIT
-                        .lock()
-                        .unwrap()
-                        .insert(plugin.name().to_string(), plugin.init());
-                }
-
-                Ok(())
-            }
-            PluginType::Static(plugin_builder) => {
-                let plugins = manager.store.get_all_plugins();
-                if plugins.contains_key(&plugin_builder.name().to_string()) {
-                    return Err(Error::Exists(plugin_builder.name().to_string()));
-                }
-                if !plugin_builder.name().starts_with("puniyu_plugin_") {
-                    // 插件名称必须以 `puniyu_plugin_` 开头
-                    return Ok(());
-                }
-                let plugin_info = PluginInfo {
-                    name: plugin_builder.name(),
-                    version: plugin_builder.version(),
-                    rustc_version: plugin_builder.rustc_version(),
-                    author: plugin_builder.author(),
-                };
-                let tasks = collect_tasks(plugin_builder.tasks());
-
-                for task_builder in plugin_builder.tasks() {
-                    TaskManager::register_task(task_builder);
-                }
-
-                let commands = collect_commands(plugin_builder.commands());
-                let plugin = Plugin {
-                    info: plugin_info,
-                    tasks,
-                    commands,
-                };
-                manager
-                    .store
-                    .insert_plugin(plugin_builder.name().to_string(), plugin);
-                PLUGIN_INIT
-                    .lock()
-                    .unwrap()
-                    .insert(plugin_builder.name().to_string(), plugin_builder.init());
-                Ok(())
-            }
-        }
-    }
-}
-
 #[derive(Debug, Clone)]
 pub struct PluginInfo {
     pub name: &'static str,
     pub version: &'static str,
-    pub rustc_version: &'static str,
+    pub abi_version: &'static str,
     pub author: &'static str,
 }
 
@@ -191,18 +110,123 @@ impl PluginManager {
         Self::default()
     }
 
-    pub fn add_plugin<T>(&mut self, plugin: T) -> Result<&mut Self, Error>
-    where
-        T: AddPlugin,
-    {
-        plugin.add_plugin(self)?;
+    pub fn add_plugin<T: Into<PluginType>>(&mut self, plugin: T) -> Result<&mut Self, Error> {
+        let plugin_id: PluginType = plugin.into();
+        match plugin_id {
+            // 动态链接插件
+            PluginType::Path(path) => {
+                let client = LIBRARY.get_or_init(|| Mutex::new(PluginLibrary::new()));
+                let lib = {
+                    let mut library = client.lock().unwrap();
+                    library.load_plugin(&path).unwrap();
+                    library.get_plugin(&path).unwrap().clone()
+                };
+                unsafe {
+                    let symbol: Symbol<unsafe extern "C" fn() -> *mut dyn PluginBuilder> =
+                        lib.get(b"plugin_info").unwrap();
+                    let plugin_builder = &*symbol();
+                    let set_logger: fn(&SharedLogger) = *lib.get(b"setup_logger").unwrap();
+                    set_logger(&SharedLogger::new());
+                    let plugins = self.store.get_all_plugins();
+                    if plugins.contains_key(&plugin_builder.name().to_string()) {
+                        return Err(Error::Exists(plugin_builder.name().to_string()));
+                    }
+                    let plugin_name = plugin_builder.name();
+                    if !plugin_name.starts_with("puniyu_plugin_") {
+                        // 插件名称必须以 `puniyu_plugin_` 开头
+                        return Ok(self);
+                    }
+                    let abi_version = plugin_builder.abi_version();
+                    let plugin_info = PluginInfo {
+                        name: plugin_name,
+                        version: plugin_builder.version(),
+                        abi_version,
+                        author: plugin_builder.author(),
+                    };
+                    if abi_version != VERSION {
+                        log::warn!(
+                            "插件 {} 版本 {} 不兼容当前ABI版本 {}，请联系开发者更新ABI版本",
+                            plugin_name,
+                            abi_version,
+                            VERSION
+                        );
+                        return Ok(self);
+                    }
+                    let tasks = collect_tasks(plugin_builder.tasks());
+                    for task_builder in plugin_builder.tasks() {
+                        TaskManager::register_task(task_builder);
+                    }
+
+                    let commands = collect_commands(plugin_builder.commands());
+                    let plugin_obj = Plugin {
+                        info: plugin_info,
+                        tasks,
+                        commands,
+                    };
+
+                    self.store
+                        .insert_plugin(plugin_obj.info.name.to_string(), plugin_obj);
+                    PLUGIN_INIT
+                        .lock()
+                        .unwrap()
+                        .insert(plugin_name.to_string(), plugin_builder.init());
+                }
+            }
+            // 静态插件
+            PluginType::Builder(plugin_builder) => {
+                let plugins = self.store.get_all_plugins();
+                if plugins.contains_key(&plugin_builder.name().to_string()) {
+                    return Err(Error::Exists(plugin_builder.name().to_string()));
+                }
+                let plugin_name = plugin_builder.name();
+                if !plugin_name.starts_with("puniyu_plugin_") {
+                    // 插件名称必须以 `puniyu_plugin_` 开头
+                    return Ok(self);
+                }
+                let abi_version = plugin_builder.abi_version();
+                let plugin_info = PluginInfo {
+                    name: plugin_name,
+                    version: plugin_builder.version(),
+                    abi_version,
+                    author: plugin_builder.author(),
+                };
+
+                if abi_version != VERSION {
+                    log::warn!(
+                        "插件 {} 版本 {} 不兼容当前版本 {}，请升级插件",
+                        plugin_name,
+                        abi_version,
+                        VERSION
+                    );
+                    return Ok(self);
+                }
+                let tasks = collect_tasks(plugin_builder.tasks());
+
+                for task_builder in plugin_builder.tasks() {
+                    TaskManager::register_task(task_builder);
+                }
+
+                let commands = collect_commands(plugin_builder.commands());
+                let plugin = Plugin {
+                    info: plugin_info,
+                    tasks,
+                    commands,
+                };
+                self.store
+                    .insert_plugin(plugin_builder.name().to_string(), plugin);
+                PLUGIN_INIT
+                    .lock()
+                    .unwrap()
+                    .insert(plugin_name.to_string(), plugin_builder.init());
+            }
+        }
         Ok(self)
     }
 
-    pub fn add_plugins<T>(&mut self, plugins: Vec<T>) -> Result<&mut Self, Error>
-    where
-        T: AddPlugin,
-    {
+    pub fn add_plugins<T: Into<PluginType>>(
+        &mut self,
+        plugins: Vec<T>,
+    ) -> Result<&mut Self, Error> {
         for plugin in plugins {
             self.add_plugin(plugin)?;
         }

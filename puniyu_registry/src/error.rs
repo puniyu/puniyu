@@ -8,6 +8,8 @@ pub enum Plugin {
     Exists(String),
     #[error("插件: {0}初始化失败")]
     InitializationFailed(String),
+    #[error("插件: {0}ABI版本不匹配, 插件版本: {1}, 运行时版本: {2}")]
+    ABIVersion(String, String, String),
 }
 
 #[derive(Error, Debug)]

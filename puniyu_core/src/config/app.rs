@@ -4,7 +4,7 @@ use puniyu_utils::utils::toml;
 use serde::{Deserialize, Serialize};
 use std::sync::{Arc, LazyLock, RwLock};
 
-static APP_CONFIG: LazyLock<Arc<RwLock<AppConfig>>> =
+pub(crate) static APP_CONFIG: LazyLock<Arc<RwLock<AppConfig>>> =
     LazyLock::new(|| Arc::new(RwLock::new(AppConfig::get())));
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -70,12 +70,5 @@ impl AppConfig {
     pub fn logger(&self) -> LoggerConfig {
         let config = APP_CONFIG.read().unwrap();
         config.logger.clone()
-    }
-
-    pub fn reload() -> Result<(), Error> {
-        let new_config = reload_config("app").map_err(|_| Error::Read)?;
-        let mut config = APP_CONFIG.write().map_err(|_| Error::Write)?;
-        *config = new_config;
-        Ok(())
     }
 }

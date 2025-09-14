@@ -8,7 +8,7 @@ use std::{
     sync::{Arc, LazyLock, RwLock},
 };
 
-static GROUP_CONFIG: LazyLock<Arc<RwLock<GroupConfig>>> =
+pub(crate) static GROUP_CONFIG: LazyLock<Arc<RwLock<GroupConfig>>> =
     LazyLock::new(|| Arc::new(RwLock::new(GroupConfig::get())));
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GroupConfigFile {
@@ -78,12 +78,5 @@ impl GroupConfig {
             .get(group_id)
             .cloned()
             .unwrap_or_else(GroupConfigFile::default)
-    }
-
-    pub fn reload() -> Result<(), Error> {
-        let new_config = reload_config("bot").map_err(|_| Error::Read)?;
-        let mut config = GROUP_CONFIG.write().map_err(|_| Error::Write)?;
-        *config = new_config;
-        Ok(())
     }
 }

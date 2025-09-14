@@ -1,25 +1,31 @@
+use crate::config::app::APP_CONFIG;
+use crate::config::bot::BOT_CONFIG;
+use crate::config::group::GROUP_CONFIG;
 use crate::config::{app::AppConfig, bot::BotConfig, group::GroupConfig};
 use crate::error::Config as Error;
 use notify::{Config as WatcherConfig, Event, RecommendedWatcher, RecursiveMode, Watcher};
 use puniyu_utils::path::CONFIG_DIR;
 use puniyu_utils::utils::toml::merge_config;
-use serde::{Deserialize, Serialize};
-use std::path::Path;
-use std::sync::mpsc;
-use std::time::Duration;
-use std::{env, thread};
+use serde::{Deserialize, Serialize, de::DeserializeOwned};
+use std::{env, sync::mpsc, thread, time::Duration};
 
-mod app;
-mod bot;
-mod group;
+pub mod app;
+pub mod bot;
+pub mod group;
 
-pub(crate) fn reload_config<T>(name: &str) -> Result<T, Error>
+fn reload_config<T>(name: &str, config: &mut T) -> Result<(), Error>
 where
-    T: Default + serde::de::DeserializeOwned,
+    T: Default + DeserializeOwned,
 {
     match puniyu_utils::utils::toml::read_config(CONFIG_DIR.as_path(), name) {
-        Ok(config) => Ok(config),
-        Err(_) => Ok(T::default()),
+        Ok(new_config) => {
+            *config = new_config;
+            Ok(())
+        }
+        Err(_) => {
+            *config = T::default();
+            Ok(())
+        }
     }
 }
 
@@ -119,42 +125,43 @@ pub(crate) fn config_watcher() {
                             .collect::<Vec<_>>()
                             .join(", ")
                     );
+
                     for path in event.paths.iter() {
                         if let Some(file_name) = path.file_name().and_then(|n| n.to_str()) {
                             match file_name {
                                 "app.toml" => {
-                                    AppConfig::reload()
+                                    reload_config("app", &mut *APP_CONFIG.write().unwrap())
                                         .map_err(|e| {
                                             log::error!("[配置文件] 重载App配置失败: {}", e)
                                         })
                                         .unwrap();
                                 }
                                 "bot.toml" => {
-                                    BotConfig::reload()
+                                    reload_config("bot", &mut *BOT_CONFIG.write().unwrap())
                                         .map_err(|e| {
                                             log::error!("[配置文件] 重载Bot配置失败: {}", e)
                                         })
                                         .unwrap();
                                 }
                                 "group.toml" => {
-                                    GroupConfig::reload()
+                                    reload_config("group", &mut *GROUP_CONFIG.write().unwrap())
                                         .map_err(|e| {
                                             log::error!("[配置文件] 重载Group配置失败: {}", e)
                                         })
                                         .unwrap();
                                 }
                                 _ => {
-                                    AppConfig::reload()
+                                    reload_config("app", &mut *APP_CONFIG.write().unwrap())
                                         .map_err(|e| {
                                             log::error!("[配置文件] 重载App配置失败: {}", e)
                                         })
                                         .unwrap();
-                                    BotConfig::reload()
+                                    reload_config("bot", &mut *BOT_CONFIG.write().unwrap())
                                         .map_err(|e| {
                                             log::error!("[配置文件] 重载Bot配置失败: {}", e)
                                         })
                                         .unwrap();
-                                    GroupConfig::reload()
+                                    reload_config("group", &mut *GROUP_CONFIG.write().unwrap())
                                         .map_err(|e| {
                                             log::error!("[配置文件] 重载Group配置失败: {}", e)
                                         })

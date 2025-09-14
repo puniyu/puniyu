@@ -19,7 +19,6 @@ serde = { version = "1.0.219", features = ["derive"] }
 log = { version = "0.4.28"}
 regex = "1.11.2"
 futures = "0.3.31"
-emitter-rs = "0.0.5"
 
 
 puniyu_plugin_derive = { path = "../puniyu_derives/puniyu_plugin_derive" }

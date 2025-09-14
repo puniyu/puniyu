@@ -1,28 +1,54 @@
-use crate::config::{config_watcher, init_config};
-use crate::logger::log_init;
-use puniyu_registry::plugin::init_plugin;
+mod registry;
 
-pub struct Bot;
+use puniyu_registry::{
+    adapter::{AccountInfo, AdapterInfo},
+    bot::{Bot, BotId, registry::BotRegistry},
+};
 
-impl Default for Bot {
-    fn default() -> Self {
-        Self::new()
+/// 获取Bot实例
+///
+/// # 参数
+///
+/// * `id` - Bot的ID
+///
+/// # 返回值
+///
+/// * `Option<Bot>` - 如果找到Bot，则返回Bot实例，否则返回None
+pub fn get_bot<T: Into<BotId>>(id: T) -> Option<Bot> {
+    let bot_id: BotId = id.into();
+    match bot_id {
+        BotId::Index(index) => BotRegistry::get(index),
+        BotId::SelfId(id) => BotRegistry::get_with_id(id.as_str()),
     }
 }
 
-impl Bot {
-    /// TODO: 插件绑定， 适配器绑定
-    pub fn new() -> Self {
-        Self
-    }
-    pub async fn run(&self) {
-        init_config();
-        log_init();
-        config_watcher();
-        // 初始化插件系统
-        init_plugin();
-        use tokio::signal;
+/// 注册Bot实例
+///
+/// # 参数
+///
+/// * `adapter` - 适配器信息
+/// * `account` - 账号信息
+///
+/// # 返回值
+///
+/// * `u64` - 注册成功后返回的Bot索引
+pub fn register_bot(adapter: AdapterInfo, account: AccountInfo) -> u64 {
+    BotRegistry::register(adapter, account)
+}
 
-        signal::ctrl_c().await.unwrap();
+/// 注销Bot实例
+///
+/// # 参数
+///
+/// * `id` - Bot的ID
+///
+/// # 返回值
+///
+/// * `bool` - 如果注销成功，则返回true，否则返回false
+pub fn unregister_bot<T: Into<BotId>>(id: T) -> bool {
+    let bot_id: BotId = id.into();
+    match bot_id {
+        BotId::Index(index) => BotRegistry::unregister(index),
+        BotId::SelfId(id) => BotRegistry::unregister_with_id(id.as_str()),
     }
 }
