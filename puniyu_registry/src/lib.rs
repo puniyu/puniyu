@@ -9,5 +9,4 @@ pub mod listener;
 mod utils;
 
 pub use inventory;
-pub use puniyu_macro::plugin;
-pub use puniyu_macro::task;
+pub use puniyu_plugin_derive::{plugin, task};

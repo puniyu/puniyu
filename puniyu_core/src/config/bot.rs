@@ -1,4 +1,5 @@
-use crate::{config::reload_config, error::Config as Error, path::CONFIG_DIR};
+use crate::{config::reload_config, error::Config as Error};
+use puniyu_utils::path::CONFIG_DIR;
 use puniyu_utils::utils::toml;
 use serde::{Deserialize, Serialize};
 use std::{

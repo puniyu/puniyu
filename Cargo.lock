@@ -246,6 +246,15 @@ dependencies = [
 
 [[package]]
 name = "croner"
+version = "2.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c344b0690c1ad1c7176fe18eb173e0c927008fdaaa256e40dfd43ddd149c0843"
+dependencies = [
+ "chrono",
+]
+
+[[package]]
+name = "croner"
 version = "3.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4c007081651a19b42931f86f7d4f74ee1c2a7d0cd2c6636a81695b5ffd4e9990"
@@ -741,9 +750,9 @@ dependencies = [
 
 [[package]]
 name = "log"
-version = "0.4.27"
+version = "0.4.28"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "13dc2df351e3202783a1fe0d44375f7295ffb4049267b0f3018346dc122a1d94"
+checksum = "34080505efa8e45a4b816c349525ebe327ceaa8559756f0356cba97ef3bf7432"
 
 [[package]]
 name = "memchr"
@@ -819,6 +828,17 @@ name = "num-conv"
 version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "51d515d32fb182ee37cda2ccdcb92950d6a3c2893aa280e540671c2cd0f3b1d9"
+
+[[package]]
+name = "num-derive"
+version = "0.4.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ed3955f1a9c7c0c15e092f9c887db08b1fc683305fdf6eb6684f22555355e202"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.106",
+]
 
 [[package]]
 name = "num-modular"
@@ -1059,15 +1079,19 @@ name = "puniyu_core"
 version = "0.1.0"
 dependencies = [
  "emitter-rs",
+ "hashbrown 0.16.0",
  "log",
  "notify",
  "puniyu_logger",
+ "puniyu_registry",
  "puniyu_system_info",
  "puniyu_utils",
  "regex",
  "serde",
  "serde_json",
+ "strum",
  "thiserror 2.0.16",
+ "tokio",
 ]
 
 [[package]]
@@ -1087,11 +1111,11 @@ dependencies = [
 ]
 
 [[package]]
-name = "puniyu_macro"
+name = "puniyu_plugin_derive"
 version = "0.1.0"
 dependencies = [
  "convert_case",
- "croner",
+ "croner 3.0.0",
  "proc-macro2",
  "quote",
  "syn 2.0.106",
@@ -1110,19 +1134,21 @@ dependencies = [
 name = "puniyu_registry"
 version = "0.1.0"
 dependencies = [
+ "chrono-tz",
  "emitter-rs",
  "futures",
  "hashbrown 0.16.0",
  "inventory",
  "libloading",
+ "log",
  "puniyu_logger",
- "puniyu_macro",
+ "puniyu_plugin_derive",
  "puniyu_utils",
  "regex",
  "serde",
  "thiserror 2.0.16",
  "tokio",
- "tracing",
+ "tokio-cron-scheduler",
 ]
 
 [[package]]
@@ -1655,6 +1681,21 @@ dependencies = [
  "socket2",
  "tokio-macros",
  "windows-sys 0.59.0",
+]
+
+[[package]]
+name = "tokio-cron-scheduler"
+version = "0.14.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5c71ce8f810abc9fabebccc30302a952f9e89c6cf246fafaf170fef164063141"
+dependencies = [
+ "chrono",
+ "croner 2.2.0",
+ "num-derive",
+ "num-traits",
+ "tokio",
+ "tracing",
+ "uuid",
 ]
 
 [[package]]

@@ -1,7 +1,10 @@
-use crate::logger::SharedLogger;
+use super::Plugin;
+use crate::plugin::command::builder::CommandBuilder;
+use crate::plugin::task::builder::TaskBuilder;
 use crate::{
-    error::Plugin as Error, library::PluginLibrary, plugin::builder::PluginBuilder,
-    plugin::task::builder::TaskBuilder, utils::execute_tasks,
+    error::Plugin as Error, library::PluginLibrary, logger::SharedLogger,
+    plugin::builder::PluginBuilder, plugin::command::Command, plugin::task::Task,
+    plugin::task::manger::TaskManager, utils::execute_tasks,
 };
 use hashbrown::HashMap;
 use libloading::Symbol;
@@ -22,6 +25,29 @@ pub enum PluginType {
     Dynamic(&'static str),
     /// 静态链接的插件
     Static(&'static dyn PluginBuilder),
+}
+
+/// 收集任务
+fn collect_tasks(tasks: Vec<Box<dyn TaskBuilder>>) -> Vec<Task> {
+    tasks
+        .into_iter()
+        .map(|task_builder| Task {
+            name: task_builder.name(),
+            cron: task_builder.cron(),
+        })
+        .collect()
+}
+
+/// 收集命令
+fn collect_commands(commands: Vec<Box<dyn CommandBuilder>>) -> Vec<Command> {
+    commands
+        .into_iter()
+        .map(|command_builder| Command {
+            name: command_builder.name(),
+            command: command_builder.command(),
+            rank: command_builder.rank(),
+        })
+        .collect()
 }
 
 pub trait AddPlugin {
@@ -58,15 +84,18 @@ impl AddPlugin for PluginType {
                         rustc_version: plugin.rustc_version(),
                         author: plugin.author(),
                     };
-                    let tasks: Vec<TaskInfo> = plugin
-                        .tasks()
-                        .into_iter()
-                        .map(|task_builder| task_builder.into_task_info())
-                        .collect();
+                    let tasks = collect_tasks(plugin.tasks());
+                    for task_builder in plugin.tasks() {
+                        TaskManager::register_task(task_builder);
+                    }
+
+                    let commands = collect_commands(plugin.commands());
                     let plugin_obj = Plugin {
                         info: plugin_info,
                         tasks,
+                        commands,
                     };
+
                     manager
                         .store
                         .insert_plugin(plugin_obj.info.name.to_string(), plugin_obj);
@@ -93,14 +122,17 @@ impl AddPlugin for PluginType {
                     rustc_version: plugin_builder.rustc_version(),
                     author: plugin_builder.author(),
                 };
-                let tasks: Vec<TaskInfo> = plugin_builder
-                    .tasks()
-                    .into_iter()
-                    .map(|task_builder| task_builder.into_task_info())
-                    .collect();
+                let tasks = collect_tasks(plugin_builder.tasks());
+
+                for task_builder in plugin_builder.tasks() {
+                    TaskManager::register_task(task_builder);
+                }
+
+                let commands = collect_commands(plugin_builder.commands());
                 let plugin = Plugin {
                     info: plugin_info,
                     tasks,
+                    commands,
                 };
                 manager
                     .store
@@ -121,30 +153,6 @@ pub struct PluginInfo {
     pub version: &'static str,
     pub rustc_version: &'static str,
     pub author: &'static str,
-}
-
-#[derive(Debug, Clone)]
-pub struct TaskInfo {
-    pub name: &'static str,
-    pub cron: &'static str,
-}
-
-pub trait IntoTaskInfo {
-    fn into_task_info(self) -> TaskInfo;
-}
-
-impl IntoTaskInfo for Box<dyn TaskBuilder> {
-    fn into_task_info(self) -> TaskInfo {
-        TaskInfo {
-            name: self.name(),
-            cron: self.cron(),
-        }
-    }
-}
-#[derive(Debug, Clone)]
-pub struct Plugin {
-    pub info: PluginInfo,
-    pub tasks: Vec<TaskInfo>,
 }
 
 #[derive(Debug, Default, Clone)]
@@ -215,14 +223,14 @@ impl Builder {
             let mut guard = PLUGIN_INIT.lock().unwrap();
             guard.remove(plugin_name)
         };
-        tracing::debug!("[plugin:{}] 开始加载插件", plugin_name);
+        log::debug!("[plugin:{}] 开始加载插件", plugin_name);
         match plugin_future {
             Some(future) => {
                 future.await;
-                tracing::debug!("[plugin:{}] 插件加载成功", plugin_name);
+                log::debug!("[plugin:{}] 插件加载成功", plugin_name);
             }
             None => {
-                tracing::error!("[plugin:{}] 插件加载失败", plugin_name);
+                log::error!("[plugin:{}] 插件加载失败", plugin_name);
             }
         }
     }
@@ -239,7 +247,7 @@ impl Builder {
 
         let plugin_names: Vec<String> = init_futures.iter().map(|(name, _)| name.clone()).collect();
         for plugin_name in &plugin_names {
-            tracing::debug!("[plugin:{}] 开始加载插件", plugin_name);
+            log::debug!("[plugin:{}] 开始加载插件", plugin_name);
         }
 
         let results = execute_tasks(init_futures).await;
@@ -248,10 +256,10 @@ impl Builder {
             let plugin_name = &plugin_names[i];
             match result {
                 Ok(_) => {
-                    tracing::debug!("[plugin:{}] 插件加载成功", plugin_name);
+                    log::debug!("[plugin:{}] 插件加载成功", plugin_name);
                 }
                 Err(_) => {
-                    tracing::error!("[plugin:{}] 插件加载失败", plugin_name);
+                    log::error!("[plugin:{}] 插件加载失败", plugin_name);
                 }
             }
         }

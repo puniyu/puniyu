@@ -1,16 +1,28 @@
-use crate::config::init_config;
+use crate::config::{config_watcher, init_config};
 use crate::logger::log_init;
+use puniyu_registry::plugin::init_plugin;
 
 pub struct Bot;
+
+impl Default for Bot {
+    fn default() -> Self {
+        Self::new()
+    }
+}
 
 impl Bot {
     /// TODO: 插件绑定， 适配器绑定
     pub fn new() -> Self {
-        // 初始化配置文件
-        init_config();
-        // 初始化日志系统
-        log_init();
-        // TODO: 事件初始化，多线程定时器初始化
         Self
+    }
+    pub async fn run(&self) {
+        init_config();
+        log_init();
+        config_watcher();
+        // 初始化插件系统
+        init_plugin();
+        use tokio::signal;
+
+        signal::ctrl_c().await.unwrap();
     }
 }

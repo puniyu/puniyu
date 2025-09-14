@@ -2,9 +2,6 @@ use proc_macro::TokenStream;
 use std::env;
 use syn::{Signature, Token, punctuated::Punctuated};
 
-use std::collections::{HashMap, HashSet};
-use std::sync::{Mutex, OnceLock};
-
 pub(crate) fn parse_fields<T, F>(
     fields: &Punctuated<syn::MetaNameValue, Token![,]>,
     field_list: &[(&str, F)],

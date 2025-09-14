@@ -1,21 +1,18 @@
 use std::{env::current_dir, path::PathBuf, sync::LazyLock};
 
-static BASE_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
-    let mut path = current_dir().unwrap();
-    path.push("@puniyu");
-    path
-});
+static BASE_DIR: LazyLock<PathBuf> = LazyLock::new(|| current_dir().unwrap());
 
 /// 配置文件夹路径
 ///
 /// # 示例
 ///
 /// ```
-/// use puniyu_core::path::CONFIG_DIR;
+/// use puniyu_utils::path::CONFIG_DIR;
 /// let config_dir = CONFIG_DIR.as_path();
 /// ```
 pub static CONFIG_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
     let mut path = BASE_DIR.to_path_buf();
+    path.push("@puniyu");
     path.push("config");
     path
 });
@@ -25,11 +22,18 @@ pub static CONFIG_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
 /// # 示例
 ///
 /// ```
-/// use puniyu_core::path::TEMP_DIR;
+/// use puniyu_utils::path::TEMP_DIR;
 /// let temp_dir = TEMP_DIR.as_path();
 /// ```
 pub static TEMP_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
-    let mut path = BASE_DIR.clone();
+    let mut path = BASE_DIR.to_path_buf();
+    path.push("@puniyu");
     path.push("temp");
+    path
+});
+
+pub static PLUGIN_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
+    let mut path = BASE_DIR.to_path_buf();
+    path.push("plugins");
     path
 });

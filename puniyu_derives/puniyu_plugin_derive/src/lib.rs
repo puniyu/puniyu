@@ -79,15 +79,15 @@ impl PluginArgs {
 ///
 /// # 示例
 /// ## 最小化示例
-/// ```rust
-/// use puniyu_macro::plugin;
+/// ```rust, ignore
+/// use puniyu_plugin_derive::plugin;
 ///
 /// #[plugin]
 /// pub async fn hello() {} // 默认会实现一个 log::info!("{} v{} 初始化完成",plugin_name, plugin_version);
 /// ```
 /// ## 完整示例
 /// ```rust
-/// use puniyu_macro::plugin;
+/// use puniyu_plugin_derive::plugin;
 ///
 /// #[plugin(name = "puniyu_plugin_hello", version = "0.1.0", author = "wuliya", rustc_version = "1.88.0")]
 /// pub async fn hello() {
@@ -253,6 +253,15 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
                     .collect()
             }
 
+            fn commands(&self) -> Vec<Box<dyn ::puniyu_registry::plugin::command::builder::CommandBuilder>> {
+                let plugin_name = self.name();
+                ::puniyu_registry::inventory::iter::<CommandRegistry>
+                    .into_iter()
+                    .filter(|command| command.plugin_name == plugin_name)
+                    .map(|command| (command.builder)())
+                    .collect()
+            }
+
             fn init(&self) -> ::std::pin::Pin<Box<dyn ::std::future::Future<Output = ()> + Send + 'static>> {
                #init_call
             }
@@ -272,6 +281,13 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
             builder: fn() -> Box<dyn ::puniyu_registry::plugin::task::builder::TaskBuilder>,
         }
         ::puniyu_registry::inventory::collect!(TaskRegistry);
+
+        pub struct CommandRegistry {
+            plugin_name: &'static str,
+            /// 命令构造器
+            builder: fn() -> Box<dyn ::puniyu_registry::plugin::command::builder::CommandBuilder>,
+        }
+        ::puniyu_registry::inventory::collect!(CommandRegistry);
 
         ::puniyu_registry::inventory::submit! {
             PluginRegistry {

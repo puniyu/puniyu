@@ -1,4 +1,4 @@
-use crate::plugin::task::builder::TaskBuilder;
+use super::{command::builder::CommandBuilder, task::builder::TaskBuilder};
 use std::pin::Pin;
 
 pub trait PluginBuilder: Send + Sync + 'static {
@@ -16,6 +16,8 @@ pub trait PluginBuilder: Send + Sync + 'static {
 
     /// 任务列表
     fn tasks(&self) -> Vec<Box<dyn TaskBuilder>>;
+
+    fn commands(&self) -> Vec<Box<dyn CommandBuilder>>;
     /// 插件初始化函数
     fn init(&self) -> Pin<Box<dyn Future<Output = ()> + Send + 'static>>;
 }

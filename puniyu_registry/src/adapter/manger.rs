@@ -169,14 +169,14 @@ impl Builder {
             let mut guard = ADAPTER_INIT.lock().unwrap();
             guard.remove(name)
         };
-        tracing::debug!("[adapter:{}] 开始加载适配器", name);
+        log::debug!("[adapter:{}] 开始加载适配器", name);
         match plugin_future {
             Some(future) => {
                 future.await;
-                tracing::debug!("[adapter:{}] 适配器加载成功", name);
+                log::debug!("[adapter:{}] 适配器加载成功", name);
             }
             None => {
-                tracing::error!("[adapter:{}] 适配器加载失败", name);
+                log::error!("[adapter:{}] 适配器加载失败", name);
             }
         }
     }
@@ -194,7 +194,7 @@ impl Builder {
         let adapter_names: Vec<String> =
             init_futures.iter().map(|(name, _)| name.clone()).collect();
         for name in &adapter_names {
-            tracing::debug!("[adapter:{}] 开始加载适配器", name);
+            log::debug!("[adapter:{}] 开始加载适配器", name);
         }
 
         let results = execute_tasks(init_futures).await;
@@ -203,10 +203,10 @@ impl Builder {
             let adapter_name = &adapter_names[i];
             match result {
                 Ok(_) => {
-                    tracing::debug!("[adapter:{}] 适配器加载成功", adapter_name);
+                    log::debug!("[adapter:{}] 适配器加载成功", adapter_name);
                 }
                 Err(_) => {
-                    tracing::error!("[adapter:{}] 适配器加载失败", adapter_name);
+                    log::error!("[adapter:{}] 适配器加载失败", adapter_name);
                 }
             }
         }

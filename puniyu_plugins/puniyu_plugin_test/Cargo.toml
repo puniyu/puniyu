@@ -13,12 +13,12 @@ rust-version.workspace = true
 crate-type = ["cdylib"]
 
 [dependencies]
-puniyu_registry = { path = "../puniyu_registry" }
+puniyu_registry = { path = "../../puniyu_registry" }
 log = "0.4.27"
 
 
 [build-dependencies]
-puniyu_build = { path = "../puniyu_build" }
+puniyu_build = { path = "../../puniyu_build" }
 
 [lints]
 workspace = true

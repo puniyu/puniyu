@@ -14,13 +14,16 @@ serde = { workspace = true }
 serde_json = "1.0.143"
 log = { workspace = true }
 emitter-rs = { version = "0.0.5" }
-
+hashbrown = "0.16.0"
 puniyu_logger = { version = "0.2.1" }
 puniyu_utils = { path = "../puniyu_utils" }
 regex = "1.11.2"
 thiserror = "2.0.16"
 puniyu_system_info = { version = "0.5.0" }
 notify = "8.2.0"
+strum = { version = "0.27.2", features = ["derive"] }
+puniyu_registry = { path = "../puniyu_registry" }
+tokio = "1.47.1"
 
 [lints]
 workspace = true

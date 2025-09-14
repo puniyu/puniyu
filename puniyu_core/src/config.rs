@@ -1,13 +1,13 @@
 use crate::config::{app::AppConfig, bot::BotConfig, group::GroupConfig};
 use crate::error::Config as Error;
-use crate::path::CONFIG_DIR;
+use notify::{Config as WatcherConfig, Event, RecommendedWatcher, RecursiveMode, Watcher};
+use puniyu_utils::path::CONFIG_DIR;
 use puniyu_utils::utils::toml::merge_config;
 use serde::{Deserialize, Serialize};
+use std::path::Path;
 use std::sync::mpsc;
 use std::time::Duration;
 use std::{env, thread};
-
-use notify::{Config as WatcherConfig, Event, RecommendedWatcher, RecursiveMode, Watcher};
 
 mod app;
 mod bot;
@@ -80,14 +80,16 @@ impl Config {
 }
 
 pub fn init_config() {
+    if !CONFIG_DIR.as_path().exists() {
+        std::fs::create_dir_all(CONFIG_DIR.as_path()).unwrap();
+    }
     let default_config = AppConfig::default();
     let user_config = AppConfig::get();
     let _ = merge_config(CONFIG_DIR.as_path(), "bot", &user_config, &default_config);
     init_env();
-    config_watcher(); // 配置文件监听器
 }
 
-fn config_watcher() {
+pub(crate) fn config_watcher() {
     thread::spawn(|| {
         let (tx, rx) = mpsc::channel::<notify::Result<Event>>();
 

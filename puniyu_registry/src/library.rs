@@ -1,5 +1,4 @@
 use crate::error::Library as Error;
-use crate::library;
 use hashbrown::HashMap;
 use libloading::Library;
 use std::{env::consts::DLL_EXTENSION, path::PathBuf, sync::Arc};
