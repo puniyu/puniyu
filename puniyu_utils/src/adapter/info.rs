@@ -12,25 +12,25 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub enum AdapterPlatform {
-    QQ,
-    Wechat,
-    Telegram,
-    Discord,
-    Kook,
-    Other,
+	QQ,
+	Wechat,
+	Telegram,
+	Discord,
+	Kook,
+	Other,
 }
 
 impl AdapterPlatform {
-    pub fn to_platform_str(&self) -> &'static str {
-        match self {
-            AdapterPlatform::QQ => "qq",
-            AdapterPlatform::Wechat => "wechat",
-            AdapterPlatform::Telegram => "telegram",
-            AdapterPlatform::Discord => "discord",
-            AdapterPlatform::Kook => "kook",
-            AdapterPlatform::Other => "other",
-        }
-    }
+	pub fn to_platform_str(&self) -> &'static str {
+		match self {
+			AdapterPlatform::QQ => "qq",
+			AdapterPlatform::Wechat => "wechat",
+			AdapterPlatform::Telegram => "telegram",
+			AdapterPlatform::Discord => "discord",
+			AdapterPlatform::Kook => "kook",
+			AdapterPlatform::Other => "other",
+		}
+	}
 }
 
 /// 适配器所使用的标准接口协议
@@ -43,22 +43,22 @@ impl AdapterPlatform {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub enum AdapterStandard {
-    OneBotV11,
-    OneBotV12,
-    Oicq,
-    Icqq,
-    Other,
+	OneBotV11,
+	OneBotV12,
+	Oicq,
+	Icqq,
+	Other,
 }
 impl AdapterStandard {
-    pub fn to_standard_str(&self) -> &'static str {
-        match self {
-            AdapterStandard::OneBotV11 => "Onebot v11",
-            AdapterStandard::OneBotV12 => "Onebot v12",
-            AdapterStandard::Oicq => "OICQ",
-            AdapterStandard::Icqq => "ICQQ",
-            AdapterStandard::Other => "Other",
-        }
-    }
+	pub fn to_standard_str(&self) -> &'static str {
+		match self {
+			AdapterStandard::OneBotV11 => "Onebot v11",
+			AdapterStandard::OneBotV12 => "Onebot v12",
+			AdapterStandard::Oicq => "OICQ",
+			AdapterStandard::Icqq => "ICQQ",
+			AdapterStandard::Other => "Other",
+		}
+	}
 }
 
 /// 适配器协议实现
@@ -76,31 +76,31 @@ impl AdapterStandard {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub enum AdapterProtocol {
-    QQBOT,
-    ICQQ,
-    GoCqHttp,
-    NapCat,
-    LLOneBot,
-    Conwechat,
-    Lagrange,
-    Console,
-    Other,
+	QQBOT,
+	ICQQ,
+	GoCqHttp,
+	NapCat,
+	LLOneBot,
+	Conwechat,
+	Lagrange,
+	Console,
+	Other,
 }
 
 impl AdapterProtocol {
-    pub fn to_protocol_str(&self) -> &'static str {
-        match self {
-            AdapterProtocol::QQBOT => "qqbot",
-            AdapterProtocol::ICQQ => "icqq",
-            AdapterProtocol::GoCqHttp => "gocq-http",
-            AdapterProtocol::NapCat => "napcat",
-            AdapterProtocol::LLOneBot => "llonebot",
-            AdapterProtocol::Conwechat => "conwechat",
-            AdapterProtocol::Lagrange => "lagrange",
-            AdapterProtocol::Console => "console",
-            AdapterProtocol::Other => "other",
-        }
-    }
+	pub fn to_protocol_str(&self) -> &'static str {
+		match self {
+			AdapterProtocol::QQBOT => "qqbot",
+			AdapterProtocol::ICQQ => "icqq",
+			AdapterProtocol::GoCqHttp => "gocq-http",
+			AdapterProtocol::NapCat => "napcat",
+			AdapterProtocol::LLOneBot => "llonebot",
+			AdapterProtocol::Conwechat => "conwechat",
+			AdapterProtocol::Lagrange => "lagrange",
+			AdapterProtocol::Console => "console",
+			AdapterProtocol::Other => "other",
+		}
+	}
 }
 
 /// 适配器通信方式
@@ -115,50 +115,50 @@ impl AdapterProtocol {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub enum AdapterCommunication {
-    Http,
-    WebSocketServer,
-    WebSocketClient,
-    Grpc,
-    Other,
+	Http,
+	WebSocketServer,
+	WebSocketClient,
+	Grpc,
+	Other,
 }
 
 impl AdapterCommunication {
-    pub fn to_communication_str(&self) -> &'static str {
-        match self {
-            AdapterCommunication::Http => "http",
-            AdapterCommunication::WebSocketServer => "websocket-server",
-            AdapterCommunication::WebSocketClient => "websocket-client",
-            AdapterCommunication::Grpc => "grpc",
-            AdapterCommunication::Other => "other",
-        }
-    }
+	pub fn to_communication_str(&self) -> &'static str {
+		match self {
+			AdapterCommunication::Http => "http",
+			AdapterCommunication::WebSocketServer => "websocket-server",
+			AdapterCommunication::WebSocketClient => "websocket-client",
+			AdapterCommunication::Grpc => "grpc",
+			AdapterCommunication::Other => "other",
+		}
+	}
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 /// 适配器信息
 pub struct AdapterInfo {
-    /// 适配器名称 如lagrange-onebot
-    pub name: &'static str,
-    /// 适配器版本
-    pub version: &'static str,
-    /// 适配器平台
-    pub platform: &'static str,
-    /// 适配器使用的协议标准 如onebot11
-    pub standard: &'static str,
-    /// 适配器协议实现 如gocq、napcat
-    pub protocol: &'static str,
-    /// 适配器通信方式
-    pub communication: &'static str,
-    /// 适配器通信地址
-    ///
-    /// # 示例
-    /// `http://127.0.0.1:7000`
-    /// `ws://127.0.0.1:7000/ws`
-    /// `grpc://127.0.0.1:7001`
-    pub address: Option<String>,
-    /// 连接时间
-    pub connect_time: u32,
-    /// 鉴权秘钥
-    pub secret: Option<String>,
+	/// 适配器名称 如lagrange-onebot
+	pub name: &'static str,
+	/// 适配器版本
+	pub version: &'static str,
+	/// 适配器平台
+	pub platform: &'static str,
+	/// 适配器使用的协议标准 如onebot11
+	pub standard: &'static str,
+	/// 适配器协议实现 如gocq、napcat
+	pub protocol: &'static str,
+	/// 适配器通信方式
+	pub communication: &'static str,
+	/// 适配器通信地址
+	///
+	/// # 示例
+	/// `http://127.0.0.1:7000`
+	/// `ws://127.0.0.1:7000/ws`
+	/// `grpc://127.0.0.1:7001`
+	pub address: Option<String>,
+	/// 连接时间
+	pub connect_time: u32,
+	/// 鉴权秘钥
+	pub secret: Option<String>,
 }

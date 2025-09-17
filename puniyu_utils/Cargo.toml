@@ -22,6 +22,3 @@ handlebars = "6.3.2"
 puniyu_logger = { version = "0.2.1" }
 thiserror = "2.0.16"
 
-
-[lints]
-workspace = true

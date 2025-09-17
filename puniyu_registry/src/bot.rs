@@ -4,37 +4,37 @@ pub mod registry;
 
 #[derive(Clone)]
 pub enum BotId {
-    Index(u64),
-    SelfId(String),
+	Index(u64),
+	SelfId(String),
 }
 
 impl From<u64> for BotId {
-    fn from(index: u64) -> Self {
-        BotId::Index(index)
-    }
+	fn from(index: u64) -> Self {
+		BotId::Index(index)
+	}
 }
 
 impl From<&str> for BotId {
-    fn from(self_id: &str) -> Self {
-        BotId::SelfId(self_id.to_string())
-    }
+	fn from(self_id: &str) -> Self {
+		BotId::SelfId(self_id.to_string())
+	}
 }
 
 impl From<String> for BotId {
-    fn from(self_id: String) -> Self {
-        BotId::SelfId(self_id)
-    }
+	fn from(self_id: String) -> Self {
+		BotId::SelfId(self_id)
+	}
 }
 
 #[derive(Clone)]
 pub struct Bot {
-    pub index: u64,
-    pub adapter: AdapterInfo,
-    pub account: AccountInfo,
+	pub index: u64,
+	pub adapter: AdapterInfo,
+	pub account: AccountInfo,
 }
 
 impl Bot {
-    fn send_msg(&self, message: String) {
-        // TODO: 发送消息
-    }
+	fn send_msg(&self, message: String) {
+		// TODO: 发送消息
+	}
 }

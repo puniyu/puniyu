@@ -10,27 +10,20 @@ use std::env;
 /// - `PLUGIN_NAME`: 从 `CARGO_PKG_NAME` 获取
 /// - `PLUGIN_VERSION`: 从 `CARGO_PKG_VERSION` 获取
 /// - `PLUGIN_AUTHOR`: 从 `CARGO_PKG_AUTHORS` 获取
-/// - `PLUGIN_RUSTC_VERSION`: 使用 rustc_version 获取当前 rustc 版本
 pub fn setup_plugin() {
-    println!("cargo:rerun-if-changed=build.rs");
-    println!("cargo:rerun-if-changed=Cargo.toml");
-    println!("cargo:rerun-if-changed=src/lib.rs");
-    let plugin_name = env::var("CARGO_PKG_NAME").unwrap();
-    println!("cargo:rustc-env=PLUGIN_NAME={}", plugin_name);
+	println!("cargo:rerun-if-changed=build.rs");
+	println!("cargo:rerun-if-changed=Cargo.toml");
+	println!("cargo:rerun-if-changed=src/lib.rs");
 
-    let plugin_version = env::var("CARGO_PKG_VERSION").unwrap();
-    println!("cargo:rustc-env=PLUGIN_VERSION={}", plugin_version);
+	let plugin_name =
+		env::var("CARGO_PKG_NAME").expect("呜哇～CARGO_PKG_NAME什么的根本找不到啦～杂鱼杂鱼～");
+	println!("cargo:rustc-env=PLUGIN_NAME={}", plugin_name);
 
-    let plugin_author = env::var("CARGO_PKG_AUTHORS").unwrap();
-    println!("cargo:rustc-env=PLUGIN_AUTHOR={}", plugin_author);
+	let plugin_version =
+		env::var("CARGO_PKG_VERSION").expect("版本号什么的...难道杂鱼忘记设置了吗～？");
+	println!("cargo:rustc-env=PLUGIN_VERSION={}", plugin_version);
 
-    let plugin_rustc_version = rustc_version::version().unwrap().to_string();
-    println!(
-        "cargo:rustc-env=PLUGIN_RUSTC_VERSION={}",
-        plugin_rustc_version
-    );
-}
-
-pub fn setup_extend() {
-    println!("cargo:rustc-link-arg=-rdynamic");
+	let plugin_author =
+		env::var("CARGO_PKG_AUTHORS").expect("作者信息都没有...真是个粗心的杂鱼呢～");
+	println!("cargo:rustc-env=PLUGIN_AUTHOR={}", plugin_author);
 }

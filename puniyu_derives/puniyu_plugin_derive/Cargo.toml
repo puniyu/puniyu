@@ -18,6 +18,3 @@ syn = { version = "2.0.106", features = ["full"] }
 proc-macro2 = { version = "1.0.101" }
 croner = { version = "3.0.0" }
 convert_case = { version = "0.8.0" }
-
-[lints]
-workspace = true

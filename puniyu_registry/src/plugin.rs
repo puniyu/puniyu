@@ -1,6 +1,4 @@
-use crate::PluginManager;
-use crate::plugin::{command::Command, manger::PluginInfo, task::Task, task::manger::TaskManager};
-use puniyu_utils::path::PLUGIN_DIR;
+use crate::plugin::{builder::PluginBuilder, command::Command, manger::PluginInfo, task::Task};
 use std::pin::Pin;
 
 pub mod builder;
@@ -13,34 +11,54 @@ pub type PluginFuture = Pin<Box<dyn Future<Output = ()> + Send + 'static>>;
 
 #[derive(Debug, Clone)]
 pub struct Plugin {
-    pub info: PluginInfo,
-    pub tasks: Vec<Task>,
-    pub commands: Vec<Command>,
+	pub info: PluginInfo,
+	pub tasks: Vec<Task>,
+	pub commands: Vec<Command>,
 }
 
-pub fn init_plugin() {
-    if !PLUGIN_DIR.as_path().exists() {
-        std::fs::create_dir_all(PLUGIN_DIR.as_path()).unwrap();
-    }
+/// 定义插件类型枚举
+/// #[derive(Debug, Clone)]
+pub enum PluginType {
+	/// 基于文件路径加载的动态库插件
+	Path(String),
+	/// 静态链接的插件
+	Builder(&'static dyn PluginBuilder),
+}
+impl From<&str> for PluginType {
+	fn from(path: &str) -> Self {
+		PluginType::Path(path.to_string())
+	}
+}
 
-    tokio::spawn(async {
-        // 获取插件名称列表
-        let plugins: Vec<String> = std::fs::read_dir(PLUGIN_DIR.as_path())
-            .into_iter()
-            .flatten()
-            .filter_map(|entry| entry.ok())
-            .filter_map(|entry| entry.file_name().to_str().map(|s| s.to_string()))
-            .filter(|name| name.starts_with("puniyu_plugin_"))
-            .filter_map(|name| name.split('.').next().map(|s| s.to_string()))
-            .collect();
+impl From<String> for PluginType {
+	fn from(path: String) -> Self {
+		PluginType::Path(path)
+	}
+}
 
-        let mut manager = PluginManager::new();
-        // 添加到插件注册表
-        manager.add_plugins(plugins).unwrap();
-        let mut builder = manager.build();
-        // 加载全部插件
-        builder.load_plugins().await;
-        // 初始化定时任务系统
-        TaskManager::init_scheduler().await
-    });
+impl From<&'static dyn PluginBuilder> for PluginType {
+	fn from(builder: &'static dyn PluginBuilder) -> Self {
+		PluginType::Builder(builder)
+	}
+}
+
+#[derive(Debug, Clone)]
+pub enum PluginId {
+	Index(u64),
+	Name(String),
+}
+impl From<u64> for PluginId {
+	fn from(value: u64) -> Self {
+		Self::Index(value)
+	}
+}
+impl From<String> for PluginId {
+	fn from(value: String) -> Self {
+		Self::Name(value)
+	}
+}
+impl From<&str> for PluginId {
+	fn from(value: &str) -> Self {
+		Self::Name(value.to_string())
+	}
 }

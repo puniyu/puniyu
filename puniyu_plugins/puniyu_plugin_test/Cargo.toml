@@ -14,11 +14,10 @@ crate-type = ["cdylib"]
 
 [dependencies]
 puniyu_registry = { path = "../../puniyu_registry" }
-log = "0.4.27"
+log = "0.4.28"
 
 
 [build-dependencies]
 puniyu_build = { path = "../../puniyu_build" }
 
-[lints]
-workspace = true
+

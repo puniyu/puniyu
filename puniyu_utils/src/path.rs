@@ -11,10 +11,10 @@ static BASE_DIR: LazyLock<PathBuf> = LazyLock::new(|| current_dir().unwrap());
 /// let config_dir = CONFIG_DIR.as_path();
 /// ```
 pub static CONFIG_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
-    let mut path = BASE_DIR.to_path_buf();
-    path.push("@puniyu");
-    path.push("config");
-    path
+	let mut path = BASE_DIR.to_path_buf();
+	path.push("@puniyu");
+	path.push("config");
+	path
 });
 
 /// 临时文件夹路径
@@ -26,14 +26,14 @@ pub static CONFIG_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
 /// let temp_dir = TEMP_DIR.as_path();
 /// ```
 pub static TEMP_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
-    let mut path = BASE_DIR.to_path_buf();
-    path.push("@puniyu");
-    path.push("temp");
-    path
+	let mut path = BASE_DIR.to_path_buf();
+	path.push("@puniyu");
+	path.push("temp");
+	path
 });
 
 pub static PLUGIN_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
-    let mut path = BASE_DIR.to_path_buf();
-    path.push("plugins");
-    path
+	let mut path = BASE_DIR.to_path_buf();
+	path.push("plugins");
+	path
 });

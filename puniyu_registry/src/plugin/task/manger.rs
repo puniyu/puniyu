@@ -1,56 +1,111 @@
-use crate::plugin::task::builder::TaskBuilder;
-use chrono_tz::Asia::Shanghai;
+use crate::plugin::task::{TaskId, get_scheduler, registry::TaskRegistry};
 use hashbrown::HashMap;
-use log::info;
-use std::{
-    sync::{LazyLock, Mutex},
-    time::Instant,
+use std::sync::{
+	Arc, LazyLock, RwLock,
+	atomic::{AtomicU64, Ordering},
 };
-use tokio_cron_scheduler::{JobBuilder, JobScheduler};
+use uuid::Uuid;
 
-static TASK_REGISTRY: LazyLock<Mutex<HashMap<String, Box<dyn TaskBuilder>>>> =
-    LazyLock::new(|| Mutex::new(HashMap::new()));
+static TASK_STORE: LazyLock<Arc<RwLock<TaskStore>>> =
+	LazyLock::new(|| Arc::new(RwLock::new(TaskStore::default())));
+
+static TASK_MANAGER: LazyLock<Arc<RwLock<HashMap<u64, Uuid>>>> =
+	LazyLock::new(|| Arc::new(RwLock::new(HashMap::new())));
+
+static TASK_INDEX: AtomicU64 = AtomicU64::new(0);
+
+#[derive(Default)]
+struct TaskStore(HashMap<u64, Arc<TaskRegistry>>);
+
+impl TaskStore {
+	pub fn insert_task(task: TaskRegistry) -> u64 {
+		let id = TASK_INDEX.fetch_add(1, Ordering::Relaxed);
+		TASK_STORE.write().unwrap().0.insert(id, Arc::new(task));
+		id
+	}
+
+	pub fn get_task<T: Into<TaskId>>(task: T) -> Option<Arc<TaskRegistry>> {
+		let store = TASK_STORE.read().unwrap();
+		match task.into() {
+			TaskId::Index(index) => store.0.get(&index).cloned(),
+			TaskId::Name(name) => {
+				store.0.values().find(|r| r.builder.name() == name.as_str()).cloned()
+			}
+		}
+	}
+
+	pub fn get_tasks() -> Vec<(u64, Arc<TaskRegistry>)> {
+		TASK_STORE.read().unwrap().0.iter().map(|(id, reg)| (*id, reg.clone())).collect()
+	}
+
+	pub fn remove_tasks_by_plugin(plugin: &str) -> Vec<u64> {
+		let mut store = TASK_STORE.write().unwrap();
+		let ids: Vec<u64> =
+			store.0.iter().filter(|(_, r)| r.plugin_name == plugin).map(|(id, _)| *id).collect();
+		for id in &ids {
+			store.0.remove(id);
+		}
+		ids
+	}
+
+	pub fn remove_task_by_id(id: u64) -> Option<Arc<TaskRegistry>> {
+		TASK_STORE.write().unwrap().0.remove(&id)
+	}
+}
 
 pub struct TaskManager;
 
 impl TaskManager {
-    pub fn register_task(task: Box<dyn TaskBuilder>) {
-        let mut registry = TASK_REGISTRY.lock().unwrap();
-        registry.insert(task.name().to_string(), task);
-    }
+	pub async fn add_task(task: TaskRegistry) -> u64 {
+		let id = TaskStore::insert_task(task);
+		let registry = TaskStore::get_task(id).unwrap();
 
-    pub(crate) async fn init_scheduler() -> () {
-        let scheduler = JobScheduler::new().await.unwrap();
-        scheduler.start().await.unwrap();
+		let job = tokio_cron_scheduler::Job::from(TaskRegistry {
+			plugin_name: registry.plugin_name,
+			builder: registry.builder.clone(),
+		});
 
-        let tasks: Vec<Box<dyn TaskBuilder>> = {
-            let mut registry = TASK_REGISTRY.lock().unwrap();
-            std::mem::take(&mut *registry).into_values().collect()
-        };
+		let scheduler = get_scheduler().await;
+		let uuid = scheduler.add(job).await.unwrap();
+		TASK_MANAGER.write().unwrap().insert(id, uuid);
 
-        for task in tasks {
-            let job = JobBuilder::new()
-                .with_timezone(Shanghai)
-                .with_cron_job_type()
-                .with_schedule(task.cron())
-                .unwrap()
-                .with_run_async(Box::new(move |_uuid, _lock| {
-                    let name = task.name().to_string();
-                    let task_run = task.run();
-                    Box::pin(async move {
-                        let start_time = Instant::now();
-                        info!("[定时计划:{}] 开始执行", name);
+		id
+	}
 
-                        task_run.await;
+	pub async fn remove_task<T>(task: T) -> bool
+	where
+		T: Into<TaskId>,
+	{
+		match task.into() {
+			TaskId::Index(id) => {
+				let uuid = { TASK_MANAGER.write().unwrap().remove(&id) };
+				let _ = TaskStore::remove_task_by_id(id);
 
-                        let duration = start_time.elapsed().as_millis();
-                        info!("[定时计划:{}] 执行完成，耗时: {}ms", name, duration);
-                    })
-                }))
-                .build()
-                .unwrap();
+				if let Some(uuid) = uuid {
+					let scheduler = get_scheduler().await;
+					let _ = scheduler.remove(&uuid).await;
+					true
+				} else {
+					false
+				}
+			}
+			TaskId::Name(plugin_name) => {
+				let task_ids = TaskStore::remove_tasks_by_plugin(&plugin_name);
+				if task_ids.is_empty() {
+					return false;
+				}
 
-            scheduler.add(job).await.unwrap();
-        }
-    }
+				let mut removed = 0;
+				for id in task_ids {
+					let uuid = { TASK_MANAGER.write().unwrap().remove(&id) };
+					if let Some(uuid) = uuid {
+						let scheduler = get_scheduler().await;
+						let _ = scheduler.remove(&uuid).await;
+						removed += 1;
+					}
+				}
+				removed > 0
+			}
+		}
+	}
 }

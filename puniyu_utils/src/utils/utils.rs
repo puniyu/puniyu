@@ -23,32 +23,27 @@ use crate::error::Config as Error;
 /// * `G` - 删除节点的闭包类型，需要实现Fn(&mut V, &str)
 ///
 pub(crate) fn delete_nested_node<V, G, M>(
-    value: &mut V,
-    node_keys: &[&str],
-    get_mut_mapping: G,
-    remove_from_mapping: M,
+	value: &mut V,
+	node_keys: &[&str],
+	get_mut_mapping: G,
+	remove_from_mapping: M,
 ) -> Result<(), Error>
 where
-    G: for<'a> Fn(&'a mut V, &str) -> Option<&'a mut V>,
-    M: Fn(&mut V, &str),
+	G: for<'a> Fn(&'a mut V, &str) -> Option<&'a mut V>,
+	M: Fn(&mut V, &str),
 {
-    if node_keys.is_empty() {
-        return Ok(());
-    }
+	if node_keys.is_empty() {
+		return Ok(());
+	}
 
-    let current_key = node_keys[0];
+	let current_key = node_keys[0];
 
-    if node_keys.len() == 1 {
-        remove_from_mapping(value, current_key);
-        Ok(())
-    } else if let Some(child_value) = get_mut_mapping(value, current_key) {
-        delete_nested_node(
-            child_value,
-            &node_keys[1..],
-            get_mut_mapping,
-            remove_from_mapping,
-        )
-    } else {
-        Ok(())
-    }
+	if node_keys.len() == 1 {
+		remove_from_mapping(value, current_key);
+		Ok(())
+	} else if let Some(child_value) = get_mut_mapping(value, current_key) {
+		delete_nested_node(child_value, &node_keys[1..], get_mut_mapping, remove_from_mapping)
+	} else {
+		Ok(())
+	}
 }

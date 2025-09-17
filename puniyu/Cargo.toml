@@ -12,17 +12,10 @@ rust-version.workspace = true
 [dependencies]
 log = { workspace = true }
 tokio = { workspace = true }
-emitter-rs = "0.0.5"
 
 puniyu_core = { path = "../puniyu_core" }
-puniyu_utils = { path = "../puniyu_utils" }
-
-puniyu_plugin_test = { path = "../puniyu_plugins/puniyu_plugin_test", package = "puniyu_plugin_test" }
-puniyu_registry = { path = "../puniyu_registry" }
 
 
-[lints]
-workspace = true
 
 [[bin]]
 name = "puniyu"

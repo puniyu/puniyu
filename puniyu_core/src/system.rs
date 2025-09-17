@@ -1,33 +1,33 @@
 pub use puniyu_system_info::{
-    CpuInfo, DiskInfo, HostInfo, MemoryInfo, get_cpu_info, get_disk_info, get_host_info,
-    get_memory_info, get_process_info,
+	CpuInfo, DiskInfo, HostInfo, MemoryInfo, get_cpu_info, get_disk_info, get_host_info,
+	get_memory_info, get_process_info,
 };
 use std::process;
 
 #[derive(Debug)]
 pub struct SystemInfo {
-    /// 系统信息
-    pub cpu: CpuInfo,
-    /// 内存信息
-    pub memory: MemoryInfo,
-    /// 硬盘信息
-    pub disk: DiskInfo,
-    /// 主机信息
-    pub host: HostInfo,
-    /// Bot状态信息
-    pub bot: BotStatusInfo,
+	/// 系统信息
+	pub cpu: CpuInfo,
+	/// 内存信息
+	pub memory: MemoryInfo,
+	/// 硬盘信息
+	pub disk: DiskInfo,
+	/// 主机信息
+	pub host: HostInfo,
+	/// Bot状态信息
+	pub bot: BotStatusInfo,
 }
 
 #[derive(Debug)]
 pub struct BotStatusInfo {
-    /// 进程PID
-    pub pid: u32,
-    /// CPU使用率
-    pub cpu_usage: Option<u8>,
-    /// 内存使用率
-    pub memory_usage: Option<u8>,
-    /// 已用内存(单位: MB)
-    pub used_memory: f32,
+	/// 进程PID
+	pub pid: u32,
+	/// CPU使用率
+	pub cpu_usage: Option<u8>,
+	/// 内存使用率
+	pub memory_usage: Option<u8>,
+	/// 已用内存(单位: MB)
+	pub used_memory: f32,
 }
 
 /// 获取系统信息
@@ -38,18 +38,12 @@ pub struct BotStatusInfo {
 /// * [SystemInfo] - 系统信息
 ///
 pub fn get_system_info() -> SystemInfo {
-    let cpu = get_cpu_info();
-    let host = get_host_info();
-    let memory = get_memory_info();
-    let disk = get_disk_info();
-    let bot = get_bot_info();
-    SystemInfo {
-        cpu,
-        memory,
-        disk,
-        host,
-        bot,
-    }
+	let cpu = get_cpu_info();
+	let host = get_host_info();
+	let memory = get_memory_info();
+	let disk = get_disk_info();
+	let bot = get_bot_info();
+	SystemInfo { cpu, memory, disk, host, bot }
 }
 
 /// 获取进程PID
@@ -60,7 +54,7 @@ pub fn get_system_info() -> SystemInfo {
 /// * [u32] - 进程PID
 ///
 pub fn get_process_pid() -> u32 {
-    process::id()
+	process::id()
 }
 
 /// 获取Bot状态信息
@@ -71,11 +65,11 @@ pub fn get_process_pid() -> u32 {
 /// * [BotStatusInfo] - Bot状态信息
 ///
 pub fn get_bot_info() -> BotStatusInfo {
-    let process = get_process_info();
-    BotStatusInfo {
-        pid: process.pid.as_u32(),
-        cpu_usage: process.cpu_usage,
-        memory_usage: process.memory_usage,
-        used_memory: process.used_memory,
-    }
+	let process = get_process_info();
+	BotStatusInfo {
+		pid: process.pid.as_u32(),
+		cpu_usage: process.cpu_usage,
+		memory_usage: process.memory_usage,
+		used_memory: process.used_memory,
+	}
 }

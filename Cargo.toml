@@ -25,10 +25,7 @@ log = { version = "0.4.27" }
 tokio = { version = "1.47.1", features = ["full"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0"}
-
-
-[workspace.lints.clippy]
-uninlined_format_args = "allow"
+puniyu_logger = { version = "0.5.4" }
 
 [profile.release]
 lto = "thin"

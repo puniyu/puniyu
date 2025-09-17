@@ -1,8 +1,7 @@
 use strum::{Display, EnumString, IntoStaticStr};
-mod cd;
 pub mod contact;
 mod handler;
-pub mod key;
+mod manger;
 mod matcher;
 pub mod message;
 pub mod sender;
@@ -11,8 +10,8 @@ pub mod sender;
 #[derive(Debug, Clone, EnumString, Display, IntoStaticStr)]
 #[strum(serialize_all = "snake_case")]
 pub enum EventType {
-    Message,
-    Notice,
-    Request,
-    Unknown,
+	Message,
+	Notice,
+	Request,
+	Unknown,
 }
