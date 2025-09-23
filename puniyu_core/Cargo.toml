@@ -17,11 +17,13 @@ thiserror = "2.0.16"
 notify = "8.2.0"
 strum = { version = "0.27.2", features = ["derive"] }
 tokio = "1.47.1"
+futures = { workspace = true }
 
 puniyu_system_info = { version = "0.5.0" }
 puniyu_logger = { workspace = true }
 puniyu_registry = { path = "../puniyu_registry" }
 puniyu_utils = { path = "../puniyu_utils" }
+figlet-rs = "0.1.5"
 
 [build-dependencies]
 puniyu_build = { path = "../puniyu_build" }

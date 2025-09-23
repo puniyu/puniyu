@@ -1,6 +1,6 @@
 use puniyu_core::app::Bot;
-#[tokio::main(worker_threads = 4)]
+#[tokio::main]
 async fn main() {
-	let bot = Bot::new().daemon();
+	let bot = Bot::default();
 	bot.run().await;
 }

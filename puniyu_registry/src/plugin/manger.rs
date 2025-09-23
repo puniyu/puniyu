@@ -5,6 +5,7 @@ use crate::{
 	VERSION, error::Plugin as Error, library::PluginLibrary, logger::SharedLogger,
 	plugin::builder::PluginBuilder, plugin::command::Command, plugin::task::Task,
 };
+use futures::future;
 use hashbrown::HashMap;
 use libloading::Symbol;
 use std::sync::{
@@ -248,9 +249,13 @@ impl PluginManager {
 	where
 		T: Into<PluginType>,
 	{
-		for plugin in plugins {
-			Self::load_plugin(plugin).await?;
+		let load_futures = plugins.into_iter().map(|plugin| Self::load_plugin(plugin));
+
+		let results = future::join_all(load_futures).await;
+		for result in results {
+			result?;
 		}
+
 		Ok(())
 	}
 

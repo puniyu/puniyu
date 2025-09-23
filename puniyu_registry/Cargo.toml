@@ -15,6 +15,7 @@ hashbrown = "0.16.0"
 libloading = "0.8.8"
 thiserror = { version = "2.0.16" }
 log = { version = "0.4.28"}
+futures = { workspace = true }
 
 puniyu_plugin_derive = { path = "../puniyu_derives/puniyu_plugin_derive" }
 puniyu_utils = { path = "../puniyu_utils" }

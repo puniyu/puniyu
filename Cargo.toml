@@ -14,8 +14,8 @@ resolver = "2"
 authors = ["wuliya <3369906077@qq.com>"]
 license = "LGPL-3.0-only"
 readme = "README.md"
-homepage = "https://github.com/Puniyu/core"
-repository = "https://github.com/Puniyu/core"
+homepage = "https://github.com/Puniyu/puniyu"
+repository = "https://github.com/Puniyu/puniyu"
 edition = "2024"
 rust-version = "1.88.0"
 
@@ -25,6 +25,7 @@ log = { version = "0.4.27" }
 tokio = { version = "1.47.1", features = ["full"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0"}
+futures = { version = "0.3.31" }
 puniyu_logger = { version = "0.5.4" }
 
 [profile.release]

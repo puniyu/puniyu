@@ -1,4 +1,1 @@
-# 奈柚插件工具函数
-
-> [!TIP]
-> 此包后续会被弃用， 合并到`puniyu_core`中
+# puniyu公共函数crate
