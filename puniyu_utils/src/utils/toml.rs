@@ -1,4 +1,4 @@
-use super::utils::delete_nested_node;
+use super::tools::delete_nested_node;
 use crate::error::Config as Error;
 use serde::{Serialize, de::DeserializeOwned};
 use std::{fs, path::Path};
@@ -87,34 +87,29 @@ where
 ///
 /// `path` 配置文件路径
 /// `name` 配置文件名, 不包含后缀
-/// `config1` 第一个配置结构体
-/// `config2` 第二个配置结构体
+/// `default_config` 第一个配置结构体
+/// `user_config` 第二个配置结构体
 ///
 pub fn merge_config<C1, C2>(
 	path: &Path,
 	name: &str,
-	user_config: &C1,
-	default_config: &C2,
+	default_config: &C1,
+	user_config: &C2,
 ) -> Result<(), Error>
 where
 	C1: Serialize,
 	C2: Serialize,
 {
-	let user_config_str =
-		serde_json::to_string_pretty(user_config).map_err(|_| Error::Serialize)?;
-	let default_config_str =
-		serde_json::to_string_pretty(default_config).map_err(|_| Error::Serialize)?;
+	let default_config_str = to_string_pretty(default_config).map_err(|_| Error::Serialize)?;
+	let user_config_str = to_string_pretty(user_config).map_err(|_| Error::Serialize)?;
 
-	let mut user_config_value: Value = from_str(&user_config_str).map_err(|_| Error::Parse)?;
-	let default_config_value: Value = from_str(&default_config_str).map_err(|_| Error::Parse)?;
+	let mut default_config_value = from_str(&default_config_str).map_err(|_| Error::Parse)?;
+	let user_config_value = from_str(&user_config_str).map_err(|_| Error::Parse)?;
 
-	merge_toml_values(&mut user_config_value, default_config_value);
+	merge_toml_values(&mut default_config_value, user_config_value);
 
 	let full_path = path.join(format!("{}.toml", name));
-	if !full_path.exists() {
-		return Err(Error::NotFound);
-	}
-	write_to_file(&full_path, &user_config_value)
+	write_to_file(&full_path, &default_config_value)
 }
 
 /// 递归合并两个 TOML 值

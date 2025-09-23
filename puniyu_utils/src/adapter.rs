@@ -13,7 +13,9 @@ pub use info::{
 #[derive(Clone)]
 pub struct Adapter {
 	pub index: u64,
+
 	pub adapter: AdapterInfo,
+
 	pub account: AccountInfo,
 	pub api: &'static dyn AdapterApi,
 	pub self_id: &'static str,

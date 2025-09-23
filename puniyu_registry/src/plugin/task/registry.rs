@@ -1,5 +1,6 @@
 use super::builder::TaskBuilder;
 use crate::logger::info;
+use crate::logger::owo_colors::OwoColorize;
 use chrono_tz::Asia::Shanghai;
 use std::sync::Arc;
 use std::time::Instant;
@@ -24,12 +25,14 @@ impl From<TaskRegistry> for tokio_cron_scheduler::Job {
 				let task_run = value.builder.run();
 				Box::pin(async move {
 					let start_time = Instant::now();
-					info!("[定时计划:{}] 开始执行", name);
+					let prefix = "task".fg_rgb::<176, 196, 222>();
+					let message = name.fg_rgb::<255, 192, 203>();
+					info!("[{}:{}] 开始执行", prefix, message);
 
 					task_run.await;
 
 					let duration = start_time.elapsed().as_millis();
-					info!("[定时计划:{}] 执行完成，耗时: {}ms", name, duration);
+					info!("[{}:{}] 执行完成，耗时: {}ms", prefix, message, duration);
 				})
 			}))
 			.build()

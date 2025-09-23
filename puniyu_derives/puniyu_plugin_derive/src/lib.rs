@@ -247,9 +247,9 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
 				($($arg:tt)*) => {
 					{
 						use ::puniyu_registry::logger::owo_colors::OwoColorize;
-						let plugin_prefix = format!("plugin:{}", #name);
-						let colored_prefix = plugin_prefix.fg_rgb::<255,192,203>();
-						::puniyu_registry::logger::info!("[{}] {}", colored_prefix, format!($($arg)*))
+						let prefix = "plugin".fg_rgb::<176,196,222>();
+						let func_name = #name.fg_rgb::<255,192,203>();
+						::puniyu_registry::logger::info!("[{}:{}] {}", prefix,func_name, format!($($arg)*))
 					}
 				};
 			}
@@ -259,9 +259,9 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
 				($($arg:tt)*) => {
 					{
 						use ::puniyu_registry::logger::owo_colors::OwoColorize;
-						let plugin_prefix = format!("plugin:{}", #name);
-						let colored_prefix = plugin_prefix.fg_rgb::<255,192,203>();
-						::puniyu_registry::logger::warn!("[{}] {}", colored_prefix, format!($($arg)*))
+						let prefix = "plugin".fg_rgb::<176,196,222>();
+						let func_name = #name.fg_rgb::<255,192,203>();
+						::puniyu_registry::logger::warn!("[{}:{}] {}", prefix,func_name, format!($($arg)*))
 					}
 				};
 			}
@@ -271,9 +271,9 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
 				($($arg:tt)*) => {
 				{
 						use ::puniyu_registry::logger::owo_colors::OwoColorize;
-						let plugin_prefix = format!("plugin:{}", #name);
-						let colored_prefix = plugin_prefix.fg_rgb::<255,192,203>();
-						::puniyu_registry::logger::error!("[{}] {}", colored_prefix, format_args!($($arg)*))
+						let prefix = "plugin".fg_rgb::<176,196,222>();
+						let func_name = #name.fg_rgb::<255,192,203>();
+						::puniyu_registry::logger::error!("[{}:{}] {}", prefix,func_name, format_args!($($arg)*))
 					}
 				};
 			}
@@ -283,9 +283,9 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
 				($($arg:tt)*) => {
 					{
 						use ::puniyu_registry::logger::owo_colors::OwoColorize;
-						let plugin_prefix = format!("plugin:{}", #name);
-						let colored_prefix = plugin_prefix.fg_rgb::<255,192,203>();
-						::puniyu_registry::logger::debug!("[{}] {}", colored_prefix, format_args!($($arg)*))
+						let prefix = "plugin".fg_rgb::<176,196,222>();
+						let func_name = #name.fg_rgb::<255,192,203>();
+						::puniyu_registry::logger::debug!("[{}:{}] {}", prefix,func_name, format_args!($($arg)*))
 					}
 				};
 			}

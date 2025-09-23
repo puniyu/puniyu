@@ -1,3 +1,4 @@
+use crate::message::element::Alias;
 use crate::message::element::send::{
 	JsonElement, MusicElement, RecordElement, ReplyElement, TextElement, XmlElement,
 };
@@ -26,6 +27,11 @@ impl ReceiveAtElement {
 	}
 }
 
+impl Alias for ReceiveAtElement {
+	fn alias(&self) -> String {
+		format!("[at:{}]", self.target_id)
+	}
+}
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ReceiveFaceElement {
