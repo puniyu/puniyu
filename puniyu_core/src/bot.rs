@@ -16,11 +16,9 @@ use puniyu_registry::{
 /// * `Option<Bot>` - 如果找到Bot，则返回Bot实例，否则返回None
 pub fn get_bot<T: Into<BotId>>(id: T) -> Option<Bot> {
 	let bot_id: BotId = id.into();
-	let b = "console";
-	let bot_id_str = format!("{}/{b}", 123);
 	match bot_id {
 		BotId::Index(index) => BotRegistry::get(index),
-		BotId::SelfId(id) => BotRegistry::get_with_id(id.as_str()),
+		BotId::SelfId(id) => BotRegistry::get_with_self_id(id.as_str()),
 	}
 }
 

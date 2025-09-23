@@ -7,7 +7,7 @@ pub mod manger;
 pub mod registry;
 pub mod task;
 
-pub type PluginFuture = Pin<Box<dyn Future<Output = ()> + Send + 'static>>;
+pub(crate) type PluginFuture = Pin<Box<dyn Future<Output = ()> + Send + 'static>>;
 
 #[derive(Debug, Clone)]
 pub struct Plugin {

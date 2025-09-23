@@ -1,7 +1,8 @@
+use crate::config::{config_watcher, init_config};
 use crate::logger::log_init;
 use puniyu_registry::{PluginManager, plugin::task::init_task};
 use puniyu_utils::path::PLUGIN_DIR;
-use std::{env::consts::DLL_EXTENSION, ffi};
+use std::{env::consts::DLL_EXTENSION, ffi, process, time::Duration};
 use tokio::{fs, signal};
 
 pub struct Bot {
@@ -11,13 +12,14 @@ pub struct Bot {
 
 impl Default for Bot {
 	fn default() -> Self {
+		init_config();
 		log_init();
 		Self { is_daemon: false }
 	}
 }
 
 impl Bot {
-	/// TODO: 添加自定义插件，编译绑定
+	/// TODO: 添加自定义插件，编译绑定, 这部分后续让开发者自定义
 	pub fn new() -> Self {
 		Self::default()
 	}
@@ -27,12 +29,17 @@ impl Bot {
 		self
 	}
 	pub async fn run(&self) {
+		let start_time = std::time::Instant::now();
 		init_app().await;
+		let duration = start_time.elapsed();
+		let duration_str = format_duration(duration);
+		log::info!("应用初始化完成，耗时: {}", duration_str);
 		signal::ctrl_c().await.unwrap()
 	}
 }
 
 async fn init_app() {
+	config_watcher();
 	init_plugin().await;
 	init_task().await;
 }
@@ -56,5 +63,34 @@ async fn init_plugin() {
 		}
 	}
 
-	PluginManager::load_plugins(plugins).await.unwrap()
+	PluginManager::load_plugins(plugins).await.unwrap_or_else(|e| {
+		log::error!("插件加载失败: {:?}", e);
+		process::exit(1);
+	});
+}
+
+fn format_duration(duration: Duration) -> String {
+	let minutes = duration.as_secs() / 60;
+	let seconds = duration.as_secs() % 60;
+	let milliseconds = duration.subsec_millis();
+
+	let mut result = String::new();
+
+	if minutes > 0 {
+		result.push_str(&format!("{}分", minutes));
+	}
+
+	if seconds > 0 {
+		result.push_str(&format!("{}秒", seconds));
+	}
+
+	if milliseconds > 0 {
+		result.push_str(&format!("{}毫秒", milliseconds));
+	}
+
+	if result.is_empty() {
+		result.push_str("0秒");
+	}
+
+	result
 }

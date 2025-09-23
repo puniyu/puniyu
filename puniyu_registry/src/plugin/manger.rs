@@ -46,7 +46,7 @@ pub struct PluginInfo {
 
 #[derive(Debug, Default, Clone)]
 /// 插件存储器
-pub struct PluginStore {
+pub(crate) struct PluginStore {
 	plugins: Arc<Mutex<HashMap<u64, Plugin>>>,
 }
 
@@ -66,18 +66,14 @@ impl PluginStore {
 		plugins.clone()
 	}
 
-	pub(crate) fn get_plugin<T>(&self, plugin: T) -> Option<Plugin>
-	where
-		T: Into<PluginId>,
-	{
-		let plugin_id = plugin.into();
+	pub fn get_plugin_with_index(&self, index: u64) -> Option<Plugin> {
 		let plugins = self.plugins.lock().unwrap();
-		match plugin_id {
-			PluginId::Index(index) => plugins.get(&index).cloned(),
-			PluginId::Name(name) => {
-				plugins.values().find(|plugin| plugin.info.name == name).cloned()
-			}
-		}
+		plugins.get(&index).cloned()
+	}
+
+	pub fn get_plugin_with_name(&self, name: &str) -> Option<Plugin> {
+		let plugins = self.plugins.lock().unwrap();
+		plugins.values().find(|plugin| plugin.info.name == name).cloned()
 	}
 
 	pub(crate) async fn remove_plugin<T>(&self, plugin: T) -> bool
@@ -271,6 +267,12 @@ impl PluginManager {
 	where
 		T: Into<PluginId>,
 	{
-		PLUGIN_STORE.get_plugin(plugin).map(|plugin| plugin.info)
+		let plugin_id = plugin.into();
+		match plugin_id {
+			PluginId::Index(index) => PLUGIN_STORE.get_plugin_with_index(index).map(|p| p.info),
+			PluginId::Name(name) => {
+				PLUGIN_STORE.get_plugin_with_name(name.as_str()).map(|p| p.info)
+			}
+		}
 	}
 }
