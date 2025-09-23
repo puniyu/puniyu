@@ -1045,9 +1045,9 @@ dependencies = [
 
 [[package]]
 name = "puniyu_system_info"
-version = "0.5.0"
+version = "0.5.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "05ee45dc3c70a8d091292de47c2e23be80e153e7695f9b8bb4a028a2d3888b5a"
+checksum = "c750278e714fb67c6e1186f560e7a07e9c74819d44aeff918d7e7b486e1460c8"
 dependencies = [
  "chrono",
  "rust_decimal",
