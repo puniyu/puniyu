@@ -961,6 +961,7 @@ version = "0.1.0"
 dependencies = [
  "log",
  "notify",
+ "puniyu_build",
  "puniyu_logger 0.5.4",
  "puniyu_registry",
  "puniyu_system_info",
@@ -1022,6 +1023,7 @@ version = "0.1.0"
 dependencies = [
  "log",
  "puniyu_build",
+ "puniyu_core",
  "puniyu_registry",
 ]
 

@@ -20,3 +20,6 @@ puniyu_core = { path = "../puniyu_core" }
 [[bin]]
 name = "puniyu"
 path = "src/main.rs"
+
+[features]
+preview = ["puniyu_core/core_preview"]

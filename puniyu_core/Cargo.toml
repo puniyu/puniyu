@@ -23,3 +23,8 @@ puniyu_logger = { workspace = true }
 puniyu_registry = { path = "../puniyu_registry" }
 puniyu_utils = { path = "../puniyu_utils" }
 
+[build-dependencies]
+puniyu_build = { path = "../puniyu_build" }
+
+[features]
+core_preview = ["puniyu_build/core_preview"]

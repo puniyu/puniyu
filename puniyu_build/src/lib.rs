@@ -27,3 +27,23 @@ pub fn setup_plugin() {
 		env::var("CARGO_PKG_AUTHORS").expect("作者信息都没有...真是个粗心的杂鱼呢～");
 	println!("cargo:rustc-env=PLUGIN_AUTHOR={}", plugin_author);
 }
+
+pub fn setup_core() {
+	let version = env!("CARGO_PKG_VERSION");
+	println!("cargo:rustc-env=CORE_VERSION={}", version);
+
+	let version_parts: Vec<&str> = version.split(|c: char| !c.is_ascii_digit()).collect();
+	let major = version_parts.get(0).and_then(|s| s.parse::<u32>().ok()).unwrap_or(0);
+	let minor = version_parts.get(1).and_then(|s| s.parse::<u32>().ok()).unwrap_or(0);
+	let patch = version_parts.get(2).and_then(|s| s.parse::<u32>().ok()).unwrap_or(0);
+
+	println!("cargo:rustc-env=CORE_VERSION_MAJOR={}", major);
+	println!("cargo:rustc-env=CORE_VERSION_MINOR={}", minor);
+	println!("cargo:rustc-env=CORE_VERSION_PATCH={}", patch);
+
+	#[cfg(feature = "core_preview")]
+	println!("cargo:rustc-env=CORE_VERSION_CHANNEL=Preview");
+
+	#[cfg(not(feature = "core_preview"))]
+	println!("cargo:rustc-env=CORE_VERSION_CHANNEL=Stable");
+}

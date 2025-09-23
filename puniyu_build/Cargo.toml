@@ -11,3 +11,6 @@ rust-version.workspace = true
 
 [dependencies]
 
+[features]
+core_preview = []
+

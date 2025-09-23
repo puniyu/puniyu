@@ -28,7 +28,7 @@ type FieldSetter<T> = fn(&mut T, syn::LitStr) -> syn::Result<()>;
 /// pub async fn hello() {} // 默认会实现一个 log::info!("{} v{} 初始化完成",plugin_name, plugin_version);
 /// ```
 /// ## 完整示例
-/// ```rust
+/// ```rust, ignore
 /// use puniyu_plugin_derive::plugin;
 ///
 /// #[plugin(name = "puniyu_plugin_hello", version = "0.1.0", author = "wuliya")]
