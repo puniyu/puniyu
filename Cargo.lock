@@ -1122,9 +1122,9 @@ dependencies = [
 
 [[package]]
 name = "puniyu_system_info"
-version = "0.5.2"
+version = "0.5.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c750278e714fb67c6e1186f560e7a07e9c74819d44aeff918d7e7b486e1460c8"
+checksum = "cce32a91f76b7e6262cb50192ca5116f117b5e6b265a9c986986cd8eed8436ca"
 dependencies = [
  "chrono",
  "rust_decimal",
