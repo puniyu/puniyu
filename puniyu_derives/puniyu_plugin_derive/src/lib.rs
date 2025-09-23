@@ -12,59 +12,12 @@ use syn::{
 };
 type FieldSetter<T> = fn(&mut T, syn::LitStr) -> syn::Result<()>;
 
-#[derive(Default)]
-struct PluginArgs {
-	name: Option<syn::LitStr>,
-	version: Option<syn::LitStr>,
-	author: Option<syn::LitStr>,
-}
-
-impl Parse for PluginArgs {
-	fn parse(input: ParseStream) -> syn::Result<Self> {
-		if input.is_empty() {
-			return Ok(PluginArgs::default());
-		}
-
-		let fields = Punctuated::<syn::MetaNameValue, Token![,]>::parse_terminated(input)?;
-		parse_fields(
-			&fields,
-			&[
-				("name", Self::set_name as FieldSetter<Self>),
-				("version", Self::set_version as FieldSetter<Self>),
-				("author", Self::set_author as FieldSetter<Self>),
-			],
-		)
-	}
-}
-
-impl PluginArgs {
-	fn set_name(args: &mut Self, value: syn::LitStr) -> syn::Result<()> {
-		args.name = Some(value);
-		Ok(())
-	}
-
-	fn set_version(args: &mut Self, value: syn::LitStr) -> syn::Result<()> {
-		args.version = Some(value);
-		Ok(())
-	}
-
-	fn set_author(args: &mut Self, value: syn::LitStr) -> syn::Result<()> {
-		args.author = Some(value);
-		Ok(())
-	}
-}
-
 /// 注册插件
 /// 此宏包含以下检测：
 /// 1. 函数是否为异步函数
 /// 2. 插件名称，插件版本，插件作者
 /// 3. 插件名称是否规范
 ///
-/// # 参数
-///
-/// * `name` - 插件名称
-/// * `version` - 插件版本
-/// * `author` - 插件作者
 ///
 /// # 示例
 /// ## 最小化示例
@@ -84,9 +37,7 @@ impl PluginArgs {
 /// }
 /// ```
 #[proc_macro_attribute]
-pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
-	let args = parse_macro_input!(args as PluginArgs);
-
+pub fn plugin(_: TokenStream, item: TokenStream) -> TokenStream {
 	let input_fn = if let Ok(fn_item) = syn::parse::<ItemFn>(item.clone()) {
 		fn_item
 	} else {
@@ -112,55 +63,29 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
 			.into();
 	}
 
-	// 获取插件名称
-	let plugin_name = match &args.name {
-		Some(name) => name.value(),
-		None => match get_plugin_name(fn_sig) {
-			Ok(name) => name,
-			Err(err) => return err,
-		},
+	let plugin_name = match env::var("PLUGIN_NAME") {
+		Ok(name) => name,
+		Err(_) => {
+			return syn::Error::new_spanned(fn_sig, "呜哇~PLUGIN_NAME都没有设置！杂鱼程序员！")
+				.to_compile_error()
+				.into();
+		}
 	};
-
-	// 获取插件版本
-	let plugin_version = match &args.version {
-		Some(version) => version.value(),
-		None => match env::var("PLUGIN_VERSION") {
-			Ok(version) => version,
-			Err(_) => {
-				return syn::Error::new_spanned(fn_sig, "诶？PLUGIN_VERSION都没设置！笨蛋！")
-					.to_compile_error()
-					.into();
-			}
-		},
+	let plugin_version = match env::var("PLUGIN_VERSION") {
+		Ok(version) => version,
+		Err(_) => {
+			return syn::Error::new_spanned(fn_sig, "呜哇~PLUGIN_VERSION都没有设置！杂鱼程序员！")
+				.to_compile_error()
+				.into();
+		}
 	};
-
-	// 获取插件作者
-	let plugin_author = match &args.author {
-		Some(author) => author.value(),
-		None => match env::var("PLUGIN_AUTHOR") {
-			Ok(author) => author,
-			Err(_) => {
-				return syn::Error::new_spanned(fn_sig, "哼！连PLUGIN_AUTHOR都不设置！杂鱼~")
-					.to_compile_error()
-					.into();
-			}
-		},
-	};
-
-	// 生成插件元信息
-	let name = match &args.name {
-		Some(name) => quote! { #name },
-		None => quote! { #plugin_name },
-	};
-
-	let version = match &args.version {
-		Some(version) => quote! { #version },
-		None => quote! { #plugin_version },
-	};
-
-	let author = match &args.author {
-		Some(author) => quote! { #author },
-		None => quote! { #plugin_author },
+	let plugin_author = match env::var("PLUGIN_AUTHOR") {
+		Ok(author) => quote! { #author },
+		Err(_) => {
+			return syn::Error::new_spanned(fn_sig, "呜哇~PLUGIN_AUTHOR都没有设置！杂鱼程序员！")
+				.to_compile_error()
+				.into();
+		}
 	};
 
 	// 检查插件名称是否符合命名规则
@@ -184,8 +109,8 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
 			Box::pin(async {
 				log::info!(
 					"{} v{} 初始化完成",
-					#name,
-					#version
+					#plugin_name,
+					#plugin_version,
 				);
 			})
 		}
@@ -205,15 +130,15 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
 
 		impl ::puniyu_registry::plugin::builder::PluginBuilder for #struct_name {
 			fn name(&self) -> &'static str {
-				#name
+				#plugin_name
 			}
 
 			fn version(&self) -> &'static str {
-				#version
+				#plugin_version
 			}
 
 			fn author(&self) -> &'static str {
-				#author
+				#plugin_author
 			}
 
 			fn abi_version(&self) -> &'static str {
@@ -248,7 +173,7 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
 					{
 						use ::puniyu_registry::logger::owo_colors::OwoColorize;
 						let prefix = "plugin".fg_rgb::<176,196,222>();
-						let func_name = #name.fg_rgb::<255,192,203>();
+						let func_name = #plugin_name.fg_rgb::<255,192,203>();
 						::puniyu_registry::logger::info!("[{}:{}] {}", prefix,func_name, format!($($arg)*))
 					}
 				};
@@ -260,7 +185,7 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
 					{
 						use ::puniyu_registry::logger::owo_colors::OwoColorize;
 						let prefix = "plugin".fg_rgb::<176,196,222>();
-						let func_name = #name.fg_rgb::<255,192,203>();
+						let func_name = #plugin_name.fg_rgb::<255,192,203>();
 						::puniyu_registry::logger::warn!("[{}:{}] {}", prefix,func_name, format!($($arg)*))
 					}
 				};
@@ -272,7 +197,7 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
 				{
 						use ::puniyu_registry::logger::owo_colors::OwoColorize;
 						let prefix = "plugin".fg_rgb::<176,196,222>();
-						let func_name = #name.fg_rgb::<255,192,203>();
+						let func_name = #plugin_name.fg_rgb::<255,192,203>();
 						::puniyu_registry::logger::error!("[{}:{}] {}", prefix,func_name, format_args!($($arg)*))
 					}
 				};
@@ -284,7 +209,7 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
 					{
 						use ::puniyu_registry::logger::owo_colors::OwoColorize;
 						let prefix = "plugin".fg_rgb::<176,196,222>();
-						let func_name = #name.fg_rgb::<255,192,203>();
+						let func_name = #plugin_name.fg_rgb::<255,192,203>();
 						::puniyu_registry::logger::debug!("[{}:{}] {}", prefix,func_name, format_args!($($arg)*))
 					}
 				};
