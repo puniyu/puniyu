@@ -92,7 +92,9 @@ pub fn init_config() {
 	}
 	let default_config = AppConfig::default();
 	let user_config = AppConfig::get();
-	let _ = merge_config(CONFIG_DIR.as_path(), "bot", &user_config, &default_config);
+	merge_config(CONFIG_DIR.as_path(), "bot", &default_config, &user_config).unwrap_or_else(|e| {
+		log::error!("[配置文件] 合并Bot配置失败: {}", e);
+	});
 	init_env();
 }
 
@@ -110,13 +112,13 @@ pub(crate) fn config_watcher() {
 
 		watcher.watch(CONFIG_DIR.as_path(), RecursiveMode::NonRecursive).unwrap();
 
-		log::info!("[配置文件]配置文件监听器已启动");
+		log::info!("[Config] 配置文件监听器已启动");
 
 		for res in rx {
 			match res {
 				Ok(event) => {
 					log::info!(
-						"[配置文件] 文件变更: {}",
+						"[Config] 文件变更: {}",
 						event
 							.paths
 							.iter()
@@ -130,39 +132,31 @@ pub(crate) fn config_watcher() {
 							match file_name {
 								"app.toml" => {
 									reload_config("app", &mut *APP_CONFIG.write().unwrap())
-										.map_err(|e| {
-											log::error!("[配置文件] 重载App配置失败: {}", e)
-										})
+										.map_err(|e| log::error!("[Config] 重载App配置失败: {}", e))
 										.unwrap();
 								}
 								"bot.toml" => {
 									reload_config("bot", &mut *BOT_CONFIG.write().unwrap())
-										.map_err(|e| {
-											log::error!("[配置文件] 重载Bot配置失败: {}", e)
-										})
+										.map_err(|e| log::error!("[Config] 重载Bot配置失败: {}", e))
 										.unwrap();
 								}
 								"group.toml" => {
 									reload_config("group", &mut *GROUP_CONFIG.write().unwrap())
 										.map_err(|e| {
-											log::error!("[配置文件] 重载Group配置失败: {}", e)
+											log::error!("[Config] 重载Group配置失败: {}", e)
 										})
 										.unwrap();
 								}
 								_ => {
 									reload_config("app", &mut *APP_CONFIG.write().unwrap())
-										.map_err(|e| {
-											log::error!("[配置文件] 重载App配置失败: {}", e)
-										})
+										.map_err(|e| log::error!("[Config] 重载App配置失败: {}", e))
 										.unwrap();
 									reload_config("bot", &mut *BOT_CONFIG.write().unwrap())
-										.map_err(|e| {
-											log::error!("[配置文件] 重载Bot配置失败: {}", e)
-										})
+										.map_err(|e| log::error!("[Config] 重载Bot配置失败: {}", e))
 										.unwrap();
 									reload_config("group", &mut *GROUP_CONFIG.write().unwrap())
 										.map_err(|e| {
-											log::error!("[配置文件] 重载Group配置失败: {}", e)
+											log::error!("[Config] 重载Group配置失败: {}", e)
 										})
 										.unwrap();
 								}
@@ -171,7 +165,7 @@ pub(crate) fn config_watcher() {
 					}
 				}
 				Err(e) => {
-					log::error!("[配置文件] 监听错误: {}", e);
+					log::error!("[Config] 监听错误: {}", e);
 				}
 			}
 		}

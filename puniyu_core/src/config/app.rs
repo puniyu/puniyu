@@ -11,7 +11,7 @@ pub(crate) static APP_CONFIG: LazyLock<Arc<RwLock<AppConfig>>> = LazyLock::new(|
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct LoggerConfig {
-	/// 是否启用日志
+	/// 是否启用文件日志记录
 	#[serde(default = "default_logger_file_enable")]
 	pub enable_file: bool,
 	/// 日志等级
@@ -52,7 +52,7 @@ fn default_logger_retention_days() -> u8 {
 }
 
 impl LoggerConfig {
-	/// 是否启用日志
+	/// 是否启用文件日志记录
 	pub fn enable_file(&self) -> bool {
 		self.enable_file
 	}
