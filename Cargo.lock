@@ -1047,6 +1047,7 @@ version = "0.1.0"
 name = "puniyu_core"
 version = "0.1.0"
 dependencies = [
+ "convert_case",
  "figlet-rs",
  "futures",
  "log",
@@ -1065,12 +1066,13 @@ dependencies = [
 
 [[package]]
 name = "puniyu_logger"
-version = "0.5.4"
+version = "0.5.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8b0fd8973353dff46d6eb6856f27e9850dbfd2c81edcd44f80d030c7a753332c"
+checksum = "8b58f7ca07f8cfdcf1a76b290fd321cfa52c58932538a53d67ab70f0be5dfaa9"
 dependencies = [
  "chrono",
  "chrono-tz",
+ "convert_case",
  "owo-colors",
  "strip-ansi-escapes",
  "tracing",

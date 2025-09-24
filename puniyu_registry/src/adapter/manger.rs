@@ -68,10 +68,6 @@ impl AdapterManger {
 					if adapters.contains_key(adapter_name) {
 						return Err(Error::Exists(adapter_name.to_string()));
 					}
-					if !adapter_name.starts_with("puniyu_adapter_") {
-						// 适配器名称必须以 `puniyu_adapter_` 开头
-						return Ok(());
-					}
 
 					let adapter = Adapter {
 						index: ADAPTER_COUNTER.fetch_add(1, Ordering::Relaxed),
@@ -112,10 +108,16 @@ impl AdapterManger {
 		}
 	}
 
+	pub async fn load_adapters<T: Into<AdapterType>>(adapters: Vec<T>) -> Result<(), Error> {
+		futures::future::try_join_all(
+			adapters.into_iter().map(|adapter| Self::load_adapter(adapter)),
+		)
+		.await?;
+
+		Ok(())
+	}
+	/// TODO: 此部分待完成
 	pub async fn register_adapters<T: Into<AdapterType>>(adapters: Vec<T>) -> Result<(), Error> {
-		for adapter in adapters {
-			Self::load_adapter(adapter).await?;
-		}
 		Ok(())
 	}
 }

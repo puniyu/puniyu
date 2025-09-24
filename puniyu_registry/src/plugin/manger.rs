@@ -158,10 +158,6 @@ impl PluginManager {
 						return Err(Error::Exists(plugin_name.to_string()));
 					}
 
-					if !plugin_name.starts_with("puniyu_plugin_") {
-						// 插件名称必须以 `puniyu_plugin_` 开头
-						return Ok(());
-					}
 					let abi_version = plugin_builder.abi_version();
 					let plugin_info = PluginInfo {
 						name: plugin_name,
@@ -201,10 +197,6 @@ impl PluginManager {
 				let plugin_name = plugin_builder.name();
 				if plugins.iter().any(|(_, plugin)| plugin.info.name == plugin_name) {
 					return Err(Error::Exists(plugin_name.to_string()));
-				}
-				if !plugin_name.starts_with("puniyu_plugin_") {
-					// 插件名称必须以 `puniyu_plugin_` 开头
-					return Ok(());
 				}
 				let abi_version = plugin_builder.abi_version();
 				let plugin_info = PluginInfo {
@@ -249,12 +241,8 @@ impl PluginManager {
 	where
 		T: Into<PluginType>,
 	{
-		let load_futures = plugins.into_iter().map(|plugin| Self::load_plugin(plugin));
-
-		let results = future::join_all(load_futures).await;
-		for result in results {
-			result?;
-		}
+		futures::future::try_join_all(plugins.into_iter().map(|plugin| Self::load_plugin(plugin)))
+			.await?;
 
 		Ok(())
 	}

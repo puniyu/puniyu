@@ -24,6 +24,7 @@ puniyu_logger = { workspace = true }
 puniyu_registry = { path = "../puniyu_registry" }
 puniyu_utils = { path = "../puniyu_utils" }
 figlet-rs = "0.1.5"
+convert_case = "0.8.0"
 
 [build-dependencies]
 puniyu_build = { path = "../puniyu_build" }
