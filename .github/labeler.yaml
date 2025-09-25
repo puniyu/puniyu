@@ -1,0 +1,8 @@
+version: 1
+labels:
+  - label: "bug"
+    title: "^bug:.*"
+    branch: "^fix/.*"
+  - label: "enhancement"
+    title: "^feat:.*"
+    branch: "^feature/.*"

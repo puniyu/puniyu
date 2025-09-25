@@ -5,7 +5,6 @@ use crate::{
 	VERSION, error::Plugin as Error, library::PluginLibrary, logger::SharedLogger,
 	plugin::builder::PluginBuilder, plugin::command::Command, plugin::task::Task,
 };
-use futures::future;
 use hashbrown::HashMap;
 use libloading::Symbol;
 use std::sync::{
