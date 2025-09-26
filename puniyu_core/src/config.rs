@@ -30,13 +30,7 @@ where
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
-pub struct Config {
-	#[serde(default)]
-	pub app: AppConfig,
-	#[serde(default)]
-	pub group: GroupConfig,
-}
-
+pub struct Config;
 impl Config {
 	/// 获取app配置
 	///
@@ -92,7 +86,7 @@ pub fn init_config() {
 	}
 	let default_config = AppConfig::default();
 	let user_config = AppConfig::get();
-	merge_config(CONFIG_DIR.as_path(), "bot", &default_config, &user_config).unwrap_or_else(|e| {
+	merge_config(CONFIG_DIR.as_path(), "app", &default_config, &user_config).unwrap_or_else(|e| {
 		log::error!("[配置文件] 合并Bot配置失败: {}", e);
 	});
 	init_env();

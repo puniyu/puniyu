@@ -31,4 +31,6 @@ puniyu_server = { workspace = true }
 puniyu_build = { path = "../puniyu_build" }
 
 [features]
+default = ["server"]
+server = []
 core_preview = ["puniyu_build/core_preview"]

@@ -1,11 +1,12 @@
+use crate::config::app::AppConfig;
 use crate::config::{config_watcher, init_config};
 use crate::logger::log_init;
 use crate::{VERSION, common};
 use convert_case::{Case, Casing};
 use figlet_rs::FIGfont;
 use puniyu_registry::{PluginManager, plugin::task::init_task};
-use puniyu_server::run_server_spawn;
 use puniyu_utils::path::PLUGIN_DIR;
+use std::net::IpAddr;
 use std::{env::consts::DLL_EXTENSION, ffi, process, time::Duration};
 use tokio::{fs, signal};
 
@@ -16,7 +17,7 @@ pub struct Bot {
 impl Default for Bot {
 	fn default() -> Self {
 		let app_name = "puniyu";
-		print_welcome(app_name);
+		print_start_log(app_name);
 		init_config();
 		log_init();
 		Self { name: app_name.to_string() }
@@ -34,7 +35,13 @@ impl Bot {
 		let duration = start_time.elapsed();
 		let duration_str = format_duration(duration);
 		log::info!("{} 初始化完成，耗时: {}", self.name.to_case(Case::Lower), duration_str);
-		run_server_spawn(None, None).await;
+		#[cfg(feature = "server")]
+		{
+			let config = AppConfig::get();
+			let host = IpAddr::V4(config.server.host().parse().unwrap());
+			let port = config.server.port();
+			puniyu_server::run_server_spawn(Some(host), Some(port)).await;
+		}
 		signal::ctrl_c().await.unwrap();
 		log::info!("{} 本次运行时间: {}", self.name.to_case(Case::Lower), common::uptime());
 	}
@@ -96,7 +103,7 @@ fn format_duration(duration: Duration) -> String {
 	result
 }
 
-fn print_welcome<T>(name: T)
+fn print_start_log<T>(name: T)
 where
 	T: AsRef<str>,
 {
