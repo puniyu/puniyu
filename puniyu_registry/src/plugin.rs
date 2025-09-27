@@ -1,13 +1,10 @@
 use crate::plugin::{builder::PluginBuilder, command::Command, manger::PluginInfo, task::Task};
-use std::pin::Pin;
 
 pub mod builder;
 pub mod command;
 pub mod manger;
 pub mod registry;
 pub mod task;
-
-pub(crate) type PluginFuture = Pin<Box<dyn Future<Output = ()> + Send + 'static>>;
 
 #[derive(Debug, Clone)]
 pub struct Plugin {

@@ -106,19 +106,19 @@ pub fn plugin(_: TokenStream, item: TokenStream) -> TokenStream {
 	// 默认初始化函数
 	let init_call = if fn_block.stmts.is_empty() {
 		quote! {
-			Box::pin(async {
+			async {
 				log::info!(
 					"{} v{} 初始化完成",
 					#plugin_name,
 					#plugin_version,
 				);
-			})
+			}
 		}
 	} else {
 		quote! {
-			Box::pin(async {;
+			async {
 				#fn_name().await;
-			})
+			}
 		}
 	};
 
@@ -128,6 +128,7 @@ pub fn plugin(_: TokenStream, item: TokenStream) -> TokenStream {
 
 		#fn_vis #fn_sig #fn_block
 
+		#[::puniyu_registry::async_trait]
 		impl ::puniyu_registry::plugin::builder::PluginBuilder for #struct_name {
 			fn name(&self) -> &'static str {
 				#plugin_name
@@ -163,8 +164,8 @@ pub fn plugin(_: TokenStream, item: TokenStream) -> TokenStream {
 					.collect()
 			}
 
-			fn init(&self) -> ::std::pin::Pin<Box<dyn ::std::future::Future<Output = ()> + Send + 'static>> {
-			   #init_call
+			async fn init(&self) {
+			   #init_call.await;
 			}
 		}
 			#[macro_export]
@@ -342,17 +343,18 @@ pub fn task(args: TokenStream, item: TokenStream) -> TokenStream {
 
 	#fn_vis #fn_sig #fn_block
 
-	impl ::puniyu_registry::plugin::task::builder::TaskBuilder for #struct_name {
-		fn name(&self) -> &'static str {
+		#[::puniyu_registry::async_trait]
+		impl ::puniyu_registry::plugin::task::builder::TaskBuilder for #struct_name {
+			fn name(&self) -> &'static str {
 			stringify!(#fn_name)
 		}
 
-		fn cron(&self) -> &'static str {
+			fn cron(&self) -> &'static str {
 			#cron_expr
 		}
 
-		fn run(&self) -> ::std::pin::Pin<Box<dyn ::std::future::Future<Output = ()> + Send + 'static>> {
-			Box::pin(#fn_name())
+			async fn run(&self) {
+				#fn_name().await;
 		}
 	}
 

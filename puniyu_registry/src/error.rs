@@ -1,7 +1,7 @@
 use thiserror::Error;
 
 #[derive(Error, Debug)]
-pub enum Plugin {
+pub enum Load {
 	#[error("插件: {0}不存在")]
 	NotFound(String),
 	#[error("插件: {0}已存在")]
@@ -13,6 +13,7 @@ pub enum Plugin {
 }
 
 #[derive(Error, Debug)]
+#[deprecated(note = "即将弃用，实现自动注册", since = "0.1.0")]
 pub enum Adapter {
 	#[error("适配器: {0}不存在")]
 	NotFound(String),

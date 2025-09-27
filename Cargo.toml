@@ -26,6 +26,9 @@ tokio = { version = "1.47.1", features = ["full"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0"}
 futures = { version = "0.3.31" }
+async-trait = { version = "0.1.89" }
+thiserror = { version = "2.0.16" }
+anythow = { version = "1.0.51" }
 
 puniyu_logger = { version = "0.5.6" }
 puniyu_server = { git = "https://github.com/Puniyu/server" }

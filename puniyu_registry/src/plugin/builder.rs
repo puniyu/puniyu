@@ -1,5 +1,7 @@
-use super::{PluginFuture, command::builder::CommandBuilder, task::builder::TaskBuilder};
+use super::{command::builder::CommandBuilder, task::builder::TaskBuilder};
+use async_trait::async_trait;
 
+#[async_trait]
 pub trait PluginBuilder: Send + Sync + 'static {
 	/// 插件名称
 	fn name(&self) -> &'static str;
@@ -19,5 +21,5 @@ pub trait PluginBuilder: Send + Sync + 'static {
 	/// 命令列表
 	fn commands(&self) -> Vec<Box<dyn CommandBuilder>>;
 	/// 插件初始化函数
-	fn init(&self) -> PluginFuture;
+	async fn init(&self);
 }

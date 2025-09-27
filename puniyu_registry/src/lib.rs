@@ -10,5 +10,6 @@ mod utils;
 mod version;
 pub use version::VERSION;
 
+pub use async_trait::async_trait;
 pub use inventory;
 pub use puniyu_plugin_derive::{plugin, task};

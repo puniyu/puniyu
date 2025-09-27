@@ -1,8 +1,9 @@
 use super::{Plugin, PluginId, PluginType};
+use crate::logger::{debug, warn};
 use crate::plugin::command::builder::CommandBuilder;
 use crate::plugin::task::{builder::TaskBuilder, manger::TaskManager, registry::TaskRegistry};
 use crate::{
-	VERSION, error::Plugin as Error, library::PluginLibrary, logger::SharedLogger,
+	VERSION, error::Load as Error, library::PluginLibrary, logger::SharedLogger,
 	plugin::builder::PluginBuilder, plugin::command::Command, plugin::task::Task,
 };
 use hashbrown::HashMap;
@@ -164,11 +165,9 @@ impl PluginManager {
 						author: plugin_builder.author(),
 					};
 					if abi_version != VERSION {
-						log::warn!(
+						warn!(
 							"插件 {} 版本 {} 不兼容当前ABI版本 {}，请联系开发者更新ABI版本",
-							plugin_name,
-							abi_version,
-							VERSION
+							plugin_name, abi_version, VERSION
 						);
 						return Ok(());
 					}
@@ -183,9 +182,9 @@ impl PluginManager {
 
 					let commands = collect_commands(&plugin_builder.commands());
 					let plugin_obj = Plugin { info: plugin_info, tasks, commands };
-					log::debug!("[plugin:{}] 正在加载插件", plugin_name);
+					debug!("[plugin:{}] 正在加载插件", plugin_name);
 					plugin_builder.init().await;
-					log::debug!("[plugin:{}] 插件加载成功", plugin_name);
+					debug!("[plugin:{}] 插件加载成功", plugin_name);
 
 					PLUGIN_STORE.insert_plugin(plugin_obj);
 				}
@@ -205,11 +204,9 @@ impl PluginManager {
 				};
 
 				if abi_version != VERSION {
-					log::warn!(
+					warn!(
 						"插件 {} 版本 {} 不兼容当前版本 {}，请升级插件",
-						plugin_name,
-						abi_version,
-						VERSION
+						plugin_name, abi_version, VERSION
 					);
 					return Ok(());
 				}
@@ -227,10 +224,9 @@ impl PluginManager {
 				let plugin = Plugin { info: plugin_info, tasks, commands };
 				PLUGIN_STORE.insert_plugin(plugin);
 
-				log::debug!("[plugin:{}] 正在加载插件", plugin_name);
-				let plugin_future = plugin_builder.init();
-				plugin_future.await;
-				log::debug!("[plugin:{}] 插件加载成功", plugin_name);
+				debug!("[plugin:{}] 正在加载插件", plugin_name);
+				plugin_builder.init().await;
+				debug!("[plugin:{}] 插件加载成功", plugin_name);
 			}
 		}
 		Ok(())

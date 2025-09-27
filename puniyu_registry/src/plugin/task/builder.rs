@@ -1,6 +1,6 @@
-use std::pin::Pin;
-
+use async_trait::async_trait;
 /// 定时任务
+#[async_trait]
 pub trait TaskBuilder: Send + Sync + 'static {
 	/// 任务名称
 	fn name(&self) -> &'static str;
@@ -9,5 +9,5 @@ pub trait TaskBuilder: Send + Sync + 'static {
 	fn cron(&self) -> &'static str;
 
 	/// 执行任务
-	fn run(&self) -> Pin<Box<dyn Future<Output = ()> + Send + 'static>>;
+	async fn run(&self);
 }

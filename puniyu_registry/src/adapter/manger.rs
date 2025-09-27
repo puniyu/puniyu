@@ -1,3 +1,4 @@
+use crate::logger::debug;
 use crate::{adapter::AdapterType, error::Adapter as Error, library::AdapterLibrary};
 use hashbrown::HashMap;
 use libloading::Symbol;
@@ -77,9 +78,9 @@ impl AdapterManger {
 						self_name: adapter_builder.self_name(),
 						api: adapter_builder.api(),
 					};
-					log::debug!("[adapter:{}] 正在加载适配器", adapter_name);
+					debug!("[adapter:{}] 正在加载适配器", adapter_name);
 					adapter_builder.init().await;
-					log::debug!("[adapter:{}] 适配器加载成功", adapter_name);
+					debug!("[adapter:{}] 适配器加载成功", adapter_name);
 					ADAPTER_STORE.insert_adapter(adapter_name, adapter);
 					Ok(())
 				}
@@ -99,9 +100,9 @@ impl AdapterManger {
 					self_name: builder.self_name(),
 					api: builder.api(),
 				};
-				log::debug!("[adapter:{}] 正在加载适配器", adapter_name);
+				debug!("[adapter:{}] 正在加载适配器", adapter_name);
 				builder.init().await;
-				log::debug!("[adapter:{}] 适配器加载成功", adapter_name);
+				debug!("[adapter:{}] 适配器加载成功", adapter_name);
 				ADAPTER_STORE.insert_adapter(adapter_name, adapter);
 				Ok(())
 			}

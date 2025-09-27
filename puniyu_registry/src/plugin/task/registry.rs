@@ -21,9 +21,10 @@ impl From<TaskRegistry> for tokio_cron_scheduler::Job {
 			.with_schedule(value.builder.cron())
 			.unwrap()
 			.with_run_async(Box::new(move |_uuid, _lock| {
-				let name = value.builder.name().to_string();
-				let task_run = value.builder.run();
+				let builder = value.builder.clone();
 				Box::pin(async move {
+					let name = builder.name().to_string();
+					let task_run = builder.run();
 					let start_time = Instant::now();
 					let prefix = "task".fg_rgb::<176, 196, 222>();
 					let message = name.fg_rgb::<255, 192, 203>();

@@ -1,5 +1,7 @@
-use std::pin::Pin;
+use crate::bot::Bot;
+use async_trait::async_trait;
 
+#[async_trait]
 pub trait CommandBuilder: Send + Sync + 'static {
 	/// 命令名称
 	fn name(&self) -> &'static str;
@@ -21,5 +23,5 @@ pub trait CommandBuilder: Send + Sync + 'static {
 	fn rank(&self) -> usize;
 
 	/// TODO: e占位，未实现
-	fn run(&self, e: &'static str) -> Pin<Box<dyn Future<Output = ()> + Send + 'static>>;
+	async fn run(&self, bot: &Bot);
 }
