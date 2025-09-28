@@ -1,6 +1,6 @@
 use crate::error::Library as Error;
-use hashbrown::HashMap;
 use libloading::Library;
+use std::collections::HashMap;
 use std::{env::consts::DLL_EXTENSION, path::PathBuf, sync::Arc};
 
 #[derive(Default)]
@@ -20,7 +20,7 @@ impl LibraryStore {
 	}
 
 	pub fn get_library(&self, name: &str) -> Option<Arc<Library>> {
-		self.libs.get(name).cloned()
+		self.libs.get(name).map(|v| v.clone())
 	}
 
 	pub fn remove_library(&mut self, name: &str) -> bool {
@@ -53,8 +53,8 @@ impl PluginLibrary {
 	}
 
 	/// 从内部存储中获取已加载的库
-	pub fn get_plugin(&self, name: &str) -> Option<&Arc<Library>> {
-		self.store.libs.get(name)
+	pub fn get_plugin(&self, name: &str) -> Option<Arc<Library>> {
+		self.store.libs.get(name).map(|v| v.clone())
 	}
 
 	/// 移除已加载的库
@@ -98,8 +98,8 @@ impl AdapterLibrary {
 		Ok(self)
 	}
 
-	pub fn get(&self, name: &str) -> Option<&Arc<Library>> {
-		self.store.libs.get(name)
+	pub fn get(&self, name: &str) -> Option<Arc<Library>> {
+		self.store.libs.get(name).map(|v| v.clone())
 	}
 
 	pub fn remove_plugin(&mut self, name: &str) -> bool {

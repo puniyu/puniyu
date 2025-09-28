@@ -1,11 +1,13 @@
 use crate::logger::debug;
 use crate::{adapter::AdapterType, error::Adapter as Error, library::AdapterLibrary};
-use hashbrown::HashMap;
 use libloading::Symbol;
 use puniyu_utils::adapter::{Adapter, AdapterBase as AdapterBuilder};
 use std::{
-	sync::atomic::{AtomicU64, Ordering},
-	sync::{Arc, LazyLock, Mutex, OnceLock},
+	collections::HashMap,
+	sync::{
+		Arc, LazyLock, Mutex, OnceLock,
+		atomic::{AtomicU64, Ordering},
+	},
 };
 
 static LIBRARY: OnceLock<Mutex<AdapterLibrary>> = OnceLock::new();

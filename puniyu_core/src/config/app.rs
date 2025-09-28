@@ -5,7 +5,7 @@ use std::sync::{Arc, LazyLock, RwLock};
 
 pub(crate) static APP_CONFIG: LazyLock<Arc<RwLock<AppConfig>>> = LazyLock::new(|| {
 	Arc::new(RwLock::new(
-		toml::read_config::<AppConfig>(CONFIG_DIR.as_path(), "bot").unwrap_or_default(),
+		toml::read_config::<AppConfig>(CONFIG_DIR.as_path(), "app").unwrap_or_default(),
 	))
 });
 

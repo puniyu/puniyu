@@ -1,42 +1,29 @@
 use super::{Plugin, PluginId, PluginType};
-use crate::logger::{debug, warn};
-use crate::plugin::command::builder::CommandBuilder;
-use crate::plugin::task::{builder::TaskBuilder, manger::TaskManager, registry::TaskRegistry};
 use crate::{
-	VERSION, error::Load as Error, library::PluginLibrary, logger::SharedLogger,
-	plugin::builder::PluginBuilder, plugin::command::Command, plugin::task::Task,
+	VERSION,
+	error::Load as Error,
+	library::PluginLibrary,
+	logger::SharedLogger,
+	logger::{debug, warn},
+	plugin::builder::PluginBuilder,
+	plugin::{
+		command::Command,
+		task::{Task, manger::TaskManager, registry::TaskRegistry},
+	},
 };
-use hashbrown::HashMap;
 use libloading::Symbol;
-use std::sync::{
-	Arc, LazyLock, Mutex, OnceLock,
-	atomic::{AtomicU64, Ordering},
+use std::{
+	collections::HashMap,
+	sync::{
+		Arc, LazyLock, Mutex, OnceLock,
+		atomic::{AtomicU64, Ordering},
+	},
 };
 
 static LIBRARY: OnceLock<Mutex<PluginLibrary>> = OnceLock::new();
 static PLUGIN_INDEX: AtomicU64 = AtomicU64::new(0);
 
 static PLUGIN_STORE: LazyLock<PluginStore> = LazyLock::new(PluginStore::default);
-
-/// 收集任务
-fn collect_tasks(tasks: &[Box<dyn TaskBuilder>]) -> Vec<Task> {
-	tasks
-		.iter()
-		.map(|task_builder| Task { name: task_builder.name(), cron: task_builder.cron() })
-		.collect()
-}
-
-/// 收集命令
-fn collect_commands(commands: &[Box<dyn CommandBuilder>]) -> Vec<Command> {
-	commands
-		.iter()
-		.map(|command_builder| Command {
-			name: command_builder.name(),
-			command: command_builder.command(),
-			rank: command_builder.rank(),
-		})
-		.collect()
-}
 
 #[derive(Debug, Clone)]
 pub struct PluginInfo {
@@ -171,7 +158,8 @@ impl PluginManager {
 						);
 						return Ok(());
 					}
-					let tasks = collect_tasks(&plugin_builder.tasks());
+					let tasks: Vec<Task> =
+						plugin_builder.tasks().into_iter().map(Into::into).collect();
 					for task_builder in plugin_builder.tasks() {
 						let _ = TaskManager::add_task(TaskRegistry {
 							plugin_name,
@@ -180,7 +168,8 @@ impl PluginManager {
 						.await;
 					}
 
-					let commands = collect_commands(&plugin_builder.commands());
+					let commands: Vec<Command> =
+						plugin_builder.commands().into_iter().map(Into::into).collect();
 					let plugin_obj = Plugin { info: plugin_info, tasks, commands };
 					debug!("[plugin:{}] 正在加载插件", plugin_name);
 					plugin_builder.init().await;
@@ -210,7 +199,8 @@ impl PluginManager {
 					);
 					return Ok(());
 				}
-				let tasks = collect_tasks(&plugin_builder.tasks());
+
+				let tasks: Vec<Task> = plugin_builder.tasks().into_iter().map(Into::into).collect();
 
 				for task_builder in plugin_builder.tasks() {
 					let _ = TaskManager::add_task(TaskRegistry {
@@ -220,7 +210,8 @@ impl PluginManager {
 					.await;
 				}
 
-				let commands = collect_commands(&plugin_builder.commands());
+				let commands: Vec<Command> =
+					plugin_builder.commands().into_iter().map(Into::into).collect();
 				let plugin = Plugin { info: plugin_info, tasks, commands };
 				PLUGIN_STORE.insert_plugin(plugin);
 

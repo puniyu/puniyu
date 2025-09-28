@@ -9,8 +9,7 @@
       "schedule": ["at any time"],
       "labels": [
         "dependencies"
-      ],
-      "automerge": true
+      ]
     }
   ]
 }

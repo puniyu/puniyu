@@ -1,4 +1,4 @@
-use crate::bot::Bot;
+use crate::{bot::Bot, plugin::command::Command};
 use async_trait::async_trait;
 
 #[async_trait]
@@ -24,4 +24,14 @@ pub trait CommandBuilder: Send + Sync + 'static {
 
 	/// TODO: e占位，未实现
 	async fn run(&self, bot: &Bot);
+}
+
+impl From<Box<dyn CommandBuilder>> for Command {
+	fn from(command_builder: Box<dyn CommandBuilder>) -> Self {
+		Self {
+			name: command_builder.name(),
+			command: command_builder.command(),
+			rank: command_builder.rank(),
+		}
+	}
 }

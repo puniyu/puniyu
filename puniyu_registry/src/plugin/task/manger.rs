@@ -1,8 +1,10 @@
 use crate::plugin::task::{TaskId, get_scheduler, registry::TaskRegistry};
-use hashbrown::HashMap;
-use std::sync::{
-	Arc, LazyLock, RwLock,
-	atomic::{AtomicU64, Ordering},
+use std::{
+	collections::HashMap,
+	sync::{
+		Arc, LazyLock, RwLock,
+		atomic::{AtomicU64, Ordering},
+	},
 };
 use uuid::Uuid;
 

@@ -44,6 +44,8 @@ pub(crate) async fn get_scheduler() -> Arc<JobScheduler> {
 		.await
 		.clone()
 }
+
+#[inline]
 pub async fn init_task() {
 	let scheduler = get_scheduler().await;
 	scheduler.start().await.unwrap();

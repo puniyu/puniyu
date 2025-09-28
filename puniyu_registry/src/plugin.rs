@@ -14,13 +14,14 @@ pub struct Plugin {
 }
 
 /// 定义插件类型枚举
-/// #[derive(Debug, Clone)]
+#[derive(Clone)]
 pub enum PluginType {
 	/// 基于文件路径加载的动态库插件
 	Path(String),
 	/// 静态链接的插件
 	Builder(&'static dyn PluginBuilder),
 }
+
 impl From<&str> for PluginType {
 	fn from(path: &str) -> Self {
 		PluginType::Path(path.to_string())
