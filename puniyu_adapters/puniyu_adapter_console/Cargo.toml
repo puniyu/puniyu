@@ -1,0 +1,17 @@
+[package]
+name = "puniyu_adapter_console"
+version = "0.1.0"
+authors.workspace = true
+license.workspace = true
+readme.workspace = true
+homepage.workspace = true
+repository.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+puniyu_core = { path = "../../puniyu_core" }
+async-trait = "0.1"

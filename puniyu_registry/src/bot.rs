@@ -26,15 +26,9 @@ impl From<String> for BotId {
 	}
 }
 
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub struct Bot {
 	pub index: u64,
 	pub adapter: AdapterInfo,
 	pub account: AccountInfo,
-}
-
-impl Bot {
-	fn send_msg(&self, message: String) {
-		// TODO: 发送消息
-	}
 }

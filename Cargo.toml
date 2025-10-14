@@ -6,7 +6,8 @@ members = [
     "puniyu_registry",
     "puniyu_utils",
     "puniyu_derives/*",
-    "puniyu_plugins/*"
+    "puniyu_plugins/*",
+    "puniyu_adapters/*"
 ]
 resolver = "2"
 
@@ -28,11 +29,14 @@ serde_json = { version = "1.0"}
 futures = { version = "0.3.31" }
 async-trait = { version = "0.1.89" }
 thiserror = { version = "2.0.16" }
-anythow = { version = "1.0.51" }
+anyhow = { version = "1.0.100" }
+inventory = "0.3.21"
+strum = { version = "0.27.2", features = ["derive"] }
 
-puniyu_logger = { version = "0.5.6" }
+
+puniyu_logger = { version = "0.6.1" }
 puniyu_server = { git = "https://github.com/Puniyu/server" }
-puniyu_system_info = { version = "0.5.5" }
+
 
 [profile.release]
 lto = "thin"

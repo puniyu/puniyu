@@ -1,23 +1,25 @@
-use crate::config::app::APP_CONFIG;
-use crate::config::bot::BOT_CONFIG;
-use crate::config::group::GROUP_CONFIG;
-use crate::config::{app::AppConfig, bot::BotConfig, group::GroupConfig};
+use crate::config::{
+	app::{APP_CONFIG, AppConfig},
+	bot::{BOT_CONFIG, BotConfig},
+	group::{GROUP_CONFIG, GroupConfig},
+};
 use crate::error::Config as Error;
+use crate::logger::{error, info};
 use notify::{Config as WatcherConfig, Event, RecommendedWatcher, RecursiveMode, Watcher};
-use puniyu_utils::path::CONFIG_DIR;
-use puniyu_utils::utils::toml::merge_config;
+use puniyu_registry::logger::debug;
+use puniyu_utils::{path::CONFIG_DIR, toml::merge_config};
 use serde::{Deserialize, Serialize, de::DeserializeOwned};
 use std::{env, sync::mpsc, thread, time::Duration};
 
-pub mod app;
-pub mod bot;
-pub mod group;
+pub(crate) mod app;
+mod bot;
+mod group;
 
 fn reload_config<T>(name: &str, config: &mut T) -> Result<(), Error>
 where
 	T: Default + DeserializeOwned,
 {
-	match puniyu_utils::utils::toml::read_config(CONFIG_DIR.as_path(), name) {
+	match puniyu_utils::toml::read_config(CONFIG_DIR.as_path(), name) {
 		Ok(new_config) => {
 			*config = new_config;
 			Ok(())
@@ -82,12 +84,12 @@ impl Config {
 pub fn init_config() {
 	if !CONFIG_DIR.as_path().exists() {
 		std::fs::create_dir_all(CONFIG_DIR.as_path())
-			.unwrap_or_else(|_| log::error!("[配置文件] 初始化配置文件失败"));
+			.unwrap_or_else(|_| error!("[配置文件] 初始化配置文件失败"));
 	}
 	let default_config = AppConfig::default();
 	let user_config = AppConfig::get();
 	merge_config(CONFIG_DIR.as_path(), "app", &default_config, &user_config).unwrap_or_else(|e| {
-		log::error!("[配置文件] 合并Bot配置失败: {}", e);
+		error!("[配置文件] 合并Bot配置失败: {}", e);
 	});
 	init_env();
 }
@@ -104,14 +106,16 @@ pub(crate) fn config_watcher() {
 		)
 		.unwrap();
 
+		println!("{}", CONFIG_DIR.to_string_lossy());
+
 		watcher.watch(CONFIG_DIR.as_path(), RecursiveMode::NonRecursive).unwrap();
 
-		log::info!("[Config] 配置文件监听器已启动");
+		debug!("[Config] 配置文件监听器已启动");
 
 		for res in rx {
 			match res {
 				Ok(event) => {
-					log::info!(
+					info!(
 						"[Config] 文件变更: {}",
 						event
 							.paths
@@ -126,32 +130,28 @@ pub(crate) fn config_watcher() {
 							match file_name {
 								"app.toml" => {
 									reload_config("app", &mut *APP_CONFIG.write().unwrap())
-										.map_err(|e| log::error!("[Config] 重载App配置失败: {}", e))
+										.map_err(|e| error!("[Config] 重载App配置失败: {}", e))
 										.unwrap();
 								}
 								"bot.toml" => {
 									reload_config("bot", &mut *BOT_CONFIG.write().unwrap())
-										.map_err(|e| log::error!("[Config] 重载Bot配置失败: {}", e))
+										.map_err(|e| error!("[Config] 重载Bot配置失败: {}", e))
 										.unwrap();
 								}
 								"group.toml" => {
 									reload_config("group", &mut *GROUP_CONFIG.write().unwrap())
-										.map_err(|e| {
-											log::error!("[Config] 重载Group配置失败: {}", e)
-										})
+										.map_err(|e| error!("[Config] 重载Group配置失败: {}", e))
 										.unwrap();
 								}
 								_ => {
 									reload_config("app", &mut *APP_CONFIG.write().unwrap())
-										.map_err(|e| log::error!("[Config] 重载App配置失败: {}", e))
+										.map_err(|e| error!("[Config] 重载App配置失败: {}", e))
 										.unwrap();
 									reload_config("bot", &mut *BOT_CONFIG.write().unwrap())
-										.map_err(|e| log::error!("[Config] 重载Bot配置失败: {}", e))
+										.map_err(|e| error!("[Config] 重载Bot配置失败: {}", e))
 										.unwrap();
 									reload_config("group", &mut *GROUP_CONFIG.write().unwrap())
-										.map_err(|e| {
-											log::error!("[Config] 重载Group配置失败: {}", e)
-										})
+										.map_err(|e| error!("[Config] 重载Group配置失败: {}", e))
 										.unwrap();
 								}
 							}
@@ -159,7 +159,7 @@ pub(crate) fn config_watcher() {
 					}
 				}
 				Err(e) => {
-					log::error!("[Config] 监听错误: {}", e);
+					error!("[Config] 监听错误: {}", e);
 				}
 			}
 		}

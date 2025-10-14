@@ -1,35 +1,52 @@
-use crate::plugin::{builder::PluginBuilder, command::Command, manger::PluginInfo, task::Task};
+use crate::plugin::{builder::PluginBuilder, command::Command, registry::PluginInfo, task::Task};
+use std::fmt;
+use std::path::PathBuf;
 
 pub mod builder;
 pub mod command;
-pub mod manger;
 pub mod registry;
+mod store;
 pub mod task;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct Plugin {
-	pub info: PluginInfo,
+	/// 插件名称
+	pub name: &'static str,
+	/// 插件版本
+	pub version: &'static str,
+	/// 插件作者
+	pub author: &'static str,
+	/// 插件定时任务
 	pub tasks: Vec<Task>,
+	/// 插件命令
 	pub commands: Vec<Command>,
 }
 
-/// 定义插件类型枚举
+impl From<Plugin> for PluginInfo {
+	fn from(info: Plugin) -> Self {
+		Self { name: info.name, version: info.version, author: info.author }
+	}
+}
+
 #[derive(Clone)]
+
 pub enum PluginType {
 	/// 基于文件路径加载的动态库插件
-	Path(String),
+	Path(PathBuf),
 	/// 静态链接的插件
 	Builder(&'static dyn PluginBuilder),
 }
 
-impl From<&str> for PluginType {
-	fn from(path: &str) -> Self {
-		PluginType::Path(path.to_string())
+impl fmt::Debug for PluginType {
+	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+		match self {
+			PluginType::Path(path) => f.debug_struct("Path").field("path", path).finish(),
+			PluginType::Builder(_) => f.debug_struct("Builder").finish(),
+		}
 	}
 }
-
-impl From<String> for PluginType {
-	fn from(path: String) -> Self {
+impl From<PathBuf> for PluginType {
+	fn from(path: PathBuf) -> Self {
 		PluginType::Path(path)
 	}
 }

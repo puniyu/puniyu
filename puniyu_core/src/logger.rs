@@ -4,7 +4,7 @@ use std::{env, sync::OnceLock};
 static LOGGER_INIT: OnceLock<()> = OnceLock::new();
 
 /// 初始化日志系统
-pub fn log_init() {
+pub(crate) fn log_init() {
 	LOGGER_INIT.get_or_init(|| {
 		let log_level = env::var("LOGGER_LEVEL").unwrap_or("info".to_string());
 		let log_path = env::var("LOGGER_PATH").unwrap_or("logs".to_string());
@@ -24,4 +24,6 @@ pub fn log_init() {
 	});
 }
 
-pub use puniyu_logger::{debug, error, info, trace, warn};
+pub use puniyu_logger::{
+	SharedLogger, debug, error, info, owo_colors::OwoColorize, setup_shared_logger, warn,
+};

@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use strum::{Display, EnumString, IntoStaticStr};
 
 /// 适配器平台
 ///
@@ -9,27 +10,26 @@ use serde::{Deserialize, Serialize};
 /// - Discord: Discord 平台
 /// - Kook: 开黑吧 平台
 /// - Other: 其他平台
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Display, EnumString, IntoStaticStr)]
 #[serde(rename_all = "camelCase")]
 pub enum AdapterPlatform {
+	#[strum(serialize = "qq")]
 	QQ,
+	#[strum(serialize = "wechat")]
 	Wechat,
+	#[strum(serialize = "telegram")]
 	Telegram,
+	#[strum(serialize = "discord")]
 	Discord,
+	#[strum(serialize = "kook")]
 	Kook,
+	#[strum(serialize = "other")]
 	Other,
 }
 
-impl AdapterPlatform {
-	pub fn to_platform_str(&self) -> &'static str {
-		match self {
-			AdapterPlatform::QQ => "qq",
-			AdapterPlatform::Wechat => "wechat",
-			AdapterPlatform::Telegram => "telegram",
-			AdapterPlatform::Discord => "discord",
-			AdapterPlatform::Kook => "kook",
-			AdapterPlatform::Other => "other",
-		}
+impl Default for AdapterPlatform {
+	fn default() -> Self {
+		Self::Other
 	}
 }
 
@@ -40,24 +40,24 @@ impl AdapterPlatform {
 /// - OICQ: OICQ 标准
 /// - ICQQ: OICQ fork 标准
 /// - Other: 其他标准
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Display, EnumString, IntoStaticStr)]
 #[serde(rename_all = "camelCase")]
 pub enum AdapterStandard {
+	#[strum(serialize = "Onebot v11")]
 	OneBotV11,
+	#[strum(serialize = "Onebot v12")]
 	OneBotV12,
+	#[strum(serialize = "OICQ")]
 	Oicq,
+	#[strum(serialize = "ICQQ")]
 	Icqq,
+	#[strum(serialize = "Other")]
 	Other,
 }
-impl AdapterStandard {
-	pub fn to_standard_str(&self) -> &'static str {
-		match self {
-			AdapterStandard::OneBotV11 => "Onebot v11",
-			AdapterStandard::OneBotV12 => "Onebot v12",
-			AdapterStandard::Oicq => "OICQ",
-			AdapterStandard::Icqq => "ICQQ",
-			AdapterStandard::Other => "Other",
-		}
+
+impl Default for AdapterStandard {
+	fn default() -> Self {
+		Self::Other
 	}
 }
 
@@ -73,33 +73,32 @@ impl AdapterStandard {
 /// - Lagrange: [Lagrange 协议实现](ttps://lagrangedev.github.io/Lagrange.Doc/Lagrange.OneBot/)
 /// - Console: 控制台协议实现
 /// - Other: 其他协议实现
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Display, EnumString, IntoStaticStr)]
 #[serde(rename_all = "camelCase")]
 pub enum AdapterProtocol {
+	#[strum(serialize = "QQBOT")]
 	QQBOT,
+	#[strum(serialize = "ICQQ")]
 	ICQQ,
+	#[strum(serialize = "GoCqHttp")]
 	GoCqHttp,
+	#[strum(serialize = "NapCat")]
 	NapCat,
+	#[strum(serialize = "LLOneBot")]
 	LLOneBot,
+	#[strum(serialize = "Conwechat")]
 	Conwechat,
+	#[strum(serialize = "Lagrange")]
 	Lagrange,
+	#[strum(serialize = "Console")]
 	Console,
+	#[strum(serialize = "Other")]
 	Other,
 }
 
-impl AdapterProtocol {
-	pub fn to_protocol_str(&self) -> &'static str {
-		match self {
-			AdapterProtocol::QQBOT => "qqbot",
-			AdapterProtocol::ICQQ => "icqq",
-			AdapterProtocol::GoCqHttp => "gocq-http",
-			AdapterProtocol::NapCat => "napcat",
-			AdapterProtocol::LLOneBot => "llonebot",
-			AdapterProtocol::Conwechat => "conwechat",
-			AdapterProtocol::Lagrange => "lagrange",
-			AdapterProtocol::Console => "console",
-			AdapterProtocol::Other => "other",
-		}
+impl Default for AdapterProtocol {
+	fn default() -> Self {
+		Self::Other
 	}
 }
 
@@ -112,25 +111,24 @@ impl AdapterProtocol {
 /// - WebSocketClient: WebSocket 客户端通信方式
 /// - Grpc: Grpc 通信方式
 /// - Other: 其他通信方式
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Display, EnumString, IntoStaticStr)]
 #[serde(rename_all = "camelCase")]
 pub enum AdapterCommunication {
+	#[strum(serialize = "Http")]
 	Http,
+	#[strum(serialize = "WebSocketServer")]
 	WebSocketServer,
+	#[strum(serialize = "WebSocketClient")]
 	WebSocketClient,
+	#[strum(serialize = "Grpc")]
 	Grpc,
+	#[strum(serialize = "Other")]
 	Other,
 }
 
-impl AdapterCommunication {
-	pub fn to_communication_str(&self) -> &'static str {
-		match self {
-			AdapterCommunication::Http => "http",
-			AdapterCommunication::WebSocketServer => "websocket-server",
-			AdapterCommunication::WebSocketClient => "websocket-client",
-			AdapterCommunication::Grpc => "grpc",
-			AdapterCommunication::Other => "other",
-		}
+impl Default for AdapterCommunication {
+	fn default() -> Self {
+		Self::Other
 	}
 }
 
@@ -139,17 +137,17 @@ impl AdapterCommunication {
 /// 适配器信息
 pub struct AdapterInfo {
 	/// 适配器名称 如lagrange-onebot
-	pub name: &'static str,
+	pub name: String,
 	/// 适配器版本
-	pub version: &'static str,
+	pub version: String,
 	/// 适配器平台
-	pub platform: &'static str,
+	pub platform: AdapterPlatform,
 	/// 适配器使用的协议标准 如onebot11
-	pub standard: &'static str,
+	pub standard: AdapterStandard,
 	/// 适配器协议实现 如gocq、napcat
-	pub protocol: &'static str,
+	pub protocol: AdapterProtocol,
 	/// 适配器通信方式
-	pub communication: &'static str,
+	pub communication: AdapterCommunication,
 	/// 适配器通信地址
 	///
 	/// # 示例
@@ -158,7 +156,56 @@ pub struct AdapterInfo {
 	/// `grpc://127.0.0.1:7001`
 	pub address: Option<String>,
 	/// 连接时间
-	pub connect_time: u32,
-	/// 鉴权秘钥
-	pub secret: Option<String>,
+	pub connect_time: u64,
+}
+#[macro_export]
+macro_rules! adapter_info {
+	(name: $name:expr, version: $version:expr, platform: $platform:expr, standard: $standard:expr, protocol: $protocol:expr, communication: $communication:expr, address: $address:expr, connect_time: $connect_time:expr) => {
+		AdapterInfo {
+			name: $name.to_string(),
+			version: $version.to_string(),
+			platform: $platform,
+			standard: $standard,
+			protocol: $protocol,
+			communication: $communication,
+			address: Some($address.to_string()),
+			connect_time: $connect_time,
+		}
+	};
+	(name: $name:expr, platform: $platform:expr, standard: $standard:expr, protocol: $protocol:expr, communication: $communication:expr, address: $address:expr, connect_time: $connect_time:expr) => {
+		AdapterInfo {
+			name: $name.to_string(),
+			version: env!("CARGO_PKG_VERSION").to_string(),
+			platform: $platform,
+			standard: $standard,
+			protocol: $protocol,
+			communication: $communication,
+			address: Some($address.to_string()),
+			connect_time: $connect_time,
+		}
+	};
+	(name: $name:expr, version: $version:expr, platform: $platform:expr, standard: $standard:expr, protocol: $protocol:expr, communication: $communication:expr, connect_time: $connect_time:expr) => {
+		AdapterInfo {
+			name: $name.to_string(),
+			version: $version.to_string(),
+			platform: $platform,
+			standard: $standard,
+			protocol: $protocol,
+			communication: $communication,
+			address: None,
+			connect_time: $connect_time,
+		}
+	};
+	(name: $name:expr, platform: $platform:expr, standard: $standard:expr, protocol: $protocol:expr, communication: $communication:expr, connect_time: $connect_time:expr) => {
+		AdapterInfo {
+			name: $name.to_string(),
+			version: env!("CARGO_PKG_VERSION").to_string(),
+			platform: $platform,
+			standard: $standard,
+			protocol: $protocol,
+			communication: $communication,
+			address: None,
+			connect_time: $connect_time,
+		}
+	};
 }

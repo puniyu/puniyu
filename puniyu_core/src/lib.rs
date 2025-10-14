@@ -1,16 +1,26 @@
 pub mod bot;
 pub mod common;
 pub mod config;
-mod error;
-pub mod event;
+pub mod error;
 pub mod logger;
-pub mod message;
 mod system;
 pub use system::*;
-pub mod app;
-mod plugin;
+mod app;
+pub use app::{APP_NAME, App};
+pub mod plugin;
 mod version;
 pub use plugin::get_plugin_info;
 
-pub use log;
+pub mod adapter;
+
 pub use version::VERSION;
+
+pub use async_trait::async_trait;
+pub use puniyu_registry::{
+	VERSION as ABI_VERSION,
+	plugin::{
+		builder::PluginBuilder, command::builder::CommandBuilder, task::builder::TaskBuilder,
+	},
+};
+
+pub use inventory;

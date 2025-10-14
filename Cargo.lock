@@ -37,7 +37,7 @@ dependencies = [
  "derive_more",
  "encoding_rs",
  "flate2",
-    "foldhash",
+ "foldhash",
  "futures-core",
  "h2",
  "http",
@@ -151,7 +151,7 @@ dependencies = [
  "cookie",
  "derive_more",
  "encoding_rs",
-    "foldhash",
+ "foldhash",
  "futures-core",
  "futures-util",
  "impl-more",
@@ -1495,8 +1495,27 @@ name = "puniyu"
 version = "0.1.0"
 dependencies = [
  "log",
+ "puniyu_adapter_console",
  "puniyu_core",
+ "puniyu_plugin_test",
  "tokio",
+]
+
+[[package]]
+name = "puniyu_adapter_console"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "puniyu_core",
+]
+
+[[package]]
+name = "puniyu_adapter_derive"
+version = "0.1.0"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.106",
 ]
 
 [[package]]
@@ -1507,20 +1526,20 @@ version = "0.1.0"
 name = "puniyu_core"
 version = "0.1.0"
 dependencies = [
+ "async-trait",
  "convert_case",
  "figlet-rs",
- "futures",
- "log",
+ "inventory",
  "notify",
+ "puniyu_adapter_derive",
  "puniyu_build",
- "puniyu_logger",
+ "puniyu_logger 0.6.1",
+ "puniyu_plugin_derive",
  "puniyu_registry",
  "puniyu_server",
- "puniyu_system_info",
  "puniyu_utils",
  "serde",
  "serde_json",
- "strum",
  "thiserror 2.0.16",
  "tokio",
 ]
@@ -1544,11 +1563,29 @@ dependencies = [
 ]
 
 [[package]]
+name = "puniyu_logger"
+version = "0.6.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "416cf907fac9f197570e3b246d09f7661a6526594bfd5da58dd859a665ecc3d0"
+dependencies = [
+ "chrono",
+ "chrono-tz",
+ "convert_case",
+ "owo-colors",
+ "strip-ansi-escapes",
+ "tracing",
+ "tracing-appender",
+ "tracing-log",
+ "tracing-shared",
+ "tracing-subscriber",
+]
+
+[[package]]
 name = "puniyu_plugin_derive"
 version = "0.1.0"
 dependencies = [
  "convert_case",
-    "croner",
+ "croner",
  "proc-macro2",
  "quote",
  "syn 2.0.106",
@@ -1558,10 +1595,8 @@ dependencies = [
 name = "puniyu_plugin_test"
 version = "0.1.0"
 dependencies = [
- "log",
  "puniyu_build",
  "puniyu_core",
- "puniyu_registry",
 ]
 
 [[package]]
@@ -1571,10 +1606,8 @@ dependencies = [
  "async-trait",
  "chrono-tz",
  "futures",
- "inventory",
  "libloading",
- "puniyu_logger",
- "puniyu_plugin_derive",
+ "puniyu_logger 0.6.1",
  "puniyu_utils",
  "thiserror 2.0.16",
  "tokio",
@@ -1589,17 +1622,16 @@ source = "git+https://github.com/Puniyu/server#ce26ce96c5c4f3294711434d96b9a23dd
 dependencies = [
  "actix-web",
  "futures-util",
- "puniyu_logger",
+ "puniyu_logger 0.5.6",
  "tokio",
 ]
 
 [[package]]
 name = "puniyu_system_info"
-version = "0.5.5"
+version = "0.5.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "35235482da2c6e41a1049021a1f665cfe1b4406e9a00779cad206dff3f131a3c"
+checksum = "14685ce2932b00bd09b445ecf29d7a386ff633557c53d8f00771a646d75bb730"
 dependencies = [
- "chrono",
  "rust_decimal",
  "sysinfo",
 ]
@@ -1608,9 +1640,12 @@ dependencies = [
 name = "puniyu_utils"
 version = "0.1.0"
 dependencies = [
+ "async-trait",
+ "puniyu_logger 0.6.1",
  "puniyu_system_info",
  "serde",
  "serde_json",
+ "strum",
  "thiserror 2.0.16",
  "tokio",
  "toml",
@@ -2203,8 +2238,8 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bb73c4033ddcbbf81fd828293fd41a0145cde2cbc30dd782227c5081a523214d"
 dependencies = [
  "chrono",
-    "chrono-tz",
-    "croner",
+ "chrono-tz",
+ "croner",
  "num-derive",
  "num-traits",
  "tokio",

@@ -10,17 +10,18 @@ edition.workspace = true
 rust-version.workspace = true
 
 [dependencies]
-inventory = "0.3.21"
 libloading = "0.8.8"
 thiserror = { workspace = true }
 futures = { workspace = true }
 async-trait = { workspace = true }
+tokio = { workspace = true }
 
-puniyu_plugin_derive = { path = "../puniyu_derives/puniyu_plugin_derive" }
+
 puniyu_utils = { path = "../puniyu_utils" }
 puniyu_logger = { workspace = true }
+
 tokio-cron-scheduler = "0.15.0"
 chrono-tz = "0.10.4"
 uuid = { version = "1.17.0", features = ["v4"] }
-tokio = "1.47.1"
+
 

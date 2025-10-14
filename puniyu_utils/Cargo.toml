@@ -10,11 +10,16 @@ edition.workspace = true
 rust-version.workspace = true
 
 [dependencies]
-tokio = { workspace = true }
 toml = { version = "0.9.5" }
+
 serde = { workspace = true }
 serde_json = { workspace = true }
-thiserror = "2.0.16"
+thiserror = { workspace = true }
+async-trait = { workspace = true }
+strum = { workspace = true }
+tokio = { workspace = true }
 
-puniyu_system_info = { workspace = true }
+puniyu_logger = { workspace = true }
+
+puniyu_system_info = { version = "0.5.7" }
 

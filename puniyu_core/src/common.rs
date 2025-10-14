@@ -1,4 +1,4 @@
-use crate::system::get_process_info;
+use crate::system::get_bot_info;
 use std::{thread, time::Duration};
 
 /// 等待一段时间
@@ -16,6 +16,28 @@ pub fn sleep(ms: u64) {
 ///
 /// * `String` - 系统运行时间
 pub fn uptime() -> String {
-	let process_info = get_process_info();
-	process_info.run_time
+	let time = get_bot_info().run_time;
+	format_duration(Duration::from_millis(time))
+}
+
+pub(crate) fn format_duration(duration: Duration) -> String {
+	let minutes = duration.as_secs() / 60;
+	let seconds = duration.as_secs() % 60;
+	let milliseconds = duration.subsec_millis();
+
+	let mut parts = Vec::new();
+
+	if minutes > 0 {
+		parts.push(format!("{}分", minutes));
+	}
+
+	if seconds > 0 {
+		parts.push(format!("{}秒", seconds));
+	}
+
+	if milliseconds > 0 {
+		parts.push(format!("{}毫秒", milliseconds));
+	}
+
+	if parts.is_empty() { "0秒".to_string() } else { parts.join("") }
 }

@@ -1,10 +1,11 @@
+use crate::APP_NAME;
 use std::{env::current_dir, path::PathBuf, sync::LazyLock};
 
 static BASE_DIR: LazyLock<PathBuf> = LazyLock::new(|| current_dir().unwrap());
 
-static PUNIYU_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
+static APP_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
 	let mut path = BASE_DIR.to_path_buf();
-	path.push("@puniyu");
+	path.push(format!("@{}", APP_NAME.get().unwrap()));
 	path
 });
 
@@ -12,12 +13,12 @@ static PUNIYU_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
 ///
 /// # 示例
 ///
-/// ```
+/// ```rust
 /// use puniyu_utils::path::CONFIG_DIR;
 /// let config_dir = CONFIG_DIR.as_path();
 /// ```
 pub static CONFIG_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
-	let mut path = PUNIYU_DIR.to_path_buf();
+	let mut path = APP_DIR.to_path_buf();
 	path.push("config");
 	path
 });
@@ -31,7 +32,7 @@ pub static CONFIG_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
 /// let temp_dir = TEMP_DIR.as_path();
 /// ```
 pub static TEMP_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
-	let mut path = PUNIYU_DIR.to_path_buf();
+	let mut path = APP_DIR.to_path_buf();
 	path.push("temp");
 	path
 });
@@ -47,5 +48,19 @@ pub static TEMP_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
 pub static PLUGIN_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
 	let mut path = BASE_DIR.to_path_buf();
 	path.push("plugins");
+	path
+});
+
+/// 适配器文件夹路径
+///
+/// # 示例
+///
+/// ```
+/// use puniyu_utils::path::ADAPTER_DIR;
+/// let adapter_dir = ADAPTER_DIR.as_path();
+/// ```
+pub static ADAPTER_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
+	let mut path = BASE_DIR.to_path_buf();
+	path.push("adapters");
 	path
 });

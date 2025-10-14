@@ -21,5 +21,5 @@ pub trait PluginBuilder: Send + Sync + 'static {
 	/// 命令列表
 	fn commands(&self) -> Vec<Box<dyn CommandBuilder>>;
 	/// 插件初始化函数
-	async fn init(&self);
+	async fn init(&self) -> Result<(), Box<dyn std::error::Error>>;
 }

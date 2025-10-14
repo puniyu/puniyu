@@ -1,9 +1,6 @@
 mod registry;
 
-use puniyu_registry::{
-	adapter::{AccountInfo, AdapterInfo},
-	bot::{Bot, BotId, registry::BotRegistry},
-};
+use puniyu_registry::bot::{Bot, BotId, registry::BotRegistry};
 
 /// 获取Bot实例
 ///
@@ -14,26 +11,12 @@ use puniyu_registry::{
 /// # 返回值
 ///
 /// * `Option<Bot>` - 如果找到Bot，则返回Bot实例，否则返回None
-pub fn get_bot<T: Into<BotId>>(id: T) -> Option<Bot> {
+pub fn get_bot(id: impl Into<BotId>) -> Option<Bot> {
 	let bot_id: BotId = id.into();
 	match bot_id {
-		BotId::Index(index) => BotRegistry::get(index),
+		BotId::Index(index) => BotRegistry::get_with_index(index),
 		BotId::SelfId(id) => BotRegistry::get_with_self_id(id.as_str()),
 	}
-}
-
-/// 注册Bot实例
-///
-/// # 参数
-///
-/// * `adapter` - 适配器信息
-/// * `account` - 账号信息
-///
-/// # 返回值
-///
-/// * `u64` - 注册成功后返回的Bot索引
-pub fn register_bot(adapter: AdapterInfo, account: AccountInfo) -> u64 {
-	BotRegistry::register(adapter, account)
 }
 
 /// 注销Bot实例

@@ -1,10 +1,11 @@
-use puniyu_core::VERSION;
-use puniyu_registry::plugin;
+use puniyu_core::plugin::prelude::*;
+use puniyu_core::{VERSION, logger};
 
 #[plugin]
-pub async fn min() {
+async fn min() -> Result<(), Box<dyn std::error::Error>> {
 	let version = VERSION;
-	log::info!("version: {}", version);
+	logger::info!("version: {}", version);
+	Ok(())
 }
 
 mod task;

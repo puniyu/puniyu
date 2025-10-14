@@ -1,5 +1,5 @@
 use puniyu_utils::path::CONFIG_DIR;
-use puniyu_utils::utils::toml;
+use puniyu_utils::toml;
 use serde::{Deserialize, Serialize};
 use std::sync::{Arc, LazyLock, RwLock};
 

@@ -112,12 +112,13 @@ pub fn plugin(_: TokenStream, item: TokenStream) -> TokenStream {
 					#plugin_name,
 					#plugin_version,
 				);
+				Ok(())
 			}
 		}
 	} else {
 		quote! {
 			async {
-				#fn_name().await;
+				#fn_name().await
 			}
 		}
 	};
@@ -128,8 +129,10 @@ pub fn plugin(_: TokenStream, item: TokenStream) -> TokenStream {
 
 		#fn_vis #fn_sig #fn_block
 
-		#[::puniyu_registry::async_trait]
-		impl ::puniyu_registry::plugin::builder::PluginBuilder for #struct_name {
+		use puniyu_core::{APP_NAME, async_trait};
+
+		#[async_trait]
+		impl ::puniyu_core::PluginBuilder for #struct_name {
 			fn name(&self) -> &'static str {
 				#plugin_name
 			}
@@ -143,39 +146,39 @@ pub fn plugin(_: TokenStream, item: TokenStream) -> TokenStream {
 			}
 
 			fn abi_version(&self) -> &'static str {
-				::puniyu_registry::VERSION
+				::puniyu_core::ABI_VERSION
 			}
 
-			fn tasks(&self) -> Vec<Box<dyn ::puniyu_registry::plugin::task::builder::TaskBuilder>> {
+			fn tasks(&self) -> Vec<Box<dyn ::puniyu_core::TaskBuilder>> {
 				let plugin_name = self.name();
-				::puniyu_registry::inventory::iter::<TaskRegistry>
+				::puniyu_core::inventory::iter::<TaskRegistry>
 					.into_iter()
 					.filter(|task| task.plugin_name == plugin_name)
 					.map(|task| (task.builder)())
 					.collect()
 			}
 
-			fn commands(&self) -> Vec<Box<dyn ::puniyu_registry::plugin::command::builder::CommandBuilder>> {
+			fn commands(&self) -> Vec<Box<dyn ::puniyu_core::CommandBuilder>> {
 				let plugin_name = self.name();
-				::puniyu_registry::inventory::iter::<CommandRegistry>
+				::puniyu_core::inventory::iter::<CommandRegistry>
 					.into_iter()
 					.filter(|command| command.plugin_name == plugin_name)
 					.map(|command| (command.builder)())
 					.collect()
 			}
 
-			async fn init(&self) {
-			   #init_call.await;
+			async fn init(&self) -> Result<(), Box<dyn std::error::Error>>{
+			   #init_call.await
 			}
 		}
 			#[macro_export]
 			macro_rules! info {
 				($($arg:tt)*) => {
 					{
-						use ::puniyu_registry::logger::owo_colors::OwoColorize;
+						use ::puniyu_core::logger::OwoColorize;
 						let prefix = "plugin".fg_rgb::<176,196,222>();
 						let func_name = #plugin_name.fg_rgb::<255,192,203>();
-						::puniyu_registry::logger::info!("[{}:{}] {}", prefix,func_name, format!($($arg)*))
+						::puniyu_core::logger::info!("[{}:{}] {}", prefix,func_name, format!($($arg)*))
 					}
 				};
 			}
@@ -184,10 +187,10 @@ pub fn plugin(_: TokenStream, item: TokenStream) -> TokenStream {
 			macro_rules! warn {
 				($($arg:tt)*) => {
 					{
-						use ::puniyu_registry::logger::owo_colors::OwoColorize;
+						use ::puniyu_core::logger::OwoColorize;
 						let prefix = "plugin".fg_rgb::<176,196,222>();
 						let func_name = #plugin_name.fg_rgb::<255,192,203>();
-						::puniyu_registry::logger::warn!("[{}:{}] {}", prefix,func_name, format!($($arg)*))
+						::puniyu_core::logger::warn!("[{}:{}] {}", prefix,func_name, format!($($arg)*))
 					}
 				};
 			}
@@ -196,10 +199,10 @@ pub fn plugin(_: TokenStream, item: TokenStream) -> TokenStream {
 			macro_rules! error {
 				($($arg:tt)*) => {
 				{
-						use ::puniyu_registry::logger::owo_colors::OwoColorize;
+						use ::puniyu_core::logger::OwoColorize;
 						let prefix = "plugin".fg_rgb::<176,196,222>();
 						let func_name = #plugin_name.fg_rgb::<255,192,203>();
-						::puniyu_registry::logger::error!("[{}:{}] {}", prefix,func_name, format_args!($($arg)*))
+						::puniyu_core::logger::error!("[{}:{}] {}", prefix,func_name, format_args!($($arg)*))
 					}
 				};
 			}
@@ -208,10 +211,10 @@ pub fn plugin(_: TokenStream, item: TokenStream) -> TokenStream {
 			macro_rules! debug {
 				($($arg:tt)*) => {
 					{
-						use ::puniyu_registry::logger::owo_colors::OwoColorize;
+						use ::puniyu_core::logger::OwoColorize;
 						let prefix = "plugin".fg_rgb::<176,196,222>();
 						let func_name = #plugin_name.fg_rgb::<255,192,203>();
-						::puniyu_registry::logger::debug!("[{}:{}] {}", prefix,func_name, format_args!($($arg)*))
+						::puniyu_core::logger::debug!("[{}:{}] {}", prefix,func_name, format_args!($($arg)*))
 					}
 				};
 			}
@@ -219,40 +222,40 @@ pub fn plugin(_: TokenStream, item: TokenStream) -> TokenStream {
 		/// 插件注册表
 		pub struct PluginRegistry {
 			/// 插件构造器
-			builder: fn() -> Box<dyn ::puniyu_registry::plugin::builder::PluginBuilder>,
+			builder: fn() -> Box<dyn ::puniyu_core::PluginBuilder>,
 		}
-		::puniyu_registry::inventory::collect!(PluginRegistry);
+		::puniyu_core::inventory::collect!(PluginRegistry);
 
 		/// 定时计划注册表
 		pub struct TaskRegistry {
 			/// 插件名称
 			plugin_name: &'static str,
 			/// 任务构造器
-			builder: fn() -> Box<dyn ::puniyu_registry::plugin::task::builder::TaskBuilder>,
+			builder: fn() -> Box<dyn ::puniyu_core::TaskBuilder>,
 		}
-		::puniyu_registry::inventory::collect!(TaskRegistry);
+		::puniyu_core::inventory::collect!(TaskRegistry);
 
 		pub struct CommandRegistry {
 			plugin_name: &'static str,
 			/// 命令构造器
-			builder: fn() -> Box<dyn ::puniyu_registry::plugin::command::builder::CommandBuilder>,
+			builder: fn() -> Box<dyn ::puniyu_core::CommandBuilder>,
 		}
-		::puniyu_registry::inventory::collect!(CommandRegistry);
+		::puniyu_core::inventory::collect!(CommandRegistry);
 
-		::puniyu_registry::inventory::submit! {
+		::puniyu_core::inventory::submit! {
 			PluginRegistry {
-				builder: || -> Box<dyn ::puniyu_registry::plugin::builder::PluginBuilder> { Box::new(#struct_name {}) },
+				builder: || -> Box<dyn ::puniyu_core::PluginBuilder> { Box::new(#struct_name {}) },
 			}
 		}
 
 		#[unsafe(no_mangle)]
-		pub unsafe extern "C" fn plugin_info() -> *mut dyn puniyu_registry::plugin::builder::PluginBuilder {
+		pub unsafe extern "C" fn plugin_info() -> *mut dyn ::puniyu_core::PluginBuilder {
 			Box::into_raw(Box::new(#struct_name {}))
 		}
 
 		#[unsafe(no_mangle)]
-		pub unsafe extern "C" fn setup_logger(logger: &::puniyu_registry::logger::SharedLogger) {
-			::puniyu_registry::logger::setup_shared_logger(logger);
+		pub unsafe extern "C" fn setup_logger(logger: &::puniyu_core::logger::SharedLogger) {
+			::puniyu_core::logger::setup_shared_logger(logger);
 		}
 
 	};
@@ -343,8 +346,8 @@ pub fn task(args: TokenStream, item: TokenStream) -> TokenStream {
 
 	#fn_vis #fn_sig #fn_block
 
-		#[::puniyu_registry::async_trait]
-		impl ::puniyu_registry::plugin::task::builder::TaskBuilder for #struct_name {
+		#[::puniyu_core::async_trait]
+		impl ::puniyu_core::TaskBuilder for #struct_name {
 			fn name(&self) -> &'static str {
 			stringify!(#fn_name)
 		}
@@ -358,10 +361,10 @@ pub fn task(args: TokenStream, item: TokenStream) -> TokenStream {
 		}
 	}
 
-	::puniyu_registry::inventory::submit! {
+	::puniyu_core::inventory::submit! {
 		crate::TaskRegistry  {
 			plugin_name: #crate_name,
-			builder: || -> Box<dyn ::puniyu_registry::plugin::task::builder::TaskBuilder> { Box::new(#struct_name {}) },
+			builder: || -> Box<dyn ::puniyu_core::TaskBuilder> { Box::new(#struct_name {}) },
 		}
 	}
 

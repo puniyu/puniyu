@@ -1,24 +1,23 @@
 use thiserror::Error;
 
 #[derive(Error, Debug)]
-pub enum Load {
+pub enum Plugin {
 	#[error("插件: {0}不存在")]
 	NotFound(String),
 	#[error("插件: {0}已存在")]
 	Exists(String),
-	#[error("插件: {0}初始化失败")]
-	InitializationFailed(String),
-	#[error("插件: {0}ABI版本不匹配, 插件版本: {1}, 运行时版本: {2}")]
-	ABIVersion(String, String, String),
+	#[error("插件: 初始化失败: {0}")]
+	Init(String),
 }
 
 #[derive(Error, Debug)]
-#[deprecated(note = "即将弃用，实现自动注册", since = "0.1.0")]
 pub enum Adapter {
 	#[error("适配器: {0}不存在")]
 	NotFound(String),
 	#[error("适配器: {0}已存在")]
 	Exists(String),
+	#[error("适配器: 初始化失败: {0}")]
+	Init(String),
 }
 
 #[derive(Error, Debug)]
