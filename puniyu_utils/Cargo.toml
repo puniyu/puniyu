@@ -20,5 +20,5 @@ strum = { workspace = true }
 tokio = { workspace = true }
 puniyu_logger = { workspace = true }
 
-puniyu_system_info = { version = "0.5.7" }
+puniyu_system_info = { version = "0.5.8" }
 
