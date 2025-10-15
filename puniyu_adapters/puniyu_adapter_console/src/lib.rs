@@ -29,14 +29,29 @@ impl AdapterBuilder for Adapter {
 	async fn init(&self) -> Result<(), Box<dyn std::error::Error>> {
 		let bot_id = "console";
 		let name = APP_NAME.get().unwrap();
-		println!("{} v{}", name, env!("CARGO_PKG_VERSION"));
 		let account_info = account_info!(
 			uin: bot_id,
 			name: format!("{}/{}", name, bot_id),
 			avatar: "".to_string()
 		);
 		register_bot!(self.info(), account_info);
-		create_friend_message!("event_id", "self_id", "user_id", "message_id", vec![]);
+		tokio::spawn(async move {
+			loop {
+				let message = tokio::task::spawn_blocking(|| {
+					let mut input = String::new();
+					std::io::stdin().read_line(&mut input).unwrap();
+					input.trim().to_string()
+				})
+				.await
+				.unwrap();
+
+				if message == "quit" {
+					std::process::exit(0);
+				}
+
+				create_friend_message!("console_event", bot_id, "user", "msg_1", vec![]);
+			}
+		});
 		Ok(())
 	}
 }

@@ -15,3 +15,4 @@ crate-type = ["cdylib", "rlib"]
 [dependencies]
 puniyu_core = { path = "../../puniyu_core" }
 async-trait = "0.1"
+tokio = "1.47.1"

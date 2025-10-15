@@ -248,16 +248,19 @@ pub fn plugin(_: TokenStream, item: TokenStream) -> TokenStream {
 			}
 		}
 
+		#[cfg(target_arch = "cdylib")]
 		#[unsafe(no_mangle)]
 		pub unsafe extern "C" fn plugin_info() -> *mut dyn ::puniyu_core::PluginBuilder {
 			Box::into_raw(Box::new(#struct_name {}))
 		}
 
+		#[cfg(target_arch = "cdylib")]
 		#[unsafe(no_mangle)]
 		pub unsafe extern "C" fn setup_logger(logger: &::puniyu_core::logger::SharedLogger) {
 			::puniyu_core::logger::setup_shared_logger(logger);
 		}
 
+		#[cfg(target_arch = "cdylib")]
 		#[unsafe(no_mangle)]
 		pub extern "C" fn setup_app_name(name: String) {
 			 APP_NAME.get_or_init(|| name);

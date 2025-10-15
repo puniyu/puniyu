@@ -22,16 +22,19 @@ pub fn adapter(_: TokenStream, item: TokenStream) -> TokenStream {
 		use std::sync::{OnceLock, Mutex, Arc};
 		use puniyu_core::APP_NAME;
 
+		#[cfg(target_arch = "cdylib")]
 		#[unsafe(no_mangle)]
 		pub extern "C" fn get_adapter_info() -> *mut dyn ::puniyu_core::adapter::AdapterBuilder {
 			Box::into_raw(Box::new(#struct_name {}))
 		}
 
+		#[cfg(target_arch = "cdylib")]
 		#[unsafe(no_mangle)]
 		pub extern "C" fn setup_app_name(name: String) {
 			 APP_NAME.get_or_init(|| name);
 		}
 
+		#[cfg(target_arch = "cdylib")]
 		#[unsafe(no_mangle)]
 		pub extern "C" fn setup_event_bus(bus: Arc<Mutex<::puniyu_core::adapter::EventBus>>) {
 			 EVENT_BUS.get_or_init(|| bus);
