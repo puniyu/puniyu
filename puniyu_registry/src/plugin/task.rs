@@ -5,7 +5,7 @@ pub mod builder;
 pub mod manger;
 pub mod registry;
 
-static SCHEDULER: OnceCell<Arc<JobScheduler>> = OnceCell::const_new();
+pub(crate) static SCHEDULER: OnceCell<Arc<JobScheduler>> = OnceCell::const_new();
 
 pub enum TaskId {
 	Index(u64),
@@ -35,18 +35,11 @@ pub struct Task {
 	pub cron: &'static str,
 }
 
-pub(crate) async fn get_scheduler() -> Arc<JobScheduler> {
+pub async fn init_scheduler() {
 	SCHEDULER
 		.get_or_init(|| async {
 			let sched = JobScheduler::new().await.unwrap();
 			Arc::new(sched)
 		})
-		.await
-		.clone()
-}
-
-#[inline]
-pub async fn init_task() {
-	let scheduler = get_scheduler().await;
-	scheduler.start().await.unwrap();
+		.await;
 }

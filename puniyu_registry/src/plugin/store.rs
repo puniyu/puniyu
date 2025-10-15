@@ -14,6 +14,12 @@ static PLUGIN_INDEX: AtomicU64 = AtomicU64::new(0);
 pub(crate) struct PluginStore(Arc<Mutex<HashMap<u64, Plugin>>>);
 impl PluginStore {
 	pub fn insert_plugin(&self, plugin: Plugin) {
+		{
+			let plugins = self.0.lock().unwrap();
+			if plugins.values().any(|p| p.name == plugin.name) {
+				return;
+			}
+		}
 		let index = PLUGIN_INDEX.fetch_add(1, Ordering::Relaxed);
 		let mut plugins = self.0.lock().unwrap();
 		plugins.insert(index, plugin);

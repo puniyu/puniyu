@@ -44,10 +44,9 @@ impl PluginRegistry {
 					let mut library = client.lock().unwrap();
 					library.load_plugin(&path).unwrap();
 					let name = path
-						.file_stem()
-						.ok_or_else(|| Error::NotFound(path.to_string_lossy().to_string()))?
-						.to_string_lossy()
-						.to_string();
+						.file_name()
+						.map(|n| n.to_string_lossy().to_string())
+						.ok_or_else(|| Error::NotFound(path.to_string_lossy().to_string()))?;
 					library.get_plugin(&name).unwrap().library.clone()
 				};
 				unsafe {
@@ -56,8 +55,8 @@ impl PluginRegistry {
 					let plugin_builder = &*symbol();
 					let set_logger: fn(&SharedLogger) = *lib.get(b"setup_logger").unwrap();
 					set_logger(&SharedLogger::new());
-					let setup_app_name: fn(name: &str) = *lib.get(b"setup_app_name").unwrap();
-					setup_app_name(APP_NAME.get().unwrap());
+					let setup_app_name: fn(name: String) = *lib.get(b"setup_app_name").unwrap();
+					setup_app_name(APP_NAME.get().unwrap().to_string());
 					let plugins = PLUGIN_STORE.get_all_plugins();
 					let plugin_name = plugin_builder.name();
 					debug!(
@@ -160,6 +159,10 @@ impl PluginRegistry {
 				PLUGIN_STORE.get_plugin_with_name(name.as_str()).map(|p| p.into())
 			}
 		}
+	}
+
+	pub fn get_all_plugins() -> Vec<PluginInfo> {
+		PLUGIN_STORE.get_all_plugins().into_values().map(PluginInfo::from).collect()
 	}
 }
 

@@ -258,6 +258,11 @@ pub fn plugin(_: TokenStream, item: TokenStream) -> TokenStream {
 			::puniyu_core::logger::setup_shared_logger(logger);
 		}
 
+		#[unsafe(no_mangle)]
+		pub extern "C" fn setup_app_name(name: String) {
+			 APP_NAME.get_or_init(|| name);
+		}
+
 	};
 
 	TokenStream::from(expanded)

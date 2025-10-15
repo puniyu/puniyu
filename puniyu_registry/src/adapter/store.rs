@@ -12,7 +12,9 @@ impl AdapterStore {
 
 	pub fn insert_adapter(&self, name: &str, adapter: Adapter) {
 		let mut adapters = self.0.lock().unwrap();
-		adapters.insert(name.to_string(), adapter);
+		if !adapters.contains_key(name) {
+			adapters.insert(name.to_string(), adapter);
+		}
 	}
 
 	pub fn get_adapters(&self, name: &str) -> Option<Adapter> {

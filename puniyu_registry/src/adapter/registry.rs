@@ -39,9 +39,10 @@ impl AdapterRegistry {
 					let adapter_builder = &*symbol();
 					let setup_event_bus: fn(bus: Arc<Mutex<EventBus>>) =
 						*lib.get(b"setup_event_bus").unwrap();
-					setup_event_bus(EVENT_BUS.get().unwrap().clone());
-					let setup_app_name: fn(name: &str) = *lib.get(b"setup_app_name").unwrap();
-					setup_app_name(APP_NAME.get().unwrap());
+					let event_bus = EVENT_BUS.get().unwrap().clone();
+					setup_event_bus(event_bus);
+					let setup_app_name: fn(name: String) = *lib.get(b"setup_app_name").unwrap();
+					setup_app_name(APP_NAME.get().unwrap().to_string());
 					let adapters = ADAPTER_STORE.get_all_adapters();
 					let adapter_name = adapter_builder.info().name;
 					if adapters.contains_key(adapter_name.as_str()) {

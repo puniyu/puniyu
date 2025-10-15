@@ -12,7 +12,7 @@ use figlet_rs::FIGfont;
 use puniyu_registry::{
 	AdapterRegistry, PluginRegistry,
 	adapter::AdapterType,
-	plugin::{PluginType, builder::PluginBuilder, task::init_task},
+	plugin::{PluginType, builder::PluginBuilder, task::init_scheduler},
 };
 pub use puniyu_utils::APP_NAME;
 use puniyu_utils::event::init_event_bus;
@@ -98,8 +98,8 @@ async fn init_app() {
 	config_watcher();
 	let event_bus = init_event_bus();
 	event_bus.lock().unwrap().run();
+	init_scheduler().await;
 	init_plugin().await;
-	init_task().await;
 	init_adapter().await;
 }
 
@@ -126,11 +126,12 @@ async fn init_plugin() {
 		let guard = plugins.read().unwrap();
 		guard.clone()
 	};
-	let plugin_count = plugin_list.len();
 
 	PluginRegistry::load_plugins(plugin_list).await.unwrap_or_else(|e| {
 		error!("插件加载失败: {:?}", e);
 	});
+
+	let plugin_count = PluginRegistry::get_all_plugins().len();
 	debug!(
 		"{}: {} {}",
 		"共加载".fg_rgb::<135, 206, 250>(),

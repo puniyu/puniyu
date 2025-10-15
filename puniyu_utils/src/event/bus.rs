@@ -49,6 +49,12 @@ impl EventBus {
 			}
 		});
 	}
+
+	pub fn stop(&self) {
+		if let Some(receiver) = self.receiver.lock().unwrap().take() {
+			drop(receiver);
+		}
+	}
 }
 
 pub static EVENT_BUS: OnceLock<Arc<Mutex<EventBus>>> = OnceLock::new();

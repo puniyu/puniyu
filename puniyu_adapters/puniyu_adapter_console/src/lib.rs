@@ -28,9 +28,11 @@ impl AdapterBuilder for Adapter {
 
 	async fn init(&self) -> Result<(), Box<dyn std::error::Error>> {
 		let bot_id = "console";
+		let name = APP_NAME.get().unwrap();
+		println!("{} v{}", name, env!("CARGO_PKG_VERSION"));
 		let account_info = account_info!(
 			uin: bot_id,
-			name: format!("{}/{}", APP_NAME.get().unwrap(), bot_id),
+			name: format!("{}/{}", name, bot_id),
 			avatar: "".to_string()
 		);
 		register_bot!(self.info(), account_info);

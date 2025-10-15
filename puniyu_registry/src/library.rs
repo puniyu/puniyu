@@ -50,10 +50,10 @@ impl PluginLibrary {
 	}
 
 	pub fn load_plugin(&mut self, path: &Path) -> Result<&mut Self, Error> {
-		let name = match path.file_name() {
-			Some(name) => name.to_string_lossy().to_string(),
-			None => return Err(Error::NotFound(path.to_string_lossy().to_string())),
-		};
+		let name = path
+			.file_name()
+			.map(|n| n.to_string_lossy().to_string())
+			.ok_or_else(|| Error::NotFound(path.to_string_lossy().to_string()))?;
 		if self.store.0.contains_key(&name) {
 			return Ok(self);
 		}

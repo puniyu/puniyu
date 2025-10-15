@@ -1,4 +1,4 @@
-use crate::plugin::task::{TaskId, get_scheduler, registry::TaskRegistry};
+use crate::plugin::task::{SCHEDULER, TaskId, registry::TaskRegistry};
 use std::{
 	collections::HashMap,
 	sync::{
@@ -67,10 +67,9 @@ impl TaskManager {
 			builder: registry.builder.clone(),
 		});
 
-		let scheduler = get_scheduler().await;
+		let scheduler = SCHEDULER.get().unwrap();
 		let uuid = scheduler.add(job).await.unwrap();
 		TASK_MANAGER.write().unwrap().insert(id, uuid);
-
 		id
 	}
 
@@ -84,9 +83,8 @@ impl TaskManager {
 				let _ = TaskStore::remove_task_by_id(id);
 
 				if let Some(uuid) = uuid {
-					let scheduler = get_scheduler().await;
-					let _ = scheduler.remove(&uuid).await;
-					true
+					let scheduler = SCHEDULER.get().unwrap();
+					scheduler.remove(&uuid).await.is_ok()
 				} else {
 					false
 				}
@@ -101,7 +99,7 @@ impl TaskManager {
 				for id in task_ids {
 					let uuid = { TASK_MANAGER.write().unwrap().remove(&id) };
 					if let Some(uuid) = uuid {
-						let scheduler = get_scheduler().await;
+						let scheduler = SCHEDULER.get().unwrap();
 						let _ = scheduler.remove(&uuid).await;
 						removed += 1;
 					}

@@ -28,8 +28,8 @@ pub fn adapter(_: TokenStream, item: TokenStream) -> TokenStream {
 		}
 
 		#[unsafe(no_mangle)]
-		pub extern "C" fn setup_app_name(name: &str) {
-			 APP_NAME.get_or_init(|| name.to_string());
+		pub extern "C" fn setup_app_name(name: String) {
+			 APP_NAME.get_or_init(|| name);
 		}
 
 		#[unsafe(no_mangle)]
