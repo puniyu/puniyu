@@ -20,3 +20,6 @@ puniyu_core = { path = "../../puniyu_core" }
 puniyu_build = { path = "../../puniyu_build" }
 
 
+[features]
+default = ["cdylib"]
+cdylib = []

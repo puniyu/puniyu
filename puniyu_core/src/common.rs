@@ -17,7 +17,6 @@ pub fn sleep(ms: u64) {
 /// * `String` - 系统运行时间
 pub fn uptime() -> String {
 	let time = get_bot_info().run_time;
-	println!("uptime: {}", time);
 	format_duration(Duration::from_secs(time))
 }
 

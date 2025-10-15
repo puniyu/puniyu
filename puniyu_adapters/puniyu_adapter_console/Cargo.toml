@@ -16,3 +16,11 @@ crate-type = ["cdylib", "rlib"]
 puniyu_core = { path = "../../puniyu_core" }
 async-trait = "0.1"
 tokio = "1.47.1"
+
+[build-dependencies]
+puniyu_build = { path = "../../puniyu_build" }
+
+
+[features]
+default = []
+cdylib = []

@@ -67,3 +67,7 @@ pub fn send_event(event: Event) {
 	let event_bus = EVENT_BUS.get().unwrap();
 	event_bus.lock().unwrap().send_event(event).unwrap();
 }
+
+pub fn setup_event_bus(bus: Arc<Mutex<EventBus>>) {
+	EVENT_BUS.get_or_init(|| bus);
+}

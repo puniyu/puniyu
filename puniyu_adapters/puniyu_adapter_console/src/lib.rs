@@ -2,6 +2,7 @@ mod api;
 
 use puniyu_core::adapter::prelude::*;
 use std::env;
+use std::thread;
 
 #[adapter]
 pub struct Adapter;
@@ -35,16 +36,13 @@ impl AdapterBuilder for Adapter {
 			avatar: "".to_string()
 		);
 		register_bot!(self.info(), account_info);
-		tokio::spawn(async move {
+		thread::spawn(move || {
 			loop {
-				let message = tokio::task::spawn_blocking(|| {
+				let message = {
 					let mut input = String::new();
 					std::io::stdin().read_line(&mut input).unwrap();
 					input.trim().to_string()
-				})
-				.await
-				.unwrap();
-
+				};
 				if message == "quit" {
 					std::process::exit(0);
 				}

@@ -14,7 +14,7 @@ log = { workspace = true }
 tokio = { workspace = true }
 
 puniyu_core = { path = "../puniyu_core" }
-puniyu_plugin_test = { path = "../puniyu_plugins/puniyu_plugin_test" }
+puniyu_plugin_test = { path = "../puniyu_plugins/puniyu_plugin_test", default-features = false }
 puniyu_adapter_console = { path = "../puniyu_adapters/puniyu_adapter_console" }
 
 

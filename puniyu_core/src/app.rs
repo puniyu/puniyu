@@ -164,11 +164,11 @@ async fn init_adapter() {
 		guard.clone()
 	};
 
-	let adapter_count = adapter_list.len();
-
 	AdapterRegistry::load_adapters(adapter_list).await.unwrap_or_else(|e| {
 		error!("适配器加载失败: {:?}", e);
 	});
+
+	let adapter_count = AdapterRegistry::get_all_adapters().len();
 
 	debug!(
 		"{}: {} {}",

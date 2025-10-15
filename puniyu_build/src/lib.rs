@@ -28,12 +28,30 @@ pub fn setup_plugin() {
 	println!("cargo:rustc-env=PLUGIN_AUTHOR={}", plugin_author);
 }
 
+pub fn setup_adapter() {
+	println!("cargo:rerun-if-changed=build.rs");
+	println!("cargo:rerun-if-changed=Cargo.toml");
+	println!("cargo:rerun-if-changed=src/lib.rs");
+
+	let plugin_name =
+		env::var("CARGO_PKG_NAME").expect("呜哇～CARGO_PKG_NAME什么的根本找不到啦～杂鱼杂鱼～");
+	println!("cargo:rustc-env=ADAPTER_NAME={}", plugin_name);
+
+	let plugin_version =
+		env::var("CARGO_PKG_VERSION").expect("版本号什么的...难道杂鱼忘记设置了吗～？");
+	println!("cargo:rustc-env=ADAPTER_VERSION={}", plugin_version);
+
+	let plugin_author =
+		env::var("CARGO_PKG_AUTHORS").expect("作者信息都没有...真是个粗心的杂鱼呢～");
+	println!("cargo:rustc-env=ADAPTER_AUTHOR={}", plugin_author);
+}
+
 pub fn setup_core() {
 	let version = env!("CARGO_PKG_VERSION");
 	println!("cargo:rustc-env=CORE_VERSION={}", version);
 
 	let version_parts: Vec<&str> = version.split(|c: char| !c.is_ascii_digit()).collect();
-	let major = version_parts.get(0).and_then(|s| s.parse::<u32>().ok()).unwrap_or(0);
+	let major = version_parts.first().and_then(|s| s.parse::<u32>().ok()).unwrap_or(0);
 	let minor = version_parts.get(1).and_then(|s| s.parse::<u32>().ok()).unwrap_or(0);
 	let patch = version_parts.get(2).and_then(|s| s.parse::<u32>().ok()).unwrap_or(0);
 

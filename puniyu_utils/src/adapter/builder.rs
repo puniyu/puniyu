@@ -33,7 +33,7 @@ pub trait AdapterBase: Send + Sync + 'static {
 }
 
 pub trait AdapterApi: Send + Sync + 'static {
-	fn send_msg(&self, contact: Contact, element: Message, message: String);
+	fn send_msg(&self, contact: Contact, element: Message);
 	/// 获取头像URL
 	fn get_avatar_url(&self, user_id: &str, size: AvatarSize) -> String;
 
