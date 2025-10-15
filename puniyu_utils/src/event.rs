@@ -6,8 +6,8 @@ mod bus;
 mod handler;
 mod matcher;
 pub mod message;
-pub use bus::init_event_bus;
 pub use bus::{EVENT_BUS, Event, EventBus};
+pub use bus::{init_event_bus, send_event};
 
 /// 事件类型枚举
 #[derive(Debug, Clone, EnumString, Display, IntoStaticStr)]

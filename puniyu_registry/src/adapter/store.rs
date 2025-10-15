@@ -17,7 +17,7 @@ impl AdapterStore {
 		}
 	}
 
-	pub fn get_adapters(&self, name: &str) -> Option<Adapter> {
+	pub fn get_adapter(&self, name: &str) -> Option<Adapter> {
 		let adapters = self.0.lock().unwrap();
 		adapters.get(name).cloned()
 	}

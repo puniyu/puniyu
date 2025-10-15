@@ -10,14 +10,18 @@ pub trait CommandBuilder: Send + Sync + 'static {
 	/// ## 示例
 	///
 	/// ```ignore
-	/// echo <String>
+	/// echo
 	/// ```
 	///
 	/// ## 说明
 	///
-	/// - `<String>` 表示参数，参数类型为 `String`
 	/// - `echo` 表示命令名称
 	fn command(&self) -> &'static str;
+
+	/// 参数
+	///
+	/// 此命令所拥有的参数
+	fn args(&self) -> Vec<String>;
 
 	/// 优先级
 	fn rank(&self) -> usize;

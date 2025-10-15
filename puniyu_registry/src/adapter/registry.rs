@@ -2,7 +2,7 @@ use crate::adapter::{AdapterType, store::AdapterStore};
 use crate::error::Adapter as Error;
 use crate::library::AdapterLibrary;
 use crate::logger::owo_colors::OwoColorize;
-use crate::logger::{SharedLogger, debug, error};
+use crate::logger::{debug, error};
 use libloading::Symbol;
 use puniyu_utils::APP_NAME;
 use puniyu_utils::adapter::{Adapter, AdapterBase as AdapterBuilder};
@@ -96,6 +96,14 @@ impl AdapterRegistry {
 		)
 		.await?;
 		Ok(())
+	}
+
+	pub fn get_adapter(name: &str) -> Option<Adapter> {
+		ADAPTER_STORE.get_adapter(name)
+	}
+
+	pub fn get_all_adapters() -> Vec<Adapter> {
+		ADAPTER_STORE.get_all_adapters().values().cloned().collect()
 	}
 }
 

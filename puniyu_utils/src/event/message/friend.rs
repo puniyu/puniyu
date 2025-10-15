@@ -64,10 +64,6 @@ impl Display for FriendMessage {
 #[macro_export]
 macro_rules! create_friend_message {
 	($event_id:expr, $self_id:expr, $user_id:expr, $message_id:expr, $elements:expr) => {
-		let event_bus = EVENT_BUS
-			.get_or_init(|| std::sync::Arc::new(std::sync::Mutex::new(EventBus::new())))
-			.lock()
-			.unwrap();
 		let message = FriendMessage {
 			event_id: $event_id.into(),
 			self_id: $self_id.into(),
@@ -76,6 +72,6 @@ macro_rules! create_friend_message {
 			elements: $elements,
 		};
 		let event = Event::Message(MessageEvent::Friend(message));
-		event_bus.send_event(event).unwrap();
+		send_event(event);
 	};
 }
