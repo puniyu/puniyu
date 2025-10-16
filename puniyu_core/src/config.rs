@@ -4,9 +4,8 @@ use crate::config::{
 	group::{GROUP_CONFIG, GroupConfig},
 };
 use crate::error::Config as Error;
-use crate::logger::{error, info};
+use crate::logger::{debug, error, info};
 use notify::{Config as WatcherConfig, Event, RecommendedWatcher, RecursiveMode, Watcher};
-use puniyu_registry::logger::debug;
 use puniyu_utils::{path::CONFIG_DIR, toml::merge_config};
 use serde::{Deserialize, Serialize, de::DeserializeOwned};
 use std::{env, sync::mpsc, thread, time::Duration};
@@ -105,8 +104,6 @@ pub(crate) fn config_watcher() {
 				.with_poll_interval(Duration::from_secs(200)),
 		)
 		.unwrap();
-
-		println!("{}", CONFIG_DIR.to_string_lossy());
 
 		watcher.watch(CONFIG_DIR.as_path(), RecursiveMode::NonRecursive).unwrap();
 

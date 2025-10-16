@@ -1,0 +1,19 @@
+[package]
+name = "puniyu_task"
+version = "0.1.0"
+authors.workspace = true
+license.workspace = true
+readme.workspace = true
+homepage.workspace = true
+repository.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+tokio-cron-scheduler = "0.15.0"
+chrono-tz = "0.10.4"
+uuid = { version = "1.17.0", features = ["v4"] }
+
+puniyu_logger = { workspace = true }
+tokio = { workspace = true }
+async-trait = { workspace = true }

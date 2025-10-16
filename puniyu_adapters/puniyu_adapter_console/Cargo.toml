@@ -18,7 +18,7 @@ async-trait = "0.1"
 tokio = "1.47.1"
 
 [build-dependencies]
-puniyu_build = { path = "../../puniyu_build" }
+puniyu_build = { path = "../../crates/puniyu_build" }
 
 
 [features]

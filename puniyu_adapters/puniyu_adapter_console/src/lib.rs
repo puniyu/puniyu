@@ -2,7 +2,11 @@ mod api;
 
 use puniyu_core::adapter::prelude::*;
 use std::env;
+use std::sync::atomic::{AtomicU64, Ordering};
 use std::thread;
+
+static EVENT_ID: AtomicU64 = AtomicU64::new(0);
+static MESSAGE_ID: AtomicU64 = AtomicU64::new(0);
 
 #[adapter]
 pub struct Adapter;
@@ -47,7 +51,21 @@ impl AdapterBuilder for Adapter {
 					std::process::exit(0);
 				}
 
-				create_friend_message!("console_event", bot_id, "user", "msg_1", vec![]);
+				let contact = contact_friend!(name, name);
+				let sender = friend_sender!(user_id: name, nick: name, sex: Sex::Unknown, age: 0);
+
+				let event_id = EVENT_ID.fetch_add(1, Ordering::Relaxed).to_string();
+				let message_id = MESSAGE_ID.fetch_add(1, Ordering::Relaxed).to_string();
+
+				create_friend_message!(
+					event_id,
+					contact,
+					bot_id,
+					bot_id,
+					message_id,
+					vec![],
+					sender
+				);
 			}
 		});
 		Ok(())

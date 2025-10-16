@@ -55,7 +55,6 @@ pub fn plugin(_: TokenStream, item: TokenStream) -> TokenStream {
 	let fn_vis = &input_fn.vis;
 	let fn_block = &input_fn.block;
 
-	// 检查函数是否是异步的
 	let is_async = fn_sig.asyncness.is_some();
 	if !is_async {
 		return syn::Error::new_spanned(fn_sig, "诶嘿~杂鱼函数连async都不会用吗？")
@@ -101,7 +100,7 @@ pub fn plugin(_: TokenStream, item: TokenStream) -> TokenStream {
 		.into();
 	}
 
-	let struct_name = Ident::new("PluginInfo", fn_name.span());
+	let struct_name = Ident::new("Plugin", fn_name.span());
 
 	// 默认初始化函数
 	let init_call = if fn_block.stmts.is_empty() {
@@ -132,7 +131,7 @@ pub fn plugin(_: TokenStream, item: TokenStream) -> TokenStream {
 		use puniyu_core::{APP_NAME, async_trait};
 
 		#[async_trait]
-		impl ::puniyu_core::PluginBuilder for #struct_name {
+		impl ::puniyu_core::plugin::PluginBuilder for #struct_name {
 			fn name(&self) -> &'static str {
 				#plugin_name
 			}
@@ -149,7 +148,7 @@ pub fn plugin(_: TokenStream, item: TokenStream) -> TokenStream {
 				::puniyu_core::ABI_VERSION
 			}
 
-			fn tasks(&self) -> Vec<Box<dyn ::puniyu_core::TaskBuilder>> {
+			fn tasks(&self) -> Vec<Box<dyn ::puniyu_core::plugin::TaskBuilder>> {
 				let plugin_name = self.name();
 				::puniyu_core::inventory::iter::<TaskRegistry>
 					.into_iter()
@@ -158,7 +157,7 @@ pub fn plugin(_: TokenStream, item: TokenStream) -> TokenStream {
 					.collect()
 			}
 
-			fn commands(&self) -> Vec<Box<dyn ::puniyu_core::CommandBuilder>> {
+			fn commands(&self) -> Vec<Box<dyn ::puniyu_core::plugin::CommandBuilder>> {
 				let plugin_name = self.name();
 				::puniyu_core::inventory::iter::<CommandRegistry>
 					.into_iter()
@@ -220,37 +219,37 @@ pub fn plugin(_: TokenStream, item: TokenStream) -> TokenStream {
 			}
 
 		/// 插件注册表
-		pub struct PluginRegistry {
+		pub(crate) struct PluginRegistry {
 			/// 插件构造器
-			builder: fn() -> Box<dyn ::puniyu_core::PluginBuilder>,
+			builder: fn() -> Box<dyn ::puniyu_core::plugin::PluginBuilder>,
 		}
 		::puniyu_core::inventory::collect!(PluginRegistry);
 
 		/// 定时计划注册表
-		pub struct TaskRegistry {
+		pub(crate) struct TaskRegistry {
 			/// 插件名称
 			plugin_name: &'static str,
 			/// 任务构造器
-			builder: fn() -> Box<dyn ::puniyu_core::TaskBuilder>,
+			builder: fn() -> Box<dyn ::puniyu_core::plugin::TaskBuilder>,
 		}
 		::puniyu_core::inventory::collect!(TaskRegistry);
 
-		pub struct CommandRegistry {
+		pub(crate) struct CommandRegistry {
 			plugin_name: &'static str,
 			/// 命令构造器
-			builder: fn() -> Box<dyn ::puniyu_core::CommandBuilder>,
+			builder: fn() -> Box<dyn ::puniyu_core::plugin::CommandBuilder>,
 		}
 		::puniyu_core::inventory::collect!(CommandRegistry);
 
 		::puniyu_core::inventory::submit! {
 			PluginRegistry {
-				builder: || -> Box<dyn ::puniyu_core::PluginBuilder> { Box::new(#struct_name {}) },
+				builder: || -> Box<dyn ::puniyu_core::plugin::PluginBuilder> { Box::new(#struct_name {}) },
 			}
 		}
 
 		#[cfg(feature = "cdylib")]
 		#[unsafe(no_mangle)]
-		pub unsafe extern "C" fn plugin_info() -> *mut dyn ::puniyu_core::PluginBuilder {
+		pub unsafe extern "C" fn plugin_info() -> *mut dyn ::puniyu_core::plugin::PluginBuilder {
 			Box::into_raw(Box::new(#struct_name {}))
 		}
 
@@ -354,8 +353,10 @@ pub fn task(args: TokenStream, item: TokenStream) -> TokenStream {
 
 	#fn_vis #fn_sig #fn_block
 
-		#[::puniyu_core::async_trait]
-		impl ::puniyu_core::TaskBuilder for #struct_name {
+		use puniyu_core::async_trait;
+
+		#[async_trait]
+		impl ::puniyu_core::plugin::TaskBuilder for #struct_name {
 			fn name(&self) -> &'static str {
 			stringify!(#fn_name)
 		}
@@ -372,7 +373,7 @@ pub fn task(args: TokenStream, item: TokenStream) -> TokenStream {
 	::puniyu_core::inventory::submit! {
 		crate::TaskRegistry  {
 			plugin_name: #crate_name,
-			builder: || -> Box<dyn ::puniyu_core::TaskBuilder> { Box::new(#struct_name {}) },
+			builder: || -> Box<dyn ::puniyu_core::plugin::TaskBuilder> { Box::new(#struct_name {}) },
 		}
 	}
 

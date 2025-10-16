@@ -20,17 +20,30 @@ thiserror = { workspace = true }
 tokio = { workspace = true }
 async-trait = { workspace = true }
 inventory = { workspace = true }
-
+puniyu_server = { workspace = true }
 puniyu_logger = { workspace = true }
-puniyu_registry = { path = "../puniyu_registry" }
+
+
+puniyu_bot = { path = "../crates/puniyu_bot" }
+puniyu_plugin = { path = "../crates/puniyu_plugin" }
+puniyu_adapter = { path = "../crates/puniyu_adapter" }
+puniyu_command = { path = "../crates/puniyu_command" }
+puniyu_task = { path = "../crates/puniyu_task" }
+puniyu_utils = { path = "../crates/puniyu_utils" }
+puniyu_element = { path = "../crates/puniyu_element" }
+puniyu_event_core = { path = "../crates/puniyu_event_core" }
+puniyu_event_message = { path = "../crates/puniyu_event_message" }
+puniyu_event_bus = { path = "../crates/puniyu_event_bus" }
+puniyu_event_utils = { path = "../crates/puniyu_event_utils" }
+
+
 puniyu_plugin_derive = { path = "../puniyu_derives/puniyu_plugin_derive" }
 puniyu_adapter_derive = { path = "../puniyu_derives/puniyu_adapter_derive" }
-puniyu_utils = { path = "../puniyu_utils" }
-puniyu_server = { workspace = true }
+
 
 
 [build-dependencies]
-puniyu_build = { path = "../puniyu_build" }
+puniyu_build = { path = "../crates/puniyu_build" }
 
 [features]
 default = ["server"]

@@ -1,7 +1,5 @@
 use crate::{
-	VERSION,
-	adapter::AdapterBuilder,
-	common,
+	VERSION, common,
 	common::format_duration,
 	config::{app::AppConfig, config_watcher, init_config},
 	logger::log_init,
@@ -9,15 +7,12 @@ use crate::{
 };
 use convert_case::{Case, Casing};
 use figlet_rs::FIGfont;
-use puniyu_registry::{
-	AdapterRegistry, PluginRegistry,
-	adapter::AdapterType,
-	plugin::{PluginType, builder::PluginBuilder, task::init_scheduler},
-};
+use puniyu_adapter::{AdapterBuilder, AdapterRegistry, AdapterType};
+use puniyu_event_bus::init_event_bus;
+use puniyu_plugin::{PluginBuilder, PluginRegistry, PluginType};
+use puniyu_task::{SCHEDULER, init_scheduler};
 pub use puniyu_utils::APP_NAME;
-use puniyu_utils::event::init_event_bus;
 use puniyu_utils::path::{ADAPTER_DIR, PLUGIN_DIR};
-use std::net::IpAddr;
 use std::sync::{OnceLock, RwLock};
 use std::{env, env::consts::DLL_EXTENSION};
 use tokio::{fs, signal};
@@ -25,7 +20,7 @@ use tokio::{fs, signal};
 static REGISTERED_PLUGINS: OnceLock<RwLock<Vec<PluginType>>> = OnceLock::new();
 static REGISTERED_ADAPTER: OnceLock<RwLock<Vec<AdapterType>>> = OnceLock::new();
 
-pub struct App {}
+pub struct App();
 
 impl Default for App {
 	fn default() -> Self {
@@ -75,6 +70,7 @@ impl App {
 		);
 		#[cfg(feature = "server")]
 		{
+			use std::net::IpAddr;
 			let config = AppConfig::get();
 			let host = IpAddr::V4(config.server.host().parse().unwrap());
 			let port = config.server.port();
@@ -99,6 +95,7 @@ async fn init_app() {
 	let event_bus = init_event_bus();
 	event_bus.lock().unwrap().run();
 	init_scheduler().await;
+	SCHEDULER.get().unwrap().start().await.unwrap();
 	init_plugin().await;
 	init_adapter().await;
 }

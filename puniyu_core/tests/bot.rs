@@ -1,5 +1,4 @@
 use puniyu_core::adapter::prelude::*;
-use puniyu_utils::adapter_info;
 
 #[test]
 fn get_bot() {
