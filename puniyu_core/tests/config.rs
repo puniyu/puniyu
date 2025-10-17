@@ -1,7 +1,7 @@
 use puniyu_core::config::Config;
 
 #[test]
-fn app_config_test() {
+fn app_config() {
 	let config = Config::app();
 	let logger = config.logger();
 	assert!(!logger.level().is_empty());
@@ -9,7 +9,7 @@ fn app_config_test() {
 	assert!(logger.retention_days() > 0);
 }
 #[test]
-fn bot_config_test() {
+fn bot_config() {
 	let config = Config::bot();
 	let bot_config = config.bot("default");
 	let _cd = bot_config.cd();
@@ -18,7 +18,7 @@ fn bot_config_test() {
 }
 
 #[test]
-fn group_config_test() {
+fn group_config() {
 	let config = Config::group();
 	let group_config = config.group("default");
 	let _ = group_config.cd();

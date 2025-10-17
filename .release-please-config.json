@@ -1,7 +1,13 @@
 {
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
-  "release-type": "node",
+  "release-type": "rust",
   "include-component-in-tag": false,
+  "plugins": [
+    {
+      "type": "cargo-workspace",
+      "updatePeerDependencies": true
+    }
+  ],
   "changelog-sections": [
     {
       "type": "feat",
@@ -64,20 +70,21 @@
     }
   ],
   "packages": {
-    "puniyu": {
-      "release-type": "rust"
+    ".": {
+      "release-type": "rust",
+      "component": "puniyu"
     },
     "puniyu_core": {
-      "release-type": "rust"
+      "release-type": "rust",
+      "component": "core"
     },    
     "puniyu_plugin": {
-      "release-type": "rust"
+      "release-type": "rust",
+      "component": "plugin"
     },
-    "puniyu_utils": {
-      "release-type": "rust"
-    },
-    "puniyu_logger": {
-      "release-type": "rust"
+    "puniyu_adapter": {
+      "release-type": "rust",
+      "component": "adapter"
     }
   },
   "commit-search-depth": 50

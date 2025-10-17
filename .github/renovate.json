@@ -1,6 +1,8 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["github>puniyu/github-action//.github/renovate"],
+  "extends": [
+    "github>puniyu/.github//.github/renovate"
+  ],
   "packageRules": [
     {
       "groupName": "puniyu core packages",
@@ -9,8 +11,7 @@
       "schedule": ["at any time"],
       "labels": [
         "dependencies"
-      ],
-      "automerge": true
+      ]
     }
   ]
 }

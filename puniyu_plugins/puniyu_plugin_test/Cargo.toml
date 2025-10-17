@@ -10,15 +10,17 @@ edition.workspace = true
 rust-version.workspace = true
 
 [lib]
-crate-type = ["cdylib"]
+crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-puniyu_registry = { path = "../../puniyu_registry" }
+puniyu_plugin = { path = "../../puniyu_plugin" }
 puniyu_core = { path = "../../puniyu_core" }
-log = "0.4.28"
 
 
 [build-dependencies]
 puniyu_build = { path = "../../puniyu_build" }
 
 
+[features]
+default = []
+cdylib = []

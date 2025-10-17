@@ -10,25 +10,33 @@ edition.workspace = true
 rust-version.workspace = true
 
 [dependencies]
-serde = { workspace = true }
-serde_json = "1.0.143"
-log = { workspace = true }
-thiserror = "2.0.16"
 notify = "8.2.0"
-strum = { version = "0.27.2", features = ["derive"] }
-tokio = "1.47.1"
-futures = { workspace = true }
 figlet-rs = "0.1.5"
-convert_case = "0.8.0"
 
-puniyu_system_info = { workspace = true }
-puniyu_logger = { workspace = true }
-puniyu_registry = { path = "../puniyu_registry" }
-puniyu_utils = { path = "../puniyu_utils" }
-puniyu_server = { workspace = true }
+serde.workspace = true
+thiserror.workspace = true
+tokio.workspace = true
+async-trait.workspace = true
+inventory.workspace = true
+puniyu_server.workspace = true
+puniyu_logger.workspace = true
+convert_case.workspace = true
+
+
+puniyu_bot = { path = "../crates/puniyu_bot" }
+puniyu_plugin_builder = { path = "../crates/puniyu_plugin_builder" }
+puniyu_plugin_registry = { path = "../crates/puniyu_plugin_registry" }
+puniyu_adapter_builder = { path = "../crates/puniyu_adapter_builder" }
+puniyu_adapter_registry = { path = "../crates/puniyu_adapter_registry" }
+puniyu_task_registry = { path = "../crates/puniyu_task_registry" }
+puniyu_utils = { path = "../crates/puniyu_utils" }
+puniyu_event_bus = { path = "../crates/puniyu_event_bus" }
+
 
 [build-dependencies]
-puniyu_build = { path = "../puniyu_build" }
+puniyu_build = { path = "../puniyu_build", version = "0.1.0" }
 
 [features]
+default = ["server"]
+server = []
 core_preview = ["puniyu_build/core_preview"]

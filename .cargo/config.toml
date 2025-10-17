@@ -1,8 +1,2 @@
 [env]
 LOGGER_LEVEL = "debug"
-
-[target.'cfg(unix)']
-rustflags = [ "-C", "link-arg=-rdynamic"]
-
-[target.'cfg(windows)']
-rustflags = [ "-C", "link-arg=-Wl,--export-all-symbols"]

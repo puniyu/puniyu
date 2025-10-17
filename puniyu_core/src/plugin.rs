@@ -1,7 +1,7 @@
-use puniyu_registry::PluginManager;
-use puniyu_registry::plugin::{PluginId, manger::PluginInfo};
+use puniyu_plugin_builder::{Plugin, PluginId};
+use puniyu_plugin_registry::PluginRegistry;
 
-pub fn get_plugin_info<T: Into<PluginId>>(plugin: T) -> Option<PluginInfo> {
+pub fn get_plugin_info(plugin: impl Into<PluginId>) -> Option<Plugin> {
 	let plugin_id = plugin.into();
-	PluginManager::get_plugin(plugin_id)
+	PluginRegistry::get_plugin(plugin_id)
 }

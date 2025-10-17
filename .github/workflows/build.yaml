@@ -1,0 +1,130 @@
+name: Build Package
+
+on:
+  workflow_call:
+    inputs:
+      preview:
+        description: '是否为预览构建'
+        type: boolean
+        required: false
+        default: true
+
+env:
+  APP_NAME: puniyu
+
+jobs:
+  build_windows:
+    runs-on: ${{ matrix.platform.runner }}
+    strategy:
+      matrix:
+        platform:
+          - runner: windows-latest
+            target: x86_64-pc-windows-msvc
+            label: windows-x86_64
+
+    steps:
+      - name: 检出仓库
+        uses: actions/checkout@v4
+
+      - name: 设置 rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.platform.target }}
+
+      - name: 设置 rust 缓存
+        uses: swatinem/rust-cache@v2
+        with:
+          prefix-key: ${{ env.APP_NAME }}
+
+      - name: 构建
+        run: |
+          if [ "${{ inputs.preview }}" == "true" ]; then
+            cargo build --release --bin ${{ env.APP_NAME }} --target ${{ matrix.platform.target }} --features preview
+          else
+            cargo build --release --bin ${{ env.APP_NAME }} --target ${{ matrix.platform.target }}
+          fi
+
+
+      - name: 上传构建产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: "${{ env.APP_NAME }}-${{ matrix.platform.label }}"
+          path: |
+            target/${{ matrix.platform.target }}/release/${{ env.APP_NAME }}.exe
+
+  build_macos:
+    runs-on: ${{ matrix.platform.runner }}
+    strategy:
+      matrix:
+        platform:
+          - runner: macos-latest
+            target: x86_64-apple-darwin
+            label: macos-x86_64
+
+    steps:
+      - name: 检出仓库
+        uses: actions/checkout@v4
+
+      - name: 设置 rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.platform.target }}
+
+      - name: 设置 rust 缓存
+        uses: swatinem/rust-cache@v2
+        with:
+          prefix-key: ${{ env.APP_NAME }}
+
+      - name: 构建
+        run: |
+          if [ "${{ inputs.preview }}" == "true" ]; then
+            cargo build --release --bin ${{ env.APP_NAME }} --target ${{ matrix.platform.target }} --features preview
+          else
+            cargo build --release --bin ${{ env.APP_NAME }} --target ${{ matrix.platform.target }}
+          fi
+
+      - name: 上传构建产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: "${{ env.APP_NAME }}-${{ matrix.platform.label }}"
+          path: |
+            target/${{ matrix.platform.target }}/release/${{ env.APP_NAME }}
+
+  build_linux:
+    runs-on: ${{ matrix.platform.runner }}
+    container: ${{ matrix.platform.container }}
+    strategy:
+      matrix:
+        platform:
+          - runner: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            label: linux-x86_64
+
+    steps:
+      - name: 检出仓库
+        uses: actions/checkout@v4
+
+      - name: 设置 rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.platform.target }}
+
+      - name: 设置 rust 缓存
+        uses: swatinem/rust-cache@v2
+        with:
+          prefix-key: ${{ env.APP_NAME }}
+
+      - name: 构建
+        run: |
+          if [ "${{ inputs.preview }}" == "true" ]; then
+            cargo build --release --bin ${{ env.APP_NAME }} --target ${{ matrix.platform.target }} --features preview
+          else
+            cargo build --release --bin ${{ env.APP_NAME }} --target ${{ matrix.platform.target }}
+          fi
+
+      - name: 上传构建产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: "${{ env.APP_NAME }}-${{ matrix.platform.label }}"
+          path: |
+            target/${{ matrix.platform.target }}/release/${{ env.APP_NAME }}

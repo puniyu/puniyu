@@ -1,13 +1,53 @@
-use puniyu_core::bot::get_bot;
+use puniyu_adapter_builder::{
+	AccountInfo, AdapterCommunication, AdapterInfo, AdapterPlatform, AdapterProtocol,
+	AdapterStandard, account_info, adapter_info,
+};
+use puniyu_bot::{BotRegistry, register_bot};
 
 #[test]
-fn test_get_bot() {
+fn get_bot() {
+	use puniyu_core::bot::get_bot;
+	use std::time::SystemTime;
+	let start_time = SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_secs();
+	let adapter_info = adapter_info!(
+		name: "Console",
+		platform: AdapterPlatform::Other,
+		standard: AdapterStandard::Other,
+		protocol: AdapterProtocol::Console,
+		communication: AdapterCommunication::Other,
+		connect_time: start_time
+	);
+	let bot_id = "test";
+	let account_info = account_info!(
+		uin: bot_id,
+		name: bot_id,
+		avatar: "".to_string()
+	);
+	register_bot!(adapter_info, account_info);
 	let bot = get_bot(0);
 	assert!(bot.is_some());
 }
 
 #[test]
-fn test_get_bot_with_id() {
-	let bot = get_bot("123456");
+fn get_bot_with_id() {
+	use puniyu_core::bot::get_bot;
+	use std::time::SystemTime;
+	let start_time = SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_secs();
+	let adapter_info = adapter_info!(
+		name: "Console",
+		platform: AdapterPlatform::Other,
+		standard: AdapterStandard::Other,
+		protocol: AdapterProtocol::Console,
+		communication: AdapterCommunication::Other,
+		connect_time: start_time
+	);
+	let bot_id = "test";
+	let account_info = account_info!(
+		uin: bot_id,
+		name: bot_id,
+		avatar: "".to_string()
+	);
+	register_bot!(adapter_info, account_info);
+	let bot = get_bot("test");
 	assert!(bot.is_some());
 }
