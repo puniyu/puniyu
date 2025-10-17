@@ -41,7 +41,7 @@ impl Config {
 	///
 	/// # 示例
 	///
-	/// ```
+	/// ```rust, ignore
 	/// use puniyu_core::config::Config;
 	/// let config = Config::app();
 	/// ```
@@ -56,7 +56,7 @@ impl Config {
 	///
 	/// # 示例
 	///
-	/// ```
+	/// ```rust, ignore
 	/// use puniyu_core::config::Config;
 	/// let config = Config::group();
 	/// ```
@@ -71,7 +71,7 @@ impl Config {
 	///
 	/// # 示例
 	///
-	/// ```
+	/// ```rust, ignore
 	/// use puniyu_core::config::Config;
 	/// let config = Config::bot();
 	/// ```

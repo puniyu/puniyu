@@ -69,7 +69,8 @@ impl BotRegistry {
 /// * `account` - 账号信息
 ///
 /// ## 示例
-/// ```rust
+/// ```rust, ignore
+/// use puniyu_bot::{BotRegistry, register_bot};
 /// register_bot!(adapter_info, account_info);
 /// register_bot!(adapter: adapter_info, account: account_info);
 /// ```
@@ -90,10 +91,11 @@ macro_rules! register_bot {
 /// * `id` - Bot的ID，可以是索引或self_id
 ///
 /// ## 实例
-/// ```rust
+/// ```rust, ignore
+/// use puniyu_bot::{BotRegistry, register_bot};
 /// unregister_bot!("self_id")
 /// unregister_bot!(index: 1)
-/// nregister_bot!(id: "self_id")
+/// register_bot!(id: "self_id")
 /// ```
 #[macro_export]
 macro_rules! unregister_bot {

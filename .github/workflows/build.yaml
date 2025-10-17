@@ -37,6 +37,7 @@ jobs:
           prefix-key: ${{ env.APP_NAME }}
 
       - name: 构建
+        shell: bash
         run: |
           if [ "${{ inputs.preview }}" == "true" ]; then
             cargo build --release --bin ${{ env.APP_NAME }} --target ${{ matrix.platform.target }} --features preview
@@ -60,6 +61,9 @@ jobs:
           - runner: macos-latest
             target: x86_64-apple-darwin
             label: macos-x86_64
+          - runner: macos-latest
+            target: aarch64-apple-darwin
+            label: macos-aarch64
 
     steps:
       - name: 检出仓库
@@ -69,6 +73,10 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.platform.target }}
+
+      - name: 添加目标平台
+        run: |
+          rustup target add ${{ matrix.platform.target }}
 
       - name: 设置 rust 缓存
         uses: swatinem/rust-cache@v2

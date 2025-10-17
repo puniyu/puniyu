@@ -37,7 +37,7 @@ dependencies = [
  "derive_more",
  "encoding_rs",
  "flate2",
- "foldhash 0.1.5",
+ "foldhash",
  "futures-core",
  "h2",
  "http",
@@ -151,7 +151,7 @@ dependencies = [
  "cookie",
  "derive_more",
  "encoding_rs",
- "foldhash 0.1.5",
+ "foldhash",
  "futures-core",
  "futures-util",
  "impl-more",
@@ -236,12 +236,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "allocator-api2"
-version = "0.2.21"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "683d7910e743518b0e34f1186f92494becacb047c7b6bf616c96772180fef923"
-
-[[package]]
 name = "android_system_properties"
 version = "0.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -255,6 +249,17 @@ name = "arrayvec"
 version = "0.7.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7c02d123df017efcdfbd739ef81735b36c5ba83ec3c59c80a9d7ecc718f92e50"
+
+[[package]]
+name = "async-trait"
+version = "0.1.89"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9035ad2d096bed7955a320ee7e2230574d28fd3c3a0f186cbea1ff3c7eed5dbb"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.106",
+]
 
 [[package]]
 name = "autocfg"
@@ -648,6 +653,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "either"
+version = "1.15.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "48c757948c5ede0e46177b7add2e67155f70e33c07fea8284df6576da70b3719"
+
+[[package]]
 name = "encoding_rs"
 version = "0.8.35"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -695,12 +706,6 @@ name = "foldhash"
 version = "0.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d9c4f5dac5e15c24eb999c26181a6ca40b39fe946cbe4c263c7209467bc83af2"
-
-[[package]]
-name = "foldhash"
-version = "0.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "77ce24cb58228fbb8aa041425bb1050850ac19177686ea6e0f41a70416f56fdb"
 
 [[package]]
 name = "form_urlencoded"
@@ -887,11 +892,6 @@ name = "hashbrown"
 version = "0.16.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5419bdc4f6a9207fbeba6d11b604d481addf78ecd10c11ad51e76c2f6482748d"
-dependencies = [
- "allocator-api2",
- "equivalent",
- "foldhash 0.2.0",
-]
 
 [[package]]
 name = "heck"
@@ -1113,6 +1113,15 @@ dependencies = [
  "bitflags 2.9.4",
  "cfg-if",
  "libc",
+]
+
+[[package]]
+name = "itertools"
+version = "0.14.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2b192c782037fadd9cfa75548310488aabdbf3d2da73885b31bd0abd03351285"
+dependencies = [
+ "either",
 ]
 
 [[package]]
@@ -1500,9 +1509,80 @@ dependencies = [
 name = "puniyu"
 version = "0.1.0"
 dependencies = [
- "log",
+ "puniyu_adapter_console",
+ "puniyu_core",
+ "puniyu_plugin_test",
+ "tokio",
+]
+
+[[package]]
+name = "puniyu_adapter"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "puniyu_adapter_builder",
+ "puniyu_adapter_derive",
+ "puniyu_bot",
+ "puniyu_element",
+ "puniyu_event_bus",
+ "puniyu_event_core",
+ "puniyu_event_message",
+ "puniyu_event_utils",
+ "puniyu_logger 0.6.1",
+ "puniyu_utils",
+ "serde_json",
+]
+
+[[package]]
+name = "puniyu_adapter_builder"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "puniyu_element",
+ "puniyu_event_utils",
+ "serde",
+ "strum",
+]
+
+[[package]]
+name = "puniyu_adapter_console"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "puniyu_adapter",
+ "puniyu_build",
  "puniyu_core",
  "tokio",
+]
+
+[[package]]
+name = "puniyu_adapter_derive"
+version = "0.1.0"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.106",
+]
+
+[[package]]
+name = "puniyu_adapter_registry"
+version = "0.1.0"
+dependencies = [
+ "futures",
+ "puniyu_adapter_builder",
+ "puniyu_event_bus",
+ "puniyu_library",
+ "puniyu_logger 0.6.1",
+ "puniyu_utils",
+ "thiserror 2.0.17",
+]
+
+[[package]]
+name = "puniyu_bot"
+version = "0.1.0"
+dependencies = [
+ "puniyu_adapter_builder",
+ "puniyu_logger 0.6.1",
 ]
 
 [[package]]
@@ -1510,25 +1590,152 @@ name = "puniyu_build"
 version = "0.1.0"
 
 [[package]]
-name = "puniyu_core"
+name = "puniyu_command_builder"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "puniyu_event_context",
+]
+
+[[package]]
+name = "puniyu_command_derive"
 version = "0.1.0"
 dependencies = [
  "convert_case",
+ "proc-macro2",
+ "puniyu_derive_utils",
+ "quote",
+ "syn 2.0.106",
+]
+
+[[package]]
+name = "puniyu_command_registry"
+version = "0.1.0"
+dependencies = [
+ "itertools",
+ "puniyu_command_builder",
+]
+
+[[package]]
+name = "puniyu_core"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "convert_case",
  "figlet-rs",
- "futures",
- "log",
+ "inventory",
  "notify",
+ "puniyu_adapter_builder",
+ "puniyu_adapter_registry",
+ "puniyu_bot",
  "puniyu_build",
- "puniyu_logger",
- "puniyu_registry",
+ "puniyu_event_bus",
+ "puniyu_logger 0.6.1",
+ "puniyu_plugin_builder",
+ "puniyu_plugin_registry",
  "puniyu_server",
- "puniyu_system_info",
+ "puniyu_task_registry",
  "puniyu_utils",
+ "serde",
+ "thiserror 2.0.17",
+ "tokio",
+]
+
+[[package]]
+name = "puniyu_derive_utils"
+version = "0.1.0"
+dependencies = [
+ "syn 2.0.106",
+]
+
+[[package]]
+name = "puniyu_element"
+version = "0.1.0"
+dependencies = [
  "serde",
  "serde_json",
  "strum",
- "thiserror 2.0.17",
+]
+
+[[package]]
+name = "puniyu_event_bus"
+version = "0.1.0"
+dependencies = [
+ "puniyu_event_core",
+ "puniyu_event_handler",
+ "puniyu_event_matcher",
+ "puniyu_logger 0.6.1",
+ "strum",
  "tokio",
+]
+
+[[package]]
+name = "puniyu_event_context"
+version = "0.1.0"
+dependencies = [
+ "puniyu_adapter_builder",
+ "puniyu_element",
+ "puniyu_event_message",
+ "puniyu_event_utils",
+]
+
+[[package]]
+name = "puniyu_event_core"
+version = "0.1.0"
+dependencies = [
+ "puniyu_adapter_builder",
+ "puniyu_event_message",
+]
+
+[[package]]
+name = "puniyu_event_handler"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "puniyu_command_builder",
+ "puniyu_command_registry",
+ "puniyu_event_context",
+ "puniyu_event_core",
+ "puniyu_event_message",
+]
+
+[[package]]
+name = "puniyu_event_matcher"
+version = "0.1.0"
+dependencies = [
+ "itertools",
+ "puniyu_command_registry",
+ "puniyu_element",
+ "puniyu_event_core",
+ "puniyu_event_message",
+ "puniyu_event_utils",
+ "puniyu_logger 0.6.1",
+]
+
+[[package]]
+name = "puniyu_event_message"
+version = "0.1.0"
+dependencies = [
+ "puniyu_adapter_builder",
+ "puniyu_element",
+ "puniyu_event_utils",
+ "strum",
+]
+
+[[package]]
+name = "puniyu_event_utils"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "strum",
+]
+
+[[package]]
+name = "puniyu_library"
+version = "0.1.0"
+dependencies = [
+ "libloading",
+ "thiserror 2.0.17",
 ]
 
 [[package]]
@@ -1550,43 +1757,84 @@ dependencies = [
 ]
 
 [[package]]
+name = "puniyu_logger"
+version = "0.6.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "416cf907fac9f197570e3b246d09f7661a6526594bfd5da58dd859a665ecc3d0"
+dependencies = [
+ "chrono",
+ "chrono-tz",
+ "convert_case",
+ "owo-colors",
+ "strip-ansi-escapes",
+ "tracing",
+ "tracing-appender",
+ "tracing-log",
+ "tracing-shared",
+ "tracing-subscriber",
+]
+
+[[package]]
+name = "puniyu_plugin"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "inventory",
+ "puniyu_adapter_builder",
+ "puniyu_command_builder",
+ "puniyu_command_derive",
+ "puniyu_element",
+ "puniyu_event_context",
+ "puniyu_event_utils",
+ "puniyu_logger 0.6.1",
+ "puniyu_plugin_builder",
+ "puniyu_plugin_derive",
+ "puniyu_task_builder",
+ "puniyu_task_derive",
+ "puniyu_utils",
+ "serde_json",
+]
+
+[[package]]
+name = "puniyu_plugin_builder"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "puniyu_command_builder",
+ "puniyu_task_builder",
+]
+
+[[package]]
 name = "puniyu_plugin_derive"
 version = "0.1.0"
 dependencies = [
- "convert_case",
- "croner",
  "proc-macro2",
  "quote",
  "syn 2.0.106",
 ]
 
 [[package]]
-name = "puniyu_plugin_test"
+name = "puniyu_plugin_registry"
 version = "0.1.0"
 dependencies = [
- "log",
- "puniyu_build",
- "puniyu_core",
- "puniyu_registry",
+ "futures",
+ "puniyu_command_builder",
+ "puniyu_command_registry",
+ "puniyu_library",
+ "puniyu_logger 0.6.1",
+ "puniyu_plugin_builder",
+ "puniyu_task_registry",
+ "puniyu_utils",
+ "thiserror 2.0.17",
 ]
 
 [[package]]
-name = "puniyu_registry"
+name = "puniyu_plugin_test"
 version = "0.1.0"
 dependencies = [
- "chrono-tz",
- "futures",
- "hashbrown 0.16.0",
- "inventory",
- "libloading",
- "log",
- "puniyu_logger",
- "puniyu_plugin_derive",
- "puniyu_utils",
- "thiserror 2.0.17",
- "tokio",
- "tokio-cron-scheduler",
- "uuid",
+ "puniyu_build",
+ "puniyu_core",
+ "puniyu_plugin",
 ]
 
 [[package]]
@@ -1596,19 +1844,49 @@ source = "git+https://github.com/Puniyu/server#ce26ce96c5c4f3294711434d96b9a23dd
 dependencies = [
  "actix-web",
  "futures-util",
- "puniyu_logger",
+ "puniyu_logger 0.5.6",
  "tokio",
 ]
 
 [[package]]
 name = "puniyu_system_info"
-version = "0.5.5"
+version = "0.5.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "35235482da2c6e41a1049021a1f665cfe1b4406e9a00779cad206dff3f131a3c"
+checksum = "f105a756ac0e85fd630597165ebb3bfe2461cd91b038491a3d4d122b2b0657c4"
 dependencies = [
- "chrono",
  "rust_decimal",
  "sysinfo",
+]
+
+[[package]]
+name = "puniyu_task_builder"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+]
+
+[[package]]
+name = "puniyu_task_derive"
+version = "0.1.0"
+dependencies = [
+ "convert_case",
+ "croner",
+ "proc-macro2",
+ "puniyu_derive_utils",
+ "quote",
+ "syn 2.0.106",
+]
+
+[[package]]
+name = "puniyu_task_registry"
+version = "0.1.0"
+dependencies = [
+ "chrono-tz",
+ "puniyu_logger 0.6.1",
+ "puniyu_task_builder",
+ "tokio",
+ "tokio-cron-scheduler",
+ "uuid",
 ]
 
 [[package]]
@@ -1617,9 +1895,7 @@ version = "0.1.0"
 dependencies = [
  "puniyu_system_info",
  "serde",
- "serde_json",
  "thiserror 2.0.17",
- "tokio",
  "toml",
 ]
 

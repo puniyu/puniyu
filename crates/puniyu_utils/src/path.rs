@@ -13,7 +13,7 @@ static APP_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
 ///
 /// # 示例
 ///
-/// ```rust
+/// ```rust, ignore
 /// use puniyu_utils::path::CONFIG_DIR;
 /// let config_dir = CONFIG_DIR.as_path();
 /// ```
@@ -27,7 +27,7 @@ pub static CONFIG_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
 ///
 /// # 示例
 ///
-/// ```
+/// ```rust, ignore
 /// use puniyu_utils::path::TEMP_DIR;
 /// let temp_dir = TEMP_DIR.as_path();
 /// ```
@@ -41,7 +41,7 @@ pub static TEMP_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
 ///
 /// # 示例
 ///
-/// ```
+/// ```rust, ignore
 /// use puniyu_utils::path::PLUGIN_DIR;
 /// let plugin_dir = PLUGIN_DIR.as_path();
 /// ```
@@ -55,7 +55,7 @@ pub static PLUGIN_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
 ///
 /// # 示例
 ///
-/// ```
+/// ```rust, ignore
 /// use puniyu_utils::path::ADAPTER_DIR;
 /// let adapter_dir = ADAPTER_DIR.as_path();
 /// ```

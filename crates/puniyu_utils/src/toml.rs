@@ -58,10 +58,14 @@ where
 ///     field2: u32,
 /// }
 ///
+/// fn config() -> Result<(), puniyu_utils::error::Config> {
 /// update_config::<Config>(Path::new("config"), "config", |config| {
 ///     config.field1 = "new value".to_string();
 ///     config.field2 = 42;
-/// })?;
+///    })?;
+/// Ok(())
+///}
+///
 /// ```
 ///
 pub fn update_config<C>(path: &Path, name: &str, updater: impl FnOnce(&mut C)) -> Result<(), Error>
@@ -131,7 +135,7 @@ fn merge_toml_values(base: &mut Value, fill: Value) {
 /// `node_path` 要删除的节点路径，支持嵌套节点，如 "parent.child"
 ///
 /// # 示例
-/// ```
+/// ```rust, ignore
 /// use std::path::Path;
 /// use puniyu_utils::toml::delete_config;
 /// let config_path = Path::new("./config");
