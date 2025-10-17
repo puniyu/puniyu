@@ -19,7 +19,7 @@ concurrency:
 
 jobs:
   release:
-    if: github.actor != 'puniyu[bot]'
+    if: github.actor != 'puniyu[bot]' || github.actor != 'allcontributors[bot]'
     runs-on: ubuntu-latest
     outputs:
       release_created: ${{ steps.release-please.outputs.release_created }}
@@ -46,6 +46,7 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
+    if: github.actor != 'puniyu[bot]' || github.actor != 'allcontributors[bot]'
     steps:
       - name: 检出代码
         uses: actions/checkout@v5
@@ -69,7 +70,7 @@ jobs:
     needs: [ release, test ]
     uses: ./.github/workflows/build.yaml
     with:
-      preview: ${{ needs.release.outputs.release_created == 'true' }}
+      preview: ${{ needs.release.outputs.release_created != 'true' }}
 
 
   publish-crates-io:
