@@ -64,17 +64,21 @@
     }
   ],
   "packages": {
-    "puniyu": {
-      "release-type": "rust"
+    ".": {
+      "release-type": "rust",
+      "component": "puniyu"
     },
     "puniyu_core": {
-      "release-type": "rust"
+      "release-type": "rust",
+      "component": "core"
     },    
     "puniyu_plugin": {
-      "release-type": "rust"
+      "release-type": "rust",
+      "component": "plugin"
     },
-    "puniyu_utils": {
-      "release-type": "rust"
+    "puniyu_adapter": {
+      "release-type": "rust",
+      "component": "adapter"
     }
   },
   "commit-search-depth": 50

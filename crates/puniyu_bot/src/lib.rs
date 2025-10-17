@@ -1,4 +1,4 @@
-use puniyu_adapter::{AccountInfo, AdapterInfo};
+use puniyu_adapter_builder::{AccountInfo, AdapterInfo};
 
 mod registry;
 pub use registry::BotRegistry;

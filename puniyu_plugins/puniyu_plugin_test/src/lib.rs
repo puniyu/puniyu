@@ -1,5 +1,8 @@
-use puniyu_core::plugin::prelude::*;
+mod command;
+mod task;
+
 use puniyu_core::{VERSION, logger};
+pub use puniyu_plugin::prelude::*;
 
 #[plugin]
 async fn min() -> Result<(), Box<dyn std::error::Error>> {
@@ -7,5 +10,3 @@ async fn min() -> Result<(), Box<dyn std::error::Error>> {
 	logger::info!("version: {}", version);
 	Ok(())
 }
-
-mod task;

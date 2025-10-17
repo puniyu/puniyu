@@ -24,6 +24,12 @@ impl AtElement {
 	}
 }
 
+impl RawMessage for AtElement {
+	fn raw(&self) -> String {
+		format!("[at:{}]", self.target_id)
+	}
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct FaceElement {
@@ -225,4 +231,121 @@ pub enum Elements {
 	Text(TextElement),
 	Video(VideoElement),
 	Xml(XmlElement),
+}
+
+impl Elements {
+	pub fn as_text(&self) -> Option<&str> {
+		match self {
+			Elements::Text(text_element) => Some(&text_element.text),
+			_ => None,
+		}
+	}
+}
+
+impl RawMessage for Elements {
+	fn raw(&self) -> String {
+		match self {
+			Elements::Text(text_element) => text_element.raw(),
+			Elements::Image(image_element) => image_element.raw(),
+			Elements::Json(json_element) => json_element.raw(),
+			Elements::Record(record_element) => record_element.raw(),
+			Elements::Reply(reply_element) => reply_element.raw(),
+			Elements::Video(video_element) => video_element.raw(),
+			Elements::Xml(xml_element) => xml_element.raw(),
+			Elements::At(at_element) => at_element.raw(),
+		}
+	}
+}
+
+impl RawMessage for Vec<Elements> {
+	fn raw(&self) -> String {
+		self.iter().map(|element| element.raw()).collect::<Vec<_>>().join("")
+	}
+}
+#[macro_export]
+macro_rules! element {
+	// 文本元素
+	(text,$text:expr) => {
+		Elements::Text(TextElement {
+			r#type: ElementType::Text.to_string(),
+			text: $text.to_string(),
+		})
+	};
+
+	// 图片元素
+	(image $file:expr) => {
+		$crate::element::Elements::Image($crate::element::ImageElement {
+			r#type: "image".to_string(),
+			file: $file.to_string(),
+			is_flash: false,
+			summary: None,
+		})
+	};
+
+	// @元素
+	(at $target_id:expr) => {
+		$crate::element::Elements::At($crate::element::AtElement {
+			r#type: "at".to_string(),
+			target_id: $target_id.to_string(),
+			name: None,
+		})
+	};
+
+	// @全体成员
+	(at_all) => {
+		$crate::element::Elements::At($crate::element::AtElement {
+			r#type: "at".to_string(),
+			target_id: "all".to_string(),
+			name: Some("全体成员".to_string()),
+		})
+	};
+
+	// 表情元素
+	(face $id:expr) => {
+		$crate::element::Elements::Face($crate::element::FaceElement {
+			r#type: "face".to_string(),
+			id: $id,
+		})
+	};
+
+	// 回复元素
+	(reply $message_id:expr) => {
+		$crate::element::Elements::Reply($crate::element::ReplyElement {
+			r#type: "reply".to_string(),
+			message_id: $message_id.to_string(),
+		})
+	};
+
+	// 语音元素
+	(record $file:expr) => {
+		$crate::element::Elements::Record($crate::element::RecordElement {
+			r#type: "record".to_string(),
+			file: $file.to_string(),
+		})
+	};
+
+	// 视频元素
+	(video $file:expr, $file_name:expr) => {
+		$crate::element::Elements::Video($crate::element::VideoElement {
+			r#type: "video".to_string(),
+			file: $file.to_string(),
+			file_name: $file_name.to_string(),
+		})
+	};
+
+	// JSON元素
+	(json $data:expr) => {
+		$crate::element::Elements::Json($crate::element::JsonElement {
+			r#type: "json".to_string(),
+			data: serde_json::Value::String($data.to_string()),
+		})
+	};
+
+	// XML元素
+	(xml $data:expr) => {
+		$crate::element::Elements::Xml($crate::element::XmlElement {
+			r#type: "xml".to_string(),
+			data: $data.to_string(),
+		})
+	};
 }

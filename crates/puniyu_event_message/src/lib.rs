@@ -1,8 +1,6 @@
 mod friend;
 
 pub use friend::FriendMessage;
-use serde::{Deserialize, Serialize};
-
 use puniyu_element::Elements;
 use puniyu_event_utils::contact::Contact;
 use puniyu_event_utils::sender::Sender;

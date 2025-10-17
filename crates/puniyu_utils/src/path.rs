@@ -47,7 +47,7 @@ pub static TEMP_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
 /// ```
 pub static PLUGIN_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
 	let mut path = BASE_DIR.to_path_buf();
-	path.push("../../../plugins");
+	path.push("plugins");
 	path
 });
 
@@ -61,6 +61,6 @@ pub static PLUGIN_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
 /// ```
 pub static ADAPTER_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
 	let mut path = BASE_DIR.to_path_buf();
-	path.push("../../../adapters");
+	path.push("adapters");
 	path
 });

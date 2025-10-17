@@ -1,12 +1,13 @@
-use puniyu_adapter::AdapterApi;
+use puniyu_adapter_builder::AdapterApi;
 use puniyu_element::Message;
 use puniyu_event_message::MessageBase;
 use puniyu_event_utils::contact::Contact;
 use std::sync::Arc;
 
+#[derive(Clone)]
 pub struct Bot {
 	pub contact: Contact,
-	pub(crate) api: Box<dyn AdapterApi>,
+	pub api: Arc<dyn AdapterApi>,
 }
 
 impl Bot {
@@ -18,4 +19,18 @@ impl Bot {
 	}
 }
 
-pub struct EventContext(Vec<Arc<dyn MessageBase>>);
+pub struct EventContext(pub Arc<dyn MessageBase>);
+
+#[macro_export]
+macro_rules! create_context_bot {
+	($contact:expr, $api:expr) => {
+		Bot { contact: $contact, api: std::sync::Arc::from($api) }
+	};
+}
+
+#[macro_export]
+macro_rules! create_event_context {
+	($event:expr) => {
+		EventContext(std::sync::Arc::from($event))
+	};
+}

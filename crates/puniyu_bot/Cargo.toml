@@ -10,6 +10,6 @@ edition.workspace = true
 rust-version.workspace = true
 
 [dependencies]
-puniyu_logger = { workspace = true }
+puniyu_logger.workspace = true
 
-puniyu_adapter = { path = "../puniyu_adapter" }
+puniyu_adapter_builder = { path = "../puniyu_adapter_builder" }

@@ -75,7 +75,7 @@ impl fmt::Display for FriendMessage {
 
 #[macro_export]
 macro_rules! create_friend_message {
-	($event_id:expr, $contact:expr, $self_id:expr, $user_id:expr, $message_id:expr, $elements:expr, $sender:expr) => {{
+	($adapter:expr, $event_id:expr, $contact:expr, $self_id:expr, $user_id:expr, $message_id:expr, $elements:expr, $sender:expr) => {{
 		let message = FriendMessage {
 			event_id: $event_id.into(),
 			contact: $contact,
@@ -85,7 +85,7 @@ macro_rules! create_friend_message {
 			elements: $elements,
 			sender: $sender,
 		};
-		let event = Event::Message(MessageEvent::Friend(message));
+		let event = Event::Message(std::sync::Arc::from($adapter), MessageEvent::Friend(message));
 		send_event(event);
 	}};
 }

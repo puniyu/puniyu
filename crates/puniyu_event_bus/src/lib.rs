@@ -1,8 +1,8 @@
-mod bus;
-
 use puniyu_event_core::Event;
-use puniyu_event_handler::{HandlerRegistry, MessageHandler};
-use puniyu_event_matcher::{MatcherRegistry, MessageMatcher};
+use puniyu_event_handler::{Handler, MessageHandler};
+use puniyu_event_matcher::{Matcher, MessageMatcher};
+use puniyu_logger::owo_colors::OwoColorize;
+use puniyu_logger::warn;
 use std::sync::{Arc, Mutex, OnceLock};
 use strum::{Display, EnumString, IntoStaticStr};
 use tokio::sync::mpsc;
@@ -21,16 +21,7 @@ pub enum EventType {
 }
 
 pub static EVENT_BUS: OnceLock<Arc<Mutex<EventBus>>> = OnceLock::new();
-static HANDLER_REGISTRY: OnceLock<Arc<Mutex<HandlerRegistry>>> = OnceLock::new();
-static MATCHER_REGISTRY: OnceLock<Arc<Mutex<MatcherRegistry>>> = OnceLock::new();
 
-fn get_handler_registry() -> Arc<Mutex<HandlerRegistry>> {
-	HANDLER_REGISTRY.get_or_init(|| Arc::new(Mutex::new(HandlerRegistry::new()))).clone()
-}
-
-fn get_matcher_registry() -> Arc<Mutex<MatcherRegistry>> {
-	MATCHER_REGISTRY.get_or_init(|| Arc::new(Mutex::new(MatcherRegistry::new()))).clone()
-}
 pub type EventSender = mpsc::UnboundedSender<Event>;
 pub type EventReceiver = mpsc::UnboundedReceiver<Event>;
 
@@ -41,10 +32,6 @@ pub struct EventBus {
 
 impl Default for EventBus {
 	fn default() -> Self {
-		let handler_registry = get_handler_registry();
-		let matcher_registry = get_matcher_registry();
-		handler_registry.lock().unwrap().register(Arc::new(MessageHandler));
-		matcher_registry.lock().unwrap().register(Arc::new(MessageMatcher));
 		let (sender, receiver) = mpsc::unbounded_channel();
 		Self { sender, receiver: Arc::new(Mutex::new(Some(receiver))) }
 	}
@@ -56,22 +43,19 @@ impl EventBus {
 	}
 
 	pub fn send_event(&self, event: Event) -> Result<(), Box<mpsc::error::SendError<Event>>> {
-		self.sender.send(event).map_err(Box::new)
+		self.sender.send(event).map_err(|e| {
+			warn!("[{}]: 事件发送失败 {:?}", "Event".blue(), e);
+			Box::new(e)
+		})
 	}
 
 	pub fn run(&mut self) {
 		let receiver = self.receiver.lock().unwrap().take().unwrap();
 		tokio::spawn(async move {
-			let handlers = get_handler_registry().lock().unwrap().get_all();
-			let matchers = get_matcher_registry().lock().unwrap().get_all();
 			let mut receiver = receiver;
 			while let Some(event) = receiver.recv().await {
-				let is_matched = matchers.iter().any(|matcher| matcher.matches(&event));
-
-				if is_matched {
-					for handler in &handlers {
-						handler.handle(&event).await;
-					}
+				if let (Some(plugin_name), match_text) = MessageMatcher.matches(&event) {
+					MessageHandler.handle(&event, &plugin_name, match_text.unwrap()).await;
 				}
 			}
 		});

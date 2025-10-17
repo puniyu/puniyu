@@ -1,9 +1,10 @@
-use puniyu_core::adapter::prelude::*;
+use puniyu_adapter::prelude::*;
 
 pub struct ConsoleAdapterApi;
 
 impl AdapterApi for ConsoleAdapterApi {
 	fn send_msg(&self, contact: Contact, element: Message) {
+		println!("{:?}", contact);
 		match contact {
 			Contact::Friend(friend) => {
 				println!("Friend: {}", friend.name)

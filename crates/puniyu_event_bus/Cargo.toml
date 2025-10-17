@@ -10,8 +10,9 @@ edition.workspace = true
 rust-version.workspace = true
 
 [dependencies]
-tokio = { workspace = true }
-strum = { workspace = true }
+tokio.workspace = true
+strum.workspace = true
+puniyu_logger.workspace = true
 
 puniyu_event_matcher = { path = "../puniyu_event_matcher" }
 puniyu_event_handler = { path = "../puniyu_event_handler" }

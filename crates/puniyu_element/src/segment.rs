@@ -21,4 +21,14 @@ macro_rules! segment {
 			),
 		}
 	};
+	(text, $text:expr) => {
+		Segment {
+			r#type: ElementType::Text.to_string(),
+			data: serde_json::json!(
+				{
+					"text": $text
+				}
+			),
+		}
+	};
 }

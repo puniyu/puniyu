@@ -7,8 +7,8 @@ use serde_json::json;
 pub struct Message(Vec<Segment>);
 
 impl From<Vec<Segment>> for Message {
-	fn from(v: Vec<Segment>) -> Self {
-		Message(v)
+	fn from(message: Vec<Segment>) -> Self {
+		Message(message)
 	}
 }
 
@@ -19,8 +19,8 @@ impl From<Segment> for Message {
 }
 
 impl From<Message> for Vec<Segment> {
-	fn from(v: Message) -> Self {
-		v.0
+	fn from(message: Message) -> Self {
+		message.0
 	}
 }
 

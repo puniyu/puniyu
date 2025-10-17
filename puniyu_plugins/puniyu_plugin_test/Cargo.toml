@@ -13,6 +13,7 @@ rust-version.workspace = true
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
+puniyu_plugin = { path = "../../puniyu_plugin" }
 puniyu_core = { path = "../../puniyu_core" }
 
 
@@ -21,5 +22,5 @@ puniyu_build = { path = "../../crates/puniyu_build" }
 
 
 [features]
-default = ["cdylib"]
+default = []
 cdylib = []

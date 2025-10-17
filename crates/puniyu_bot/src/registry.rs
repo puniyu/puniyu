@@ -1,5 +1,5 @@
 use crate::Bot;
-use puniyu_adapter::{AccountInfo, AdapterInfo};
+use puniyu_adapter_builder::{AccountInfo, AdapterInfo};
 use puniyu_logger::info;
 use std::sync::{
 	Arc, LazyLock, RwLock,

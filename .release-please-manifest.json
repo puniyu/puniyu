@@ -1,6 +1,6 @@
 {
-  "puniyu": "0.1.0",
+  ".": "0.1.0",
   "puniyu_core": "0.1.0",
   "puniyu_plugin": "0.1.0",
-  "puniyu_utils": "0.1.0"
+  "puniyu_adapter": "0.1.0"
 }

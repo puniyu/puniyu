@@ -7,10 +7,12 @@ use crate::{
 };
 use convert_case::{Case, Casing};
 use figlet_rs::FIGfont;
-use puniyu_adapter::{AdapterBuilder, AdapterRegistry, AdapterType};
+use puniyu_adapter_builder::{AdapterBuilder, AdapterType};
+use puniyu_adapter_registry::AdapterRegistry;
 use puniyu_event_bus::init_event_bus;
-use puniyu_plugin::{PluginBuilder, PluginRegistry, PluginType};
-use puniyu_task::{SCHEDULER, init_scheduler};
+use puniyu_plugin_builder::{PluginBuilder, PluginType};
+use puniyu_plugin_registry::PluginRegistry;
+use puniyu_task_registry::{SCHEDULER, init_scheduler};
 pub use puniyu_utils::APP_NAME;
 use puniyu_utils::path::{ADAPTER_DIR, PLUGIN_DIR};
 use std::sync::{OnceLock, RwLock};

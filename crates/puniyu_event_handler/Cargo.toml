@@ -10,6 +10,10 @@ edition.workspace = true
 rust-version.workspace = true
 
 [dependencies]
-async-trait = { workspace = true }
+async-trait.workspace = true
 
 puniyu_event_core = { path = "../puniyu_event_core" }
+puniyu_command_registry = { path = "../puniyu_command_registry" }
+puniyu_command_builder = { path = "../puniyu_command_builder" }
+puniyu_event_context = { path = "../puniyu_event_context" }
+puniyu_event_message = { path = "../puniyu_event_message" }

@@ -10,8 +10,11 @@ edition.workspace = true
 rust-version.workspace = true
 
 [dependencies]
-puniyu_logger = { workspace = true }
+puniyu_logger.workspace = true
 
+puniyu_element = { path = "../puniyu_element" }
 puniyu_event_message = { path = "../puniyu_event_message" }
 puniyu_event_core = { path = "../puniyu_event_core" }
 puniyu_event_utils = { path = "../puniyu_event_utils" }
+puniyu_command_registry = { path = "../puniyu_command_registry" }
+itertools = "0.14.0"

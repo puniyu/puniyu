@@ -10,8 +10,8 @@ edition.workspace = true
 rust-version.workspace = true
 
 [dependencies]
-strum = { workspace = true }
-serde = { workspace = true }
+strum.workspace = true
 
+puniyu_adapter_builder = { path = "../puniyu_adapter_builder" }
 puniyu_element = { path = "../puniyu_element" }
 puniyu_event_utils = { path = "../puniyu_event_utils" }

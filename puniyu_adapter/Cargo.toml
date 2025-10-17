@@ -1,0 +1,25 @@
+[package]
+name = "puniyu_adapter"
+version = "0.1.0"
+authors.workspace = true
+license.workspace = true
+readme.workspace = true
+homepage.workspace = true
+repository.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+async-trait.workspace = true
+puniyu_logger.workspace = true
+serde_json.workspace = true
+
+puniyu_adapter_builder = { path = "../crates/puniyu_adapter_builder" }
+puniyu_adapter_derive = { path = "../crates/puniyu_adapter_derive" }
+puniyu_bot = { path = "../crates/puniyu_bot" }
+puniyu_element = { path = "../crates/puniyu_element" }
+puniyu_event_core = { path = "../crates/puniyu_event_core" }
+puniyu_event_bus = { path = "../crates/puniyu_event_bus" }
+puniyu_event_message = { path = "../crates/puniyu_event_message" }
+puniyu_event_utils = { path = "../crates/puniyu_event_utils" }
+puniyu_utils = { path = "../crates/puniyu_utils" }

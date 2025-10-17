@@ -1,4 +1,8 @@
-use puniyu_core::adapter::prelude::*;
+use puniyu_adapter_builder::{
+	AccountInfo, AdapterCommunication, AdapterInfo, AdapterPlatform, AdapterProtocol,
+	AdapterStandard, account_info, adapter_info,
+};
+use puniyu_bot::{BotRegistry, register_bot};
 
 #[test]
 fn get_bot() {

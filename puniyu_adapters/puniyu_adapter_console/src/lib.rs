@@ -1,6 +1,8 @@
 mod api;
 
-use puniyu_core::adapter::prelude::*;
+use async_trait::async_trait;
+use puniyu_adapter::prelude::*;
+use puniyu_core::APP_NAME;
 use std::env;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::thread;
@@ -31,6 +33,10 @@ impl AdapterBuilder for Adapter {
 		&api::ConsoleAdapterApi
 	}
 
+	fn abi_version(&self) -> &'static str {
+		puniyu_adapter::ABI_VERSION
+	}
+
 	async fn init(&self) -> Result<(), Box<dyn std::error::Error>> {
 		let bot_id = "console";
 		let name = APP_NAME.get().unwrap();
@@ -45,9 +51,10 @@ impl AdapterBuilder for Adapter {
 				let message = {
 					let mut input = String::new();
 					std::io::stdin().read_line(&mut input).unwrap();
-					input.trim().to_string()
+					input.trim_end().to_string()
 				};
-				if message == "quit" {
+
+				if matches!(message.as_str(), "quit" | "exit" | "q") {
 					std::process::exit(0);
 				}
 
@@ -57,13 +64,16 @@ impl AdapterBuilder for Adapter {
 				let event_id = EVENT_ID.fetch_add(1, Ordering::Relaxed).to_string();
 				let message_id = MESSAGE_ID.fetch_add(1, Ordering::Relaxed).to_string();
 
+				let adapter = Arc::new(api::ConsoleAdapterApi) as Arc<dyn AdapterApi>;
+
 				create_friend_message!(
+					adapter,
 					event_id,
 					contact,
 					bot_id,
 					bot_id,
 					message_id,
-					vec![],
+					vec![element!(text, message)],
 					sender
 				);
 			}

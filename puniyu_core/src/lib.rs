@@ -11,11 +11,8 @@ pub mod plugin;
 mod version;
 pub use plugin::get_plugin_info;
 
-pub mod adapter;
-
 pub use version::VERSION;
 
 pub use async_trait::async_trait;
-pub use puniyu_plugin::VERSION as ABI_VERSION;
 
 pub use inventory;

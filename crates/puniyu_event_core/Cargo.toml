@@ -10,5 +10,5 @@ edition.workspace = true
 rust-version.workspace = true
 
 [dependencies]
-
 puniyu_event_message = { path = "../puniyu_event_message" }
+puniyu_adapter_builder = { path = "../puniyu_adapter_builder" }
