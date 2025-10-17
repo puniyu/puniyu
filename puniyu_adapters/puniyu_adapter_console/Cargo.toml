@@ -20,7 +20,7 @@ async-trait.workspace = true
 tokio.workspace = true
 
 [build-dependencies]
-puniyu_build = { path = "../../crates/puniyu_build" }
+puniyu_build = { path = "../../puniyu_build" }
 
 
 [features]

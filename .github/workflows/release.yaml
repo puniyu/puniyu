@@ -1,0 +1,144 @@
+name: release
+on:
+  push:
+    branches:
+      - main
+  pull_request_target:
+    branches-ignore:
+      - 'release-please**'
+  workflow_dispatch:
+
+
+env:
+  APP_NAME: puniyu
+
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  release:
+    if: github.actor != 'puniyu[bot]'
+    runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.release-please.outputs.release_created }}
+      tag_name: ${{ steps.release-please.outputs.tag_name }}
+      core: ${{ steps.release-please.outputs['puiyu_core--release_created'] }}
+      build: ${{ steps.release-please.outputs['puiyu_build--release_created'] }}
+      adapter: ${{ steps.release-please.outputs['puiyu_adapter--release_created'] }}
+      plugin: ${{ steps.release-please.outputs['puiyu_plugin--release_created'] }}
+    steps:
+      - name: 获取token
+        uses: actions/create-github-app-token@v2
+        id: app-token
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - name: 运行 release-please-action
+        id: release-please
+        uses: googleapis/release-please-action@v4
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          config-file: .release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+
+      - name: 设置 Rust 工具链
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: 设置 Rust 缓存
+        uses: swatinem/rust-cache@v2
+        with:
+          prefix-key: ${{ env.APP_NAME }}
+
+      - name: 单元测试
+        run: cargo test
+
+
+  build:
+    needs: [ release, test ]
+    uses: ./.github/workflows/build.yaml
+    with:
+      preview: ${{ needs.release.outputs.release_created == 'true' }}
+
+
+  publish-crates-io:
+    needs: [ release, test ]
+    if: ${{ needs.release.outputs.release_created || needs.release.outputs.core || needs.release.outputs.build || needs.release.outputs.adapter || needs.release.outputs.plugin }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出仓库
+        uses: actions/checkout@v5
+
+      - name: 设置 Rust 工具链
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: 设置 rust 缓存
+        uses: swatinem/rust-cache@v2
+        with:
+          prefix-key: ${{ env.APP_NAME }}
+
+      - name: 发布puniyu_build
+        if: needs.release.outputs.build
+        run: |
+          cargo publish --package puniyu_build
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_API_TOKEN }}
+
+      - name: 发布puniyu_core
+        if: needs.release.outputs.core
+        run: |
+          cargo publish --package puniyu_core
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_API_TOKEN }}
+
+      - name: 发布puniyu_adapter
+        if: needs.release.outputs.adapter
+        run: |
+          cargo publish --package puniyu_adapter
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_API_TOKEN }}
+
+      - name: 发布puniyu_plugin
+        if: needs.release.outputs.plugin
+        run: |
+          cargo publish --package puniyu_plugin
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_API_TOKEN }
+
+  publish-github-release:
+    needs: [ release, build ]
+    if: ${{ needs.release.outputs.release_created }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: 获取token
+        uses: actions/create-github-app-token@v2
+        id: app-token
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - name: 下载构建产物
+        uses: dawidd6/action-download-artifact@v11
+        with:
+          name: ^${{ env.APP_NAME }}.*
+          name_is_regexp: true
+          skip_unpack: true
+
+      - name: 上传Release
+        uses: softprops/action-gh-release@v2
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          files: |
+            ${{ env.APP_NAME }}-*
+          tag_name: ${{ needs.release.outputs.tag_name }}
