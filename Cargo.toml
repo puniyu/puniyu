@@ -6,7 +6,6 @@ members = [
     "puniyu_plugin",
     "puniyu_adapter",
     "puniyu_plugins/*",
-    "puniyu_adapters/*",
 ]
 resolver = "2"
 
@@ -14,8 +13,8 @@ resolver = "2"
 authors = ["wuliya <3369906077@qq.com>"]
 license = "LGPL-3.0-only"
 readme = "README.md"
-homepage = "https://github.com/Puniyu/puniyu"
-repository = "https://github.com/Puniyu/puniyu"
+homepage = "https://github.com/puniyu/puniyu"
+repository = "https://github.com/puniyu/puniyu"
 edition = "2024"
 rust-version = "1.88.0"
 
@@ -38,9 +37,13 @@ puniyu_logger = { version = "0.6.1" }
 puniyu_server = { git = "https://github.com/Puniyu/server" }
 
 
+[patch."https://github.com/puniyu/puniyu"] # 未来版本会移除
+puniyu_adapter = { path = "./puniyu_adapter" }
+puniyu_core = { path = "./puniyu_core" }
+
+
 [profile.release]
 lto = "thin"
-panic = "abort"
 incremental = false
 
 [profile.dev]

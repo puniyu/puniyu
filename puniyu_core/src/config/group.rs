@@ -10,7 +10,7 @@ pub(crate) static GROUP_CONFIG: LazyLock<Arc<RwLock<GroupConfig>>> = LazyLock::n
 	Arc::new(RwLock::new(toml::read_config(CONFIG_DIR.as_path(), "group").unwrap_or_default()))
 });
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct GroupConfigFile {
+pub struct GroupConfigOption {
 	/// 全局cd冷却时间
 	#[serde(default = "default_group_cd")]
 	pub cd: u8,
@@ -27,7 +27,7 @@ fn default_group_user_cd() -> u8 {
 	0
 }
 
-impl GroupConfigFile {
+impl GroupConfigOption {
 	pub fn cd(&self) -> u8 {
 		self.cd
 	}
@@ -39,36 +39,38 @@ impl GroupConfigFile {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct GroupConfig {
 	#[serde(default)]
-	group: HashMap<String, GroupConfigFile>,
+	global: GroupConfigOption,
+	#[serde(default, skip_serializing_if = "HashMap::is_empty")]
+	group: HashMap<String, GroupConfigOption>,
 }
 
-impl Default for GroupConfigFile {
+impl Default for GroupConfigOption {
 	fn default() -> Self {
 		Self { cd: default_group_cd(), user_cd: default_group_user_cd() }
 	}
 }
 
 impl GroupConfig {
-	/// 根据群组ID获取群组配置
-	///
-	/// # 参数
-	///
-	/// `group_id` - 群组ID
-	///
-	/// # 返回值
-	///
-	/// 返回对应群组的配置，如果找不到则返回默认配置
+	/// 根据群组配置, 包括全局和所有群组的配置
 	pub fn get() -> Self {
 		GROUP_CONFIG.read().unwrap().clone()
 	}
 
-	/// 获取全局cd冷却时间
-	///
-	/// # 参数
-	///
-	/// `group_id` - 群组ID
-	pub fn group(&self, group_id: &str) -> GroupConfigFile {
+	/// 获取指定群组配置
+	pub fn group(&self, group_id: &str) -> GroupConfigOption {
 		let config = GROUP_CONFIG.read().unwrap();
 		config.group.get(group_id).cloned().unwrap_or_default()
+	}
+
+	/// 获取所有群组配置
+	pub fn groups(&self) -> Vec<GroupConfigOption> {
+		let config = GROUP_CONFIG.read().unwrap();
+		config.group.values().cloned().collect()
+	}
+
+	/// 获取全局群组配置
+	pub fn global(&self) -> GroupConfigOption {
+		let config = GROUP_CONFIG.read().unwrap();
+		config.global.clone()
 	}
 }

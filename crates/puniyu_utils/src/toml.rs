@@ -58,14 +58,11 @@ where
 ///     field2: u32,
 /// }
 ///
-/// fn config() -> Result<(), puniyu_utils::error::Config> {
+///
 /// update_config::<Config>(Path::new("config"), "config", |config| {
 ///     config.field1 = "new value".to_string();
 ///     config.field2 = 42;
-///    })?;
-/// Ok(())
-///}
-///
+///    });
 /// ```
 ///
 pub fn update_config<C>(path: &Path, name: &str, updater: impl FnOnce(&mut C)) -> Result<(), Error>
@@ -117,11 +114,18 @@ where
 
 /// 递归合并两个 TOML 值
 fn merge_toml_values(base: &mut Value, fill: Value) {
-	if let (Value::Table(base_table), Value::Table(fill_table)) = (base, fill) {
-		for (key, fill_value) in fill_table {
-			if !base_table.contains_key(&key) {
-				base_table.insert(key, fill_value);
+	match (base, fill) {
+		(Value::Table(base_table), Value::Table(fill_table)) => {
+			for (key, fill_value) in fill_table {
+				if let Some(base_value) = base_table.get_mut(&key) {
+					merge_toml_values(base_value, fill_value);
+				} else {
+					base_table.insert(key, fill_value);
+				}
 			}
+		}
+		(base, fill) => {
+			*base = fill;
 		}
 	}
 }
@@ -135,7 +139,7 @@ fn merge_toml_values(base: &mut Value, fill: Value) {
 /// `node_path` 要删除的节点路径，支持嵌套节点，如 "parent.child"
 ///
 /// # 示例
-/// ```rust, ignore
+/// ```
 /// use std::path::Path;
 /// use puniyu_utils::toml::delete_config;
 /// let config_path = Path::new("./config");
@@ -155,7 +159,7 @@ pub fn delete_config(path: &Path, name: &str, node_path: &str) -> Result<(), Err
 	let mut toml_value: Value = from_str(&config_str).map_err(|_| Error::Parse)?;
 	let node_keys: Vec<&str> = node_path.split('.').collect();
 
-	delete_nested_node(
+	delete_node(
 		&mut toml_value,
 		&node_keys,
 		|value, key| {
@@ -188,27 +192,16 @@ fn write_to_file<T: Serialize>(full_path: &Path, data: &T) -> Result<(), Error> 
 
 /// 通用函数，删除嵌套节点
 ///
-/// 该函数提供了一种通用的方法来删除嵌套数据结构中的节点。它通过提供获取和删除操作的回调函数，
-/// 可以适用于不同的数据结构类型（如JSON、YAML等）。
+/// 该函数提供了一种通用的方法来删除嵌套数据结构中的节点。
 ///
 /// # 参数
 ///
 /// * `value` - 需要操作的数据结构的可变引用
-/// * `node_keys` - 表示节点路径的字符串切片数组，例如 ["parent", "child", "grandchild"]
-/// * `get_mut_mapping` - 闭包函数，用于获取指定键的可变引用，如果键不存在则返回None
+/// * `node_keys` - 表示节点路径的字符串切片数组
+/// * `get_mut_mapping` - 闭包函数，用于获取指定键的可变引用
 /// * `remove_from_mapping` - 闭包函数，用于从数据结构中删除指定键
 ///
-/// # 返回值
-///
-/// 返回Result<(), Box<dyn Error>>，成功时返回Ok(())，失败时返回错误信息
-///
-/// # 泛型参数
-///
-/// * `V` - 数据结构的类型
-/// * `F` - 获取可变引用的闭包类型，需要实现Fn(&mut V, &str) -> Option<&mut V>
-/// * `G` - 删除节点的闭包类型，需要实现Fn(&mut V, &str)
-///
-fn delete_nested_node<V, G, M>(
+fn delete_node<V, G, M>(
 	value: &mut V,
 	node_keys: &[&str],
 	get_mut_mapping: G,
@@ -222,13 +215,13 @@ where
 		return Ok(());
 	}
 
-	let current_key = node_keys[0];
+	let (current_key, remaining_keys) = node_keys.split_first().unwrap();
 
-	if node_keys.len() == 1 {
+	if remaining_keys.is_empty() {
 		remove_from_mapping(value, current_key);
 		Ok(())
 	} else if let Some(child_value) = get_mut_mapping(value, current_key) {
-		delete_nested_node(child_value, &node_keys[1..], get_mut_mapping, remove_from_mapping)
+		delete_node(child_value, remaining_keys, get_mut_mapping, remove_from_mapping)
 	} else {
 		Ok(())
 	}

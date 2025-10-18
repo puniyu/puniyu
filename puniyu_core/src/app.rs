@@ -1,7 +1,7 @@
 use crate::{
 	VERSION, common,
 	common::format_duration,
-	config::{app::AppConfig, config_watcher, init_config},
+	config::{config_watcher, init_config},
 	logger::log_init,
 	logger::{OwoColorize, debug, error, info},
 };
@@ -72,10 +72,11 @@ impl App {
 		);
 		#[cfg(feature = "server")]
 		{
+			use crate::config::Config;
 			use std::net::IpAddr;
-			let config = AppConfig::get();
-			let host = IpAddr::V4(config.server.host().parse().unwrap());
-			let port = config.server.port();
+			let config = Config::app().server();
+			let host = IpAddr::V4(config.host().parse().unwrap());
+			let port = config.port();
 			puniyu_server::run_server_spawn(Some(host), Some(port)).await;
 		}
 		signal::ctrl_c().await.unwrap();
