@@ -25,7 +25,7 @@ jobs:
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
 
       - name: 贡献消息
-        uses: smartpr-labeler/smart-pr-labeler@v1
+        uses: rajithaeyee/smart-pr-labeler@v1
         with:
           token: ${{ steps.app-token.outputs.token }}
 

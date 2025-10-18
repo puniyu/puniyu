@@ -22,7 +22,7 @@ concurrency:
 
 jobs:
   release:
-    if: github.actor != 'allcontributors[bot]' ||  !startsWith(github.head_ref, 'release-please')
+    if: github.actor != 'allcontributors[bot]' || github.actor != 'puniyu[bot]' || !startsWith(github.head_ref, 'release-please')
     runs-on: ubuntu-latest
     outputs:
       release_created: ${{ steps.release-please.outputs.release_created }}
