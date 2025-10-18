@@ -15,14 +15,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 获取token
-        uses: actions/create-github-app-token@v2
+        uses: actions/create-github-app-token@67018539274d69449ef7c02e8e71183d1719ab42 # v2
         id: app-token
         with:
           app-id: ${{ secrets.APP_ID }}
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
 
       - name: 贡献消息
-        uses: plbstl/first-contribution@v4
+        uses: plbstl/first-contribution@4b2b042fffa26792504a18e49aa9543a87bec077 # v4
         with:
           token: ${{ steps.app-token.outputs.token }}
           issue-opened-msg: 👋 你好, @{fc-author}！感谢你提交了第一个问题！🔍 你的细心帮助我们发现了新的改进机会，我们会尽快处理。🚀 如果你有更多的想法或疑问，请继续分享，我们非常乐意听取你的声音！🌟 感谢你的支持！
@@ -35,14 +35,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 获取token
-        uses: actions/create-github-app-token@v2
+        uses: actions/create-github-app-token@67018539274d69449ef7c02e8e71183d1719ab42 # v2
         id: app-token
         with:
           app-id: ${{ secrets.APP_ID }}
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
 
       - name: 添加贡献者
-        uses: plbstl/first-contribution@v4
+        uses: plbstl/first-contribution@4b2b042fffa26792504a18e49aa9543a87bec077 # v4
         with:
           token: ${{ steps.app-token.outputs.token }}
           pr-merged-msg: >

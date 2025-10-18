@@ -30,7 +30,7 @@ jobs:
       plugin: ${{ steps.release-please.outputs['puiyu_plugin--release_created'] }}
     steps:
       - name: 获取token
-        uses: actions/create-github-app-token@v2
+        uses: actions/create-github-app-token@67018539274d69449ef7c02e8e71183d1719ab42 # v2
         id: app-token
         with:
           app-id: ${{ secrets.APP_ID }}
@@ -38,7 +38,7 @@ jobs:
 
       - name: 运行 release-please-action
         id: release-please
-        uses: googleapis/release-please-action@v4
+        uses: googleapis/release-please-action@c2a5a2bd6a758a0937f1ddb1e8950609867ed15c # v4
         with:
           token: ${{ steps.app-token.outputs.token }}
           config-file: .release-please-config.json
@@ -49,7 +49,7 @@ jobs:
     if: github.actor != 'puniyu[bot]' || github.actor != 'allcontributors[bot]'
     steps:
       - name: 检出代码
-        uses: actions/checkout@v5
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
         with:
           ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
           repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
@@ -58,12 +58,12 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
 
       - name: 设置 Rust 缓存
-        uses: swatinem/rust-cache@v2
+        uses: swatinem/rust-cache@98c8021b550208e191a6a3145459bfc9fb29c4c0 # v2
         with:
           prefix-key: ${{ env.APP_NAME }}
 
       - name: 设置apt 包
-        uses: awalsh128/cache-apt-pkgs-action@v1
+        uses: awalsh128/cache-apt-pkgs-action@2c09a5e66da6c8016428a2172bd76e5e4f14bb17 # v1
         with:
           packages: libdrm-dev
 
@@ -84,13 +84,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 检出仓库
-        uses: actions/checkout@v5
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
 
       - name: 设置 Rust 工具链
         uses: dtolnay/rust-toolchain@stable
 
       - name: 设置 rust 缓存
-        uses: swatinem/rust-cache@v2
+        uses: swatinem/rust-cache@98c8021b550208e191a6a3145459bfc9fb29c4c0 # v2
         with:
           prefix-key: ${{ env.APP_NAME }}
 
@@ -128,21 +128,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 获取token
-        uses: actions/create-github-app-token@v2
+        uses: actions/create-github-app-token@67018539274d69449ef7c02e8e71183d1719ab42 # v2
         id: app-token
         with:
           app-id: ${{ secrets.APP_ID }}
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
 
       - name: 下载构建产物
-        uses: dawidd6/action-download-artifact@v11
+        uses: dawidd6/action-download-artifact@ac66b43f0e6a346234dd65d4d0c8fbb31cb316e5 # v11
         with:
           name: "^${{ env.APP_NAME }}.*"
           name_is_regexp: true
           skip_unpack: true
 
       - name: 上传Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@6da8fa9354ddfdc4aeace5fc48d7f679b5214090 # v2
         with:
           token: ${{ steps.app-token.outputs.token }}
           files: |
