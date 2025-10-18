@@ -10,7 +10,7 @@ use puniyu_utils::{path::CONFIG_DIR, toml::merge_config};
 use serde::{Deserialize, Serialize, de::DeserializeOwned};
 use std::{env, sync::mpsc, thread, time::Duration};
 
-pub(crate) mod app;
+mod app;
 mod bot;
 mod group;
 
@@ -85,11 +85,18 @@ pub fn init_config() {
 		std::fs::create_dir_all(CONFIG_DIR.as_path())
 			.unwrap_or_else(|_| error!("[配置文件] 初始化配置文件失败"));
 	}
-	let default_config = AppConfig::default();
-	let user_config = AppConfig::get();
-	merge_config(CONFIG_DIR.as_path(), "app", &default_config, &user_config).unwrap_or_else(|e| {
-		error!("[配置文件] 合并Bot配置失败: {}", e);
-	});
+	merge_config(CONFIG_DIR.as_path(), "app", &AppConfig::default(), &AppConfig::get())
+		.unwrap_or_else(|e| {
+			error!("[配置文件] 合并APP配置失败: {}", e);
+		});
+	merge_config(CONFIG_DIR.as_path(), "group", &GroupConfig::default(), &GroupConfig::get())
+		.unwrap_or_else(|e| {
+			error!("[配置文件] 合并Group配置失败: {}", e);
+		});
+	merge_config(CONFIG_DIR.as_path(), "bot", &BotConfig::default(), &BotConfig::get())
+		.unwrap_or_else(|e| {
+			error!("[配置文件] 合并Bot配置失败: {}", e);
+		});
 	init_env();
 }
 
@@ -164,7 +171,7 @@ pub(crate) fn config_watcher() {
 }
 
 fn init_env() {
-	let logger_config = Config::app().logger;
+	let logger_config = Config::app().logger();
 	env::var("LOGGER_ENABLE").unwrap_or_else(|_| {
 		let logger_enable = logger_config.enable_file();
 		unsafe {

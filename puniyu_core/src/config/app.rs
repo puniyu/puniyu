@@ -13,16 +13,16 @@ pub(crate) static APP_CONFIG: LazyLock<Arc<RwLock<AppConfig>>> = LazyLock::new(|
 pub struct LoggerConfig {
 	/// 是否启用文件日志记录
 	#[serde(default = "default_logger_file_enable")]
-	pub enable_file: bool,
+	enable_file: bool,
 	/// 日志等级
 	#[serde(default = "default_logger_level")]
-	pub level: String,
+	level: String,
 	/// 日志路径
 	#[serde(default = "default_logger_path")]
-	pub path: String,
+	path: String,
 	/// 日志保留天数
 	#[serde(default = "default_logger_retention_days")]
-	pub retention_days: u8,
+	retention_days: u8,
 }
 
 impl Default for LoggerConfig {
@@ -108,10 +108,10 @@ impl ServerConfig {
 pub struct AppConfig {
 	/// 日志配置
 	#[serde(default)]
-	pub logger: LoggerConfig,
+	logger: LoggerConfig,
 	/// 服务器配置
 	#[serde(default)]
-	pub server: ServerConfig,
+	server: ServerConfig,
 }
 
 impl AppConfig {

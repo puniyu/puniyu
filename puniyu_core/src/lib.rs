@@ -1,6 +1,7 @@
 pub mod bot;
 pub mod common;
-pub mod config;
+mod config;
+pub use config::Config;
 pub mod error;
 pub mod logger;
 mod system;

@@ -9,12 +9,16 @@ repository.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 
+[lib]
+doctest = false
+
 [dependencies]
 toml = { version = "0.9.5" }
-puniyu_system_info = { version = "0.5.8" }
+puniyu_system_info = { version = "0.6.1", features = ["gpu"] }
 
 serde.workspace = true
 thiserror.workspace = true
+
 
 
 

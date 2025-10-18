@@ -1,0 +1,31 @@
+name: label
+on:
+  issues:
+    types:
+      - opened
+  pull_request:
+    types:
+      - opened
+      - closed
+
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  set-lable:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 获取token
+        uses: actions/create-github-app-token@v2
+        id: app-token
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - name: 贡献消息
+        uses: smartpr-labeler/smart-pr-labeler@v1
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+

@@ -21,7 +21,7 @@ fn get_bot() {
 	let account_info = account_info!(
 		uin: bot_id,
 		name: bot_id,
-		avatar: "".to_string()
+		avatar: String::new()
 	);
 	register_bot!(adapter_info, account_info);
 	let bot = get_bot(0);
@@ -45,7 +45,7 @@ fn get_bot_with_id() {
 	let account_info = account_info!(
 		uin: bot_id,
 		name: bot_id,
-		avatar: "".to_string()
+		avatar: String::new()
 	);
 	register_bot!(adapter_info, account_info);
 	let bot = get_bot("test");

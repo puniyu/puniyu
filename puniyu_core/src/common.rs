@@ -1,4 +1,4 @@
-use crate::system::get_bot_info;
+use crate::system::BotStatusInfo;
 use std::{thread, time::Duration};
 
 /// 等待一段时间
@@ -16,7 +16,7 @@ pub fn sleep(ms: u64) {
 ///
 /// * `String` - 系统运行时间
 pub fn uptime() -> String {
-	let time = get_bot_info().run_time;
+	let time = BotStatusInfo::default().run_time;
 	format_duration(Duration::from_secs(time))
 }
 

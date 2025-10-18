@@ -14,12 +14,14 @@ tokio.workspace = true
 
 puniyu_core = { path = "../puniyu_core" }
 puniyu_plugin_test = { path = "../puniyu_plugins/puniyu_plugin_test", default-features = false }
-puniyu_adapter_console = { path = "../puniyu_adapters/puniyu_adapter_console" }
+puniyu_adapter_console = { git = "https://github.com/puniyu/adapter" }
 
 
 [[bin]]
 name = "puniyu"
 path = "src/main.rs"
+
+
 
 [features]
 preview = ["puniyu_core/core_preview"]

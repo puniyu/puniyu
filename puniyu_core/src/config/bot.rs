@@ -45,7 +45,7 @@ fn default_bot_user_cd() -> u16 {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BotConfig {
-	#[serde(default)]
+	#[serde(default, skip_serializing_if = "HashMap::is_empty")]
 	bot: HashMap<String, BotConfigFile>,
 	/// 主人列表
 	#[serde(default)]
