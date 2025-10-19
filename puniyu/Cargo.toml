@@ -13,7 +13,8 @@ rust-version.workspace = true
 tokio.workspace = true
 
 puniyu_core = { path = "../puniyu_core" }
-puniyu_plugin_test = { path = "../puniyu_plugins/puniyu_plugin_test", default-features = false }
+puniyu_plugin_test = { path = "../puniyu_plugins/puniyu_plugin_test" }
+puniyu_adapter_console = { git = "https://github.com/puniyu/adapter" }
 
 
 

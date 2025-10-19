@@ -17,15 +17,34 @@ impl Matcher for MessageMatcher {
 		if let Event::Message(.., message_event) = event {
 			match message_event {
 				MessageEvent::Friend(message) => {
-					debug!("收到好友消息: {}", message);
-					info!("{}", message.elements().raw());
+					let has_valid_text = message.elements().iter().any(|element| {
+						if let Some(text) = element.as_text() {
+							!text.trim().is_empty()
+						} else {
+							false
+						}
+					});
+					if has_valid_text {
+						debug!("收到好友消息: {}", message);
+						info!("{}", message.elements().raw());
+					}
+					has_valid_text
 				}
 				MessageEvent::Group(message) => {
-					debug!("收到群消息: {}", message);
-					info!("{}", message.elements().raw());
+					let has_valid_text = message.elements().iter().any(|element| {
+						if let Some(text) = element.as_text() {
+							!text.trim().is_empty()
+						} else {
+							false
+						}
+					});
+					if has_valid_text {
+						debug!("收到群消息: {}", message);
+						info!("{}", message.elements().raw());
+					}
+					has_valid_text
 				}
 			}
-			true
 		} else {
 			false
 		}

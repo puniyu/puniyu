@@ -1542,6 +1542,7 @@ dependencies = [
 name = "puniyu"
 version = "0.1.0"
 dependencies = [
+ "puniyu_adapter_console",
  "puniyu_core",
  "puniyu_plugin_test",
  "tokio",
@@ -1577,6 +1578,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "puniyu_adapter_console"
+version = "0.1.0"
+source = "git+https://github.com/puniyu/adapter#0a9e01d761b7fde77a5a173282381dddf95718cb"
+dependencies = [
+ "async-trait",
+ "puniyu_adapter",
+ "puniyu_build 0.1.0 (git+https://github.com/puniyu/puniyu)",
+ "puniyu_core",
+]
+
+[[package]]
 name = "puniyu_adapter_derive"
 version = "0.1.0"
 dependencies = [
@@ -1609,6 +1621,11 @@ dependencies = [
 [[package]]
 name = "puniyu_build"
 version = "0.1.0"
+
+[[package]]
+name = "puniyu_build"
+version = "0.1.0"
+source = "git+https://github.com/puniyu/puniyu#1771782c20299d8b25ae2840a2b8612e1a44cab9"
 
 [[package]]
 name = "puniyu_command_builder"
@@ -1650,7 +1667,7 @@ dependencies = [
  "puniyu_adapter_builder",
  "puniyu_adapter_registry",
  "puniyu_bot",
- "puniyu_build",
+ "puniyu_build 0.1.0",
  "puniyu_event_bus",
  "puniyu_logger 0.6.1",
  "puniyu_plugin_builder",
@@ -1853,7 +1870,7 @@ dependencies = [
 name = "puniyu_plugin_test"
 version = "0.1.0"
 dependencies = [
- "puniyu_build",
+ "puniyu_build 0.1.0",
  "puniyu_core",
  "puniyu_plugin",
 ]

@@ -32,7 +32,8 @@ impl Parse for TaskArgs {
 		}
 
 		let fields = Punctuated::<syn::MetaNameValue, Token![,]>::parse_terminated(input)?;
-		let args = parse_fields(&fields, &[("cron", Self::set_cron as FieldSetter<Self>)], &[])?;
+		let args =
+			parse_fields(&fields, &[("cron", Self::set_cron as FieldSetter<Self>)], &[], &[])?;
 
 		if args.cron.value().is_empty() {
 			return Err(syn::Error::new(input.span(), "诶嘿~cron表达式都不给！杂鱼程序员！"));

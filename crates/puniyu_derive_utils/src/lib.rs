@@ -3,10 +3,12 @@ use syn::{Signature, Token, punctuated::Punctuated};
 
 pub type FieldSetter<T> = fn(&mut T, syn::LitStr) -> syn::Result<()>;
 pub type FieldArraySetter<T> = fn(&mut T, syn::ExprArray) -> syn::Result<()>;
+pub type FieldIntSetter<T> = fn(&mut T, syn::LitInt) -> syn::Result<()>;
 
 pub fn parse_fields<T>(
 	fields: &Punctuated<syn::MetaNameValue, Token![,]>,
 	str_setters: &[(&str, FieldSetter<T>)],
+	int_setters: &[(&str, FieldIntSetter<T>)],
 	array_setters: &[(&str, FieldArraySetter<T>)],
 ) -> syn::Result<T>
 where
@@ -48,8 +50,23 @@ where
 					})?;
 				setter(&mut args, arr.clone())?;
 			}
+			syn::Expr::Lit(syn::ExprLit { lit: syn::Lit::Int(lit_int), .. }) => {
+				let setter = int_setters
+					.iter()
+					.find_map(|(k, f)| if k == &key_str { Some(f) } else { None })
+					.ok_or_else(|| {
+						syn::Error::new_spanned(
+							key,
+							format!("呜哇~不支持的字段 '{}'！杂鱼~", key_str),
+						)
+					})?;
+				setter(&mut args, lit_int.clone())?;
+			}
 			_ => {
-				return Err(syn::Error::new_spanned(value, "呜哇~只支持字符串和数组值！杂鱼~"));
+				return Err(syn::Error::new_spanned(
+					value,
+					"呜哇~只支持字符串、数组和整数值！杂鱼~",
+				));
 			}
 		}
 	}

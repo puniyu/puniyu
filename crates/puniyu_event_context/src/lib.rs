@@ -2,6 +2,7 @@ use puniyu_adapter_builder::AdapterApi;
 use puniyu_element::Message;
 use puniyu_event_message::{FriendMessage, GroupMessage, MessageBase, MessageEvent};
 use puniyu_event_utils::contact::Contact;
+use std::collections::HashMap;
 use std::sync::Arc;
 
 #[derive(Clone)]
@@ -24,11 +25,12 @@ impl Bot {
 
 pub struct EventContext {
 	message_event: Arc<MessageEvent>,
+	args: HashMap<String, Option<String>>,
 }
 
 impl EventContext {
-	pub fn new(message_event: MessageEvent) -> Self {
-		Self { message_event: Arc::new(message_event) }
+	pub fn new(message_event: MessageEvent, args: HashMap<String, Option<String>>) -> Self {
+		Self { message_event: Arc::new(message_event), args }
 	}
 	pub fn as_friend(&self) -> Option<FriendMessage> {
 		match &*self.message_event {
@@ -50,6 +52,10 @@ impl EventContext {
 			MessageEvent::Group(ev) => ev,
 		}
 	}
+
+	pub fn arg(&self, name: &str) -> Option<String> {
+		self.args.get(name).cloned().unwrap_or(None)
+	}
 }
 
 #[macro_export]
@@ -61,7 +67,7 @@ macro_rules! create_context_bot {
 
 #[macro_export]
 macro_rules! create_event_context {
-	($event:expr) => {
-		EventContext::new($event)
+	($event:expr, $args:expr) => {
+		EventContext::new($event, $args)
 	};
 }

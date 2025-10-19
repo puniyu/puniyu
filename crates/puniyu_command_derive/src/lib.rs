@@ -1,6 +1,8 @@
 use convert_case::{Case, Casing};
 use proc_macro::TokenStream;
-use puniyu_derive_utils::{FieldArraySetter, FieldSetter, get_plugin_name, parse_fields};
+use puniyu_derive_utils::{
+	FieldArraySetter, FieldIntSetter, FieldSetter, get_plugin_name, parse_fields,
+};
 use quote::quote;
 use syn::{
 	self, Ident, ItemFn, Token, parse::Parse, parse::ParseStream, parse_macro_input,
@@ -9,8 +11,8 @@ use syn::{
 
 struct CommandArgs {
 	name: syn::LitStr,
-	args: Vec<syn::LitStr>,
-	rank: syn::LitStr,
+	args: syn::ExprArray,
+	rank: syn::LitInt,
 	desc: syn::LitStr,
 }
 
@@ -21,19 +23,11 @@ impl CommandArgs {
 	}
 
 	pub fn set_args(args: &mut Self, value: syn::ExprArray) -> syn::Result<()> {
-		let mut lit_strs = Vec::new();
-		for expr in value.elems {
-			if let syn::Expr::Lit(syn::ExprLit { lit: syn::Lit::Str(lit_str), .. }) = expr {
-				lit_strs.push(lit_str);
-			} else {
-				return Err(syn::Error::new_spanned(expr, "呜哇~args数组中只能包含字符串！杂鱼~"));
-			}
-		}
-		args.args = lit_strs;
+		args.args = value;
 		Ok(())
 	}
 
-	pub fn set_rank(args: &mut Self, value: syn::LitStr) -> syn::Result<()> {
+	pub fn set_rank(args: &mut Self, value: syn::LitInt) -> syn::Result<()> {
 		args.rank = value;
 		Ok(())
 	}
@@ -48,8 +42,12 @@ impl Default for CommandArgs {
 	fn default() -> Self {
 		Self {
 			name: syn::LitStr::new("", proc_macro2::Span::call_site()),
-			args: Vec::new(),
-			rank: syn::LitStr::new("0", proc_macro2::Span::call_site()),
+			args: syn::ExprArray {
+				attrs: Vec::new(),
+				bracket_token: syn::token::Bracket::default(),
+				elems: Punctuated::new(),
+			},
+			rank: syn::LitInt::new("100", proc_macro2::Span::call_site()),
 			desc: syn::LitStr::new("", proc_macro2::Span::call_site()),
 		}
 	}
@@ -66,9 +64,9 @@ impl Parse for CommandArgs {
 			&fields,
 			&[
 				("name", Self::set_name as FieldSetter<Self>),
-				("rank", Self::set_rank as FieldSetter<Self>),
 				("desc", Self::set_desc as FieldSetter<Self>),
 			],
+			&[("rank", Self::set_rank as FieldIntSetter<Self>)],
 			&[("args", Self::set_args as FieldArraySetter<Self>)],
 		)?;
 
@@ -112,7 +110,18 @@ pub fn command(args: TokenStream, item: TokenStream) -> TokenStream {
 	};
 
 	let command_name = &args.name;
-	let command_args: Vec<String> = args.args.iter().map(|lit_str| lit_str.value()).collect();
+	let command_args: Vec<syn::LitStr> = args
+		.args
+		.elems
+		.iter()
+		.filter_map(|expr| {
+			if let syn::Expr::Lit(syn::ExprLit { lit: syn::Lit::Str(lit_str), .. }) = expr {
+				Some(lit_str.clone())
+			} else {
+				None
+			}
+		})
+		.collect();
 	let command_rank = &args.rank;
 	let command_desc = &args.desc;
 
@@ -145,11 +154,11 @@ pub fn command(args: TokenStream, item: TokenStream) -> TokenStream {
 			}
 
 			fn args(&self) -> Vec<String> {
-				vec![#(#command_args),*]
+				vec![#(#command_args.to_string()),*]
 			}
 
 			fn rank(&self) -> usize {
-				#command_rank.parse().unwrap_or(0)
+				#command_rank.to_string().parse().unwrap_or(100)
 			}
 
 			async fn run(&self, bot: &Bot, ev: &EventContext) -> ::puniyu_plugin::HandlerResult {

@@ -1,8 +1,13 @@
 use puniyu_plugin::prelude::*;
 
-#[command(name = "echo", rank = "5")]
+#[command(
+name = "echo",
+args = ["name"],
+rank = 50,
+)]
 async fn test(bot: &Bot, event: &EventContext) -> HandlerResult {
 	bot.reply(Message::from("hello"));
-	let fe = event.as_friend().unwrap().contact();
+	let n = event.arg("name").unwrap();
+	println!("参数: {}", n);
 	HandlerResult::Ok
 }
