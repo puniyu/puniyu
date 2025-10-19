@@ -21,20 +21,20 @@ macro_rules! friend_sender {
         sex: $sex:expr,
         age: $age:expr
     ) => {
-		Sender::Friend(FriendSender {
+		FriendSender {
 			user_id: $user_id.to_string(),
 			nick: $nick.to_string(),
 			sex: $sex,
 			age: $age,
-		})
+		}
 	};
 
 	($user_id:expr, $nick:expr, $sex:expr, $age:expr) => {
-		Sender::Friend(FriendSender {
+		FriendSender {
 			user_id: $user_id.to_string(),
 			nick: $nick.to_string(),
 			sex: $sex,
 			age: $age,
-		})
+		}
 	};
 }

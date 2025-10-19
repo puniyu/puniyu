@@ -22,10 +22,22 @@ pub trait TextMessage: Send + Sync {
 pub enum ElementType {
 	#[strum(serialize = "at")]
 	At,
+	#[strum(serialize = "reply")]
+	Reply,
 	#[strum(serialize = "text")]
 	Text,
 	#[strum(serialize = "image")]
 	Image,
 	#[strum(serialize = "file")]
 	File,
+	#[strum(serialize = "record")]
+	Record,
+	#[strum(serialize = "video")]
+	Video,
+	#[strum(serialize = "face")]
+	Face,
+	#[strum(serialize = "json")]
+	Json,
+	#[strum(serialize = "xml")]
+	Xml,
 }

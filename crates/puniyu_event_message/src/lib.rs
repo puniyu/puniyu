@@ -1,6 +1,8 @@
 mod friend;
+mod group;
 
 pub use friend::FriendMessage;
+pub use group::GroupMessage;
 use puniyu_element::Elements;
 use puniyu_event_utils::contact::Contact;
 use puniyu_event_utils::sender::Sender;
@@ -19,6 +21,7 @@ pub enum MessageSubType {
 #[derive(Debug, Clone)]
 pub enum MessageEvent {
 	Friend(FriendMessage),
+	Group(GroupMessage),
 }
 
 pub trait MessageBase: Send + Sync {
@@ -68,10 +71,6 @@ pub trait MessageBase: Send + Sync {
 			.any(|e| matches!(e, Elements::At(at) if at.target_id.contains(self.self_id())))
 	}
 
-	fn get_at_online(&self) -> bool {
-		self.elements().iter().any(|e| matches!(e, Elements::At(at) if at.is_online()))
-	}
-
 	/// 获取图片元素
 	fn get_image(&self) -> Vec<String> {
 		self.elements()
@@ -102,4 +101,13 @@ pub trait MessageBase: Send + Sync {
 			})
 			.next()
 	}
+}
+
+#[derive(Debug)]
+pub struct MessageBuilder {
+	pub event_id: String,
+	pub self_id: String,
+	pub user_id: String,
+	pub message_id: String,
+	pub elements: Vec<Elements>,
 }

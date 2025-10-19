@@ -19,17 +19,9 @@ pub struct FriendContact {
 #[macro_export]
 macro_rules! contact_friend {
 	($peer:expr, $name:expr) => {
-		Contact::Friend(FriendContact {
-			scene: Scene::Friend,
-			peer: $peer.to_string(),
-			name: $name.to_string(),
-		})
+		FriendContact { scene: Scene::Friend, peer: $peer.to_string(), name: $name.to_string() }
 	};
 	(peer: $peer:expr, name: $name:expr) => {
-		Contact::Friend(FriendContact {
-			scene: Scene::Friend,
-			peer: $peer.to_string(),
-			name: $name.to_string(),
-		})
+		FriendContact { scene: Scene::Friend, peer: $peer.to_string(), name: $name.to_string() }
 	};
 }

@@ -53,8 +53,6 @@ impl From<&'static dyn AdapterBuilder> for AdapterType {
 
 /// 适配器基类
 /// 开发者需要自行实现开发适配器，部分函数需要开发者自行实现
-/// TODO: 未完成消息发送以及获取消息
-///
 ///
 #[async_trait]
 pub trait AdapterBuilder: Send + Sync + 'static {

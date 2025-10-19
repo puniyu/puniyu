@@ -46,4 +46,4 @@ jobs:
         with:
           token: ${{ steps.app-token.outputs.token }}
           pr-merged-msg: >
-            @all-contributors please add @{fc-author} for ${{ join(github.event.pull_request.labels.*.name, ', ') }}
+            @all-contributors please add @{fc-author} for code

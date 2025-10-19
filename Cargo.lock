@@ -1536,7 +1536,6 @@ dependencies = [
 name = "puniyu"
 version = "0.1.0"
 dependencies = [
- "puniyu_adapter_console",
  "puniyu_core",
  "puniyu_plugin_test",
  "tokio",
@@ -1572,17 +1571,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "puniyu_adapter_console"
-version = "0.1.0"
-source = "git+https://github.com/puniyu/adapter#45649837e61a394e3ac33e9c73ec41ef980a574c"
-dependencies = [
- "async-trait",
- "puniyu_adapter",
- "puniyu_build 0.1.0 (git+https://github.com/puniyu/puniyu)",
- "puniyu_core",
-]
-
-[[package]]
 name = "puniyu_adapter_derive"
 version = "0.1.0"
 dependencies = [
@@ -1615,11 +1603,6 @@ dependencies = [
 [[package]]
 name = "puniyu_build"
 version = "0.1.0"
-
-[[package]]
-name = "puniyu_build"
-version = "0.1.0"
-source = "git+https://github.com/puniyu/puniyu#ecc5685ae84ae0246bbdd77aac44e6795df8835a"
 
 [[package]]
 name = "puniyu_command_builder"
@@ -1660,7 +1643,7 @@ dependencies = [
  "puniyu_adapter_builder",
  "puniyu_adapter_registry",
  "puniyu_bot",
- "puniyu_build 0.1.0",
+ "puniyu_build",
  "puniyu_event_bus",
  "puniyu_logger 0.6.1",
  "puniyu_plugin_builder",
@@ -1735,8 +1718,6 @@ dependencies = [
 name = "puniyu_event_matcher"
 version = "0.1.0"
 dependencies = [
- "itertools",
- "puniyu_command_registry",
  "puniyu_element",
  "puniyu_event_core",
  "puniyu_event_message",
@@ -1817,6 +1798,7 @@ dependencies = [
  "puniyu_command_derive",
  "puniyu_element",
  "puniyu_event_context",
+ "puniyu_event_message",
  "puniyu_event_utils",
  "puniyu_logger 0.6.1",
  "puniyu_plugin_builder",
@@ -1864,7 +1846,7 @@ dependencies = [
 name = "puniyu_plugin_test"
 version = "0.1.0"
 dependencies = [
- "puniyu_build 0.1.0",
+ "puniyu_build",
  "puniyu_core",
  "puniyu_plugin",
 ]

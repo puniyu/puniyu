@@ -1,6 +1,6 @@
 use puniyu_adapter_builder::AdapterApi;
 use puniyu_element::Message;
-use puniyu_event_message::MessageBase;
+use puniyu_event_message::{FriendMessage, GroupMessage, MessageBase, MessageEvent};
 use puniyu_event_utils::contact::Contact;
 use std::sync::Arc;
 
@@ -19,7 +19,30 @@ impl Bot {
 	}
 }
 
-pub struct EventContext(pub Arc<dyn MessageBase>);
+pub struct EventContext(pub Arc<MessageEvent>);
+
+impl EventContext {
+	pub fn as_friend(&self) -> Option<FriendMessage> {
+		match &*self.0 {
+			MessageEvent::Friend(ev) => Some(ev.clone()),
+			_ => None,
+		}
+	}
+
+	pub fn as_group(&self) -> Option<GroupMessage> {
+		match &*self.0 {
+			MessageEvent::Group(ev) => Some(ev.clone()),
+			_ => None,
+		}
+	}
+
+	pub fn inner(&self) -> &dyn MessageBase {
+		match &*self.0 {
+			MessageEvent::Friend(ev) => ev,
+			MessageEvent::Group(ev) => ev,
+		}
+	}
+}
 
 #[macro_export]
 macro_rules! create_context_bot {

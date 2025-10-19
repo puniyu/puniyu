@@ -21,6 +21,7 @@ macro_rules! segment {
 			),
 		}
 	};
+	// 文本元素
 	(text, $text:expr) => {
 		Segment {
 			r#type: ElementType::Text.to_string(),
