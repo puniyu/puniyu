@@ -1,47 +1,54 @@
 use crate::{MessageBase, MessageBuilder, MessageSubType};
 use puniyu_element::Elements;
 use puniyu_event_utils::EventType;
-use puniyu_event_utils::contact::{Contact, FriendContact};
-use puniyu_event_utils::sender::{FriendSender, Sender};
+use puniyu_event_utils::contact::{Contact, GroupContact};
+use puniyu_event_utils::sender::{GroupSender, Sender};
 use std::fmt;
 
 #[derive(Debug, Clone)]
-pub struct FriendMessage {
+pub struct GroupMessage {
 	/// 事件id
 	event_id: String,
 	/// BotId
 	self_id: String,
 	/// 用户id
 	user_id: String,
+	/// 当前群昵称
+	group_id: String,
 	/// 消息id
 	message_id: String,
 	/// 消息内容
 	elements: Vec<Elements>,
 	/// 事件联系人
-	contact: FriendContact,
+	contact: GroupContact,
 	/// 事件发送者
-	sender: FriendSender,
+	sender: GroupSender,
 }
 
-impl FriendMessage {
+impl GroupMessage {
 	pub fn new(
 		message_builder: MessageBuilder,
-		contact: FriendContact,
-		sender: FriendSender,
+		group_id: String,
+		contact: GroupContact,
+		sender: GroupSender,
 	) -> Self {
 		Self {
 			event_id: message_builder.event_id,
 			self_id: message_builder.self_id,
 			user_id: message_builder.user_id,
+			group_id,
 			message_id: message_builder.message_id,
 			elements: message_builder.elements,
 			contact,
 			sender,
 		}
 	}
-}
 
-impl MessageBase for FriendMessage {
+	pub fn group_id(&self) -> &str {
+		&self.group_id
+	}
+}
+impl MessageBase for GroupMessage {
 	fn event_id(&self) -> &str {
 		&self.event_id
 	}
@@ -51,7 +58,7 @@ impl MessageBase for FriendMessage {
 	}
 
 	fn sub_event(&self) -> &str {
-		MessageSubType::Friend.into()
+		MessageSubType::Group.into()
 	}
 
 	fn contact(&self) -> Contact {
@@ -79,11 +86,12 @@ impl MessageBase for FriendMessage {
 	}
 }
 
-impl fmt::Display for FriendMessage {
+impl fmt::Display for GroupMessage {
 	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-		f.debug_struct("FriendMessage")
+		f.debug_struct("GroupMessage")
 			.field("event_id", &self.event_id)
 			.field("self_id", &self.self_id)
+			.field("group_id", &self.group_id)
 			.field("user_id", &self.user_id)
 			.field("message_id", &self.message_id)
 			.field("elements", &self.elements)
@@ -92,8 +100,8 @@ impl fmt::Display for FriendMessage {
 }
 
 #[macro_export]
-macro_rules! create_friend_message {
-	($adapter:expr, $event_id:expr, $contact:expr, $self_id:expr, $user_id:expr, $message_id:expr, $elements:expr, $sender:expr) => {{
+macro_rules! create_group_message {
+	($adapter:expr, $event_id:expr, $contact:expr, $self_id:expr, $user_id:expr, $group_id:expr ,$message_id:expr, $elements:expr, $sender:expr) => {{
 		let builder = MessageBuilder {
 			event_id: $event_id.into(),
 			self_id: $self_id.into(),
@@ -101,8 +109,8 @@ macro_rules! create_friend_message {
 			message_id: $message_id.into(),
 			elements: $elements,
 		};
-		let message = FriendMessage::new(builder, $contact, $sender);
-		let event = Event::Message(std::sync::Arc::from($adapter), MessageEvent::Friend(message));
+		let message = GroupMessage::new(builder, $group_id.into(), $contact, $sender);
+		let event = Event::Message(std::sync::Arc::from($adapter), MessageEvent::Group(message));
 		send_event(event);
 	}};
 }

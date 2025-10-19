@@ -2,7 +2,7 @@ mod friend;
 mod group;
 
 pub use friend::FriendSender;
-use group::GroupSender;
+pub use group::GroupSender;
 use serde::{Deserialize, Serialize};
 use strum::{Display, EnumString, IntoStaticStr};
 
@@ -41,4 +41,16 @@ pub enum Role {
 pub enum Sender {
 	Friend(FriendSender),
 	Group(GroupSender),
+}
+
+impl From<FriendSender> for Sender {
+	fn from(sender: FriendSender) -> Self {
+		Sender::Friend(sender)
+	}
+}
+
+impl From<GroupSender> for Sender {
+	fn from(sender: GroupSender) -> Self {
+		Sender::Group(sender)
+	}
 }

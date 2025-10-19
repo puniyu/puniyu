@@ -24,5 +24,6 @@ puniyu_plugin_derive = { path = "../crates/puniyu_plugin_derive" }
 puniyu_task_derive = { path = "../crates/puniyu_task_derive" }
 puniyu_command_derive = { path = "../crates/puniyu_command_derive" }
 puniyu_event_utils = { path = "../crates/puniyu_event_utils" }
+puniyu_event_message = { path = "../crates/puniyu_event_message" }
 puniyu_event_context = { path = "../crates/puniyu_event_context" }
 puniyu_utils = { path = "../crates/puniyu_utils" }

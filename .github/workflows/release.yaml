@@ -16,13 +16,9 @@ env:
   APP_NAME: puniyu
 
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
-  cancel-in-progress: true
-
 jobs:
   release:
-    if: github.actor != 'allcontributors[bot]' || github.actor != 'puniyu[bot]' || !startsWith(github.head_ref, 'release-please')
+    if: !startsWith(github.head_ref, 'release-please')
     runs-on: ubuntu-latest
     outputs:
       release_created: ${{ steps.release-please.outputs.release_created }}
@@ -49,7 +45,7 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
-    if: github.actor != 'puniyu[bot]' || github.actor != 'allcontributors[bot]'
+    if: !startsWith(github.head_ref, 'release-please')
     steps:
       - name: 检出代码
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
