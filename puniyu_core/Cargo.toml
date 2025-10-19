@@ -31,6 +31,7 @@ puniyu_adapter_registry = { path = "../crates/puniyu_adapter_registry" }
 puniyu_task_registry = { path = "../crates/puniyu_task_registry" }
 puniyu_utils = { path = "../crates/puniyu_utils" }
 puniyu_event_bus = { path = "../crates/puniyu_event_bus" }
+glob = "0.3.3"
 
 
 [build-dependencies]

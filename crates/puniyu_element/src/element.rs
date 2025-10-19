@@ -2,7 +2,6 @@ use super::{RawMessage, TextMessage};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
 pub struct AtElement {
 	/// at元素类型
 	#[serde(rename = "type")]
@@ -27,7 +26,6 @@ impl RawMessage for AtElement {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
 pub struct FaceElement {
 	/// 元素类型
 	#[serde(rename = "type")]
@@ -42,7 +40,6 @@ impl RawMessage for FaceElement {
 	}
 }
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
 pub struct FileElement {
 	/// 元素类型
 	#[serde(rename = "type")]
@@ -72,7 +69,6 @@ impl RawMessage for FileElement {
 	}
 }
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
 pub struct ImageElement {
 	/// 元素类型
 	#[serde(rename = "type")]
@@ -99,7 +95,6 @@ impl RawMessage for ImageElement {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
 pub struct JsonElement {
 	/// json元素类型
 	#[serde(rename = "type")]
@@ -115,7 +110,6 @@ impl RawMessage for JsonElement {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
 pub struct VideoElement {
 	/// 元素类型
 	#[serde(rename = "type")]
@@ -140,7 +134,6 @@ impl RawMessage for VideoElement {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
 pub struct RecordElement {
 	/// 元素类型
 	#[serde(rename = "type")]
@@ -163,7 +156,6 @@ impl RawMessage for RecordElement {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
 pub struct ReplyElement {
 	/// 元素类型
 	#[serde(rename = "type")]
@@ -180,7 +172,6 @@ impl RawMessage for ReplyElement {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
 pub struct TextElement {
 	/// 文本元素类型
 	#[serde(rename = "type")]
@@ -202,7 +193,6 @@ impl TextMessage for TextElement {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
 pub struct XmlElement {
 	/// xml元素类型
 	#[serde(rename = "type")]

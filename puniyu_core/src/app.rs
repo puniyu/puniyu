@@ -110,14 +110,11 @@ async fn init_plugin() {
 
 	let plugins = REGISTERED_PLUGINS.get_or_init(|| RwLock::new(Vec::new()));
 
-	if let Ok(mut entries) = fs::read_dir(PLUGIN_DIR.as_path()).await {
-		while let Some(entry) = entries.next_entry().await.ok().flatten() {
-			let path = entry.path();
-			if let Some(ext) = path.extension()
-				&& ext == DLL_EXTENSION
-				&& let Ok(mut plugins_vec) = plugins.write()
-			{
-				plugins_vec.push(PluginType::from(path));
+	let pattern = PLUGIN_DIR.join(format!("*plugin*.{}", DLL_EXTENSION));
+	if let Ok(paths) = glob::glob(pattern.to_str().unwrap()) {
+		for entry in paths.filter_map(Result::ok) {
+			if let Ok(mut plugins_vec) = plugins.write() {
+				plugins_vec.push(PluginType::from(entry));
 			}
 		}
 	}
@@ -147,14 +144,11 @@ async fn init_adapter() {
 
 	let adapters = REGISTERED_ADAPTER.get_or_init(|| RwLock::new(Vec::new()));
 
-	if let Ok(mut entries) = fs::read_dir(ADAPTER_DIR.as_path()).await {
-		while let Some(entry) = entries.next_entry().await.ok().flatten() {
-			let path = entry.path();
-			if let Some(ext) = path.extension()
-				&& ext == DLL_EXTENSION
-				&& let Ok(mut adapters_vec) = adapters.write()
-			{
-				adapters_vec.push(AdapterType::from(path));
+	let pattern = PLUGIN_DIR.join(format!("*adapter*.{}", DLL_EXTENSION));
+	if let Ok(paths) = glob::glob(pattern.to_str().unwrap()) {
+		for entry in paths.filter_map(Result::ok) {
+			if let Ok(mut adapter_vec) = adapters.write() {
+				adapter_vec.push(AdapterType::from(entry));
 			}
 		}
 	}
