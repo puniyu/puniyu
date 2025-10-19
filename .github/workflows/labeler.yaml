@@ -6,12 +6,7 @@ on:
   pull_request:
     types:
       - opened
-      - closed
 
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
-  cancel-in-progress: true
 
 jobs:
   set-lable:
@@ -24,8 +19,8 @@ jobs:
           app-id: ${{ secrets.APP_ID }}
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
 
-      - name: 贡献消息
-        uses: rajithaeyee/smart-pr-labeler@v1
+      - name: 添加标签
+        uses: fuxingloh/multi-labeler@v4
         with:
-          token: ${{ steps.app-token.outputs.token }}
+          github-token: ${{ steps.app-token.outputs.token }}
 

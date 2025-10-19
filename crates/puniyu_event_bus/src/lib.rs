@@ -54,8 +54,8 @@ impl EventBus {
 		tokio::spawn(async move {
 			let mut receiver = receiver;
 			while let Some(event) = receiver.recv().await {
-				if let (Some(plugin_name), match_text) = MessageMatcher.matches(&event) {
-					MessageHandler.handle(&event, &plugin_name, match_text.unwrap()).await;
+				if MessageMatcher.matches(&event) {
+					MessageHandler.handle(&event).await;
 				}
 			}
 		});

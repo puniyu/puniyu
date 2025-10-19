@@ -9,7 +9,7 @@ use puniyu_event_core::Event;
 /// 事件匹配器
 pub trait Matcher: Send + Sync + 'static {
 	/// 匹配事件
-	fn matches(&self, event: &Event) -> (Option<Vec<String>>, Option<String>);
+	fn matches(&self, event: &Event) -> bool;
 	/// 获取匹配器名称
 	fn name(&self) -> &str;
 

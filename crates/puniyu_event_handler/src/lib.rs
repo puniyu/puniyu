@@ -11,7 +11,7 @@ use puniyu_event_core::Event;
 /// 事件处理器
 #[async_trait]
 pub trait Handler: Send + Sync {
-	async fn handle(&self, event: &Event, plugin_name: &[String], command_name: String);
+	async fn handle(&self, event: &Event);
 	fn name(&self) -> &str;
 
 	fn rank(&self) -> u8 {

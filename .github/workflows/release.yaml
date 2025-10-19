@@ -4,11 +4,6 @@ on:
     branches:
       - main
   pull_request_target:
-    branches-ignore:
-      - 'release-please**'
-    paths-ignore:
-      - '**/Cargo.toml'
-      - '.all-contributorsrc'
   workflow_dispatch:
 
 
@@ -16,21 +11,17 @@ env:
   APP_NAME: puniyu
 
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
-  cancel-in-progress: true
-
 jobs:
   release:
-    if: github.actor != 'allcontributors[bot]' || github.actor != 'puniyu[bot]' || !startsWith(github.head_ref, 'release-please')
+    if: !startsWith(github.head_ref, 'release-please')
     runs-on: ubuntu-latest
     outputs:
       release_created: ${{ steps.release-please.outputs.release_created }}
       tag_name: ${{ steps.release-please.outputs.tag_name }}
-      core: ${{ steps.release-please.outputs['puiyu_core--release_created'] }}
-      build: ${{ steps.release-please.outputs['puiyu_build--release_created'] }}
-      adapter: ${{ steps.release-please.outputs['puiyu_adapter--release_created'] }}
-      plugin: ${{ steps.release-please.outputs['puiyu_plugin--release_created'] }}
+      core: ${{ steps.release-please.outputs['puniyu_core--release_created'] }}
+      build: ${{ steps.release-please.outputs['puniyu_build--release_created'] }}
+      adapter: ${{ steps.release-please.outputs['puniyu_adapter--release_created'] }}
+      plugin: ${{ steps.release-please.outputs['puniyu_plugin--release_created'] }}
     steps:
       - name: 获取token
         uses: actions/create-github-app-token@67018539274d69449ef7c02e8e71183d1719ab42 # v2
@@ -49,7 +40,7 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
-    if: github.actor != 'puniyu[bot]' || github.actor != 'allcontributors[bot]'
+    if: !startsWith(github.head_ref, 'release-please')
     steps:
       - name: 检出代码
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5

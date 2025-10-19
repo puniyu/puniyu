@@ -3,6 +3,6 @@ use puniyu_core::App;
 async fn main() {
 	let mut app = App::default();
 	app.add_plugin(&puniyu_plugin_test::Plugin);
-	app.add_adapter(&puniyu_adapter_console::Adapter);
+	// app.add_adapter(&puniyu_adapter_console::Adapter);
 	app.run().await;
 }

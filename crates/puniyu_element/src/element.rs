@@ -16,11 +16,7 @@ pub struct AtElement {
 impl AtElement {
 	/// 是否为艾特全体
 	pub fn is_all(&self) -> bool {
-		self.target_id.contains("all")
-	}
-	/// 是否为艾特在线成员
-	pub fn is_online(&self) -> bool {
-		self.target_id.contains("online")
+		matches!(self.target_id.as_str(), "all")
 	}
 }
 
@@ -224,6 +220,7 @@ impl RawMessage for XmlElement {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum Elements {
 	At(AtElement),
+	File(FileElement),
 	Image(ImageElement),
 	Json(JsonElement),
 	Record(RecordElement),
@@ -246,6 +243,7 @@ impl RawMessage for Elements {
 	fn raw(&self) -> String {
 		match self {
 			Elements::Text(text_element) => text_element.raw(),
+			Elements::File(file_element) => file_element.raw(),
 			Elements::Image(image_element) => image_element.raw(),
 			Elements::Json(json_element) => json_element.raw(),
 			Elements::Record(record_element) => record_element.raw(),
@@ -273,19 +271,35 @@ macro_rules! element {
 	};
 
 	// 图片元素
-	(image $file:expr) => {
-		$crate::element::Elements::Image($crate::element::ImageElement {
-			r#type: "image".to_string(),
-			file: $file.to_string(),
+	(image,$image:expr) => {
+		Elements::Image(ImageElement {
+			r#type: ElementType::Image.to_string(),
+			file: $image.to_string(),
 			is_flash: false,
 			summary: None,
 		})
 	};
+	(image,$image:expr,$is_flash:expr) => {
+		Elements::Image(ImageElement {
+			r#type: ElementType::Image.to_string(),
+			file: $image.to_string(),
+			is_flash: $is_flash,
+			summary: None,
+		})
+	};
+	(image,$image:expr,$is_flash:expr,$summary:expr) => {
+		Elements::Image(ImageElement {
+			r#type: ElementType::Image.to_string(),
+			file: $image.to_string(),
+			is_flash: $is_flash,
+			summary: Some($summary.to_string()),
+		})
+	};
 
 	// @元素
-	(at $target_id:expr) => {
-		$crate::element::Elements::At($crate::element::AtElement {
-			r#type: "at".to_string(),
+	(at,$target_id:expr) => {
+		Elements::At(AtElement {
+			r#type: ElementType::At.to_string(),
 			target_id: $target_id.to_string(),
 			name: None,
 		})
@@ -293,59 +307,65 @@ macro_rules! element {
 
 	// @全体成员
 	(at_all) => {
-		$crate::element::Elements::At($crate::element::AtElement {
-			r#type: "at".to_string(),
+		Elements::At(AtElement {
+			r#type: ElementType::At.to_string(),
 			target_id: "all".to_string(),
 			name: Some("全体成员".to_string()),
 		})
 	};
 
 	// 表情元素
-	(face $id:expr) => {
-		$crate::element::Elements::Face($crate::element::FaceElement {
-			r#type: "face".to_string(),
-			id: $id,
-		})
+	(face,$id:expr) => {
+		Elements::Face(FaceElement { r#type: ElementType::Face.to_string(), id: $id })
 	};
 
 	// 回复元素
-	(reply $message_id:expr) => {
-		$crate::element::Elements::Reply($crate::element::ReplyElement {
-			r#type: "reply".to_string(),
+	(reply,$message_id:expr) => {
+		Elements::Reply(ReplyElement {
+			r#type: ElementType::Reply.to_string(),
 			message_id: $message_id.to_string(),
 		})
 	};
 
 	// 语音元素
-	(record $file:expr) => {
-		$crate::element::Elements::Record($crate::element::RecordElement {
-			r#type: "record".to_string(),
-			file: $file.to_string(),
+	(record,$record:expr) => {
+		Elements::Record(RecordElement {
+			r#type: ElementType::Record.to_string(),
+			file: $record.to_string(),
 		})
 	};
 
-	// 视频元素
-	(video $file:expr, $file_name:expr) => {
-		$crate::element::Elements::Video($crate::element::VideoElement {
-			r#type: "video".to_string(),
+	// 文件元素
+	(file,$file:expr,$file_id:expr,$file_size:expr,$file_name:expr) => {
+		Elements::File(FileElement {
+			r#type: ElementType::File.to_string(),
 			file: $file.to_string(),
+			file_id: $file_id.to_string(),
+			file_size: $file_size,
 			file_name: $file_name.to_string(),
 		})
 	};
-
+	// 视频元素
+	(video,$video:expr,$video_name:expr) => {
+		Elements::Video(VideoElement {
+			r#type: ElementType::Video.to_string(),
+			file: $video.to_string(),
+			file_name: $video_name.to_string(),
+		})
+	};
 	// JSON元素
-	(json $data:expr) => {
-		$crate::element::Elements::Json($crate::element::JsonElement {
-			r#type: "json".to_string(),
+	(json,$data:expr) => {
+		Elements::Json(JsonElement {
+			r#type: ElementType::Json.to_string(),
 			data: serde_json::Value::String($data.to_string()),
 		})
 	};
 
 	// XML元素
-	(xml $data:expr) => {
-		$crate::element::Elements::Xml($crate::element::XmlElement {
-			r#type: "xml".to_string(),
-			data: $data.to_string(),
+	(xml,$data:expr) => {
+		Elements::Xml(XmlElement {
+			r#type: ElementType::Xml.to_string(),
+			data: String::from($data),
 		})
 	};
 }
