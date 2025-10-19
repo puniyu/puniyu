@@ -6,11 +6,14 @@ use std::sync::Arc;
 
 #[derive(Clone)]
 pub struct Bot {
-	pub contact: Contact,
-	pub api: Arc<dyn AdapterApi>,
+	contact: Contact,
+	api: Arc<dyn AdapterApi>,
 }
 
 impl Bot {
+	pub fn new(contact: Contact, api: Arc<dyn AdapterApi>) -> Self {
+		Self { contact, api }
+	}
 	pub fn api(&self) -> &dyn AdapterApi {
 		&*self.api
 	}
@@ -19,25 +22,30 @@ impl Bot {
 	}
 }
 
-pub struct EventContext(pub Arc<MessageEvent>);
+pub struct EventContext {
+	message_event: Arc<MessageEvent>,
+}
 
 impl EventContext {
+	pub fn new(message_event: MessageEvent) -> Self {
+		Self { message_event: Arc::new(message_event) }
+	}
 	pub fn as_friend(&self) -> Option<FriendMessage> {
-		match &*self.0 {
+		match &*self.message_event {
 			MessageEvent::Friend(ev) => Some(ev.clone()),
 			_ => None,
 		}
 	}
 
 	pub fn as_group(&self) -> Option<GroupMessage> {
-		match &*self.0 {
+		match &*self.message_event {
 			MessageEvent::Group(ev) => Some(ev.clone()),
 			_ => None,
 		}
 	}
 
 	pub fn inner(&self) -> &dyn MessageBase {
-		match &*self.0 {
+		match &*self.message_event {
 			MessageEvent::Friend(ev) => ev,
 			MessageEvent::Group(ev) => ev,
 		}
@@ -47,13 +55,13 @@ impl EventContext {
 #[macro_export]
 macro_rules! create_context_bot {
 	($contact:expr, $api:expr) => {
-		Bot { contact: $contact, api: std::sync::Arc::from($api) }
+		Bot::new($contact, $api)
 	};
 }
 
 #[macro_export]
 macro_rules! create_event_context {
 	($event:expr) => {
-		EventContext(std::sync::Arc::from($event))
+		EventContext::new($event)
 	};
 }
