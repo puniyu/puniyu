@@ -34,7 +34,6 @@ proc-macro2 = { version = "1.0.101" }
 quote = { version = "1.0.40" }
 
 puniyu_logger = { version = "0.6.1" }
-puniyu_server = { git = "https://github.com/Puniyu/server" }
 
 
 [patch."https://github.com/puniyu/puniyu"] # 未来版本会移除

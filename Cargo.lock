@@ -1561,7 +1561,7 @@ dependencies = [
  "puniyu_event_core",
  "puniyu_event_message",
  "puniyu_event_utils",
- "puniyu_logger 0.6.1",
+ "puniyu_logger",
  "puniyu_utils",
  "serde_json",
 ]
@@ -1605,7 +1605,7 @@ dependencies = [
  "puniyu_adapter_builder",
  "puniyu_event_bus",
  "puniyu_library",
- "puniyu_logger 0.6.1",
+ "puniyu_logger",
  "puniyu_utils",
  "thiserror 2.0.17",
 ]
@@ -1615,7 +1615,7 @@ name = "puniyu_bot"
 version = "0.1.0"
 dependencies = [
  "puniyu_adapter_builder",
- "puniyu_logger 0.6.1",
+ "puniyu_logger",
 ]
 
 [[package]]
@@ -1669,7 +1669,7 @@ dependencies = [
  "puniyu_bot",
  "puniyu_build 0.1.0",
  "puniyu_event_bus",
- "puniyu_logger 0.6.1",
+ "puniyu_logger",
  "puniyu_plugin_builder",
  "puniyu_plugin_registry",
  "puniyu_server",
@@ -1703,7 +1703,7 @@ dependencies = [
  "puniyu_event_core",
  "puniyu_event_handler",
  "puniyu_event_matcher",
- "puniyu_logger 0.6.1",
+ "puniyu_logger",
  "strum",
  "tokio",
 ]
@@ -1746,7 +1746,7 @@ dependencies = [
  "puniyu_event_core",
  "puniyu_event_message",
  "puniyu_event_utils",
- "puniyu_logger 0.6.1",
+ "puniyu_logger",
 ]
 
 [[package]]
@@ -1773,24 +1773,6 @@ version = "0.1.0"
 dependencies = [
  "libloading",
  "thiserror 2.0.17",
-]
-
-[[package]]
-name = "puniyu_logger"
-version = "0.5.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8b58f7ca07f8cfdcf1a76b290fd321cfa52c58932538a53d67ab70f0be5dfaa9"
-dependencies = [
- "chrono",
- "chrono-tz",
- "convert_case",
- "owo-colors",
- "strip-ansi-escapes",
- "tracing",
- "tracing-appender",
- "tracing-log",
- "tracing-shared",
- "tracing-subscriber",
 ]
 
 [[package]]
@@ -1824,7 +1806,7 @@ dependencies = [
  "puniyu_event_context",
  "puniyu_event_message",
  "puniyu_event_utils",
- "puniyu_logger 0.6.1",
+ "puniyu_logger",
  "puniyu_plugin_builder",
  "puniyu_plugin_derive",
  "puniyu_task_builder",
@@ -1859,7 +1841,7 @@ dependencies = [
  "puniyu_command_builder",
  "puniyu_command_registry",
  "puniyu_library",
- "puniyu_logger 0.6.1",
+ "puniyu_logger",
  "puniyu_plugin_builder",
  "puniyu_task_registry",
  "puniyu_utils",
@@ -1878,11 +1860,10 @@ dependencies = [
 [[package]]
 name = "puniyu_server"
 version = "0.1.0"
-source = "git+https://github.com/Puniyu/server#ce26ce96c5c4f3294711434d96b9a23ddfdeb0aa"
 dependencies = [
  "actix-web",
  "futures-util",
- "puniyu_logger 0.5.6",
+ "puniyu_logger",
  "tokio",
 ]
 
@@ -1921,7 +1902,7 @@ name = "puniyu_task_registry"
 version = "0.1.0"
 dependencies = [
  "chrono-tz",
- "puniyu_logger 0.6.1",
+ "puniyu_logger",
  "puniyu_task_builder",
  "tokio",
  "tokio-cron-scheduler",

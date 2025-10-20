@@ -2,7 +2,8 @@
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
   "release-type": "rust",
   "include-component-in-tag": true,
-  "labels": "release",
+  "label": "release",
+  "release-label": "release",
   "plugins": [
     {
       "type": "cargo-workspace",
@@ -78,7 +79,7 @@
     "puniyu_core": {
       "release-type": "rust",
       "component": "core"
-    },    
+    },
     "puniyu_plugin": {
       "release-type": "rust",
       "component": "plugin"
@@ -88,5 +89,5 @@
       "component": "adapter"
     }
   },
-  "commit-search-depth": 50
+  "commit-search-depth": 100
 }

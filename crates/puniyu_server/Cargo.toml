@@ -1,0 +1,20 @@
+[package]
+name = "puniyu_server"
+version = "0.1.0"
+authors.workspace = true
+license.workspace = true
+readme.workspace = true
+homepage.workspace = true
+repository.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[[bin]]
+name = "puniyu_server"
+path = "src/main.rs"
+
+[dependencies]
+puniyu_logger.workspace = true
+tokio.workspace = true
+actix-web = "4.11.0"
+futures-util = "0.3.31"
