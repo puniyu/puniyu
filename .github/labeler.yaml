@@ -1,0 +1,15 @@
+version: v1
+
+labels:
+  - label: 'feat'
+    matcher:
+      title: '^feat:.*'
+      branch: '^feat/.*'
+      commits: '^feat:.*'
+
+  - label: 'bug'
+    matcher:
+      title: '^fix:.*'
+      branch: '^fix/.*'
+      commits: '^fix:.*'
+      body: "(\\n|.)*- \\[x\\] bug(\\n|.)*"
