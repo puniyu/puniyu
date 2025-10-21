@@ -1,3 +1,5 @@
+extern crate core;
+
 #[cfg(feature = "adapter")]
 mod adapter;
 #[cfg(feature = "adapter")]

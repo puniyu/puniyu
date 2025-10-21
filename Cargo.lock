@@ -2056,6 +2056,7 @@ dependencies = [
  "puniyu_builder",
  "puniyu_command",
  "puniyu_common",
+ "puniyu_config",
  "puniyu_event_bus 0.1.0",
  "puniyu_library 0.1.0",
  "puniyu_logger",

@@ -1,4 +1,5 @@
 mod store;
+
 use crate::TaskRegistry;
 use crate::error::Plugin as Error;
 use futures::future::join_all;
@@ -6,6 +7,7 @@ use puniyu_builder::plugin::{Plugin, PluginBuilder, PluginId, PluginType, VERSIO
 use puniyu_command::register_command;
 use puniyu_command::{Command, CommandRegistry};
 use puniyu_common::APP_NAME;
+use puniyu_config::Config;
 use puniyu_library::PluginLibrary;
 use puniyu_library::libloading::Symbol;
 use puniyu_logger::{SharedLogger, debug, error, owo_colors::OwoColorize, warn};
@@ -67,8 +69,24 @@ impl PluginRegistry {
 						return Err(Error::Exists(plugin_name.to_string()));
 					}
 
-					let abi_version = plugin_builder.abi_version();
-					check_plugin_abi_version(abi_version, plugin_name);
+					let plugin_abi_version = plugin_builder.abi_version();
+					let force_plugin = Config::app().load().force_plugin();
+
+					if plugin_abi_version != ABI_VERSION {
+						let plugin_tag = "plugin".fg_rgb::<175, 238, 238>();
+						let plugin_name = plugin_name.fg_rgb::<240, 128, 128>();
+
+						warn!(
+							"[{}:{}] ABI版本不匹配, 当前ABI版本: {}, 插件ABI版本: {}",
+							plugin_tag, plugin_name, plugin_abi_version, ABI_VERSION
+						);
+
+						if !force_plugin {
+							return Ok(());
+						}
+
+						debug!("[{}:{}] 检测到配置，开始强制加载", plugin_tag, plugin_name);
+					}
 
 					let tasks: Vec<_> = plugin_builder
 						.tasks()
@@ -102,9 +120,24 @@ impl PluginRegistry {
 				if plugins.iter().any(|(_, plugin)| plugin.name == plugin_name) {
 					return Err(Error::Exists(plugin_name.to_string()));
 				}
-				let abi_version = plugin_builder.abi_version();
+				let plugin_abi_version = plugin_builder.abi_version();
+				let force_plugin = Config::app().load().force_plugin();
 
-				check_plugin_abi_version(abi_version, plugin_name);
+				if plugin_abi_version != ABI_VERSION {
+					let plugin_tag = "plugin".fg_rgb::<175, 238, 238>();
+					let plugin_name = plugin_name.fg_rgb::<240, 128, 128>();
+
+					warn!(
+						"[{}:{}] ABI版本不匹配, 当前ABI版本: {}, 插件ABI版本: {}",
+						plugin_tag, plugin_name, plugin_abi_version, ABI_VERSION
+					);
+
+					if !force_plugin {
+						return Ok(());
+					}
+
+					debug!("[{}:{}] 检测到配置，开始强制加载", plugin_tag, plugin_name);
+				}
 
 				let tasks: Vec<_> = plugin_builder
 					.tasks()
@@ -162,20 +195,9 @@ impl PluginRegistry {
 		}
 	}
 
+	#[inline]
 	pub fn get_all_plugins() -> Vec<Plugin> {
 		PLUGIN_STORE.get_all_plugins().into_values().collect()
-	}
-}
-
-fn check_plugin_abi_version(version: &str, plugin_name: &str) {
-	if version != ABI_VERSION {
-		warn!(
-			"[{}:{}] ABI版本不匹配, 当前ABI版本: {}, 插件ABI版本: {}",
-			"plugin".fg_rgb::<175, 238, 238>(),
-			plugin_name.fg_rgb::<240, 128, 128>(),
-			version,
-			ABI_VERSION
-		)
 	}
 }
 
