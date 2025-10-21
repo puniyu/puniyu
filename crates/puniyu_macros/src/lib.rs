@@ -626,13 +626,17 @@ pub fn command(args: TokenStream, item: TokenStream) -> TokenStream {
 
 #[cfg(feature = "task")]
 struct TaskArgs {
+	name: syn::LitStr,
 	cron: syn::LitStr,
 }
 
 #[cfg(feature = "task")]
 impl Default for TaskArgs {
 	fn default() -> Self {
-		Self { cron: syn::LitStr::new("", proc_macro2::Span::call_site()) }
+		Self {
+			cron: syn::LitStr::new("", proc_macro2::Span::call_site()),
+			name: syn::LitStr::new("", proc_macro2::Span::call_site()),
+		}
 	}
 }
 
@@ -640,6 +644,11 @@ impl Default for TaskArgs {
 impl TaskArgs {
 	fn set_cron(args: &mut Self, value: syn::LitStr) -> syn::Result<()> {
 		args.cron = value;
+		Ok(())
+	}
+
+	fn set_name(args: &mut Self, value: syn::LitStr) -> syn::Result<()> {
+		args.name = value;
 		Ok(())
 	}
 }
@@ -671,6 +680,18 @@ impl Parse for TaskArgs {
 						return Err(syn::Error::new_spanned(
 							&field.value,
 							"呜哇~cron 必须是字符串！杂鱼~",
+						));
+					}
+				}
+				"name" => {
+					if let syn::Expr::Lit(syn::ExprLit { lit: syn::Lit::Str(lit_str), .. }) =
+						&field.value
+					{
+						TaskArgs::set_name(&mut args, lit_str.clone())?;
+					} else {
+						return Err(syn::Error::new_spanned(
+							&field.value,
+							"呜哇~name 必须是字符串！杂鱼~",
 						));
 					}
 				}
@@ -731,6 +752,8 @@ pub fn task(args: TokenStream, item: TokenStream) -> TokenStream {
 
 	let cron_expr = &args.cron;
 
+	let task_name =
+		if args.name.value().is_empty() { fn_name.to_string() } else { args.name.value() };
 	let struct_name_str = {
 		let fn_name_str = fn_name.to_string();
 		let pascal_case_name = fn_name_str.to_case(Case::Pascal);
@@ -748,16 +771,16 @@ pub fn task(args: TokenStream, item: TokenStream) -> TokenStream {
 		#[async_trait]
 		impl ::puniyu_plugin::TaskBuilder for #struct_name {
 			fn name(&self) -> &'static str {
-			stringify!(#fn_name)
-		}
+				#task_name
+			}
 
 			fn cron(&self) -> &'static str {
-			#cron_expr
-		}
+				#cron_expr
+			}
 
 			async fn run(&self) {
 				#fn_name().await;
-		}
+			}
 	}
 
 	::puniyu_core::inventory::submit! {
