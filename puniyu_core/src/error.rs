@@ -1,4 +1,4 @@
-pub(crate) use puniyu_utils::error::Config;
+use puniyu_common::error::Config;
 use thiserror::Error;
 #[derive(Error, Debug)]
 pub enum Error {

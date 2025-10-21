@@ -1,19 +1,21 @@
 [package]
 name = "puniyu_event_bus"
 version = "0.1.0"
+description = "puniyu 的事件总线处理库"
+readme = "README.md"
 authors.workspace = true
 license.workspace = true
-readme.workspace = true
 homepage.workspace = true
 repository.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 
 [dependencies]
-tokio.workspace = true
 strum.workspace = true
+tokio.workspace = true
 puniyu_logger.workspace = true
 
-puniyu_event_matcher = { path = "../puniyu_event_matcher" }
-puniyu_event_handler = { path = "../puniyu_event_handler" }
-puniyu_event_core = { path = "../puniyu_event_core" }
+puniyu_matcher = { version = "0.1.0", path = "../puniyu_matcher" }
+puniyu_handler = { version = "0.1.0", path = "../puniyu_handler" }
+puniyu_event = { version = "0.1.0", path = "../puniyu_event", default-features = false, features = ["message"] }
+

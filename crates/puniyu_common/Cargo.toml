@@ -1,0 +1,26 @@
+[package]
+name = "puniyu_common"
+version = "0.1.0"
+description = "puniyu 的通用库"
+readme = "README.md"
+authors.workspace = true
+license.workspace = true
+homepage.workspace = true
+repository.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[lib]
+doctest = false
+
+[dependencies]
+toml = { version = "0.9.5" }
+puniyu_system_info = { version = "0.6.1", features = ["gpu"] }
+
+serde.workspace = true
+thiserror.workspace = true
+
+
+
+
+

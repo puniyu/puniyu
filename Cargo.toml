@@ -23,22 +23,17 @@ chrono = { version = "0.4" }
 tokio = { version = "1.47.1", features = ["full"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0"}
+itertools = { version = "0.14.0" }
 futures = { version = "0.3.31" }
 async-trait = { version = "0.1.89" }
 thiserror = { version = "2.0.16" }
 inventory = "0.3.21"
 strum = { version = "0.27.2", features = ["derive"] }
 convert_case = { version = "0.8.0" }
-syn = { version = "2.0.106", features = ["full"] }
-proc-macro2 = { version = "1.0.101" }
-quote = { version = "1.0.40" }
+
 
 puniyu_logger = { version = "0.6.1" }
 
-
-[patch."https://github.com/puniyu/puniyu"] # 未来版本会移除
-puniyu_adapter = { path = "./puniyu_adapter" }
-puniyu_core = { path = "./puniyu_core" }
 
 
 [profile.release]

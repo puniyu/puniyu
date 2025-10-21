@@ -3,10 +3,10 @@ use crate::config::{
 	bot::{BOT_CONFIG, BotConfig},
 	group::{GROUP_CONFIG, GroupConfig},
 };
-use crate::error::Config as Error;
 use crate::logger::{debug, error, info};
 use notify::{Config as WatcherConfig, Event, RecommendedWatcher, RecursiveMode, Watcher};
-use puniyu_utils::{path::CONFIG_DIR, toml::merge_config};
+use puniyu_common::error::Config as Error;
+use puniyu_common::{path::CONFIG_DIR, toml::merge_config};
 use serde::{Deserialize, Serialize, de::DeserializeOwned};
 use std::{env, sync::mpsc, thread, time::Duration};
 
@@ -18,7 +18,7 @@ fn reload_config<T>(name: &str, config: &mut T) -> Result<(), Error>
 where
 	T: Default + DeserializeOwned,
 {
-	match puniyu_utils::toml::read_config(CONFIG_DIR.as_path(), name) {
+	match puniyu_common::toml::read_config(CONFIG_DIR.as_path(), name) {
 		Ok(new_config) => {
 			*config = new_config;
 			Ok(())

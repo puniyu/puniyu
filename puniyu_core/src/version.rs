@@ -14,26 +14,15 @@ pub struct Version {
 	pub channel: &'static str,
 }
 
-impl Version {
-	pub const fn new(
-		major: &'static str,
-		minor: &'static str,
-		patch: &'static str,
-		channel: &'static str,
-	) -> Self {
-		Self { major, minor, patch, channel }
-	}
-}
-
 impl fmt::Display for Version {
 	fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
 		write!(f, "{}.{}.{} ({})", self.major, self.minor, self.patch, self.channel)
 	}
 }
 
-pub const VERSION: Version = Version::new(
-	env!("CORE_VERSION_MAJOR"),
-	env!("CORE_VERSION_MINOR"),
-	env!("CORE_VERSION_PATCH"),
-	env!("CORE_VERSION_CHANNEL"),
-);
+pub const VERSION: Version = Version {
+	major: env!("CORE_VERSION_MAJOR"),
+	minor: env!("CORE_VERSION_MINOR"),
+	patch: env!("CORE_VERSION_PATCH"),
+	channel: env!("CORE_VERSION_CHANNEL"),
+};

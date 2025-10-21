@@ -1,0 +1,32 @@
+[package]
+name = "puniyu_event"
+version = "0.1.0"
+description = "puniyu 的事件基础库"
+readme = "README.md"
+authors.workspace = true
+license.workspace = true
+homepage.workspace = true
+repository.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+strum.workspace = true
+puniyu_element = { version = "0.1.0", path = "../puniyu_element" }
+puniyu_adapter_api = { version = "0.1.0", path = "../puniyu_adapter_api", optional = true }
+
+
+[dependencies.puniyu_sender]
+version = "0.1.0"
+path = "../puniyu_sender"
+optional = true
+
+[dependencies.puniyu_contact]
+version = "0.1.0"
+path = "../puniyu_contact"
+optional = true
+
+[features]
+default = []
+context = ["message"]
+message = ["dep:puniyu_adapter_api", "dep:puniyu_sender", "dep:puniyu_contact"]

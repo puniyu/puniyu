@@ -1,0 +1,21 @@
+[package]
+name = "puniyu_handler"
+version = "0.1.0"
+description = "puniyu 的事件处理器模块"
+readme = "README.md"
+authors.workspace = true
+license.workspace = true
+homepage.workspace = true
+repository.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+async-trait.workspace = true
+puniyu_event = { version = "0.1.0", path = "../puniyu_event", default-features = false, features = ["context"] }
+
+[dependencies.puniyu_command]
+version = "0.1.0"
+path = "../puniyu_command"
+default-features = false
+features = ["registry"]

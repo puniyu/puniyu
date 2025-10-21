@@ -15,15 +15,12 @@ serde_json.workspace = true
 inventory.workspace = true
 puniyu_logger.workspace = true
 
-puniyu_plugin_builder = { path = "../crates/puniyu_plugin_builder" }
-puniyu_adapter_builder = { path = "../crates/puniyu_adapter_builder" }
-puniyu_task_builder = { path = "../crates/puniyu_task_builder" }
-puniyu_command_builder = { path = "../crates/puniyu_command_builder" }
-puniyu_element = { path = "../crates/puniyu_element" }
-puniyu_plugin_derive = { path = "../crates/puniyu_plugin_derive" }
-puniyu_task_derive = { path = "../crates/puniyu_task_derive" }
-puniyu_command_derive = { path = "../crates/puniyu_command_derive" }
-puniyu_event_utils = { path = "../crates/puniyu_event_utils" }
-puniyu_event_message = { path = "../crates/puniyu_event_message" }
-puniyu_event_context = { path = "../crates/puniyu_event_context" }
-puniyu_utils = { path = "../crates/puniyu_utils" }
+
+puniyu_builder = { version = "0.1.0", path = "../crates/puniyu_builder", features = ["plugin"] }
+puniyu_command = { version = "0.1.0", path = "../crates/puniyu_command", features = ["registry"] }
+puniyu_adapter_api = { version = "0.1.0", path = "../crates/puniyu_adapter_api" }
+puniyu_element = { version = "0.1.0", path = "../crates/puniyu_element" }
+puniyu_event = { version = "0.1.0", path = "../crates/puniyu_event" }
+puniyu_common = { version = "0.1.0", path = "../crates/puniyu_common" }
+puniyu_macros = { version = "0.1.0", path = "../crates/puniyu_macros" }
+puniyu_contact = { version = "0.1.0", path = "../crates/puniyu_contact" }
