@@ -26,6 +26,7 @@ pub struct LoggerConfig {
 }
 
 impl Default for LoggerConfig {
+	#[inline]
 	fn default() -> Self {
 		Self {
 			enable_file: default_logger_file_enable(),
@@ -71,13 +72,49 @@ impl LoggerConfig {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct LoadConfig {
+	/// 强制加载abi版本不同的插件,
+	#[serde(default = "default_force_plugin")]
+	force_plugin: bool,
+	/// 强制加载abi版本不同的适配器,
+	#[serde(default = "default_force_adapter")]
+	force_adapter: bool,
+}
+
+fn default_force_plugin() -> bool {
+	false
+}
+
+fn default_force_adapter() -> bool {
+	false
+}
+
+impl Default for LoadConfig {
+	#[inline]
+	fn default() -> Self {
+		Self { force_plugin: default_force_plugin(), force_adapter: default_force_adapter() }
+	}
+}
+
+impl LoadConfig {
+	/// 是否强制加载abi版本不同的插件
+	pub fn force_plugin(&self) -> bool {
+		self.force_plugin
+	}
+
+	/// 是否强制加载abi版本不同的插件
+	pub fn force_adapter(&self) -> bool {
+		self.force_adapter
+	}
+}
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ServerConfig {
 	/// 服务器主机地址
 	#[serde(default = "default_server_host")]
-	pub host: String,
+	host: String,
 	/// 服务器端口号
 	#[serde(default = "default_server_port")]
-	pub port: u16,
+	port: u16,
 }
 
 fn default_server_host() -> String {
@@ -88,6 +125,7 @@ fn default_server_port() -> u16 {
 }
 
 impl Default for ServerConfig {
+	#[inline]
 	fn default() -> Self {
 		Self { host: default_server_host(), port: default_server_port() }
 	}
@@ -112,6 +150,9 @@ pub struct AppConfig {
 	/// 服务器配置
 	#[serde(default)]
 	server: ServerConfig,
+	/// 加载配置
+	#[serde(default)]
+	load: LoadConfig,
 }
 
 impl AppConfig {
@@ -127,5 +168,11 @@ impl AppConfig {
 	pub fn server(&self) -> ServerConfig {
 		let config = APP_CONFIG.read().unwrap();
 		config.server.clone()
+	}
+
+	/// 获取加载配置
+	pub fn load(&self) -> LoadConfig {
+		let config = APP_CONFIG.read().unwrap();
+		config.load.clone()
 	}
 }

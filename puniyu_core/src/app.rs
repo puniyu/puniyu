@@ -1,7 +1,6 @@
 use crate::{
 	VERSION, common,
 	common::format_duration,
-	config::{config_watcher, init_config},
 	logger::log_init,
 	logger::{OwoColorize, debug, error, info},
 };
@@ -11,6 +10,7 @@ use puniyu_builder::adapter::{AdapterBuilder, AdapterType};
 use puniyu_builder::plugin::{PluginBuilder, PluginType};
 pub use puniyu_common::APP_NAME;
 use puniyu_common::path::{ADAPTER_DIR, PLUGIN_DIR};
+use puniyu_config::{init_config, init_config_watcher};
 use puniyu_event_bus::init_event_bus;
 use puniyu_registry::{AdapterRegistry, PluginRegistry};
 use puniyu_task::{SCHEDULER, init_scheduler};
@@ -96,15 +96,15 @@ async fn init_app() {
 	}
 	if env::var("HTTP_HOST").is_err() {
 		unsafe {
-			env::set_var("HTTP_HOST", Config::app().server().host);
+			env::set_var("HTTP_HOST", Config::app().server().host());
 		}
 	}
 	if env::var("HTTP_PORT").is_err() {
 		unsafe {
-			env::set_var("HTTP_PORT", Config::app().server().port.to_string());
+			env::set_var("HTTP_PORT", Config::app().server().port().to_string());
 		}
 	}
-	config_watcher();
+	init_config_watcher();
 	let event_bus = init_event_bus();
 	event_bus.lock().unwrap().run();
 	init_scheduler().await;
