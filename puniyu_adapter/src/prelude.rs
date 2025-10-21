@@ -1,4 +1,10 @@
+pub use puniyu_adapter_api::types::*;
 pub use puniyu_bot::{BotRegistry, register_bot};
+pub use puniyu_builder::adapter::{
+	AccountInfo, AdapterApi, AdapterBuilder, AdapterCommunication, AdapterInfo, AdapterPlatform,
+	AdapterProtocol, AdapterStandard,
+};
+pub use puniyu_builder::{account_info, adapter_info};
 pub use puniyu_contact::{
 	Contact, FriendContact, GroupContact, Scene, contact_friend, contact_group,
 };

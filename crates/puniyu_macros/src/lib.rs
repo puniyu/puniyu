@@ -1,16 +1,15 @@
 mod common;
-
-use crate::common::get_plugin_name;
-use convert_case::{Case, Casing};
-use croner::Cron;
 use proc_macro::TokenStream;
 use quote::quote;
 use std::env;
-use std::str::FromStr;
-use syn::{
-	self, Ident, ItemFn, Token, parse::Parse, parse::ParseStream, parse_macro_input,
-	punctuated::Punctuated,
-};
+#[cfg(feature = "plugin")]
+use syn::ItemFn;
+
+#[cfg(any(feature = "command", feature = "task"))]
+use syn::{Token, parse::Parse, parse::ParseStream, parse_macro_input, punctuated::Punctuated};
+
+#[cfg(any(feature = "command", feature = "task"))]
+use syn::Ident;
 
 #[cfg(feature = "adapter")]
 #[proc_macro_attribute]
@@ -526,6 +525,8 @@ impl Parse for CommandArgs {
 #[cfg(feature = "command")]
 #[proc_macro_attribute]
 pub fn command(args: TokenStream, item: TokenStream) -> TokenStream {
+	use crate::common::get_plugin_name;
+	use convert_case::{Case, Casing};
 	let args = parse_macro_input!(args as CommandArgs);
 	let input_fn = parse_macro_input!(item as ItemFn);
 	let fn_name = &input_fn.sig.ident;
@@ -689,6 +690,10 @@ impl Parse for TaskArgs {
 #[cfg(feature = "task")]
 #[proc_macro_attribute]
 pub fn task(args: TokenStream, item: TokenStream) -> TokenStream {
+	use crate::common::get_plugin_name;
+	use convert_case::{Case, Casing};
+	use croner::Cron;
+	use std::str::FromStr;
 	let args = parse_macro_input!(args as TaskArgs);
 	let input_fn = parse_macro_input!(item as ItemFn);
 	let fn_name = &input_fn.sig.ident;

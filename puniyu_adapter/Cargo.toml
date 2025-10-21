@@ -23,3 +23,4 @@ puniyu_common = { version = "0.1.0", path = "../crates/puniyu_common" }
 puniyu_builder = { version = "0.1.0", path = "../crates/puniyu_builder", default-features = false, features = ["adapter"] }
 puniyu_contact = { version = "0.1.0", path = "../crates/puniyu_contact" }
 puniyu_sender = { version = "0.1.0", path = "../crates/puniyu_sender" }
+puniyu_adapter_api = { version = "0.1.0", path = "../crates/puniyu_adapter_api" }
