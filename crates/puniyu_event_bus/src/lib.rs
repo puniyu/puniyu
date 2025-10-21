@@ -1,8 +1,8 @@
-use puniyu_event_core::Event;
-use puniyu_event_handler::{Handler, MessageHandler};
-use puniyu_event_matcher::{Matcher, MessageMatcher};
+use puniyu_event::Event;
+use puniyu_handler::{Handler, MessageHandler};
 use puniyu_logger::owo_colors::OwoColorize;
 use puniyu_logger::warn;
+use puniyu_matcher::{Matcher, MessageMatcher};
 use std::sync::{Arc, Mutex, OnceLock};
 use strum::{Display, EnumString, IntoStaticStr};
 use tokio::sync::mpsc;
@@ -23,6 +23,7 @@ pub enum EventType {
 pub static EVENT_BUS: OnceLock<Arc<Mutex<EventBus>>> = OnceLock::new();
 
 pub type EventSender = mpsc::UnboundedSender<Event>;
+
 pub type EventReceiver = mpsc::UnboundedReceiver<Event>;
 
 pub struct EventBus {

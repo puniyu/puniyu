@@ -1,0 +1,51 @@
+[package]
+name = "puniyu_registry"
+version = "0.1.0"
+description = "puniyu 的注册中心模块"
+readme = "README.md"
+authors.workspace = true
+license.workspace = true
+homepage.workspace = true
+repository.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+futures.workspace = true
+thiserror.workspace = true
+puniyu_logger.workspace = true
+puniyu_common = { version = "0.1.0", path = "../puniyu_common" }
+puniyu_task = { version = "0.1.0", path = "../puniyu_task", optional = true }
+
+[dependencies.puniyu_command]
+version = "0.1.0"
+path = "../puniyu_command"
+default-features = false
+optional = true
+features = ["registry"]
+
+[dependencies.puniyu_event_bus]
+version = "0.1.0"
+path = "../puniyu_event_bus"
+default-features = false
+optional = true
+
+[dependencies.puniyu_builder]
+version = "0.1.0"
+path = "../puniyu_builder"
+default-features = false
+optional = true
+
+[dependencies.puniyu_library]
+version = "0.1.0"
+path = "../puniyu_library"
+default-features = false
+optional = true
+
+
+[features]
+default = []
+adapter = ["puniyu_builder/adapter", "puniyu_library/adapter", "dep:puniyu_event_bus"]
+plugin = ["puniyu_builder/plugin", "puniyu_library/plugin", "task", "command"]
+task = ["dep:puniyu_task", "puniyu_builder/task"]
+command = ["dep:puniyu_command"]

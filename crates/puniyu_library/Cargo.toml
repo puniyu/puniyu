@@ -1,9 +1,10 @@
 [package]
 name = "puniyu_library"
 version = "0.1.0"
+description = "puniyu 的共享动态库模块"
+readme = "README.md"
 authors.workspace = true
 license.workspace = true
-readme.workspace = true
 homepage.workspace = true
 repository.workspace = true
 edition.workspace = true
@@ -11,5 +12,9 @@ rust-version.workspace = true
 
 [dependencies]
 libloading = "0.8.9"
-
 thiserror.workspace = true
+
+[features]
+default = ["plugin"]
+plugin = []
+adapter = []

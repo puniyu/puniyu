@@ -1,9 +1,10 @@
 [package]
 name = "puniyu_bot"
 version = "0.1.0"
+description = "puniyu 的bot相关"
+readme = "README.md"
 authors.workspace = true
 license.workspace = true
-readme.workspace = true
 homepage.workspace = true
 repository.workspace = true
 edition.workspace = true
@@ -12,4 +13,4 @@ rust-version.workspace = true
 [dependencies]
 puniyu_logger.workspace = true
 
-puniyu_adapter_builder = { path = "../puniyu_adapter_builder" }
+puniyu_builder = { path = "../puniyu_builder", default-features = false, features = ["adapter"] }

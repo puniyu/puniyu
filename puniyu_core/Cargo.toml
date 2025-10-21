@@ -23,14 +23,12 @@ puniyu_logger.workspace = true
 convert_case.workspace = true
 
 
-puniyu_bot = { path = "../crates/puniyu_bot" }
-puniyu_server = { path = "../crates/puniyu_server" }
-puniyu_plugin_builder = { path = "../crates/puniyu_plugin_builder" }
-puniyu_plugin_registry = { path = "../crates/puniyu_plugin_registry" }
-puniyu_adapter_builder = { path = "../crates/puniyu_adapter_builder" }
-puniyu_adapter_registry = { path = "../crates/puniyu_adapter_registry" }
-puniyu_task_registry = { path = "../crates/puniyu_task_registry" }
-puniyu_utils = { path = "../crates/puniyu_utils" }
+puniyu_bot = { version = "0.1.0", path = "../crates/puniyu_bot" }
+puniyu_task = { version = "0.1.0", path = "../crates/puniyu_task" }
+puniyu_server = { version = "0.1.0", path = "../crates/puniyu_server" }
+puniyu_builder = { version = "0.1.0", path = "../crates/puniyu_builder", features = ["plugin"] }
+puniyu_registry = { version = "0.1.0", path = "../crates/puniyu_registry", features = ["plugin", "adapter"] }
+puniyu_common = { path = "../crates/puniyu_common" }
 puniyu_event_bus = { path = "../crates/puniyu_event_bus" }
 
 

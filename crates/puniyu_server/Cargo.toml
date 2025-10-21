@@ -1,9 +1,10 @@
 [package]
 name = "puniyu_server"
 version = "0.1.0"
+description = "puniyu 的服务器模块"
+readme = "README.md"
 authors.workspace = true
 license.workspace = true
-readme.workspace = true
 homepage.workspace = true
 repository.workspace = true
 edition.workspace = true

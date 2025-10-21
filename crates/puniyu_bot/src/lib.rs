@@ -1,6 +1,7 @@
-use puniyu_adapter_builder::{AccountInfo, AdapterInfo};
-
 mod registry;
+
+use puniyu_builder::adapter::AccountInfo;
+use puniyu_builder::adapter::AdapterInfo;
 pub use registry::BotRegistry;
 
 #[derive(Clone)]

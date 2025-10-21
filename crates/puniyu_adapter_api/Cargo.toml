@@ -1,0 +1,18 @@
+[package]
+name = "puniyu_adapter_api"
+version = "0.1.0"
+description = "puniyu 的适配器api"
+readme = "README.md"
+authors.workspace = true
+license.workspace = true
+homepage.workspace = true
+repository.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+serde.workspace = true
+strum.workspace = true
+
+puniyu_contact = { version = "0.1.0", path = "../puniyu_contact" }
+puniyu_element = { version = "0.1.0", path = "../puniyu_element" }

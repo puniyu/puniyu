@@ -23,7 +23,7 @@ impl From<PathBuf> for LibraryInfo {
 }
 
 #[derive(Default)]
-pub struct LibraryStore(HashMap<String, Arc<LibraryInfo>>);
+struct LibraryStore(HashMap<String, Arc<LibraryInfo>>);
 impl LibraryStore {
 	pub fn new() -> Self {
 		Self::default()
@@ -42,11 +42,14 @@ impl LibraryStore {
 		self.0.remove(name).is_some()
 	}
 }
+
+#[cfg(feature = "plugin")]
 #[derive(Default)]
 pub struct PluginLibrary {
 	store: LibraryStore,
 }
 
+#[cfg(feature = "plugin")]
 impl PluginLibrary {
 	pub fn new() -> Self {
 		Self::default()
@@ -93,11 +96,13 @@ impl PluginLibrary {
 	}
 }
 
+#[cfg(feature = "adapter")]
 #[derive(Default)]
 pub struct AdapterLibrary {
 	store: LibraryStore,
 }
 
+#[cfg(feature = "adapter")]
 impl AdapterLibrary {
 	pub fn new() -> Self {
 		Self::default()

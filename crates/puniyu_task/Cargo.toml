@@ -1,0 +1,21 @@
+[package]
+name = "puniyu_task"
+version = "0.1.0"
+description = "puniyu 的定时任务模块"
+readme = "README.md"
+authors.workspace = true
+license.workspace = true
+homepage.workspace = true
+repository.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+tokio.workspace = true
+puniyu_logger.workspace = true
+
+tokio-cron-scheduler = "0.15.0"
+chrono-tz = "0.10.4"
+uuid = { version = "1.17.0", features = ["v4"] }
+puniyu_builder = { version = "0.1.0", path = "../puniyu_builder", default-features = false, features = ["task"] }
+

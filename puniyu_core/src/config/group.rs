@@ -1,5 +1,5 @@
-use puniyu_utils::path::CONFIG_DIR;
-use puniyu_utils::toml;
+use puniyu_common::path::CONFIG_DIR;
+use puniyu_common::toml;
 use serde::{Deserialize, Serialize};
 use std::{
 	collections::HashMap,
