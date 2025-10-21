@@ -2018,6 +2018,7 @@ name = "puniyu_registry"
 version = "0.1.0"
 dependencies = [
  "futures",
+ "puniyu_bot 0.1.0",
  "puniyu_builder",
  "puniyu_command",
  "puniyu_common",

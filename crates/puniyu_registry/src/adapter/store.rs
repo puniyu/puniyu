@@ -1,7 +1,7 @@
+use puniyu_bot::BotRegistry;
 use puniyu_builder::adapter::Adapter;
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
-
 #[derive(Default, Clone)]
 pub(crate) struct AdapterStore(Arc<Mutex<HashMap<String, Adapter>>>);
 
@@ -29,6 +29,10 @@ impl AdapterStore {
 
 	pub fn remove_adapter(&self, name: &str) {
 		let mut adapters = self.0.lock().unwrap();
+		BotRegistry::get_all()
+			.into_iter()
+			.filter(|bot| bot.adapter.name == name)
+			.for_each(|bot| BotRegistry::unregister(bot.index));
 		adapters.remove(name);
 	}
 }

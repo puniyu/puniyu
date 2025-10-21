@@ -16,6 +16,7 @@ thiserror.workspace = true
 puniyu_logger.workspace = true
 puniyu_common = { version = "0.1.0", path = "../puniyu_common" }
 puniyu_task = { version = "0.1.0", path = "../puniyu_task", optional = true }
+puniyu_bot = { version = "0.1.0", path = "../puniyu_bot", optional = true }
 
 [dependencies.puniyu_command]
 version = "0.1.0"
@@ -45,7 +46,7 @@ optional = true
 
 [features]
 default = []
-adapter = ["puniyu_builder/adapter", "puniyu_library/adapter", "dep:puniyu_event_bus"]
+adapter = ["puniyu_builder/adapter", "puniyu_library/adapter", "dep:puniyu_event_bus", "dep:puniyu_bot"]
 plugin = ["puniyu_builder/plugin", "puniyu_library/plugin", "task", "command"]
 task = ["dep:puniyu_task", "puniyu_builder/task"]
 command = ["dep:puniyu_command"]
