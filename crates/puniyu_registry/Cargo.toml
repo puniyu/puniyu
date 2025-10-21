@@ -43,10 +43,15 @@ path = "../puniyu_library"
 default-features = false
 optional = true
 
+[dependencies.puniyu_config]
+version = "0.1.0"
+path = "../puniyu_config"
+optional = true
+
 
 [features]
 default = []
-adapter = ["puniyu_builder/adapter", "puniyu_library/adapter", "dep:puniyu_event_bus", "dep:puniyu_bot"]
-plugin = ["puniyu_builder/plugin", "puniyu_library/plugin", "task", "command"]
+adapter = ["puniyu_builder/adapter", "puniyu_library/adapter", "dep:puniyu_event_bus", "dep:puniyu_bot", "dep:puniyu_config"]
+plugin = ["puniyu_builder/plugin", "puniyu_library/plugin", "task", "command", "dep:puniyu_config"]
 task = ["dep:puniyu_task", "puniyu_builder/task"]
 command = ["dep:puniyu_command"]

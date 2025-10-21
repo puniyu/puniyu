@@ -4,6 +4,7 @@ use crate::adapter::store::AdapterStore;
 use crate::error::Adapter as Error;
 use puniyu_builder::adapter::{Adapter, AdapterBuilder, AdapterType, VERSION as ABI_VERSION};
 use puniyu_common::APP_NAME;
+use puniyu_config::Config;
 use puniyu_event_bus::{EVENT_BUS, EventBus};
 use puniyu_library::AdapterLibrary;
 use puniyu_library::libloading::Symbol;
@@ -61,9 +62,24 @@ impl AdapterRegistry {
 						adapter_name.fg_rgb::<240, 128, 128>()
 					);
 
-					let abi_version = adapter_builder.abi_version();
+					let adapter_abi_version = adapter_builder.abi_version();
+					let force_adapter = Config::app().load().force_adapter();
 
-					check_plugin_abi_version(abi_version, adapter_name.as_str());
+					if adapter_abi_version != ABI_VERSION {
+						let adapter_tag = "adpter".fg_rgb::<175, 238, 238>();
+						let adapter_name = adapter_name.fg_rgb::<240, 128, 128>();
+
+						warn!(
+							"[{}:{}] ABI版本不匹配, 当前ABI版本: {}, 适配器ABI版本: {}",
+							adapter_tag, adapter_name, adapter_abi_version, ABI_VERSION
+						);
+
+						if !force_adapter {
+							return Ok(());
+						}
+
+						debug!("[{}:{}] 检测到配置，开始强制加载", adapter_tag, adapter_name);
+					}
 
 					run_adapter_init(adapter_name.as_str(), adapter_builder.init()).await?;
 					ADAPTER_STORE.insert_adapter(adapter_name.as_str(), adapter);
@@ -88,9 +104,24 @@ impl AdapterRegistry {
 					adapter_name.fg_rgb::<240, 128, 128>()
 				);
 
-				let abi_version = builder.abi_version();
+				let adapter_abi_version = builder.abi_version();
+				let force_adapter = Config::app().load().force_adapter();
 
-				check_plugin_abi_version(abi_version, adapter_name.as_str());
+				if adapter_abi_version != ABI_VERSION {
+					let adapter_tag = "adpter".fg_rgb::<175, 238, 238>();
+					let adapter_name = adapter_name.fg_rgb::<240, 128, 128>();
+
+					warn!(
+						"[{}:{}] ABI版本不匹配, 当前ABI版本: {}, 适配器ABI版本: {}",
+						adapter_tag, adapter_name, adapter_abi_version, ABI_VERSION
+					);
+
+					if !force_adapter {
+						return Ok(());
+					}
+
+					debug!("[{}:{}] 检测到配置，开始强制加载", adapter_tag, adapter_name);
+				}
 
 				run_adapter_init(adapter_name.as_str(), builder.init()).await?;
 				ADAPTER_STORE.insert_adapter(adapter_name.as_str(), adapter);
@@ -109,6 +140,7 @@ impl AdapterRegistry {
 	}
 
 	/// 卸载一个适配器，包括适配器中的Bot实例
+	#[inline]
 	pub fn unload_adapter(name: &str) -> Result<(), Error> {
 		ADAPTER_STORE.remove_adapter(name);
 		Ok(())
@@ -122,18 +154,6 @@ impl AdapterRegistry {
 	#[inline]
 	pub fn get_all_adapters() -> Vec<Adapter> {
 		ADAPTER_STORE.get_all_adapters().values().cloned().collect()
-	}
-}
-
-fn check_plugin_abi_version(version: &str, plugin_name: &str) {
-	if version != ABI_VERSION {
-		warn!(
-			"[{}:{}] ABI版本不匹配, 当前ABI版本: {}, 适配器ABI版本: {}",
-			"adapter".fg_rgb::<175, 238, 238>(),
-			plugin_name.fg_rgb::<240, 128, 128>(),
-			version,
-			version
-		)
 	}
 }
 
