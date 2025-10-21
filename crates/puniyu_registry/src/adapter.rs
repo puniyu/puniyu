@@ -99,6 +99,7 @@ impl AdapterRegistry {
 		}
 	}
 
+	/// 加载多个适配器
 	pub async fn load_adapters(adapters: Vec<impl Into<AdapterType>>) -> Result<(), Error> {
 		futures::future::try_join_all(
 			adapters.into_iter().map(|adapter| Self::load_adapter(adapter)),
@@ -107,10 +108,18 @@ impl AdapterRegistry {
 		Ok(())
 	}
 
+	/// 卸载一个适配器，包括适配器中的Bot实例
+	pub fn unload_adapter(name: &str) -> Result<(), Error> {
+		ADAPTER_STORE.remove_adapter(name);
+		Ok(())
+	}
+
+	#[inline]
 	pub fn get_adapter(name: &str) -> Option<Adapter> {
 		ADAPTER_STORE.get_adapter(name)
 	}
 
+	#[inline]
 	pub fn get_all_adapters() -> Vec<Adapter> {
 		ADAPTER_STORE.get_all_adapters().values().cloned().collect()
 	}
