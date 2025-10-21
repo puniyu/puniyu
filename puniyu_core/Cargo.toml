@@ -10,7 +10,6 @@ edition.workspace = true
 rust-version.workspace = true
 
 [dependencies]
-notify = "8.2.0"
 figlet-rs = "0.1.5"
 glob = "0.3.3"
 
@@ -22,7 +21,7 @@ inventory.workspace = true
 puniyu_logger.workspace = true
 convert_case.workspace = true
 
-
+puniyu_config = { version = "0.1.0", path = "../crates/puniyu_config" }
 puniyu_bot = { version = "0.1.0", path = "../crates/puniyu_bot" }
 puniyu_task = { version = "0.1.0", path = "../crates/puniyu_task" }
 puniyu_server = { version = "0.1.0", path = "../crates/puniyu_server" }
