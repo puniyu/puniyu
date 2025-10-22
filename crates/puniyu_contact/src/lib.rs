@@ -38,6 +38,7 @@ impl Contact {
 		}
 	}
 }
+
 impl From<FriendContact> for Contact {
 	fn from(contact: FriendContact) -> Self {
 		Self::Friend(contact)
