@@ -49,6 +49,7 @@ impl EventContext {
 		match &*self.event_base {
 			Event::Message(_) => self.as_message().unwrap().event_id(),
 			Event::Notion(_) => todo!(),
+			Event::Request(_) => todo!(),
 		}
 	}
 
@@ -57,6 +58,7 @@ impl EventContext {
 		match &*self.event_base {
 			Event::Message(_) => self.as_message().unwrap().event(),
 			Event::Notion(_) => todo!(),
+			Event::Request(_) => todo!(),
 		}
 	}
 
@@ -65,6 +67,7 @@ impl EventContext {
 		match &*self.event_base {
 			Event::Message(_) => self.as_message().unwrap().sub_event(),
 			Event::Notion(_) => todo!(),
+			Event::Request(_) => todo!(),
 		}
 	}
 
@@ -73,6 +76,7 @@ impl EventContext {
 		match &*self.event_base {
 			Event::Message(_) => self.as_message().unwrap().self_id(),
 			Event::Notion(_) => todo!(),
+			Event::Request(_) => todo!(),
 		}
 	}
 
@@ -81,6 +85,7 @@ impl EventContext {
 		match &*self.event_base {
 			Event::Message(_) => self.as_message().unwrap().user_id(),
 			Event::Notion(_) => todo!(),
+			Event::Request(_) => todo!(),
 		}
 	}
 
@@ -89,6 +94,7 @@ impl EventContext {
 		match &*self.event_base {
 			Event::Message(_) => self.as_message().unwrap().contact(),
 			Event::Notion(_) => todo!(),
+			Event::Request(_) => todo!(),
 		}
 	}
 
@@ -97,6 +103,7 @@ impl EventContext {
 		match &*self.event_base {
 			Event::Message(_) => self.as_message().unwrap().sender(),
 			Event::Notion(_) => todo!(),
+			Event::Request(_) => todo!(),
 		}
 	}
 

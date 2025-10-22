@@ -2,12 +2,16 @@
 pub mod context;
 #[cfg(any(feature = "message", feature = "event"))]
 pub mod message;
-mod notion;
+#[cfg(feature = "context")]
+pub mod notion;
+#[cfg(feature = "request")]
+pub mod request;
 
 #[cfg(any(feature = "message", feature = "event"))]
 use crate::message::MessageEvent;
 #[cfg(any(feature = "message", feature = "event"))]
 use crate::notion::NotionSubEvent;
+use crate::request::RequestSubEvent;
 use strum::{Display, EnumString, IntoStaticStr};
 
 #[cfg(feature = "event")]
@@ -15,6 +19,7 @@ use strum::{Display, EnumString, IntoStaticStr};
 pub enum Event {
 	Message(MessageEvent),
 	Notion(NotionSubEvent),
+	Request(RequestSubEvent),
 }
 
 #[cfg(feature = "event")]
@@ -27,6 +32,7 @@ impl std::fmt::Debug for Event {
 				.field(message_event)
 				.finish(),
 			Event::Notion(sub_event) => f.debug_tuple("Notion").field(sub_event).finish(),
+			Event::Request(sub_event) => f.debug_tuple("Request").field(sub_event).finish(),
 		}
 	}
 }

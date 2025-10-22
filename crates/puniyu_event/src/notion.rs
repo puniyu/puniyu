@@ -1,5 +1,7 @@
 mod friend;
+pub use friend::*;
 mod group;
+pub use group::*;
 
 use crate::EventBase;
 use strum::{Display, EnumString, IntoStaticStr};
@@ -71,21 +73,22 @@ pub enum NotionSubEvent {
 }
 
 pub enum NotionEvent {
-	ReceiveLike(friend::ReceiveLike),
-	FriendAdd(friend::FriendAdd),
-	PrivatePoke(friend::PrivatePoke),
-	PrivateRecall(friend::PrivateRecall),
-	PrivateFileUpload(friend::PrivateFileUpload),
-	GroupPoke(group::GroupPoke),
-	GroupRecall(group::GroupRecall),
-	GroupFileUpload(group::GroupFileUpload),
-	GroupCardChange(group::GroupCardChange),
-	GroupMemberTitleChange(group::GroupMemberTitleChange),
+	ReceiveLike(ReceiveLike),
+	FriendAdd(FriendAdd),
+	PrivatePoke(PrivatePoke),
+	PrivateRecall(PrivateRecall),
+	PrivateFileUpload(PrivateFileUpload),
+	GroupPoke(GroupPoke),
+	GroupRecall(GroupRecall),
+	GroupFileUpload(GroupFileUpload),
+	GroupCardChange(GroupCardChange),
+	GroupMemberTitleChange(GroupMemberTitleChange),
 }
 pub trait NotionBase: Send + Sync + EventBase {
 	type Content;
-	/// 通知内容
+	/// 通知消息
 	fn notion(&self) -> &str;
 
+	/// 通知内容
 	fn content(&self) -> Self::Content;
 }
