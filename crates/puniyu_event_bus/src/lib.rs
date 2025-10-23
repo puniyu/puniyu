@@ -1,9 +1,9 @@
 use puniyu_adapter_api::AdapterApi;
 use puniyu_event::Event;
-use puniyu_handler::{Handler, MessageHandler};
+use puniyu_handler::{CommandHandler, Handler};
 use puniyu_logger::owo_colors::OwoColorize;
 use puniyu_logger::warn;
-use puniyu_matcher::{Matcher, MessageMatcher};
+use puniyu_matcher::{CommandMatcher, Matcher};
 use std::sync::{Arc, Mutex, OnceLock};
 use strum::{Display, EnumString, IntoStaticStr};
 use tokio::sync::mpsc;
@@ -60,8 +60,8 @@ impl EventBus {
 		tokio::spawn(async move {
 			let mut receiver = receiver;
 			while let Some((adapter, event)) = receiver.recv().await {
-				if MessageMatcher.matches(&event) {
-					MessageHandler.handle(&event).await;
+				if CommandMatcher.matches(&event) {
+					CommandHandler.handle(adapter, event).await;
 				}
 			}
 		});

@@ -1,8 +1,8 @@
 mod registry;
 pub use registry::MatcherRegistry;
-mod message;
+mod command;
 mod store;
-pub use message::MessageMatcher;
+pub use command::CommandMatcher;
 
 use puniyu_event::Event;
 

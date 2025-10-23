@@ -72,6 +72,7 @@ pub enum NotionSubEvent {
 	GroupHonorChange,
 }
 
+#[derive(Debug, Clone)]
 pub enum NotionEvent {
 	ReceiveLike(ReceiveLike),
 	FriendAdd(FriendAdd),

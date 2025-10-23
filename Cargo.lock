@@ -1937,6 +1937,7 @@ name = "puniyu_handler"
 version = "0.1.0"
 dependencies = [
  "async-trait",
+ "puniyu_adapter_api",
  "puniyu_command",
  "puniyu_event",
 ]

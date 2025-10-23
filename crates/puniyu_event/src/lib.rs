@@ -7,32 +7,23 @@ pub mod notion;
 #[cfg(feature = "request")]
 pub mod request;
 
-#[cfg(any(feature = "message", feature = "event"))]
-use crate::message::MessageEvent;
-#[cfg(any(feature = "message", feature = "event"))]
-use crate::notion::NotionSubEvent;
-use crate::request::RequestSubEvent;
 use strum::{Display, EnumString, IntoStaticStr};
 
 #[cfg(feature = "event")]
 #[derive(Clone)]
 pub enum Event {
-	Message(MessageEvent),
-	Notion(NotionSubEvent),
-	Request(RequestSubEvent),
+	Message(Box<message::MessageEvent>),
+	Notion(Box<notion::NotionEvent>),
+	Request(Box<request::RequestEvent>),
 }
 
 #[cfg(feature = "event")]
 impl std::fmt::Debug for Event {
 	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
 		match self {
-			Event::Message(message_event) => f
-				.debug_tuple("Message")
-				.field(&format_args!("Arc<dyn AdapterApi>"))
-				.field(message_event)
-				.finish(),
-			Event::Notion(sub_event) => f.debug_tuple("Notion").field(sub_event).finish(),
-			Event::Request(sub_event) => f.debug_tuple("Request").field(sub_event).finish(),
+			Event::Message(message_event) => f.debug_tuple("Message").field(message_event).finish(),
+			Event::Notion(notion_event) => f.debug_tuple("Notion").field(notion_event).finish(),
+			Event::Request(request_event) => f.debug_tuple("Request").field(request_event).finish(),
 		}
 	}
 }

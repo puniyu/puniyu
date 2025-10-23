@@ -1,5 +1,6 @@
 use super::Matcher;
 use puniyu_element::RawMessage;
+use puniyu_event::EventBase;
 use puniyu_event::message::{MessageBase, MessageEvent};
 use puniyu_event::{Event, EventType};
 use puniyu_logger::{debug, info};
@@ -9,12 +10,12 @@ use puniyu_logger::{debug, info};
 ///     - 全局前缀
 ///     - BOT前缀
 ///     - 插件前缀
-pub struct MessageMatcher;
+pub struct CommandMatcher;
 
-impl Matcher for MessageMatcher {
+impl Matcher for CommandMatcher {
 	fn matches(&self, event: &Event) -> bool {
-		if let Event::Message(.., message_event) = event {
-			match message_event {
+		if let Event::Message(message_event) = event {
+			match message_event.as_ref() {
 				MessageEvent::Friend(message) => {
 					let has_valid_text = message.elements().iter().any(|element| {
 						if let Some(text) = element.as_text() {
