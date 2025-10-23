@@ -1,4 +1,4 @@
-use crate::message::{MessageBase, MessageSubType};
+use crate::message::{MessageBase, MessageBuilder, MessageSubType};
 use crate::{EventBase, EventType};
 use puniyu_contact::FriendContact;
 use puniyu_element::Elements;
@@ -26,7 +26,7 @@ pub struct FriendMessage {
 }
 
 impl FriendMessage {
-	pub fn new(message_builder: FriendMessageBuilder) -> Self {
+	pub fn new(message_builder: MessageBuilder<FriendContact, FriendSender>) -> Self {
 		use std::time::{SystemTime, UNIX_EPOCH};
 		let timestamp = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs();
 		Self {
@@ -100,17 +100,6 @@ impl fmt::Display for FriendMessage {
 	}
 }
 
-#[derive(Debug, Clone)]
-pub struct FriendMessageBuilder {
-	pub event_id: String,
-	pub self_id: String,
-	pub user_id: String,
-	pub contact: FriendContact,
-	pub sender: FriendSender,
-	pub message_id: String,
-	pub elements: Vec<Elements>,
-}
-
 #[cfg(feature = "message")]
 #[macro_export]
 macro_rules! create_friend_message {
@@ -125,7 +114,7 @@ macro_rules! create_friend_message {
 		$sender:expr,
 		$time:expr
 	) => {{
-		let builder = FriendMessageBuilder {
+		let builder = MessageBuilder<FriendContact, FriendSender> {
 			event_id: $event_id.into(),
 			self_id: $self_id.into(),
 			user_id: $user_id.into(),

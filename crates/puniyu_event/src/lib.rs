@@ -82,11 +82,3 @@ pub trait EventBase: Send + Sync {
 	/// 发送者
 	fn sender(&self) -> Self::SenderType;
 }
-
-#[cfg(feature = "event")]
-#[derive(Debug)]
-pub struct EventBuilder {
-	pub event_id: String,
-	pub self_id: String,
-	pub user_id: String,
-}

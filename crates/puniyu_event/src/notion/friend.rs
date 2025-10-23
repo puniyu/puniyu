@@ -1,16 +1,7 @@
-use crate::notion::{NotionBase, NotionSubEvent};
+use crate::notion::{NotionBase, NotionBuilder, NotionSubEvent};
 use crate::{EventBase, EventType};
 use puniyu_contact::FriendContact;
 use puniyu_sender::FriendSender;
-
-#[derive(Debug, Clone)]
-pub struct NotionFriendBuilder {
-	pub event_id: String,
-	pub self_id: String,
-	pub user_id: String,
-	pub contact: FriendContact,
-	pub sender: FriendSender,
-}
 
 macro_rules! impl_notion_event {
     (
@@ -41,7 +32,7 @@ macro_rules! impl_notion_event {
         }
 
         impl $struct_name {
-            pub fn new(notion_builder: NotionFriendBuilder, content: $content_struct) -> Self {
+            pub fn new(notion_builder: NotionBuilder<FriendContact, FriendSender>, content: $content_struct) -> Self {
                 use std::time::{SystemTime, UNIX_EPOCH};
                 let timestamp = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs();
                 Self {
@@ -117,7 +108,7 @@ macro_rules! impl_notion_event {
                 $sender:expr,
                 $content:expr,
             ) => {{
-                let builder = NotionFriendBuilder {
+                let builder = NotionBuilder<FriendContact, FriendSender> {
                     event_id: $event_id.into(),
                     self_id: $self_id.into(),
                     user_id: $user_id.into(),

@@ -1,17 +1,7 @@
-use crate::notion::{NotionBase, NotionSubEvent};
+use crate::notion::{NotionBase, NotionBuilder, NotionSubEvent};
 use crate::{EventBase, EventType};
 use puniyu_contact::GroupContact;
 use puniyu_sender::GroupSender;
-
-#[derive(Debug, Clone)]
-pub struct NotionGroupBuilder {
-	pub event_id: String,
-	pub self_id: String,
-	pub user_id: String,
-	pub group_id: String,
-	pub contact: GroupContact,
-	pub sender: GroupSender,
-}
 
 macro_rules! impl_notion_event {
     (
@@ -33,8 +23,6 @@ macro_rules! impl_notion_event {
             self_id: String,
             /// 用户id
             user_id: String,
-            /// 群id
-            group_id: String,
             /// 事件联系人
             contact: GroupContact,
             /// 事件发送者
@@ -44,7 +32,7 @@ macro_rules! impl_notion_event {
         }
 
         impl $struct_name {
-            pub fn new(notion_builder: NotionGroupBuilder, content: $content_struct) -> Self {
+            pub fn new(notion_builder: NotionBuilder<GroupContact, GroupSender>, content: $content_struct) -> Self {
                 use std::time::{SystemTime, UNIX_EPOCH};
                 let timestamp = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs();
                 Self {
@@ -52,7 +40,6 @@ macro_rules! impl_notion_event {
                     time: timestamp,
                     self_id: notion_builder.self_id,
                     user_id: notion_builder.user_id,
-                    group_id: notion_builder.group_id,
                     contact: notion_builder.contact,
                     sender: notion_builder.sender,
                     content
@@ -60,7 +47,7 @@ macro_rules! impl_notion_event {
             }
 
 	        pub fn group_id(&self) -> &str {
-                self.group_id.as_str()
+                &self.contact.peer
             }
         }
 
@@ -126,11 +113,10 @@ macro_rules! impl_notion_event {
                 $sender:expr,
                 $content:expr,
             ) => {{
-                let builder = NotionGroupBuilder {
+                let builder = NotionBuilder<GroupContact, GroupSender> {
                     event_id: $event_id.into(),
                     self_id: $self_id.into(),
                     user_id: $user_id.into(),
-                    group_id: $group_id.into(),
                     contact: $contact,
                     sender: $sender,
                 };

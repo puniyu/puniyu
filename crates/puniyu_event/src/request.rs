@@ -37,3 +37,12 @@ pub trait RequestBase: Send + Sync + EventBase {
 	/// 请求内容
 	fn content(&self) -> Self::Content;
 }
+
+#[derive(Debug, Clone)]
+pub struct RequestBuilder<Contact, Sender> {
+	pub event_id: String,
+	pub self_id: String,
+	pub user_id: String,
+	pub contact: Contact,
+	pub sender: Sender,
+}

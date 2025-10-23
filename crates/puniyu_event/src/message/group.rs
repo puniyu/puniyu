@@ -1,4 +1,4 @@
-use crate::message::{MessageBase, MessageSubType};
+use crate::message::{MessageBase, MessageBuilder, MessageSubType};
 use crate::{EventBase, EventType};
 use puniyu_contact::GroupContact;
 use puniyu_element::Elements;
@@ -15,8 +15,6 @@ pub struct GroupMessage {
 	self_id: String,
 	/// 用户id
 	user_id: String,
-	/// 当前群昵称
-	group_id: String,
 	/// 消息id
 	message_id: String,
 	/// 消息内容
@@ -28,7 +26,7 @@ pub struct GroupMessage {
 }
 
 impl GroupMessage {
-	pub fn new(message_builder: GroupMessageBuilder) -> Self {
+	pub fn new(message_builder: MessageBuilder<GroupContact, GroupSender>) -> Self {
 		use std::time::{SystemTime, UNIX_EPOCH};
 		let timestamp = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs();
 		Self {
@@ -36,7 +34,6 @@ impl GroupMessage {
 			time: timestamp,
 			self_id: message_builder.self_id,
 			user_id: message_builder.user_id,
-			group_id: message_builder.group_id,
 			message_id: message_builder.message_id,
 			elements: message_builder.elements,
 			contact: message_builder.contact,
@@ -45,7 +42,7 @@ impl GroupMessage {
 	}
 
 	pub fn group_id(&self) -> &str {
-		&self.group_id
+		&self.contact.peer
 	}
 }
 
@@ -102,7 +99,6 @@ impl fmt::Display for GroupMessage {
 		f.debug_struct("GroupMessage")
 			.field("event_id", &self.event_id)
 			.field("self_id", &self.self_id)
-			.field("group_id", &self.group_id)
 			.field("user_id", &self.user_id)
 			.field("message_id", &self.message_id)
 			.field("elements", &self.elements)
@@ -110,23 +106,11 @@ impl fmt::Display for GroupMessage {
 	}
 }
 
-#[derive(Debug, Clone)]
-pub struct GroupMessageBuilder {
-	pub event_id: String,
-	pub self_id: String,
-	pub user_id: String,
-	pub group_id: String,
-	pub contact: GroupContact,
-	pub sender: GroupSender,
-	pub message_id: String,
-	pub elements: Vec<Elements>,
-}
-
 #[cfg(feature = "message")]
 #[macro_export]
 macro_rules! create_group_message {
 	($adapter:expr, $event_id:expr, $contact:expr, $self_id:expr, $user_id:expr, $group_id:expr ,$message_id:expr, $elements:expr, $sender:expr) => {{
-		let builder = EventBuilder {
+		let builder = MessageBuilder<GroupContact, GroupSender> {
 			event_id: $event_id.into(),
 			self_id: $self_id.into(),
 			user_id: $user_id.into(),

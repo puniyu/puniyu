@@ -92,3 +92,12 @@ pub trait NotionBase: Send + Sync + EventBase {
 	/// 通知内容
 	fn content(&self) -> Self::Content;
 }
+
+#[derive(Debug, Clone)]
+pub struct NotionBuilder<Contact, Sender> {
+	pub event_id: String,
+	pub self_id: String,
+	pub user_id: String,
+	pub contact: Contact,
+	pub sender: Sender,
+}

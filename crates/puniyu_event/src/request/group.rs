@@ -1,16 +1,7 @@
-use crate::request::{RequestBase, RequestSubEvent};
+use crate::request::{RequestBase, RequestBuilder, RequestSubEvent};
 use crate::{EventBase, EventType};
 use puniyu_contact::GroupContact;
 use puniyu_sender::GroupSender;
-
-#[derive(Debug, Clone)]
-pub struct RequestGroupBuilder {
-	pub event_id: String,
-	pub self_id: String,
-	pub user_id: String,
-	pub contact: GroupContact,
-	pub sender: GroupSender,
-}
 
 #[derive(Debug, Clone)]
 pub struct GroupApplyType {
@@ -37,7 +28,10 @@ pub struct GroupApply {
 }
 
 impl GroupApply {
-	pub fn new(request_builder: RequestGroupBuilder, content: GroupApplyType) -> Self {
+	pub fn new(
+		request_builder: RequestBuilder<GroupContact, GroupSender>,
+		content: GroupApplyType,
+	) -> Self {
 		use std::time::{SystemTime, UNIX_EPOCH};
 		let timestamp = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs();
 		Self {
@@ -52,7 +46,7 @@ impl GroupApply {
 	}
 
 	pub fn group_id(&self) -> &str {
-		self.contact.peer.as_str()
+		&self.contact.peer
 	}
 }
 
@@ -117,7 +111,7 @@ macro_rules! create_group_apply {
 		$sender:expr,
 		$content:expr,
 	) => {{
-		let builder = RequestFriendBuilder {
+		let builder = RequestBuilder<GroupContact, GroupSender> {
 			event_id: $event_id.into(),
 			self_id: $self_id.into(),
 			user_id: $user_id.into(),
@@ -154,7 +148,10 @@ pub struct GroupInvite {
 }
 
 impl GroupInvite {
-	pub fn new(request_builder: RequestGroupBuilder, content: GroupInviteType) -> Self {
+	pub fn new(
+		request_builder: RequestBuilder<GroupContact, GroupSender>,
+		content: GroupInviteType,
+	) -> Self {
 		use std::time::{SystemTime, UNIX_EPOCH};
 		let timestamp = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs();
 		Self {
@@ -169,7 +166,7 @@ impl GroupInvite {
 	}
 
 	pub fn group_id(&self) -> &str {
-		self.contact.peer.as_str()
+		&self.contact.peer
 	}
 }
 
@@ -234,7 +231,7 @@ macro_rules! create_group_invite {
 		$sender:expr,
 		$content:expr,
 	) => {{
-		let builder = RequestFriendBuilder {
+		let builder = RequestBuilder<GroupContact, GroupSender> {
 			event_id: $event_id.into(),
 			self_id: $self_id.into(),
 			user_id: $user_id.into(),

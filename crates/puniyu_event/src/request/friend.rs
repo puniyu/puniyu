@@ -1,16 +1,7 @@
-use crate::request::{RequestBase, RequestSubEvent};
+use crate::request::{RequestBase, RequestBuilder, RequestSubEvent};
 use crate::{EventBase, EventType};
 use puniyu_contact::FriendContact;
 use puniyu_sender::FriendSender;
-
-#[derive(Debug, Clone)]
-pub struct RequestFriendBuilder {
-	pub event_id: String,
-	pub self_id: String,
-	pub user_id: String,
-	pub contact: FriendContact,
-	pub sender: FriendSender,
-}
 
 #[derive(Debug, Clone)]
 pub struct PrivateApplyType {
@@ -37,7 +28,10 @@ pub struct PrivateApply {
 }
 
 impl PrivateApply {
-	pub fn new(request_builder: RequestFriendBuilder, content: PrivateApplyType) -> Self {
+	pub fn new(
+		request_builder: RequestBuilder<FriendContact, FriendSender>,
+		content: PrivateApplyType,
+	) -> Self {
 		use std::time::{SystemTime, UNIX_EPOCH};
 		let timestamp = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs();
 		Self {
@@ -113,7 +107,7 @@ macro_rules! create_friend_apply {
 		$sender:expr,
 		$content:expr,
 	) => {{
-		let builder = RequestFriendBuilder {
+		let builder = RequestBuilder<FriendContact, FriendSender> {
 			event_id: $event_id.into(),
 			self_id: $self_id.into(),
 			user_id: $user_id.into(),

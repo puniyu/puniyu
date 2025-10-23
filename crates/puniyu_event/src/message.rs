@@ -81,3 +81,14 @@ pub trait MessageBase: Send + Sync + EventBase {
 			.next()
 	}
 }
+
+#[derive(Debug, Clone)]
+pub struct MessageBuilder<Contact, Sender> {
+	pub event_id: String,
+	pub self_id: String,
+	pub user_id: String,
+	pub contact: Contact,
+	pub sender: Sender,
+	pub message_id: String,
+	pub elements: Vec<Elements>,
+}
