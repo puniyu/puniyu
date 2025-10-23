@@ -3,9 +3,9 @@ mod group;
 
 pub use friend::FriendMessage;
 pub use group::GroupMessage;
-use puniyu_contact::Contact;
+
+use crate::EventBase;
 use puniyu_element::Elements;
-use puniyu_sender::Sender;
 use strum::{Display, EnumString, IntoStaticStr};
 
 #[derive(Debug, Clone, EnumString, Display, IntoStaticStr)]
@@ -24,32 +24,11 @@ pub enum MessageEvent {
 	Group(GroupMessage),
 }
 
-pub trait MessageBase: Send + Sync {
-	/// 事件id
-	fn event_id(&self) -> &str;
-
-	/// 事件类型
-	fn event(&self) -> &str;
-	/// 子事件类型
-	fn sub_event(&self) -> &str;
-
-	/// 联系人
-	fn contact(&self) -> Contact;
-
-	/// 机器人ID
-	fn self_id(&self) -> &str;
-
-	/// 用户ID
-	fn user_id(&self) -> &str;
-
-	/// 发送者
-	fn sender(&self) -> Sender;
-
-	/// 消息元素
-	fn elements(&self) -> Vec<Elements>;
-
+pub trait MessageBase: Send + Sync + EventBase {
 	/// message_id
 	fn message_id(&self) -> &str;
+	/// 消息元素
+	fn elements(&self) -> Vec<Elements>;
 
 	/// 获取艾特元素
 	fn get_at(&self) -> Vec<String> {
@@ -103,11 +82,13 @@ pub trait MessageBase: Send + Sync {
 	}
 }
 
-#[derive(Debug)]
-pub struct MessageBuilder {
+#[derive(Debug, Clone)]
+pub struct MessageBuilder<Contact, Sender> {
 	pub event_id: String,
 	pub self_id: String,
 	pub user_id: String,
+	pub contact: Contact,
+	pub sender: Sender,
 	pub message_id: String,
 	pub elements: Vec<Elements>,
 }

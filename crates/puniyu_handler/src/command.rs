@@ -1,18 +1,20 @@
 use super::Handler;
 use async_trait::async_trait;
+use puniyu_adapter_api::AdapterApi;
 use puniyu_command::{CommandRegistry, HandlerResult};
 use puniyu_event::message::MessageEvent;
 use puniyu_event::{
-	Event,
-	context::{Bot, EventContext},
-	create_context_bot, create_event_context,
+	Event, EventBase,
+	context::{BotContext, MessageContext},
+	create_context_bot, create_message_event_context,
 	message::MessageBase,
 };
 use std::collections::HashMap;
+use std::sync::Arc;
 
-macro_rules! handle_message_command {
+macro_rules! handle_command {
 	($message:expr, $adapter:expr, $message_event:expr) => {{
-		let bot = create_context_bot!($message.contact().clone(), $adapter.clone());
+		let bot = create_context_bot!($message.contact().into(), $adapter);
 
 		let (command_name, command_args) = {
 			let text_content = $message
@@ -36,7 +38,7 @@ macro_rules! handle_message_command {
 			} else {
 				HashMap::new()
 			};
-		let event = create_event_context!($message_event.clone(), plugin_args);
+		let event = create_message_event_context!($message_event, plugin_args);
 
 		let plugins = CommandRegistry::get_plugins_with_command(command_name.as_str());
 		for name in plugins {
@@ -61,15 +63,15 @@ macro_rules! parse_command {
 		let mut current_flag = None;
 
 		for arg in args {
-			match (arg.starts_with("--"), current_flag.take()) {
-				(true, Some(prev_flag)) => {
+			match (arg.strip_prefix("--"), current_flag.take()) {
+				(Some(flag), Some(prev_flag)) => {
 					params.insert(prev_flag, None);
-					current_flag = Some(arg[2..].to_string());
+					current_flag = Some(flag.to_string());
 				}
-				(true, None) => {
-					current_flag = Some(arg[2..].to_string());
+				(Some(flag), None) => {
+					current_flag = Some(flag.to_string());
 				}
-				(false, Some(flag)) => {
+				(None, Some(flag)) => {
 					params.insert(flag, Some(arg.to_string()));
 				}
 				_ => {}
@@ -84,18 +86,18 @@ macro_rules! parse_command {
 	}};
 }
 
-pub struct MessageHandler;
+pub struct CommandHandler;
 
 #[async_trait]
-impl Handler for MessageHandler {
-	async fn handle(&self, event: &Event) {
-		if let Event::Message(adapter, message_event) = event {
-			match message_event {
+impl Handler for CommandHandler {
+	async fn handle(&self, adapter: Arc<dyn AdapterApi>, event: Event) {
+		if let Event::Message(message_event) = event {
+			match message_event.as_ref() {
 				MessageEvent::Friend(message) => {
-					handle_message_command!(message, adapter, message_event);
+					handle_command!(message, adapter, *message_event);
 				}
 				MessageEvent::Group(message) => {
-					handle_message_command!(message, adapter, message_event);
+					handle_command!(message, adapter, *message_event);
 				}
 			}
 		}

@@ -544,7 +544,7 @@ pub fn command(args: TokenStream, item: TokenStream) -> TokenStream {
 	if input_fn.sig.inputs.len() != 2 {
 		return syn::Error::new_spanned(
 			&input_fn.sig.inputs,
-			"呜哇~命令函数必须有两个参数：&Bot, &EventContext！笨蛋！",
+			"呜哇~命令函数必须有两个参数：&BotContext, &MessageContext！笨蛋！",
 		)
 		.to_compile_error()
 		.into();
@@ -608,7 +608,7 @@ pub fn command(args: TokenStream, item: TokenStream) -> TokenStream {
 				#command_rank.to_string().parse().unwrap_or(100)
 			}
 
-			async fn run(&self, bot: &Bot, ev: &EventContext) -> ::puniyu_plugin::HandlerResult {
+			async fn run(&self, bot: &BotContext, ev: &MessageContext) -> ::puniyu_plugin::HandlerResult {
 				#fn_name(bot, ev).await
 			}
 		}

@@ -1,32 +1,29 @@
 #[cfg(feature = "context")]
 pub mod context;
-#[cfg(feature = "message")]
+#[cfg(any(feature = "message", feature = "event"))]
 pub mod message;
+#[cfg(feature = "context")]
+pub mod notion;
+#[cfg(feature = "request")]
+pub mod request;
 
-#[cfg(feature = "message")]
-use crate::message::MessageEvent;
-#[cfg(feature = "message")]
-use puniyu_adapter_api::AdapterApi;
-use std::sync::Arc;
 use strum::{Display, EnumString, IntoStaticStr};
 
-#[cfg(feature = "message")]
+#[cfg(feature = "event")]
 #[derive(Clone)]
 pub enum Event {
-	Message(Arc<dyn AdapterApi>, MessageEvent),
-	Notion,
+	Message(Box<message::MessageEvent>),
+	Notion(Box<notion::NotionEvent>),
+	Request(Box<request::RequestEvent>),
 }
 
-#[cfg(feature = "message")]
+#[cfg(feature = "event")]
 impl std::fmt::Debug for Event {
 	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
 		match self {
-			Event::Message(_, message_event) => f
-				.debug_tuple("Message")
-				.field(&format_args!("Arc<dyn AdapterApi>"))
-				.field(message_event)
-				.finish(),
-			Event::Notion => write!(f, "Notion"),
+			Event::Message(message_event) => f.debug_tuple("Message").field(message_event).finish(),
+			Event::Notion(notion_event) => f.debug_tuple("Notion").field(notion_event).finish(),
+			Event::Request(request_event) => f.debug_tuple("Request").field(request_event).finish(),
 		}
 	}
 }
@@ -49,4 +46,30 @@ pub enum EventType {
 	Request,
 	#[strum(serialize = "unknown")]
 	Unknown,
+}
+
+#[cfg(feature = "event")]
+pub trait EventBase: Send + Sync {
+	type ContactType;
+	type SenderType;
+	/// 事件触发时间戳(秒）
+	fn time(&self) -> u64;
+	/// 事件类型
+	fn event(&self) -> &str;
+	/// 事件id
+	fn event_id(&self) -> &str;
+	/// 子事件类型
+	fn sub_event(&self) -> &str;
+
+	/// 机器人ID
+	fn self_id(&self) -> &str;
+
+	/// 用户ID
+	fn user_id(&self) -> &str;
+
+	/// 联系人
+	fn contact(&self) -> Self::ContactType;
+
+	/// 发送者
+	fn sender(&self) -> Self::SenderType;
 }

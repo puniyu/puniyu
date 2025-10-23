@@ -1,8 +1,9 @@
+use puniyu_adapter_api::AdapterApi;
 use puniyu_event::Event;
-use puniyu_handler::{Handler, MessageHandler};
+use puniyu_handler::{CommandHandler, Handler};
 use puniyu_logger::owo_colors::OwoColorize;
 use puniyu_logger::warn;
-use puniyu_matcher::{Matcher, MessageMatcher};
+use puniyu_matcher::{CommandMatcher, Matcher};
 use std::sync::{Arc, Mutex, OnceLock};
 use strum::{Display, EnumString, IntoStaticStr};
 use tokio::sync::mpsc;
@@ -22,9 +23,9 @@ pub enum EventType {
 
 pub static EVENT_BUS: OnceLock<Arc<Mutex<EventBus>>> = OnceLock::new();
 
-pub type EventSender = mpsc::UnboundedSender<Event>;
+pub type EventSender = mpsc::UnboundedSender<(Arc<dyn AdapterApi>, Event)>;
 
-pub type EventReceiver = mpsc::UnboundedReceiver<Event>;
+pub type EventReceiver = mpsc::UnboundedReceiver<(Arc<dyn AdapterApi>, Event)>;
 
 pub struct EventBus {
 	pub sender: EventSender,
@@ -43,8 +44,12 @@ impl EventBus {
 		Self::default()
 	}
 
-	pub fn send_event(&self, event: Event) -> Result<(), Box<mpsc::error::SendError<Event>>> {
-		self.sender.send(event).map_err(|e| {
+	pub fn send_event(
+		&self,
+		adapter: Arc<dyn AdapterApi>,
+		event: Event,
+	) -> Result<(), Box<mpsc::error::SendError<(Arc<dyn AdapterApi>, Event)>>> {
+		self.sender.send((Arc::from(adapter), event)).map_err(|e| {
 			warn!("[{}]: 事件发送失败 {:?}", "Event".blue(), e);
 			Box::new(e)
 		})
@@ -54,9 +59,9 @@ impl EventBus {
 		let receiver = self.receiver.lock().unwrap().take().unwrap();
 		tokio::spawn(async move {
 			let mut receiver = receiver;
-			while let Some(event) = receiver.recv().await {
-				if MessageMatcher.matches(&event) {
-					MessageHandler.handle(&event).await;
+			while let Some((adapter, event)) = receiver.recv().await {
+				if CommandMatcher.matches(&event) {
+					CommandHandler.handle(adapter, event).await;
 				}
 			}
 		});
@@ -73,9 +78,9 @@ pub fn init_event_bus() -> &'static Mutex<EventBus> {
 	EVENT_BUS.get_or_init(|| Mutex::new(EventBus::default()).into())
 }
 
-pub fn send_event(event: Event) {
+pub fn send_event(adapter: Arc<dyn AdapterApi>, event: Event) {
 	let event_bus = EVENT_BUS.get().unwrap();
-	event_bus.lock().unwrap().send_event(event).unwrap();
+	event_bus.lock().unwrap().send_event(adapter, event).unwrap();
 }
 
 pub fn setup_event_bus(bus: Arc<Mutex<EventBus>>) {

@@ -26,7 +26,15 @@ version = "0.1.0"
 path = "../puniyu_contact"
 optional = true
 
+[dependencies.puniyu_config]
+version = "0.1.0"
+path = "../puniyu_config"
+optional = true
+
 [features]
 default = []
-context = ["message"]
-message = ["dep:puniyu_adapter_api", "dep:puniyu_sender", "dep:puniyu_contact"]
+event = []
+context = ["message", "notion", "request", "dep:puniyu_config", "dep:puniyu_adapter_api"]
+message = ["dep:puniyu_sender", "dep:puniyu_contact", "event"]
+notion = ["dep:puniyu_sender", "dep:puniyu_contact"]
+request = ["dep:puniyu_sender", "dep:puniyu_contact"]

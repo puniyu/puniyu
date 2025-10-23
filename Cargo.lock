@@ -1834,6 +1834,7 @@ name = "puniyu_event"
 version = "0.1.0"
 dependencies = [
  "puniyu_adapter_api",
+ "puniyu_config",
  "puniyu_contact",
  "puniyu_element 0.1.0",
  "puniyu_sender",
@@ -1844,6 +1845,7 @@ dependencies = [
 name = "puniyu_event_bus"
 version = "0.1.0"
 dependencies = [
+ "puniyu_adapter_api",
  "puniyu_event",
  "puniyu_handler",
  "puniyu_logger",
@@ -1935,6 +1937,7 @@ name = "puniyu_handler"
 version = "0.1.0"
 dependencies = [
  "async-trait",
+ "puniyu_adapter_api",
  "puniyu_command",
  "puniyu_event",
 ]

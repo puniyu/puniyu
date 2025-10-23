@@ -43,6 +43,21 @@ pub enum Sender {
 	Group(GroupSender),
 }
 
+impl Sender {
+	pub fn as_friend(&self) -> Option<FriendSender> {
+		match self {
+			Sender::Friend(sender) => Some(sender.clone()),
+			_ => None,
+		}
+	}
+	pub fn as_group(&self) -> Option<GroupSender> {
+		match self {
+			Sender::Group(sender) => Some(sender.clone()),
+			_ => None,
+		}
+	}
+}
+
 impl From<FriendSender> for Sender {
 	fn from(sender: FriendSender) -> Self {
 		Sender::Friend(sender)

@@ -12,6 +12,7 @@ rust-version.workspace = true
 
 [dependencies]
 async-trait.workspace = true
+puniyu_adapter_api = { version = "0.1.0", path = "../puniyu_adapter_api" }
 puniyu_event = { version = "0.1.0", path = "../puniyu_event", default-features = false, features = ["context"] }
 
 [dependencies.puniyu_command]

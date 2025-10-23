@@ -6,7 +6,7 @@ pub use registry::CommandRegistry;
 #[cfg(feature = "builder")]
 use async_trait::async_trait;
 #[cfg(feature = "builder")]
-use puniyu_event::context::{Bot, EventContext};
+use puniyu_event::context::{BotContext, MessageContext};
 #[cfg(feature = "builder")]
 use std::sync::Arc;
 
@@ -66,5 +66,5 @@ pub trait CommandBuilder: Send + Sync + 'static {
 	fn rank(&self) -> usize;
 
 	/// 执行的函数
-	async fn run(&self, bot: &Bot, ev: &EventContext) -> HandlerResult;
+	async fn run(&self, bot: &BotContext, ev: &MessageContext) -> HandlerResult;
 }
