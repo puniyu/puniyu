@@ -1,9 +1,10 @@
 [package]
 name = "puniyu_config"
 version = "0.1.0"
+description = "puniyu 配置模块"
+readme = "README.md"
 authors.workspace = true
 license.workspace = true
-readme.workspace = true
 homepage.workspace = true
 repository.workspace = true
 edition.workspace = true
@@ -16,5 +17,5 @@ flume = "0.11.1"
 puniyu_logger.workspace = true
 serde.workspace = true
 
-puniyu_common = { version = "0.1.0", path = "../puniyu_common" }
+puniyu_common = { workspace = true }
 

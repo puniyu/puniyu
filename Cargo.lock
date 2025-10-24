@@ -1698,7 +1698,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_event"
-version = "0.1.0"
+version = "0.1.3"
 dependencies = [
  "puniyu_adapter_api",
  "puniyu_config",

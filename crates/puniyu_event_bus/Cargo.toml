@@ -15,8 +15,8 @@ strum.workspace = true
 tokio.workspace = true
 puniyu_logger.workspace = true
 
-puniyu_adapter_api = { version = "0.1.0", path = "../puniyu_adapter_api" }
-puniyu_matcher = { version = "0.1.0", path = "../puniyu_matcher" }
-puniyu_handler = { version = "0.1.0", path = "../puniyu_handler" }
-puniyu_event = { version = "0.1.0", path = "../puniyu_event", default-features = false, features = ["message"] }
+puniyu_adapter_api = { workspace = true }
+puniyu_matcher = { workspace = true }
+puniyu_handler = { workspace = true }
+puniyu_event = { workspace = true, features = ["context"] }
 

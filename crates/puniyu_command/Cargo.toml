@@ -13,9 +13,9 @@ rust-version.workspace = true
 [dependencies]
 itertools = { workspace = true, optional = true }
 async-trait = { workspace = true, optional = true }
-puniyu_event = { version = "0.1.0", path = "../puniyu_event", default-features = false, features = ["context"], optional = true }
+puniyu_event = { workspace = true, features = ["context"], optional = true }
 
 [features]
 default = ["builder"]
 builder = ["dep:async-trait", "dep:puniyu_event"]
-registry = ["dep:itertools"]
+registry = ["dep:itertools", "builder"]

@@ -6,7 +6,7 @@ use std::sync::{Arc, Mutex};
 static COMMAND_ID: AtomicU64 = AtomicU64::new(0);
 
 #[derive(Default)]
-pub struct CommandStore(Arc<Mutex<HashMap<u64, Arc<Command>>>>);
+pub(crate) struct CommandStore(Arc<Mutex<HashMap<u64, Arc<Command>>>>);
 
 impl CommandStore {
 	pub fn new() -> Self {

@@ -14,14 +14,12 @@ rust-version.workspace = true
 futures.workspace = true
 thiserror.workspace = true
 puniyu_logger.workspace = true
-puniyu_common = { version = "0.1.0", path = "../puniyu_common" }
-puniyu_task = { version = "0.1.0", path = "../puniyu_task", optional = true }
-puniyu_bot = { version = "0.1.0", path = "../puniyu_bot", optional = true }
+puniyu_common = { workspace = true }
+puniyu_task = { workspace = true, optional = true }
+puniyu_bot = { workspace = true, optional = true }
 
 [dependencies.puniyu_command]
-version = "0.1.0"
-path = "../puniyu_command"
-default-features = false
+workspace = true
 optional = true
 features = ["registry"]
 
@@ -32,20 +30,15 @@ default-features = false
 optional = true
 
 [dependencies.puniyu_builder]
-version = "0.1.0"
-path = "../puniyu_builder"
-default-features = false
+workspace = true
 optional = true
 
 [dependencies.puniyu_library]
-version = "0.1.0"
-path = "../puniyu_library"
-default-features = false
+workspace = true
 optional = true
 
 [dependencies.puniyu_config]
-version = "0.1.0"
-path = "../puniyu_config"
+workspace = true
 optional = true
 
 

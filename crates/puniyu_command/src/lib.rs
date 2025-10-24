@@ -1,4 +1,6 @@
+#[cfg(feature = "registry")]
 mod registry;
+#[cfg(feature = "registry")]
 mod store;
 #[cfg(feature = "registry")]
 pub use registry::CommandRegistry;
