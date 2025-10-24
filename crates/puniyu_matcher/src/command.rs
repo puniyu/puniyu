@@ -1,6 +1,5 @@
 use super::Matcher;
 use puniyu_element::RawMessage;
-use puniyu_event::EventBase;
 use puniyu_event::message::{MessageBase, MessageEvent};
 use puniyu_event::{Event, EventType};
 use puniyu_logger::{debug, info};

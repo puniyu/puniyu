@@ -1,5 +1,6 @@
 use crate::notion::{NotionBase, NotionBuilder, NotionSubEvent};
 use crate::{EventBase, EventType};
+use puniyu_adapter_api::types::HighlightsAction;
 use puniyu_contact::GroupContact;
 use puniyu_sender::GroupSender;
 
@@ -205,13 +206,7 @@ pub struct GroupHighlightsChangeType {
 	/// 被添加精华消息的用户id
 	pub target_id: String,
 	pub message_id: String,
-	pub action: GroupHighlightsChangeAction,
-}
-
-#[derive(Debug, Clone)]
-pub enum GroupHighlightsChangeAction {
-	Add,
-	Remove,
+	pub action: HighlightsAction,
 }
 
 impl_notion_event!(
