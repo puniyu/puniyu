@@ -28,6 +28,11 @@ pub fn setup_plugin() {
 	println!("cargo:rustc-env=PLUGIN_AUTHOR={}", plugin_author);
 }
 
+/// 执行适配器构建时需要设置的环境变量
+///
+/// ADAPTER_NAME: 从 CARGO_PKG_NAME 获取适配器名称
+/// ADAPTER_VERSION: 从 CARGO_PKG_VERSION 获取适配器版本
+/// ADAPTER_AUTHOR: 从 CARGO_PKG_AUTHORS 获取适配器作者信息
 pub fn setup_adapter() {
 	println!("cargo:rerun-if-changed=build.rs");
 	println!("cargo:rerun-if-changed=Cargo.toml");
@@ -46,6 +51,13 @@ pub fn setup_adapter() {
 	println!("cargo:rustc-env=ADAPTER_AUTHOR={}", plugin_author);
 }
 
+/// 执行核心构建时需要设置的环境变量
+///
+/// CORE_VERSION: 完整版本号
+/// CORE_VERSION_MAJOR: 主版本号
+/// CORE_VERSION_MINOR: 次版本号
+/// CORE_VERSION_PATCH: 修订版本号
+/// CORE_VERSION_CHANNEL: 版本通道（根据 core_preview feature 设置为 "Preview" 或 "Stable"）
 pub fn setup_core() {
 	let version = env!("CARGO_PKG_VERSION");
 	println!("cargo:rustc-env=CORE_VERSION={}", version);

@@ -1,6 +1,6 @@
 [package]
 name = "puniyu_registry"
-version = "0.1.0"
+version = "0.1.1"
 description = "puniyu 的注册中心模块"
 readme = "README.md"
 authors.workspace = true
@@ -14,37 +14,20 @@ rust-version.workspace = true
 futures.workspace = true
 thiserror.workspace = true
 puniyu_logger.workspace = true
-puniyu_common = { workspace = true }
+
 puniyu_task = { workspace = true, optional = true }
 puniyu_bot = { workspace = true, optional = true }
-
-[dependencies.puniyu_command]
-workspace = true
-optional = true
-features = ["registry"]
-
-[dependencies.puniyu_event_bus]
-version = "0.1.0"
-path = "../puniyu_event_bus"
-default-features = false
-optional = true
-
-[dependencies.puniyu_builder]
-workspace = true
-optional = true
-
-[dependencies.puniyu_library]
-workspace = true
-optional = true
-
-[dependencies.puniyu_config]
-workspace = true
-optional = true
+puniyu_command = { workspace = true, optional = true, features = ["registry"] }
+puniyu_common = { workspace = true, optional = true }
+puniyu_event_bus = { workspace = true, optional = true }
+puniyu_builder = { workspace = true, optional = true }
+puniyu_library = { workspace = true, optional = true }
+puniyu_config = { workspace = true, optional = true }
 
 
 [features]
 default = []
-adapter = ["puniyu_builder/adapter", "puniyu_library/adapter", "dep:puniyu_event_bus", "dep:puniyu_bot", "dep:puniyu_config"]
-plugin = ["puniyu_builder/plugin", "puniyu_library/plugin", "task", "command", "dep:puniyu_config"]
+adapter = ["puniyu_builder/adapter", "puniyu_library/adapter", "dep:puniyu_event_bus", "dep:puniyu_bot", "dep:puniyu_config", "dep:puniyu_common"]
+plugin = ["puniyu_builder/plugin", "puniyu_library/plugin", "task", "command", "dep:puniyu_config", "dep:puniyu_common"]
 task = ["dep:puniyu_task", "puniyu_builder/task"]
 command = ["dep:puniyu_command"]

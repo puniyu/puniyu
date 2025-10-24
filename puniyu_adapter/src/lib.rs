@@ -1,6 +1,4 @@
 pub mod prelude;
-mod version;
-
 pub use async_trait::async_trait;
 pub use puniyu_builder::adapter::AdapterBuilder;
 pub use puniyu_builder::adapter::VERSION as ABI_VERSION;

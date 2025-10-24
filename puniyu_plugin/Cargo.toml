@@ -1,9 +1,10 @@
 [package]
 name = "puniyu_plugin"
 version = "0.1.0"
+description = "puniyu 的插件模块"
+readme = "README.md"
 authors.workspace = true
 license.workspace = true
-readme.workspace = true
 homepage.workspace = true
 repository.workspace = true
 edition.workspace = true
@@ -16,11 +17,11 @@ inventory.workspace = true
 puniyu_logger.workspace = true
 
 
-puniyu_builder = { version = "0.1.0", path = "../crates/puniyu_builder", features = ["plugin"] }
-puniyu_command = { version = "0.1.0", path = "../crates/puniyu_command", features = ["registry"] }
-puniyu_adapter_api = { version = "0.1.0", path = "../crates/puniyu_adapter_api" }
-puniyu_element = { version = "0.1.0", path = "../crates/puniyu_element" }
-puniyu_event = { version = "0.1.0", path = "../crates/puniyu_event" }
-puniyu_common = { version = "0.1.0", path = "../crates/puniyu_common" }
-puniyu_macros = { version = "0.1.0", path = "../crates/puniyu_macros" }
-puniyu_contact = { version = "0.1.0", path = "../crates/puniyu_contact" }
+puniyu_builder = { workspace = true, features = ["plugin"] }
+puniyu_command = { workspace = true, features = ["registry"] }
+puniyu_adapter_api = { workspace = true }
+puniyu_element = { workspace = true }
+puniyu_event = { workspace = true }
+puniyu_common = { workspace = true }
+puniyu_macros = { workspace = true, features = ["plugin"] }
+puniyu_contact = { workspace = true }

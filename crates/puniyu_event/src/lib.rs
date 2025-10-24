@@ -2,7 +2,7 @@
 pub mod context;
 #[cfg(any(feature = "message", feature = "event"))]
 pub mod message;
-#[cfg(feature = "context")]
+#[cfg(feature = "notion")]
 pub mod notion;
 #[cfg(feature = "request")]
 pub mod request;

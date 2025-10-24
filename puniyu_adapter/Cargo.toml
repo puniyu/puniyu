@@ -1,9 +1,10 @@
 [package]
 name = "puniyu_adapter"
-version = "0.1.0"
+version = "0.1.1"
+description = "puniyu 的适配器模块"
+readme = "README.md"
 authors.workspace = true
 license.workspace = true
-readme.workspace = true
 homepage.workspace = true
 repository.workspace = true
 edition.workspace = true
@@ -14,13 +15,13 @@ async-trait.workspace = true
 puniyu_logger.workspace = true
 serde_json.workspace = true
 
-puniyu_macros = { version = "0.1.0", path = "../crates/puniyu_macros", default-features = false, features = ["adapter"] }
-puniyu_bot = { version = "0.1.0", path = "../crates/puniyu_bot" }
-puniyu_element = { version = "0.1.0", path = "../crates/puniyu_element" }
-puniyu_event = { version = "0.1.0", path = "../crates/puniyu_event", default-features = false, features = ["message"] }
-puniyu_event_bus = { version = "0.1.0", path = "../crates/puniyu_event_bus" }
-puniyu_common = { version = "0.1.0", path = "../crates/puniyu_common" }
-puniyu_builder = { version = "0.1.0", path = "../crates/puniyu_builder", default-features = false, features = ["adapter"] }
-puniyu_contact = { version = "0.1.0", path = "../crates/puniyu_contact" }
-puniyu_sender = { version = "0.1.0", path = "../crates/puniyu_sender" }
-puniyu_adapter_api = { version = "0.1.0", path = "../crates/puniyu_adapter_api" }
+puniyu_macros = { workspace = true, features = ["adapter"] }
+puniyu_bot = { workspace = true }
+puniyu_element = { workspace = true }
+puniyu_event = { workspace = true, features = ["message"] }
+puniyu_event_bus = { workspace = true }
+puniyu_common = { workspace = true }
+puniyu_builder = { workspace = true, features = ["adapter"] }
+puniyu_contact = { workspace = true }
+puniyu_sender = { workspace = true }
+puniyu_adapter_api = { workspace = true }
