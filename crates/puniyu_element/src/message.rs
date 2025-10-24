@@ -1,5 +1,5 @@
+use crate::ElementType;
 use crate::segment::Segment;
-use crate::{ElementType, RawMessage};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 
@@ -21,23 +21,6 @@ impl From<Segment> for Message {
 impl From<Message> for Vec<Segment> {
 	fn from(message: Message) -> Self {
 		message.0
-	}
-}
-
-impl RawMessage for Message {
-	fn raw(&self) -> String {
-		for segment in &self.0 {
-			match segment.r#type.as_str() {
-				t if t == ElementType::Text.to_string() => {
-					return format!("[text:{}]", segment.data.get("text").unwrap());
-				}
-				t if t == ElementType::Image.to_string() => {
-					return format!("[image:{}]", segment.data.get("file").unwrap());
-				}
-				_ => continue,
-			}
-		}
-		String::new()
 	}
 }
 

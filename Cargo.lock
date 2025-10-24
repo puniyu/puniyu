@@ -1613,10 +1613,11 @@ dependencies = [
 name = "puniyu_adapter_api"
 version = "0.1.0"
 dependencies = [
+ "async-trait",
  "puniyu_contact",
  "puniyu_element 0.1.0",
+ "puniyu_sender",
  "serde",
- "strum",
 ]
 
 [[package]]

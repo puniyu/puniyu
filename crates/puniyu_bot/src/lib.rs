@@ -12,19 +12,19 @@ pub enum BotId {
 
 impl From<u64> for BotId {
 	fn from(index: u64) -> Self {
-		BotId::Index(index)
+		Self::Index(index)
 	}
 }
 
 impl From<&str> for BotId {
 	fn from(self_id: &str) -> Self {
-		BotId::SelfId(self_id.to_string())
+		Self::SelfId(self_id.to_string())
 	}
 }
 
 impl From<String> for BotId {
 	fn from(self_id: String) -> Self {
-		BotId::SelfId(self_id)
+		Self::SelfId(self_id)
 	}
 }
 

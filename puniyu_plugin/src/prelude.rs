@@ -1,4 +1,4 @@
-pub use puniyu_adapter_api::types::AvatarSize;
+pub use puniyu_adapter_api::types::*;
 pub use puniyu_builder::adapter::{
 	AccountInfo, AdapterApi, AdapterBuilder, AdapterCommunication, AdapterInfo, AdapterPlatform,
 	AdapterProtocol, AdapterStandard,
