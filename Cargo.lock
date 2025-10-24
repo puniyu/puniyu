@@ -1671,7 +1671,10 @@ dependencies = [
 name = "puniyu_bot"
 version = "0.1.0"
 dependencies = [
+ "puniyu_adapter_api",
  "puniyu_builder",
+ "puniyu_contact",
+ "puniyu_element 0.1.0",
  "puniyu_logger",
 ]
 

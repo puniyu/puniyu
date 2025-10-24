@@ -32,7 +32,7 @@ impl AdapterStore {
 		BotRegistry::get_all()
 			.into_iter()
 			.filter(|bot| bot.adapter.name == name)
-			.for_each(|bot| BotRegistry::unregister(bot.index));
+			.for_each(|bot| BotRegistry::unregister_with_id(bot.account.self_id.as_str()));
 		adapters.remove(name);
 	}
 }

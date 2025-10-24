@@ -1,7 +1,7 @@
-use crate::Bot;
-use puniyu_builder::adapter::AccountInfo;
-use puniyu_builder::adapter::AdapterInfo;
+use crate::{Bot, BotInfo};
+use puniyu_adapter_api::AdapterApi;
 use puniyu_logger::info;
+use std::collections::HashMap;
 use std::sync::{
 	Arc, LazyLock, RwLock,
 	atomic::{AtomicU64, Ordering},
@@ -10,55 +10,54 @@ use std::sync::{
 static BOT_REGISTRY: LazyLock<BotRegistry> = LazyLock::new(BotRegistry::default);
 static BOT_INDEX: AtomicU64 = AtomicU64::new(0);
 
-#[derive(Debug, Clone, Default)]
-pub struct BotRegistry(Arc<RwLock<Vec<Bot>>>);
+#[derive(Clone, Default)]
+pub struct BotRegistry(Arc<RwLock<HashMap<u64, Bot>>>);
 
 impl BotRegistry {
 	pub fn get_all() -> Vec<Bot> {
 		let bots = BOT_REGISTRY.0.read().unwrap();
-		bots.clone()
+		bots.values().cloned().collect()
 	}
 
 	pub fn get_with_index(index: u64) -> Option<Bot> {
 		let bots = BOT_REGISTRY.0.read().unwrap();
-		bots.iter().find(|bot| bot.index == index).cloned()
+		bots.get(&index).cloned()
 	}
 
 	pub fn get_with_self_id(self_id: &str) -> Option<Bot> {
 		let bots = BOT_REGISTRY.0.read().unwrap();
-		bots.iter().find(|bot| bot.account.self_id == self_id).cloned()
+		bots.values().find(|bot| bot.account.self_id == self_id).cloned()
 	}
 
-	pub fn register(adapter: AdapterInfo, account: AccountInfo) {
+	pub fn register(info: BotInfo, adapter_api: Arc<dyn AdapterApi>) {
 		let index = BOT_INDEX.fetch_add(1, Ordering::Relaxed);
-		let self_id = account.self_id.clone();
-		let bot = Bot { index, adapter, account };
-		BOT_REGISTRY.0.write().unwrap().push(bot);
+		let self_id = info.account.self_id.clone();
+		let bot = Bot { adapter: info.adapter, api: adapter_api, account: info.account };
+		BOT_REGISTRY.0.write().unwrap().insert(index, bot);
 		info!("[Bot: {}] 注册成功", self_id);
 	}
 
-	pub fn unregister(index: u64) {
+	pub fn unregister_with_index(index: u64) {
 		let mut bots = BOT_REGISTRY.0.write().unwrap();
-		let removed_bot =
-			bots.iter().position(|bot| bot.index == index).map(|pos| bots.remove(pos));
+		let removed_bot = bots.remove(&index);
 		if let Some(bot) = removed_bot {
 			info!("[Bot: {}] 卸载成功", bot.account.self_id);
 		}
 	}
 
-	pub fn unregister_with_id(id: &str) -> bool {
+	pub fn unregister_with_id(id: &str) {
 		let mut bots = BOT_REGISTRY.0.write().unwrap();
-		let is_unregistered = bots
-			.iter()
-			.position(|bot| bot.account.self_id == id)
-			.map(|pos| bots.remove(pos))
-			.is_some();
-		if is_unregistered {
-			info!("[Bot: {}] 卸载成功", id);
-		} else {
-			info!("[Bot: {}] 卸载失败", id);
+		let index_to_remove =
+			bots.iter().find(|(_, bot)| bot.account.self_id == id).map(|(index, _)| *index);
+
+		if let Some(index) = index_to_remove {
+			let removed_bot = bots.remove(&index);
+			if let Some(bot) = removed_bot {
+				info!("[Bot: {}] 卸载成功", bot.account.self_id);
+			}
 		}
-		is_unregistered
+
+		info!("[Bot: {}] 卸载失败", id);
 	}
 }
 
@@ -68,20 +67,15 @@ impl BotRegistry {
 ///
 /// * `adapter` - 适配器信息
 /// * `account` - 账号信息
-///
-/// ## 示例
-/// ```rust, ignore
-/// use puniyu_bot::{BotRegistry, register_bot};
-/// register_bot!(adapter_info, account_info);
-/// register_bot!(adapter: adapter_info, account: account_info);
-/// ```
 #[macro_export]
 macro_rules! register_bot {
-	($adapter:expr, $account:expr) => {
-		BotRegistry::register($adapter, $account)
+	($adapter:expr, $account:expr, $api:expr) => {
+		let bot_info = BotInfo { adapter: $adapter, account: $account };
+		BotRegistry::register(bot_info, $api)
 	};
-	(adapter: $adapter:expr, account: $account:expr) => {
-		BotRegistry::register($adapter, $account)
+	(adapter: $adapter:expr, account: $account:expr, api: $api:expr) => {
+		let bot_info = BotInfo { adapter: $adapter, account: $account };
+		BotRegistry::register(bot_info, $api)
 	};
 }
 
@@ -91,19 +85,14 @@ macro_rules! register_bot {
 ///
 /// * `id` - Bot的ID，可以是索引或self_id
 ///
-/// ## 实例
-/// ```rust, ignore
-/// use puniyu_bot::{BotRegistry, register_bot};
-/// unregister_bot!("self_id")
-/// unregister_bot!(index: 1)
-/// register_bot!(id: "self_id")
-/// ```
 #[macro_export]
 macro_rules! unregister_bot {
 	($id:expr) => {
 		BotRegistry::unregister_with_id($id)
 	};
-	(index: $index:expr) => {{ BotRegistry::unregister($index) }};
+	(index: $index:expr) => {
+		BotRegistry::unregister_with_index($index)
+	};
 	(id: $id:expr) => {
 		BotRegistry::unregister_with_id($id)
 	};

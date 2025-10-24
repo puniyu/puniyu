@@ -1,8 +1,13 @@
 mod registry;
 
+use puniyu_adapter_api::AdapterApi;
+use puniyu_adapter_api::types::SendMsgType;
 use puniyu_builder::adapter::AccountInfo;
 use puniyu_builder::adapter::AdapterInfo;
+use puniyu_contact::Contact;
+use puniyu_element::Message;
 pub use registry::BotRegistry;
+use std::sync::Arc;
 
 #[derive(Clone)]
 pub enum BotId {
@@ -28,9 +33,29 @@ impl From<String> for BotId {
 	}
 }
 
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub struct Bot {
-	pub index: u64,
+	/// 适配器信息
 	pub adapter: AdapterInfo,
+	/// 适配器API
+	pub api: Arc<dyn AdapterApi>,
+	/// 账户信息
 	pub account: AccountInfo,
+}
+
+#[derive(Debug, Clone)]
+pub struct BotInfo {
+	pub adapter: AdapterInfo,
+	/// 账户信息
+	pub account: AccountInfo,
+}
+
+impl Bot {
+	pub async fn send_msg(
+		&self,
+		contact: Contact,
+		message: Message,
+	) -> Result<SendMsgType, Box<dyn std::error::Error + Send + Sync>> {
+		self.api.send_msg(contact, message).await
+	}
 }
