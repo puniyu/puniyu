@@ -1565,9 +1565,7 @@ dependencies = [
 name = "puniyu"
 version = "0.1.0"
 dependencies = [
- "puniyu_adapter_console",
- "puniyu_core 0.1.0",
- "puniyu_plugin_test",
+    "puniyu_core",
  "tokio",
 ]
 
@@ -1577,35 +1575,16 @@ version = "0.1.0"
 dependencies = [
  "async-trait",
  "puniyu_adapter_api",
- "puniyu_bot 0.1.0",
+    "puniyu_bot",
  "puniyu_builder",
  "puniyu_common",
  "puniyu_contact",
- "puniyu_element 0.1.0",
+    "puniyu_element",
  "puniyu_event",
- "puniyu_event_bus 0.1.0",
+    "puniyu_event_bus",
  "puniyu_logger",
  "puniyu_macros",
  "puniyu_sender",
- "serde_json",
-]
-
-[[package]]
-name = "puniyu_adapter"
-version = "0.1.0"
-source = "git+https://github.com/puniyu/puniyu#42e5c80dea441c6dcb41b8988c00122bc68818a7"
-dependencies = [
- "async-trait",
- "puniyu_adapter_builder",
- "puniyu_adapter_derive",
- "puniyu_bot 0.1.0 (git+https://github.com/puniyu/puniyu)",
- "puniyu_element 0.1.0 (git+https://github.com/puniyu/puniyu)",
- "puniyu_event_bus 0.1.0 (git+https://github.com/puniyu/puniyu)",
- "puniyu_event_core",
- "puniyu_event_message",
- "puniyu_event_utils",
- "puniyu_logger",
- "puniyu_utils",
  "serde_json",
 ]
 
@@ -1615,56 +1594,9 @@ version = "0.1.0"
 dependencies = [
  "async-trait",
  "puniyu_contact",
- "puniyu_element 0.1.0",
+    "puniyu_element",
  "puniyu_sender",
  "serde",
-]
-
-[[package]]
-name = "puniyu_adapter_builder"
-version = "0.1.0"
-source = "git+https://github.com/puniyu/puniyu#42e5c80dea441c6dcb41b8988c00122bc68818a7"
-dependencies = [
- "async-trait",
- "puniyu_element 0.1.0 (git+https://github.com/puniyu/puniyu)",
- "puniyu_event_utils",
- "serde",
- "strum",
-]
-
-[[package]]
-name = "puniyu_adapter_console"
-version = "0.1.0"
-source = "git+https://github.com/puniyu/adapter#0a9e01d761b7fde77a5a173282381dddf95718cb"
-dependencies = [
- "async-trait",
- "puniyu_adapter 0.1.0 (git+https://github.com/puniyu/puniyu)",
- "puniyu_build 0.1.0 (git+https://github.com/puniyu/puniyu)",
- "puniyu_core 0.1.0 (git+https://github.com/puniyu/puniyu)",
-]
-
-[[package]]
-name = "puniyu_adapter_derive"
-version = "0.1.0"
-source = "git+https://github.com/puniyu/puniyu#42e5c80dea441c6dcb41b8988c00122bc68818a7"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 2.0.108",
-]
-
-[[package]]
-name = "puniyu_adapter_registry"
-version = "0.1.0"
-source = "git+https://github.com/puniyu/puniyu#42e5c80dea441c6dcb41b8988c00122bc68818a7"
-dependencies = [
- "futures",
- "puniyu_adapter_builder",
- "puniyu_event_bus 0.1.0 (git+https://github.com/puniyu/puniyu)",
- "puniyu_library 0.1.0 (git+https://github.com/puniyu/puniyu)",
- "puniyu_logger",
- "puniyu_utils",
- "thiserror 2.0.17",
 ]
 
 [[package]]
@@ -1674,27 +1606,13 @@ dependencies = [
  "puniyu_adapter_api",
  "puniyu_builder",
  "puniyu_contact",
- "puniyu_element 0.1.0",
- "puniyu_logger",
-]
-
-[[package]]
-name = "puniyu_bot"
-version = "0.1.0"
-source = "git+https://github.com/puniyu/puniyu#42e5c80dea441c6dcb41b8988c00122bc68818a7"
-dependencies = [
- "puniyu_adapter_builder",
+    "puniyu_element",
  "puniyu_logger",
 ]
 
 [[package]]
 name = "puniyu_build"
 version = "0.1.0"
-
-[[package]]
-name = "puniyu_build"
-version = "0.1.0"
-source = "git+https://github.com/puniyu/puniyu#42e5c80dea441c6dcb41b8988c00122bc68818a7"
 
 [[package]]
 name = "puniyu_builder"
@@ -1703,7 +1621,7 @@ dependencies = [
  "async-trait",
  "puniyu_adapter_api",
  "puniyu_command",
- "puniyu_element 0.1.0",
+    "puniyu_element",
  "serde",
  "strum",
 ]
@@ -1715,24 +1633,6 @@ dependencies = [
  "async-trait",
  "itertools",
  "puniyu_event",
-]
-
-[[package]]
-name = "puniyu_command_builder"
-version = "0.1.0"
-source = "git+https://github.com/puniyu/puniyu#42e5c80dea441c6dcb41b8988c00122bc68818a7"
-dependencies = [
- "async-trait",
- "puniyu_event_context",
-]
-
-[[package]]
-name = "puniyu_command_registry"
-version = "0.1.0"
-source = "git+https://github.com/puniyu/puniyu#42e5c80dea441c6dcb41b8988c00122bc68818a7"
-dependencies = [
- "itertools",
- "puniyu_command_builder",
 ]
 
 [[package]]
@@ -1773,60 +1673,23 @@ dependencies = [
  "figlet-rs",
  "glob",
  "inventory",
- "puniyu_bot 0.1.0",
- "puniyu_build 0.1.0",
+    "puniyu_bot",
+    "puniyu_build",
  "puniyu_builder",
  "puniyu_common",
  "puniyu_config",
- "puniyu_event_bus 0.1.0",
+    "puniyu_event_bus",
  "puniyu_logger",
  "puniyu_registry",
- "puniyu_server 0.1.0",
+    "puniyu_server",
  "puniyu_task",
  "thiserror 2.0.17",
  "tokio",
 ]
 
 [[package]]
-name = "puniyu_core"
-version = "0.1.0"
-source = "git+https://github.com/puniyu/puniyu#42e5c80dea441c6dcb41b8988c00122bc68818a7"
-dependencies = [
- "async-trait",
- "convert_case",
- "figlet-rs",
- "glob",
- "inventory",
- "notify",
- "puniyu_adapter_builder",
- "puniyu_adapter_registry",
- "puniyu_bot 0.1.0 (git+https://github.com/puniyu/puniyu)",
- "puniyu_build 0.1.0 (git+https://github.com/puniyu/puniyu)",
- "puniyu_event_bus 0.1.0 (git+https://github.com/puniyu/puniyu)",
- "puniyu_logger",
- "puniyu_plugin_builder",
- "puniyu_plugin_registry",
- "puniyu_server 0.1.0 (git+https://github.com/puniyu/puniyu)",
- "puniyu_task_registry",
- "puniyu_utils",
- "serde",
- "thiserror 2.0.17",
- "tokio",
-]
-
-[[package]]
 name = "puniyu_element"
 version = "0.1.0"
-dependencies = [
- "serde",
- "serde_json",
- "strum",
-]
-
-[[package]]
-name = "puniyu_element"
-version = "0.1.0"
-source = "git+https://github.com/puniyu/puniyu#42e5c80dea441c6dcb41b8988c00122bc68818a7"
 dependencies = [
  "serde",
  "serde_json",
@@ -1840,7 +1703,7 @@ dependencies = [
  "puniyu_adapter_api",
  "puniyu_config",
  "puniyu_contact",
- "puniyu_element 0.1.0",
+    "puniyu_element",
  "puniyu_sender",
  "strum",
 ]
@@ -1859,84 +1722,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "puniyu_event_bus"
-version = "0.1.0"
-source = "git+https://github.com/puniyu/puniyu#42e5c80dea441c6dcb41b8988c00122bc68818a7"
-dependencies = [
- "puniyu_event_core",
- "puniyu_event_handler",
- "puniyu_event_matcher",
- "puniyu_logger",
- "strum",
- "tokio",
-]
-
-[[package]]
-name = "puniyu_event_context"
-version = "0.1.0"
-source = "git+https://github.com/puniyu/puniyu#42e5c80dea441c6dcb41b8988c00122bc68818a7"
-dependencies = [
- "puniyu_adapter_builder",
- "puniyu_element 0.1.0 (git+https://github.com/puniyu/puniyu)",
- "puniyu_event_message",
- "puniyu_event_utils",
-]
-
-[[package]]
-name = "puniyu_event_core"
-version = "0.1.0"
-source = "git+https://github.com/puniyu/puniyu#42e5c80dea441c6dcb41b8988c00122bc68818a7"
-dependencies = [
- "puniyu_adapter_builder",
- "puniyu_event_message",
-]
-
-[[package]]
-name = "puniyu_event_handler"
-version = "0.1.0"
-source = "git+https://github.com/puniyu/puniyu#42e5c80dea441c6dcb41b8988c00122bc68818a7"
-dependencies = [
- "async-trait",
- "puniyu_command_builder",
- "puniyu_command_registry",
- "puniyu_event_context",
- "puniyu_event_core",
- "puniyu_event_message",
-]
-
-[[package]]
-name = "puniyu_event_matcher"
-version = "0.1.0"
-source = "git+https://github.com/puniyu/puniyu#42e5c80dea441c6dcb41b8988c00122bc68818a7"
-dependencies = [
- "puniyu_element 0.1.0 (git+https://github.com/puniyu/puniyu)",
- "puniyu_event_core",
- "puniyu_event_message",
- "puniyu_event_utils",
- "puniyu_logger",
-]
-
-[[package]]
-name = "puniyu_event_message"
-version = "0.1.0"
-source = "git+https://github.com/puniyu/puniyu#42e5c80dea441c6dcb41b8988c00122bc68818a7"
-dependencies = [
- "puniyu_adapter_builder",
- "puniyu_element 0.1.0 (git+https://github.com/puniyu/puniyu)",
- "puniyu_event_utils",
- "strum",
-]
-
-[[package]]
-name = "puniyu_event_utils"
-version = "0.1.0"
-source = "git+https://github.com/puniyu/puniyu#42e5c80dea441c6dcb41b8988c00122bc68818a7"
-dependencies = [
- "serde",
- "strum",
-]
-
-[[package]]
 name = "puniyu_handler"
 version = "0.1.0"
 dependencies = [
@@ -1949,15 +1734,6 @@ dependencies = [
 [[package]]
 name = "puniyu_library"
 version = "0.1.0"
-dependencies = [
- "libloading",
- "thiserror 2.0.17",
-]
-
-[[package]]
-name = "puniyu_library"
-version = "0.1.0"
-source = "git+https://github.com/puniyu/puniyu#42e5c80dea441c6dcb41b8988c00122bc68818a7"
 dependencies = [
  "libloading",
  "thiserror 2.0.17",
@@ -1996,7 +1772,7 @@ dependencies = [
 name = "puniyu_matcher"
 version = "0.1.0"
 dependencies = [
- "puniyu_element 0.1.0",
+    "puniyu_element",
  "puniyu_event",
  "puniyu_logger",
 ]
@@ -2012,7 +1788,7 @@ dependencies = [
  "puniyu_command",
  "puniyu_common",
  "puniyu_contact",
- "puniyu_element 0.1.0",
+    "puniyu_element",
  "puniyu_event",
  "puniyu_logger",
  "puniyu_macros",
@@ -2020,52 +1796,17 @@ dependencies = [
 ]
 
 [[package]]
-name = "puniyu_plugin_builder"
-version = "0.1.0"
-source = "git+https://github.com/puniyu/puniyu#42e5c80dea441c6dcb41b8988c00122bc68818a7"
-dependencies = [
- "async-trait",
- "puniyu_command_builder",
- "puniyu_task_builder",
-]
-
-[[package]]
-name = "puniyu_plugin_registry"
-version = "0.1.0"
-source = "git+https://github.com/puniyu/puniyu#42e5c80dea441c6dcb41b8988c00122bc68818a7"
-dependencies = [
- "futures",
- "puniyu_command_builder",
- "puniyu_command_registry",
- "puniyu_library 0.1.0 (git+https://github.com/puniyu/puniyu)",
- "puniyu_logger",
- "puniyu_plugin_builder",
- "puniyu_task_registry",
- "puniyu_utils",
- "thiserror 2.0.17",
-]
-
-[[package]]
-name = "puniyu_plugin_test"
-version = "0.1.0"
-dependencies = [
- "puniyu_build 0.1.0",
- "puniyu_core 0.1.0",
- "puniyu_plugin",
-]
-
-[[package]]
 name = "puniyu_registry"
 version = "0.1.0"
 dependencies = [
  "futures",
- "puniyu_bot 0.1.0",
+    "puniyu_bot",
  "puniyu_builder",
  "puniyu_command",
  "puniyu_common",
  "puniyu_config",
- "puniyu_event_bus 0.1.0",
- "puniyu_library 0.1.0",
+    "puniyu_event_bus",
+    "puniyu_library",
  "puniyu_logger",
  "puniyu_task",
  "thiserror 2.0.17",
@@ -2082,17 +1823,6 @@ dependencies = [
 [[package]]
 name = "puniyu_server"
 version = "0.1.0"
-dependencies = [
- "actix-web",
- "futures-util",
- "puniyu_logger",
- "tokio",
-]
-
-[[package]]
-name = "puniyu_server"
-version = "0.1.0"
-source = "git+https://github.com/puniyu/puniyu#42e5c80dea441c6dcb41b8988c00122bc68818a7"
 dependencies = [
  "actix-web",
  "futures-util",
@@ -2121,38 +1851,6 @@ dependencies = [
  "tokio",
  "tokio-cron-scheduler",
  "uuid",
-]
-
-[[package]]
-name = "puniyu_task_builder"
-version = "0.1.0"
-source = "git+https://github.com/puniyu/puniyu#42e5c80dea441c6dcb41b8988c00122bc68818a7"
-dependencies = [
- "async-trait",
-]
-
-[[package]]
-name = "puniyu_task_registry"
-version = "0.1.0"
-source = "git+https://github.com/puniyu/puniyu#42e5c80dea441c6dcb41b8988c00122bc68818a7"
-dependencies = [
- "chrono-tz",
- "puniyu_logger",
- "puniyu_task_builder",
- "tokio",
- "tokio-cron-scheduler",
- "uuid",
-]
-
-[[package]]
-name = "puniyu_utils"
-version = "0.1.0"
-source = "git+https://github.com/puniyu/puniyu#42e5c80dea441c6dcb41b8988c00122bc68818a7"
-dependencies = [
- "puniyu_system_info",
- "serde",
- "thiserror 2.0.17",
- "toml",
 ]
 
 [[package]]

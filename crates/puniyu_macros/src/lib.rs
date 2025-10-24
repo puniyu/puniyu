@@ -136,6 +136,61 @@ pub fn adapter(_: TokenStream, item: TokenStream) -> TokenStream {
 	TokenStream::from(expanded)
 }
 
+#[cfg(feature = "plugin")]
+struct PluginArg {
+	desc: Option<syn::LitStr>,
+}
+
+#[cfg(feature = "plugin")]
+impl Default for PluginArg {
+	fn default() -> Self {
+		Self { desc: None }
+	}
+}
+
+#[cfg(feature = "plugin")]
+impl Parse for PluginArg {
+	fn parse(input: ParseStream) -> syn::Result<Self> {
+		if input.is_empty() {
+			return Ok(PluginArg::default());
+		}
+
+		let fields = Punctuated::<syn::MetaNameValue, Token![,]>::parse_terminated(input)?;
+		let mut args = PluginArg::default();
+
+		for field in fields {
+			let key = field
+				.path
+				.get_ident()
+				.ok_or_else(|| syn::Error::new_spanned(&field.path, "呜哇~不支持的字段名！杂鱼~"))?
+				.to_string();
+
+			match key.as_str() {
+				"desc" => {
+					if let syn::Expr::Lit(syn::ExprLit { lit: syn::Lit::Str(lit_str), .. }) =
+						&field.value
+					{
+						args.desc = Some(lit_str.clone());
+					} else {
+						return Err(syn::Error::new_spanned(
+							&field.value,
+							"呜哇~desc 必须是字符串！杂鱼~",
+						));
+					}
+				}
+				_ => {
+					return Err(syn::Error::new_spanned(
+						&field.path,
+						format!("呜哇~不支持的字段 '{}'！杂鱼~", key),
+					));
+				}
+			}
+		}
+
+		Ok(args)
+	}
+}
+
 /// 注册插件
 /// 此宏包含以下检测：
 /// 1. 函数是否为异步函数
@@ -155,14 +210,14 @@ pub fn adapter(_: TokenStream, item: TokenStream) -> TokenStream {
 /// ```rust, ignore
 /// use puniyu_plugin_derive::plugin;
 ///
-/// #[plugin(name = "puniyu_plugin_hello", version = "0.1.0", author = "wuliya")]
+/// #[plugin]
 /// pub async fn hello() {
 ///     println!("hello world");
 /// }
 /// ```
 #[cfg(feature = "plugin")]
 #[proc_macro_attribute]
-pub fn plugin(_: TokenStream, item: TokenStream) -> TokenStream {
+pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
 	let input_fn = if let Ok(fn_item) = syn::parse::<ItemFn>(item.clone()) {
 		fn_item
 	} else {
@@ -179,6 +234,12 @@ pub fn plugin(_: TokenStream, item: TokenStream) -> TokenStream {
 	let fn_name = &input_fn.sig.ident;
 	let fn_vis = &input_fn.vis;
 	let fn_block = &input_fn.block;
+
+	let plugin_args = parse_macro_input!(args as PluginArg);
+	let plugin_desc = match &plugin_args.desc {
+		Some(desc) => quote! { #desc },
+		None => quote! { "这个人很懒，没有设置呢" },
+	};
 
 	let is_async = fn_sig.asyncness.is_some();
 	if !is_async {
@@ -273,6 +334,10 @@ pub fn plugin(_: TokenStream, item: TokenStream) -> TokenStream {
 				::puniyu_plugin::ABI_VERSION
 			}
 
+			fn description(&self) -> &'static str {
+				#plugin_desc
+			}
+
 			fn tasks(&self) -> Vec<Box<dyn ::puniyu_plugin::TaskBuilder>> {
 				let plugin_name = self.name();
 				::puniyu_plugin::inventory::iter::<TaskRegistry>
@@ -365,6 +430,12 @@ pub fn plugin(_: TokenStream, item: TokenStream) -> TokenStream {
 			builder: fn() -> Box<dyn ::puniyu_plugin::CommandBuilder>,
 		}
 		::puniyu_plugin::inventory::collect!(CommandRegistry);
+
+		pub(crate) struct ServerRegistry {
+			plugin_name: &'static str,
+			/// 命令构造器
+			builder: fn() -> Box<dyn ::puniyu_plugin::CommandBuilder>,
+		}
 
 		::puniyu_plugin::inventory::submit! {
 			PluginRegistry {

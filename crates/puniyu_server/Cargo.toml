@@ -17,5 +17,5 @@ path = "src/main.rs"
 [dependencies]
 puniyu_logger.workspace = true
 tokio.workspace = true
-actix-web = "4.11.0"
+actix-web.workspace = true
 futures-util = "0.3.31"
