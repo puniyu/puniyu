@@ -17,4 +17,3 @@ thiserror.workspace = true
 [features]
 default = ["plugin"]
 plugin = []
-adapter = []

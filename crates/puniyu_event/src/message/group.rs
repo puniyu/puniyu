@@ -130,6 +130,6 @@ macro_rules! create_group_message {
 		};
 		let message = GroupMessage::new(builder);
 		let event = Event::Message(Box::new(MessageEvent::Group(message)));
-		send_event(std::sync::Arc::from($adapter), event);
+		send_event($adapter, event);
 	};
 }

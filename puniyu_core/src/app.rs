@@ -6,7 +6,7 @@ use crate::{
 };
 use convert_case::{Case, Casing};
 use figlet_rs::FIGfont;
-use puniyu_builder::adapter::{AdapterBuilder, AdapterType};
+use puniyu_builder::adapter::AdapterBuilder;
 use puniyu_builder::plugin::{PluginBuilder, PluginType};
 pub use puniyu_common::APP_NAME;
 use puniyu_common::path::{ADAPTER_DATA_DIR, ADAPTER_DIR, DATA_DIR, PLUGIN_DATA_DIR, PLUGIN_DIR};
@@ -19,7 +19,7 @@ use std::{env, env::consts::DLL_EXTENSION};
 use tokio::{fs, signal};
 
 static REGISTERED_PLUGINS: OnceLock<RwLock<Vec<PluginType>>> = OnceLock::new();
-static REGISTERED_ADAPTER: OnceLock<RwLock<Vec<AdapterType>>> = OnceLock::new();
+static REGISTERED_ADAPTER: OnceLock<RwLock<Vec<&'static dyn AdapterBuilder>>> = OnceLock::new();
 
 pub struct App();
 
@@ -50,7 +50,7 @@ impl App {
 	pub fn add_adapter(&mut self, adapter: &'static dyn AdapterBuilder) -> &mut Self {
 		let adapters = REGISTERED_ADAPTER.get_or_init(|| RwLock::new(Vec::new()));
 		if let Ok(mut adapters_vec) = adapters.write() {
-			adapters_vec.push(AdapterType::from(adapter));
+			adapters_vec.push(adapter);
 		}
 		self
 	}
@@ -163,15 +163,6 @@ async fn init_adapter() {
 	}
 
 	let adapters = REGISTERED_ADAPTER.get_or_init(|| RwLock::new(Vec::new()));
-
-	let pattern = PLUGIN_DIR.join(format!("*adapter*.{}", DLL_EXTENSION));
-	if let Ok(paths) = glob::glob(pattern.to_str().unwrap()) {
-		for entry in paths.filter_map(Result::ok) {
-			if let Ok(mut adapter_vec) = adapters.write() {
-				adapter_vec.push(AdapterType::from(entry));
-			}
-		}
-	}
 
 	let adapter_list = {
 		let guard = adapters.read().unwrap();

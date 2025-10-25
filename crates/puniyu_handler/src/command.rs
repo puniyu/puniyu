@@ -10,7 +10,6 @@ use puniyu_event::{
 	message::MessageBase,
 };
 use std::collections::HashMap;
-use std::sync::Arc;
 
 macro_rules! handle_command {
 	($message:expr, $adapter:expr, $message_event:expr) => {{
@@ -90,7 +89,7 @@ pub struct CommandHandler;
 
 #[async_trait]
 impl Handler for CommandHandler {
-	async fn handle(&self, adapter: Arc<dyn AdapterApi>, event: Event) {
+	async fn handle(&self, adapter: &'static dyn AdapterApi, event: Event) {
 		if let Event::Message(message_event) = event {
 			match message_event.as_ref() {
 				MessageEvent::Friend(message) => {

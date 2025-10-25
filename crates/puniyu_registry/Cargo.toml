@@ -20,7 +20,6 @@ puniyu_task = { workspace = true, optional = true }
 puniyu_bot = { workspace = true, optional = true }
 puniyu_command = { workspace = true, optional = true, features = ["registry"] }
 puniyu_common = { workspace = true, optional = true }
-puniyu_event_bus = { workspace = true, optional = true }
 puniyu_builder = { workspace = true, optional = true }
 puniyu_library = { workspace = true, optional = true }
 puniyu_config = { workspace = true, optional = true }
@@ -28,7 +27,7 @@ puniyu_config = { workspace = true, optional = true }
 
 [features]
 default = []
-adapter = ["puniyu_builder/adapter", "puniyu_library/adapter", "dep:puniyu_event_bus", "dep:puniyu_bot", "dep:puniyu_config", "dep:puniyu_common"]
+adapter = ["puniyu_builder/adapter", "dep:puniyu_bot"]
 plugin = ["puniyu_builder/plugin", "puniyu_library/plugin", "task", "command", "dep:puniyu_config", "dep:puniyu_common"]
 task = ["dep:puniyu_task", "puniyu_builder/task"]
 command = ["dep:puniyu_command"]

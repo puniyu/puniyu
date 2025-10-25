@@ -76,23 +76,16 @@ pub struct LoadConfig {
 	/// 强制加载abi版本不同的插件,
 	#[serde(default = "default_force_plugin")]
 	force_plugin: bool,
-	/// 强制加载abi版本不同的适配器,
-	#[serde(default = "default_force_adapter")]
-	force_adapter: bool,
 }
 
 fn default_force_plugin() -> bool {
 	false
 }
 
-fn default_force_adapter() -> bool {
-	false
-}
-
 impl Default for LoadConfig {
 	#[inline]
 	fn default() -> Self {
-		Self { force_plugin: default_force_plugin(), force_adapter: default_force_adapter() }
+		Self { force_plugin: default_force_plugin() }
 	}
 }
 
@@ -100,11 +93,6 @@ impl LoadConfig {
 	/// 是否强制加载abi版本不同的插件
 	pub fn force_plugin(&self) -> bool {
 		self.force_plugin
-	}
-
-	/// 是否强制加载abi版本不同的插件
-	pub fn force_adapter(&self) -> bool {
-		self.force_adapter
 	}
 }
 #[derive(Debug, Clone, Serialize, Deserialize)]

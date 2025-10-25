@@ -53,27 +53,6 @@ pub fn adapter(_: TokenStream, item: TokenStream) -> TokenStream {
 
 	let expanded = quote! {
 		pub struct #struct_name;
-
-		use std::sync::{OnceLock, Mutex, Arc};
-
-		#[cfg(feature = "cdylib")]
-		#[unsafe(no_mangle)]
-		pub extern "C" fn get_adapter_info() -> *mut dyn ::puniyu_adapter::AdapterBuilder {
-			Box::into_raw(Box::new(#struct_name {}))
-		}
-
-		#[cfg(feature = "cdylib")]
-		#[unsafe(no_mangle)]
-		pub extern "C" fn setup_app_name(name: String) {
-			 puniyu_adapter::APP_NAME.get_or_init(|| name);
-		}
-
-		#[cfg(feature = "cdylib")]
-		#[unsafe(no_mangle)]
-		pub extern "C" fn setup_event_bus(bus: Arc<Mutex<::puniyu_adapter::EventBus>>) {
-			puniyu_adapter::setup_event_bus(bus);
-		}
-
 	};
 
 	TokenStream::from(expanded)
