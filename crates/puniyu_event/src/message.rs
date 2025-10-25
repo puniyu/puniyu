@@ -89,6 +89,7 @@ pub struct MessageBuilder<Contact, Sender> {
 	pub user_id: String,
 	pub contact: Contact,
 	pub sender: Sender,
+	pub time: u64,
 	pub message_id: String,
 	pub elements: Vec<Elements>,
 }

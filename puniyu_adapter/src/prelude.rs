@@ -1,5 +1,5 @@
 pub use puniyu_adapter_api::types::*;
-pub use puniyu_bot::{BotRegistry, register_bot};
+pub use puniyu_bot::{BotInfo, BotRegistry, register_bot};
 pub use puniyu_builder::adapter::{
 	AccountInfo, AdapterApi, AdapterBuilder, AdapterCommunication, AdapterInfo, AdapterPlatform,
 	AdapterProtocol, AdapterStandard,

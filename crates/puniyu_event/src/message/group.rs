@@ -27,11 +27,9 @@ pub struct GroupMessage {
 
 impl GroupMessage {
 	pub fn new(message_builder: MessageBuilder<GroupContact, GroupSender>) -> Self {
-		use std::time::{SystemTime, UNIX_EPOCH};
-		let timestamp = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs();
 		Self {
 			event_id: message_builder.event_id,
-			time: timestamp,
+			time: message_builder.time,
 			self_id: message_builder.self_id,
 			user_id: message_builder.user_id,
 			message_id: message_builder.message_id,
@@ -109,19 +107,29 @@ impl fmt::Display for GroupMessage {
 #[cfg(feature = "message")]
 #[macro_export]
 macro_rules! create_group_message {
-	($adapter:expr, $event_id:expr, $contact:expr, $self_id:expr, $user_id:expr, $group_id:expr ,$message_id:expr, $elements:expr, $sender:expr) => {{
-		let builder = MessageBuilder<GroupContact, GroupSender> {
-			event_id: $event_id.into(),
-			self_id: $self_id.into(),
-			user_id: $user_id.into(),
-			group_id: $group_id.into(),
+	(
+		$adapter:expr,
+		$event_id:expr,
+		$contact:expr,
+		$self_id:expr,
+		$user_id:expr,
+		$message_id:expr,
+		$elements:expr,
+		$sender:expr,
+		$time:expr
+	) => {
+		let builder = MessageBuilder {
+			event_id: $event_id.to_string(),
+			self_id: $self_id.to_string(),
+			user_id: $user_id.to_string(),
 			contact: $contact,
 			sender: $sender,
-			message_id: $message_id.into(),
+			time: $time,
+			message_id: $message_id.to_string(),
 			elements: $elements,
 		};
 		let message = GroupMessage::new(builder);
-		let event = Event::MessageMessageEvent::Group(message);
+		let event = Event::Message(Box::new(MessageEvent::Group(message)));
 		send_event(std::sync::Arc::from($adapter), event);
-	}};
+	};
 }

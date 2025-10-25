@@ -1,6 +1,6 @@
 [package]
 name = "puniyu_bot"
-version = "0.1.0"
+version = "0.1.1"
 description = "puniyu 的bot相关"
 readme = "README.md"
 authors.workspace = true
@@ -13,6 +13,7 @@ rust-version.workspace = true
 [dependencies]
 puniyu_logger.workspace = true
 
+puniyu_common = { workspace = true }
 puniyu_element = { workspace = true }
 puniyu_adapter_api = { workspace = true }
 puniyu_contact = { workspace = true }

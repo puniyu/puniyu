@@ -386,9 +386,9 @@ dependencies = [
 
 [[package]]
 name = "cc"
-version = "1.2.41"
+version = "1.2.43"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ac9fe6cdbb24b6ade63616c0a0688e45bb56732262c158df3c0c4bea4ca47cb7"
+checksum = "739eb0f94557554b3ca9a86d2d37bebd49c5e6d0c1d2bda35ba5bdac830befc2"
 dependencies = [
  "find-msvc-tools",
  "jobserver",
@@ -674,9 +674,9 @@ checksum = "52051878f80a721bb68ebfbc930e07b65ba72f2da88968ea5c06fd6ca3d3a127"
 
 [[package]]
 name = "flate2"
-version = "1.1.4"
+version = "1.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dc5a4e564e38c699f2880d3fda590bedc2e69f3f84cd48b457bd892ce61d0aa9"
+checksum = "bfe33edd8e85a12a67454e37f8c75e730830d83e313556ab9ebf9ee7fbeb3bfb"
 dependencies = [
  "crc32fast",
  "miniz_oxide",
@@ -1571,7 +1571,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_adapter"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "async-trait",
  "puniyu_adapter_api",
@@ -1590,9 +1590,10 @@ dependencies = [
 
 [[package]]
 name = "puniyu_adapter_api"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "async-trait",
+ "puniyu_common",
  "puniyu_contact",
  "puniyu_element",
  "puniyu_sender",
@@ -1601,10 +1602,11 @@ dependencies = [
 
 [[package]]
 name = "puniyu_bot"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "puniyu_adapter_api",
  "puniyu_builder",
+ "puniyu_common",
  "puniyu_contact",
  "puniyu_element",
  "puniyu_logger",
@@ -1637,7 +1639,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_common"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "puniyu_system_info",
  "serde",
@@ -1689,7 +1691,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_element"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "serde",
  "serde_json",
@@ -1698,7 +1700,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_event"
-version = "0.1.5"
+version = "0.1.6"
 dependencies = [
  "puniyu_adapter_api",
  "puniyu_config",

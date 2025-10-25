@@ -29,7 +29,7 @@ impl BotRegistry {
 		bots.values().find(|bot| bot.account.self_id == self_id).cloned()
 	}
 
-	pub fn register(info: BotInfo, adapter_api: Arc<dyn AdapterApi>) {
+	pub fn register(info: BotInfo, adapter_api: &'static dyn AdapterApi) {
 		let index = BOT_INDEX.fetch_add(1, Ordering::Relaxed);
 		let self_id = info.account.self_id.clone();
 		let bot = Bot { adapter: info.adapter, api: adapter_api, account: info.account };

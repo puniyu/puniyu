@@ -23,7 +23,7 @@ impl BotContext {
 	pub async fn reply(
 		&self,
 		message: Message,
-	) -> Result<types::SendMsgType, Box<dyn std::error::Error + Send + Sync>> {
+	) -> Result<types::SendMsgType, Box<dyn std::error::Error>> {
 		self.api.send_msg(self.contact.clone(), message).await
 	}
 }

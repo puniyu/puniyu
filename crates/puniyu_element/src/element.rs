@@ -196,33 +196,19 @@ impl RawMessage for Vec<Elements> {
 macro_rules! element {
 	// 文本元素
 	(text,$text:expr) => {
-		Elements::Text(TextElement {
-			r#type: ElementType::Text.to_string(),
-			text: $text.to_string(),
-		})
+		Elements::Text(TextElement { text: $text.to_string() })
 	};
 
 	// 图片元素
 	(image,$image:expr) => {
-		Elements::Image(ImageElement {
-			r#type: ElementType::Image.to_string(),
-			file: $image.to_string(),
-			is_flash: false,
-			summary: None,
-		})
+		Elements::Image(ImageElement { file: $image.into(), is_flash: false, summary: None })
 	};
 	(image,$image:expr,$is_flash:expr) => {
-		Elements::Image(ImageElement {
-			r#type: ElementType::Image.to_string(),
-			file: $image.to_string(),
-			is_flash: $is_flash,
-			summary: None,
-		})
+		Elements::Image(ImageElement { file: $image.into(), is_flash: $is_flash, summary: None })
 	};
 	(image,$image:expr,$is_flash:expr,$summary:expr) => {
 		Elements::Image(ImageElement {
-			r#type: ElementType::Image.to_string(),
-			file: $image.to_string(),
+			file: $image.into(),
 			is_flash: $is_flash,
 			summary: Some($summary.to_string()),
 		})
@@ -230,48 +216,35 @@ macro_rules! element {
 
 	// @元素
 	(at,$target_id:expr) => {
-		Elements::At(AtElement {
-			r#type: ElementType::At.to_string(),
-			target_id: $target_id.to_string(),
-			name: None,
-		})
+		Elements::At(AtElement { target_id: $target_id.to_string(), name: None })
 	};
 
 	// @全体成员
 	(at_all) => {
 		Elements::At(AtElement {
-			r#type: ElementType::At.to_string(),
-			target_id: "all".to_string(),
-			name: Some("全体成员".to_string()),
+			target_id: "all".to_string(), name: Some("全体成员".to_string())
 		})
 	};
 
 	// 表情元素
 	(face,$id:expr) => {
-		Elements::Face(FaceElement { r#type: ElementType::Face.to_string(), id: $id })
+		Elements::Face(FaceElement { id: $id })
 	};
 
 	// 回复元素
 	(reply,$message_id:expr) => {
-		Elements::Reply(ReplyElement {
-			r#type: ElementType::Reply.to_string(),
-			message_id: $message_id.to_string(),
-		})
+		Elements::Reply(ReplyElement { message_id: $message_id.to_string() })
 	};
 
 	// 语音元素
 	(record,$record:expr) => {
-		Elements::Record(RecordElement {
-			r#type: ElementType::Record.to_string(),
-			file: $record.to_string(),
-		})
+		Elements::Record(RecordElement { file: $record.into() })
 	};
 
 	// 文件元素
 	(file,$file:expr,$file_id:expr,$file_size:expr,$file_name:expr) => {
 		Elements::File(FileElement {
-			r#type: ElementType::File.to_string(),
-			file: $file.to_string(),
+			file: $file.into(),
 			file_id: $file_id.to_string(),
 			file_size: $file_size,
 			file_name: $file_name.to_string(),
@@ -279,25 +252,15 @@ macro_rules! element {
 	};
 	// 视频元素
 	(video,$video:expr,$video_name:expr) => {
-		Elements::Video(VideoElement {
-			r#type: ElementType::Video.to_string(),
-			file: $video.to_string(),
-			file_name: $video_name.to_string(),
-		})
+		Elements::Video(VideoElement { file: $video.into(), file_name: $video_name.to_string() })
 	};
 	// JSON元素
 	(json,$data:expr) => {
-		Elements::Json(JsonElement {
-			r#type: ElementType::Json.to_string(),
-			data: serde_json::Value::String($data.to_string()),
-		})
+		Elements::Json(JsonElement { data: serde_json::Value::String($data.to_string()) })
 	};
 
 	// XML元素
 	(xml,$data:expr) => {
-		Elements::Xml(XmlElement {
-			r#type: ElementType::Xml.to_string(),
-			data: String::from($data),
-		})
+		Elements::Xml(XmlElement { data: String::from($data) })
 	};
 }

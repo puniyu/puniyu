@@ -12,6 +12,8 @@ use puniyu_element::Message;
 use std::path::PathBuf;
 use std::time::Duration;
 
+use puniyu_common::Result;
+
 pub enum GetHistoryMsgType {
 	MessageId(String),
 	MessageSeq(u64),
@@ -33,8 +35,6 @@ impl From<u64> for GetHistoryMsgType {
 		Self::MessageSeq(message_seq)
 	}
 }
-
-pub type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;
 
 #[async_trait]
 pub trait AdapterApi: Send + Sync + 'static {

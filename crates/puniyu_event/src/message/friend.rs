@@ -27,11 +27,9 @@ pub struct FriendMessage {
 
 impl FriendMessage {
 	pub fn new(message_builder: MessageBuilder<FriendContact, FriendSender>) -> Self {
-		use std::time::{SystemTime, UNIX_EPOCH};
-		let timestamp = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs();
 		Self {
 			event_id: message_builder.event_id,
-			time: timestamp,
+			time: message_builder.time,
 			self_id: message_builder.self_id,
 			user_id: message_builder.user_id,
 			message_id: message_builder.message_id,
@@ -113,18 +111,19 @@ macro_rules! create_friend_message {
 		$elements:expr,
 		$sender:expr,
 		$time:expr
-	) => {{
-		let builder = MessageBuilder<FriendContact, FriendSender> {
-			event_id: $event_id.into(),
-			self_id: $self_id.into(),
-			user_id: $user_id.into(),
+	) => {
+		let builder = MessageBuilder {
+			event_id: $event_id.to_string(),
+			self_id: $self_id.to_string(),
+			user_id: $user_id.to_string(),
 			contact: $contact,
 			sender: $sender,
-			message_id: $message_id.into(),
+			time: $time,
+			message_id: $message_id.to_string(),
 			elements: $elements,
 		};
 		let message = FriendMessage::new(builder);
-		let event = Event::Message(MessageEvent::Friend(message));
+		let event = Event::Message(Box::new(MessageEvent::Friend(message)));
 		send_event(std::sync::Arc::from($adapter), event);
-	}};
+	};
 }

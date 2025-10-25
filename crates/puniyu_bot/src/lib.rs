@@ -7,7 +7,8 @@ use puniyu_builder::adapter::AdapterInfo;
 use puniyu_contact::Contact;
 use puniyu_element::Message;
 pub use registry::BotRegistry;
-use std::sync::Arc;
+
+use puniyu_common::Result;
 
 #[derive(Clone)]
 pub enum BotId {
@@ -38,7 +39,7 @@ pub struct Bot {
 	/// 适配器信息
 	pub adapter: AdapterInfo,
 	/// 适配器API
-	pub api: Arc<dyn AdapterApi>,
+	pub api: &'static dyn AdapterApi,
 	/// 账户信息
 	pub account: AccountInfo,
 }
@@ -51,11 +52,7 @@ pub struct BotInfo {
 }
 
 impl Bot {
-	pub async fn send_msg(
-		&self,
-		contact: Contact,
-		message: Message,
-	) -> Result<SendMsgType, Box<dyn std::error::Error + Send + Sync>> {
+	pub async fn send_msg(&self, contact: Contact, message: Message) -> Result<SendMsgType> {
 		self.api.send_msg(contact, message).await
 	}
 }

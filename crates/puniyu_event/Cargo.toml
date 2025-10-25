@@ -1,6 +1,6 @@
 [package]
 name = "puniyu_event"
-version = "0.1.5"
+version = "0.1.6"
 description = "puniyu 的事件基础库"
 readme = "README.md"
 authors.workspace = true
