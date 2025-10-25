@@ -10,11 +10,11 @@ use std::sync::Arc;
 #[derive(Clone)]
 pub struct BotContext {
 	contact: Contact,
-	api: Arc<dyn AdapterApi>,
+	api: &'static dyn AdapterApi,
 }
 
 impl BotContext {
-	pub fn new(contact: Contact, api: Arc<dyn AdapterApi>) -> Self {
+	pub fn new(contact: Contact, api: &'static dyn AdapterApi) -> Self {
 		Self { contact, api }
 	}
 	pub fn api(&self) -> &dyn AdapterApi {

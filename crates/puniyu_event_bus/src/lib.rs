@@ -23,9 +23,9 @@ pub enum EventType {
 
 pub static EVENT_BUS: OnceLock<Arc<Mutex<EventBus>>> = OnceLock::new();
 
-pub type EventSender = mpsc::UnboundedSender<(Arc<dyn AdapterApi>, Event)>;
+pub type EventSender = mpsc::UnboundedSender<(&'static dyn AdapterApi, Event)>;
 
-pub type EventReceiver = mpsc::UnboundedReceiver<(Arc<dyn AdapterApi>, Event)>;
+pub type EventReceiver = mpsc::UnboundedReceiver<(&'static dyn AdapterApi, Event)>;
 
 pub struct EventBus {
 	pub sender: EventSender,
@@ -44,12 +44,13 @@ impl EventBus {
 		Self::default()
 	}
 
+	#[allow(clippy::type_complexity)]
 	pub fn send_event(
 		&self,
-		adapter: Arc<dyn AdapterApi>,
+		adapter: &'static dyn AdapterApi,
 		event: Event,
-	) -> Result<(), Box<mpsc::error::SendError<(Arc<dyn AdapterApi>, Event)>>> {
-		self.sender.send((Arc::from(adapter), event)).map_err(|e| {
+	) -> Result<(), Box<mpsc::error::SendError<(&'static dyn AdapterApi, Event)>>> {
+		self.sender.send((adapter, event)).map_err(|e| {
 			warn!("[{}]: 事件发送失败 {:?}", "Event".blue(), e);
 			Box::new(e)
 		})
@@ -78,7 +79,7 @@ pub fn init_event_bus() -> &'static Mutex<EventBus> {
 	EVENT_BUS.get_or_init(|| Mutex::new(EventBus::default()).into())
 }
 
-pub fn send_event(adapter: Arc<dyn AdapterApi>, event: Event) {
+pub fn send_event(adapter: &'static dyn AdapterApi, event: Event) {
 	let event_bus = EVENT_BUS.get().unwrap();
 	event_bus.lock().unwrap().send_event(adapter, event).unwrap();
 }

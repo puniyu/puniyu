@@ -124,6 +124,6 @@ macro_rules! create_friend_message {
 		};
 		let message = FriendMessage::new(builder);
 		let event = Event::Message(Box::new(MessageEvent::Friend(message)));
-		send_event(std::sync::Arc::from($adapter), event);
+		send_event($adapter, event);
 	};
 }

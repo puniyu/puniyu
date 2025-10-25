@@ -13,6 +13,7 @@ publish = false
 [dependencies]
 tokio.workspace = true
 puniyu_core = { path = "../puniyu_core" }
+puniyu_adapter_console = { path = "../adapters/puniyu_adapter_console" }
 
 
 

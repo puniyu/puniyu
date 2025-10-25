@@ -1,7 +1,6 @@
 mod registry;
 
 pub use registry::HandlerRegistry;
-use std::sync::Arc;
 mod command;
 pub use command::CommandHandler;
 mod store;
@@ -13,7 +12,7 @@ use puniyu_event::Event;
 /// 事件处理器
 #[async_trait]
 pub trait Handler: Send + Sync {
-	async fn handle(&self, adapter: Arc<dyn AdapterApi>, event: Event);
+	async fn handle(&self, adapter: &'static dyn AdapterApi, event: Event);
 	fn name(&self) -> &str;
 
 	fn rank(&self) -> u8 {
