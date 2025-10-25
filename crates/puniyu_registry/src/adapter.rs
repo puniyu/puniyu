@@ -87,4 +87,10 @@ async fn create_data_dir(name: &str) {
 	if !adapter_data_dir.exists() {
 		let _ = fs::create_dir_all(&adapter_data_dir).await;
 	}
+	for subdir in ["data", "config", "resource"] {
+		let path = adapter_data_dir.join(subdir);
+		if !path.exists() {
+			let _ = fs::create_dir_all(&path).await;
+		}
+	}
 }

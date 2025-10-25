@@ -5,13 +5,15 @@ use crate::common::make_message_id;
 use async_trait::async_trait;
 use puniyu_adapter::Result;
 use puniyu_adapter::prelude::*;
+use puniyu_common::path::ADAPTER_DATA_DIR;
 use puniyu_core::APP_NAME;
-use std::env;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::thread;
+use std::{env, fs};
 
 static EVENT_ID: AtomicU64 = AtomicU64::new(0);
 
+const IMAGE_DATA: &[u8] = include_bytes!("../puniyu.png");
 #[adapter]
 pub struct Adapter;
 
@@ -46,6 +48,9 @@ impl AdapterBuilder for Adapter {
 			avatar: "".to_string()
 		);
 		register_bot!(self.info(), account_info, self.api());
+
+		let dir = ADAPTER_DATA_DIR.as_path().join(self.info().name).join("data").join("avatar.png");
+		let _ = fs::write(dir, IMAGE_DATA);
 
 		thread::spawn(move || {
 			loop {

@@ -1530,6 +1530,7 @@ dependencies = [
  "async-trait",
  "puniyu_adapter",
  "puniyu_build",
+ "puniyu_common",
  "puniyu_core",
  "rand 0.10.0-rc.5",
 ]

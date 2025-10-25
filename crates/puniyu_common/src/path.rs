@@ -8,8 +8,7 @@ use std::{env::current_dir, path::PathBuf, sync::LazyLock};
 /// use puniyu_common::path::BASE_DIR;
 /// let base_dir = BASE_DIR.as_path();
 /// ```
-pub static BASE_DIR: LazyLock<PathBuf> =
-	LazyLock::new(|| current_dir().unwrap_or(PathBuf::from(".")));
+pub static BASE_DIR: LazyLock<PathBuf> = LazyLock::new(|| current_dir().unwrap());
 
 /// 日志文件夹路径
 ///

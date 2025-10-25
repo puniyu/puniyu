@@ -2,6 +2,7 @@ use crate::common::make_message_id;
 use async_trait::async_trait;
 use puniyu_adapter::Result;
 use puniyu_adapter::prelude::*;
+use puniyu_common::path::ADAPTER_DATA_DIR;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 macro_rules! info {
@@ -20,7 +21,8 @@ pub struct ConsoleAdapterApi;
 #[async_trait]
 impl AdapterApi for ConsoleAdapterApi {
 	async fn get_avatar_url(&self, _target_id: &str, _size: Option<AvatarSize>) -> Result<String> {
-		todo!()
+		let dir = ADAPTER_DATA_DIR.as_path().join("Console").join("data").join("avatar.png");
+		Ok(format!("file://{}", dir.to_string_lossy()))
 	}
 
 	async fn get_group_avatar_url(
@@ -28,7 +30,8 @@ impl AdapterApi for ConsoleAdapterApi {
 		_group_id: &str,
 		_size: Option<AvatarSize>,
 	) -> Result<String> {
-		todo!()
+		let dir = ADAPTER_DATA_DIR.as_path().join("Console").join("data").join("avatar.png");
+		Ok(format!("file://{}", dir.to_string_lossy()))
 	}
 
 	async fn send_msg(&self, contact: Contact, element: Message) -> Result<SendMsgType> {

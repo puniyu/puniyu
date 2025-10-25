@@ -1,4 +1,5 @@
 set windows-shell := ["powershell.exe", "-c"]
+set working-directory := "./puniyu"
 run:
    cargo run --bin puniyu
 run-server:
