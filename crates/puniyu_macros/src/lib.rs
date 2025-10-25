@@ -2,18 +2,19 @@ mod common;
 use proc_macro::TokenStream;
 use quote::quote;
 use std::env;
-#[cfg(feature = "plugin")]
+#[cfg(any(feature = "plugin", feature = "command"))]
 use syn::ItemFn;
 
 #[cfg(any(feature = "command", feature = "task"))]
 use syn::{Token, parse::Parse, parse::ParseStream, parse_macro_input, punctuated::Punctuated};
 
-#[cfg(any(feature = "command", feature = "task"))]
+#[cfg(any(feature = "command", feature = "task", feature = "adapter"))]
 use syn::Ident;
 
 #[cfg(feature = "adapter")]
 #[proc_macro_attribute]
 pub fn adapter(_: TokenStream, item: TokenStream) -> TokenStream {
+	use syn::spanned::Spanned;
 	let input_struct = if let Ok(struct_item) = syn::parse::<syn::ItemStruct>(item.clone()) {
 		struct_item
 	} else {
@@ -25,17 +26,6 @@ pub fn adapter(_: TokenStream, item: TokenStream) -> TokenStream {
 		.into();
 	};
 
-	let adapter_name = match env::var("ADAPTER_NAME") {
-		Ok(name) => name,
-		Err(_) => {
-			return syn::Error::new_spanned(
-				&input_struct,
-				"呜哇~ADAPTER_NAME都没有设置！杂鱼程序员！",
-			)
-			.to_compile_error()
-			.into();
-		}
-	};
 	let _ = match env::var("ADAPTER_VERSION") {
 		Ok(version) => version,
 		Err(_) => {
@@ -59,10 +49,10 @@ pub fn adapter(_: TokenStream, item: TokenStream) -> TokenStream {
 		}
 	};
 
-	let struct_name = &input_struct.ident;
+	let struct_name = Ident::new("Adapter", input_struct.span());
 
 	let expanded = quote! {
-		#input_struct
+		pub struct #struct_name;
 
 		use std::sync::{OnceLock, Mutex, Arc};
 
@@ -84,53 +74,6 @@ pub fn adapter(_: TokenStream, item: TokenStream) -> TokenStream {
 			puniyu_adapter::setup_event_bus(bus);
 		}
 
-		#[macro_export]
-		macro_rules! info {
-				($($arg:tt)*) => {
-					{
-						use ::puniyu_adapter::logger::owo_colors::OwoColorize;
-						let prefix = "adapter".fg_rgb::<176,196,222>();
-						let func_name = #adapter_name.fg_rgb::<255,192,203>();
-						::puniyu_adapter::logger::info!("[{}:{}] {}", prefix,func_name, format!($($arg)*))
-					}
-				};
-		}
-
-			#[macro_export]
-			macro_rules! warn {
-				($($arg:tt)*) => {
-					{
-						use ::puniyu_adapter::logger::owo_colors::OwoColorize;
-						let prefix = "adapter".fg_rgb::<176,196,222>();
-						let func_name = #adapter_name.fg_rgb::<255,192,203>();
-						::puniyu_adapter::logger::warn!("[{}:{}] {}", prefix,func_name, format!($($arg)*))
-					}
-				};
-			}
-
-			#[macro_export]
-			macro_rules! error {
-				($($arg:tt)*) => {
-				{
-						use ::puniyu_adapter::logger::owo_colors::OwoColorize;
-						let prefix = "adapter".fg_rgb::<176,196,222>();
-						let func_name = #adapter_name.fg_rgb::<255,192,203>();
-						::puniyu_adapter::logger::error!("[{}:{}] {}", prefix,func_name, format_args!($($arg)*))
-					}
-				};
-			}
-
-			#[macro_export]
-			macro_rules! debug {
-				($($arg:tt)*) => {
-					{
-						use ::puniyu_adapter::logger::owo_colors::OwoColorize;
-						let prefix = "adapter".fg_rgb::<176,196,222>();
-						let func_name = #adapter_name.fg_rgb::<255,192,203>();
-						::puniyu_adapter::logger::debug!("[{}:{}] {}", prefix,func_name, format_args!($($arg)*))
-					}
-				};
-			}
 	};
 
 	TokenStream::from(expanded)
@@ -354,53 +297,6 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
 			   #init_call.await
 			}
 		}
-			#[macro_export]
-			macro_rules! info {
-				($($arg:tt)*) => {
-					{
-						use ::puniyu_plugin::logger::owo_colors::OwoColorize;
-						let prefix = "plugin".fg_rgb::<176,196,222>();
-						let func_name = #plugin_name.fg_rgb::<255,192,203>();
-						::puniyu_plugin::logger::info!("[{}:{}] {}", prefix,func_name, format!($($arg)*))
-					}
-				};
-			}
-
-			#[macro_export]
-			macro_rules! warn {
-				($($arg:tt)*) => {
-					{
-						use ::puniyu_plugin::logger::owo_colors::OwoColorize;
-						let prefix = "plugin".fg_rgb::<176,196,222>();
-						let func_name = #plugin_name.fg_rgb::<255,192,203>();
-						::puniyu_plugin::logger::warn!("[{}:{}] {}", prefix,func_name, format!($($arg)*))
-					}
-				};
-			}
-
-			#[macro_export]
-			macro_rules! error {
-				($($arg:tt)*) => {
-				{
-						use ::puniyu_plugin::logger::owo_colors::OwoColorize;
-						let prefix = "plugin".fg_rgb::<176,196,222>();
-						let func_name = #plugin_name.fg_rgb::<255,192,203>();
-						::puniyu_plugin::logger::error!("[{}:{}] {}", prefix,func_name, format_args!($($arg)*))
-					}
-				};
-			}
-
-			#[macro_export]
-			macro_rules! debug {
-				($($arg:tt)*) => {
-					{
-						use ::puniyu_plugin::logger::owo_colors::OwoColorize;
-						let prefix = "plugin".fg_rgb::<176,196,222>();
-						let func_name = #plugin_name.fg_rgb::<255,192,203>();
-						::puniyu_plugin::logger::debug!("[{}:{}] {}", prefix,func_name, format_args!($($arg)*))
-					}
-				};
-			}
 
 		/// 插件注册表
 		pub(crate) struct PluginRegistry {

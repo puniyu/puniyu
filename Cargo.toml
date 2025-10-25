@@ -53,7 +53,6 @@ puniyu_server = { version = "0.1.0", path = "crates/puniyu_server" }
 puniyu_logger = { version = "0.6.1" }
 
 
-
 [profile.release]
 lto = "thin"
 incremental = false
