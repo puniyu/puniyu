@@ -40,14 +40,14 @@ puniyu_builder = { version = "0.1.0", path = "crates/puniyu_builder", default-fe
 puniyu_command = { version = "0.1.0", path = "crates/puniyu_command", default-features = false }
 puniyu_common = { version = "0.1.0", path = "crates/puniyu_common" }
 puniyu_config = { version = "0.1.0", path = "crates/puniyu_config" }
-puniyu_library = { version = "0.1.1", path = "crates/puniyu_library" }
+puniyu_library = { version = "0.1.0", path = "crates/puniyu_library" }
 puniyu_task = { version = "0.1.0", path = "crates/puniyu_task" }
 puniyu_event = { version = "0.1.5", path = "crates/puniyu_event", default-features = false }
 puniyu_matcher = { version = "0.1.0", path = "crates/puniyu_matcher" }
 puniyu_event_bus = { version = "0.1.0", path = "crates/puniyu_event_bus", default-features = false }
 puniyu_handler = { version = "0.1.1", path = "crates/puniyu_handler" }
 puniyu_macros = { version = "0.1.0", path = "crates/puniyu_macros", default-features = false }
-puniyu_registry = { version = "0.1.0", path = "crates/puniyu_registry" }
+puniyu_registry = { version = "0.1.1", path = "crates/puniyu_registry" }
 puniyu_server = { version = "0.1.0", path = "crates/puniyu_server" }
 
 puniyu_logger = { version = "0.6.1" }
