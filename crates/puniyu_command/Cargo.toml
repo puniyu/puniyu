@@ -1,6 +1,6 @@
 [package]
 name = "puniyu_command"
-version = "0.1.1"
+version = "0.1.8"
 description = "puniyu 的命令相关"
 readme = "README.md"
 authors.workspace = true

@@ -1,6 +1,6 @@
 [package]
 name = "puniyu_handler"
-version = "0.1.2"
+version = "0.1.8"
 description = "puniyu 的事件处理器模块"
 readme = "README.md"
 authors.workspace = true

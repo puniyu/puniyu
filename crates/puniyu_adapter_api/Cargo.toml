@@ -1,6 +1,6 @@
 [package]
 name = "puniyu_adapter_api"
-version = "0.1.2"
+version = "0.1.8"
 description = "puniyu 的适配器api"
 readme = "README.md"
 authors.workspace = true

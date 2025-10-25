@@ -1,6 +1,6 @@
 [package]
 name = "puniyu_element"
-version = "0.1.1"
+version = "0.1.8"
 description = "puniyu 的消息元素处理库"
 readme = "README.md"
 authors.workspace = true

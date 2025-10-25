@@ -1,6 +1,6 @@
 [package]
 name = "puniyu_task"
-version = "0.1.0"
+version = "0.1.8"
 description = "puniyu 的定时任务模块"
 readme = "README.md"
 authors.workspace = true
