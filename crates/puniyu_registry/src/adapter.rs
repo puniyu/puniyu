@@ -4,20 +4,19 @@ use crate::adapter::store::AdapterStore;
 use crate::error::Adapter as Error;
 use puniyu_builder::adapter::{Adapter, AdapterBuilder, AdapterType, VERSION as ABI_VERSION};
 use puniyu_common::APP_NAME;
+use puniyu_common::path::ADAPTER_DATA_DIR;
 use puniyu_config::Config;
 use puniyu_event_bus::{EVENT_BUS, EventBus};
 use puniyu_library::AdapterLibrary;
 use puniyu_library::libloading::Symbol;
 use puniyu_logger::{debug, error, owo_colors::OwoColorize, warn};
-use std::sync::{
-	Arc, LazyLock, Mutex, OnceLock,
-	atomic::{AtomicU64, Ordering},
-};
+use std::sync::{Arc, LazyLock, Mutex, OnceLock};
+use tokio::fs;
 
 static LIBRARY: OnceLock<Mutex<AdapterLibrary>> = OnceLock::new();
 
-static ADAPTER_COUNTER: AtomicU64 = AtomicU64::new(0);
 static ADAPTER_STORE: LazyLock<AdapterStore> = LazyLock::new(AdapterStore::new);
+
 pub struct AdapterRegistry;
 
 impl AdapterRegistry {
@@ -47,15 +46,12 @@ impl AdapterRegistry {
 					setup_app_name(APP_NAME.get().unwrap().to_string());
 					let adapters = ADAPTER_STORE.get_all_adapters();
 					let adapter_name = adapter_builder.info().name;
-					if adapters.contains_key(adapter_name.as_str()) {
+					if adapters.values().any(|adapter| adapter.info.name == adapter_name) {
 						return Err(Error::Exists(adapter_name));
 					}
 
-					let adapter = Adapter {
-						index: ADAPTER_COUNTER.fetch_add(1, Ordering::Relaxed),
-						info: adapter_builder.info(),
-						api: adapter_builder.api(),
-					};
+					let adapter =
+						Adapter { info: adapter_builder.info(), api: adapter_builder.api() };
 					debug!(
 						"[{}:{}] 正在加载适配器",
 						"adapter".fg_rgb::<175, 238, 238>(),
@@ -81,8 +77,9 @@ impl AdapterRegistry {
 						debug!("[{}:{}] 检测到配置，开始强制加载", adapter_tag, adapter_name);
 					}
 
+					create_data_dir(adapter_name.as_str()).await;
 					run_adapter_init(adapter_name.as_str(), adapter_builder.init()).await?;
-					ADAPTER_STORE.insert_adapter(adapter_name.as_str(), adapter);
+					ADAPTER_STORE.insert_adapter(adapter);
 					Ok(())
 				}
 			}
@@ -90,14 +87,10 @@ impl AdapterRegistry {
 				let adapters = ADAPTER_STORE.get_all_adapters();
 				let adapter_info = builder.info();
 				let adapter_name = adapter_info.name.clone();
-				if adapters.contains_key(adapter_name.as_str()) {
+				if adapters.values().any(|adapter| adapter.info.name == adapter_name) {
 					return Err(Error::Exists(adapter_name));
 				}
-				let adapter = Adapter {
-					index: ADAPTER_COUNTER.fetch_add(1, Ordering::Relaxed),
-					info: adapter_info,
-					api: builder.api(),
-				};
+				let adapter = Adapter { info: adapter_info, api: builder.api() };
 				debug!(
 					"[{}:{}] 正在加载适配器",
 					"adapter".fg_rgb::<175, 238, 238>(),
@@ -123,8 +116,9 @@ impl AdapterRegistry {
 					debug!("[{}:{}] 检测到配置，开始强制加载", adapter_tag, adapter_name);
 				}
 
+				create_data_dir(adapter_name.as_str()).await;
 				run_adapter_init(adapter_name.as_str(), builder.init()).await?;
-				ADAPTER_STORE.insert_adapter(adapter_name.as_str(), adapter);
+				ADAPTER_STORE.insert_adapter(adapter);
 				Ok(())
 			}
 		}
@@ -179,5 +173,13 @@ where
 			);
 			Err(Error::Init(e.to_string()))
 		}
+	}
+}
+
+async fn create_data_dir(name: &str) {
+	let data_dir = ADAPTER_DATA_DIR.as_path();
+	let adapter_data_dir = data_dir.join(name);
+	if !adapter_data_dir.exists() {
+		let _ = fs::create_dir_all(&adapter_data_dir).await;
 	}
 }

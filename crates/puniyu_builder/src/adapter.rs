@@ -10,7 +10,6 @@ use std::path::PathBuf;
 
 #[derive(Clone)]
 pub struct Adapter {
-	pub index: u64,
 	pub info: AdapterInfo,
 	pub api: &'static dyn AdapterApi,
 }

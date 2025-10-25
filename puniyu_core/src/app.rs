@@ -9,7 +9,7 @@ use figlet_rs::FIGfont;
 use puniyu_builder::adapter::{AdapterBuilder, AdapterType};
 use puniyu_builder::plugin::{PluginBuilder, PluginType};
 pub use puniyu_common::APP_NAME;
-use puniyu_common::path::{ADAPTER_DIR, PLUGIN_DIR};
+use puniyu_common::path::{ADAPTER_DATA_DIR, ADAPTER_DIR, DATA_DIR, PLUGIN_DATA_DIR, PLUGIN_DIR};
 use puniyu_config::{init_config, init_config_watcher};
 use puniyu_event_bus::init_event_bus;
 use puniyu_registry::{AdapterRegistry, PluginRegistry};
@@ -104,6 +104,9 @@ async fn init_app() {
 			env::set_var("HTTP_PORT", Config::app().server().port().to_string());
 		}
 	}
+	if !DATA_DIR.as_path().exists() {
+		fs::create_dir(DATA_DIR.as_path()).await.unwrap();
+	}
 	init_config_watcher();
 	let event_bus = init_event_bus();
 	event_bus.lock().unwrap().run();
@@ -118,6 +121,9 @@ async fn init_plugin() {
 		fs::create_dir(PLUGIN_DIR.as_path()).await.unwrap();
 	}
 
+	if !PLUGIN_DATA_DIR.as_path().exists() {
+		fs::create_dir(PLUGIN_DATA_DIR.as_path()).await.unwrap();
+	}
 	let plugins = REGISTERED_PLUGINS.get_or_init(|| RwLock::new(Vec::new()));
 
 	let pattern = PLUGIN_DIR.join(format!("*plugin*.{}", DLL_EXTENSION));
@@ -150,6 +156,10 @@ async fn init_plugin() {
 async fn init_adapter() {
 	if !ADAPTER_DIR.as_path().exists() {
 		fs::create_dir(ADAPTER_DIR.as_path()).await.unwrap();
+	}
+
+	if !ADAPTER_DATA_DIR.as_path().exists() {
+		fs::create_dir(ADAPTER_DATA_DIR.as_path()).await.unwrap();
 	}
 
 	let adapters = REGISTERED_ADAPTER.get_or_init(|| RwLock::new(Vec::new()));

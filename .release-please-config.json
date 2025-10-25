@@ -2,8 +2,6 @@
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
   "release-type": "rust",
   "include-component-in-tag": true,
-  "label": "release",
-  "release-label": "release",
   "plugins": [
     {
       "type": "cargo-workspace",

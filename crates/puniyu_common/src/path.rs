@@ -95,3 +95,45 @@ pub static ADAPTER_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
 	path.push("adapters");
 	path
 });
+
+/// 缓存文件夹路径
+///
+/// # 示例
+///
+/// ```
+/// use puniyu_common::path::DATA_DIR;
+/// let data_dir = DATA_DIR.as_path();
+/// ```
+pub static DATA_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
+	let mut path = APP_DIR.to_path_buf();
+	path.push("data");
+	path
+});
+
+/// 插件数据文件夹
+///
+/// # 示例
+///
+/// ```
+/// use puniyu_common::path::PLUGIN_DATA_DIR;
+/// let plugin_data_dir = PLUGIN_DATA_DIR.as_path();
+/// ```
+pub static PLUGIN_DATA_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
+	let mut path = DATA_DIR.to_path_buf();
+	path.push("plugins");
+	path
+});
+
+/// 适配器数据文件夹
+///
+/// # 示例
+///
+/// ```
+/// use puniyu_common::path::ADAPTER_DATA_DIR;
+/// let adapter_data_dir = ADAPTER_DATA_DIR.as_path();
+/// ```
+pub static ADAPTER_DATA_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
+	let mut path = DATA_DIR.to_path_buf();
+	path.push("adapters");
+	path
+});

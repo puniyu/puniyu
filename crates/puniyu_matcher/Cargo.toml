@@ -1,6 +1,6 @@
 [package]
 name = "puniyu_matcher"
-version = "0.1.0"
+version = "0.1.1"
 description = "puniyu 的事件匹配器模块"
 readme = "README.md"
 authors.workspace = true

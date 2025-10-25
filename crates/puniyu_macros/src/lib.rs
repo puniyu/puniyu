@@ -88,7 +88,7 @@ pub fn adapter(_: TokenStream, item: TokenStream) -> TokenStream {
 		macro_rules! info {
 				($($arg:tt)*) => {
 					{
-						use ::puniyu_adapter::logger::OwoColorize;
+						use ::puniyu_adapter::logger::owo_colors::OwoColorize;
 						let prefix = "adapter".fg_rgb::<176,196,222>();
 						let func_name = #adapter_name.fg_rgb::<255,192,203>();
 						::puniyu_adapter::logger::info!("[{}:{}] {}", prefix,func_name, format!($($arg)*))
@@ -100,7 +100,7 @@ pub fn adapter(_: TokenStream, item: TokenStream) -> TokenStream {
 			macro_rules! warn {
 				($($arg:tt)*) => {
 					{
-						use ::puniyu_adapter::logger::OwoColorize;
+						use ::puniyu_adapter::logger::owo_colors::OwoColorize;
 						let prefix = "adapter".fg_rgb::<176,196,222>();
 						let func_name = #adapter_name.fg_rgb::<255,192,203>();
 						::puniyu_adapter::logger::warn!("[{}:{}] {}", prefix,func_name, format!($($arg)*))
@@ -112,7 +112,7 @@ pub fn adapter(_: TokenStream, item: TokenStream) -> TokenStream {
 			macro_rules! error {
 				($($arg:tt)*) => {
 				{
-						use ::puniyu_adapter::logger::OwoColorize;
+						use ::puniyu_adapter::logger::owo_colors::OwoColorize;
 						let prefix = "adapter".fg_rgb::<176,196,222>();
 						let func_name = #adapter_name.fg_rgb::<255,192,203>();
 						::puniyu_adapter::logger::error!("[{}:{}] {}", prefix,func_name, format_args!($($arg)*))
@@ -124,7 +124,7 @@ pub fn adapter(_: TokenStream, item: TokenStream) -> TokenStream {
 			macro_rules! debug {
 				($($arg:tt)*) => {
 					{
-						use ::puniyu_adapter::logger::OwoColorize;
+						use ::puniyu_adapter::logger::owo_colors::OwoColorize;
 						let prefix = "adapter".fg_rgb::<176,196,222>();
 						let func_name = #adapter_name.fg_rgb::<255,192,203>();
 						::puniyu_adapter::logger::debug!("[{}:{}] {}", prefix,func_name, format_args!($($arg)*))
@@ -137,15 +137,9 @@ pub fn adapter(_: TokenStream, item: TokenStream) -> TokenStream {
 }
 
 #[cfg(feature = "plugin")]
+#[derive(Default)]
 struct PluginArg {
 	desc: Option<syn::LitStr>,
-}
-
-#[cfg(feature = "plugin")]
-impl Default for PluginArg {
-	fn default() -> Self {
-		Self { desc: None }
-	}
 }
 
 #[cfg(feature = "plugin")]
@@ -364,7 +358,7 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
 			macro_rules! info {
 				($($arg:tt)*) => {
 					{
-						use ::puniyu_plugin::logger::OwoColorize;
+						use ::puniyu_plugin::logger::owo_colors::OwoColorize;
 						let prefix = "plugin".fg_rgb::<176,196,222>();
 						let func_name = #plugin_name.fg_rgb::<255,192,203>();
 						::puniyu_plugin::logger::info!("[{}:{}] {}", prefix,func_name, format!($($arg)*))
@@ -376,7 +370,7 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
 			macro_rules! warn {
 				($($arg:tt)*) => {
 					{
-						use ::puniyu_plugin::logger::OwoColorize;
+						use ::puniyu_plugin::logger::owo_colors::OwoColorize;
 						let prefix = "plugin".fg_rgb::<176,196,222>();
 						let func_name = #plugin_name.fg_rgb::<255,192,203>();
 						::puniyu_plugin::logger::warn!("[{}:{}] {}", prefix,func_name, format!($($arg)*))
@@ -388,7 +382,7 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
 			macro_rules! error {
 				($($arg:tt)*) => {
 				{
-						use ::puniyu_plugin::logger::OwoColorize;
+						use ::puniyu_plugin::logger::owo_colors::OwoColorize;
 						let prefix = "plugin".fg_rgb::<176,196,222>();
 						let func_name = #plugin_name.fg_rgb::<255,192,203>();
 						::puniyu_plugin::logger::error!("[{}:{}] {}", prefix,func_name, format_args!($($arg)*))
@@ -400,7 +394,7 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
 			macro_rules! debug {
 				($($arg:tt)*) => {
 					{
-						use ::puniyu_plugin::logger::OwoColorize;
+						use ::puniyu_plugin::logger::owo_colors::OwoColorize;
 						let prefix = "plugin".fg_rgb::<176,196,222>();
 						let func_name = #plugin_name.fg_rgb::<255,192,203>();
 						::puniyu_plugin::logger::debug!("[{}:{}] {}", prefix,func_name, format_args!($($arg)*))

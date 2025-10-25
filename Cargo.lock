@@ -1571,7 +1571,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_adapter"
-version = "0.1.2"
+version = "0.1.3"
 dependencies = [
  "async-trait",
  "puniyu_adapter_api",
@@ -1590,7 +1590,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_adapter_api"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "async-trait",
  "puniyu_common",
@@ -1602,7 +1602,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_bot"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "puniyu_adapter_api",
  "puniyu_builder",
@@ -1618,7 +1618,7 @@ version = "0.1.0"
 
 [[package]]
 name = "puniyu_builder"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "async-trait",
  "puniyu_adapter_api",
@@ -1630,7 +1630,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_command"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "async-trait",
  "itertools",
@@ -1639,7 +1639,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_common"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "puniyu_system_info",
  "serde",
@@ -1649,7 +1649,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_config"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "flume",
  "notify",
@@ -1668,7 +1668,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_core"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "async-trait",
  "convert_case",
@@ -1700,7 +1700,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_event"
-version = "0.1.6"
+version = "0.1.7"
 dependencies = [
  "puniyu_adapter_api",
  "puniyu_config",
@@ -1712,7 +1712,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_event_bus"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "puniyu_adapter_api",
  "puniyu_event",
@@ -1725,7 +1725,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_handler"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "async-trait",
  "puniyu_adapter_api",
@@ -1761,7 +1761,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_macros"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "convert_case",
  "croner",
@@ -1772,7 +1772,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_matcher"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "puniyu_element",
  "puniyu_event",
@@ -1781,7 +1781,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_plugin"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "async-trait",
  "inventory",
@@ -1812,6 +1812,7 @@ dependencies = [
  "puniyu_logger",
  "puniyu_task",
  "thiserror 2.0.17",
+ "tokio",
 ]
 
 [[package]]

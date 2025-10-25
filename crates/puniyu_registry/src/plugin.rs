@@ -7,6 +7,7 @@ use puniyu_builder::plugin::{Plugin, PluginBuilder, PluginId, PluginType, VERSIO
 use puniyu_command::register_command;
 use puniyu_command::{Command, CommandRegistry};
 use puniyu_common::APP_NAME;
+use puniyu_common::path::PLUGIN_DATA_DIR;
 use puniyu_config::Config;
 use puniyu_library::PluginLibrary;
 use puniyu_library::libloading::Symbol;
@@ -14,6 +15,7 @@ use puniyu_logger::{SharedLogger, debug, error, owo_colors::OwoColorize, warn};
 use puniyu_task::Task;
 use std::sync::{LazyLock, Mutex, OnceLock};
 use store::PluginStore;
+use tokio::fs;
 
 static LIBRARY: OnceLock<Mutex<PluginLibrary>> = OnceLock::new();
 static PLUGIN_STORE: LazyLock<PluginStore> = LazyLock::new(PluginStore::default);
@@ -109,6 +111,7 @@ impl PluginRegistry {
 						plugin_builder.author()
 					);
 
+					create_data_dir(plugin_name).await;
 					run_plugin_init(plugin_name, plugin_builder.init()).await?;
 					PLUGIN_STORE.insert_plugin(plugin_info);
 				}
@@ -165,6 +168,8 @@ impl PluginRegistry {
 					"plugin".fg_rgb::<175, 238, 238>(),
 					plugin_name.fg_rgb::<240, 128, 128>()
 				);
+
+				create_data_dir(plugin_name).await;
 				run_plugin_init(plugin_name, plugin_builder.init()).await?;
 				PLUGIN_STORE.insert_plugin(plugin_info);
 			}
@@ -223,5 +228,13 @@ where
 			);
 			Err(Error::Init(e.to_string()))
 		}
+	}
+}
+
+async fn create_data_dir(name: &str) {
+	let data_dir = PLUGIN_DATA_DIR.as_path();
+	let adapter_data_dir = data_dir.join(name);
+	if !adapter_data_dir.exists() {
+		let _ = fs::create_dir_all(&adapter_data_dir).await;
 	}
 }

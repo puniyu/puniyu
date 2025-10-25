@@ -1,6 +1,6 @@
 [package]
 name = "puniyu_builder"
-version = "0.1.0"
+version = "0.1.1"
 description = "puniyu 的构建器相关"
 readme = "README.md"
 authors.workspace = true
@@ -17,7 +17,7 @@ strum.workspace = true
 
 puniyu_element = { workspace = true, optional = true }
 puniyu_adapter_api = { workspace = true, optional = true }
-puniyu_command = { workspace = true, optional = true }
+puniyu_command = { workspace = true, features = ["builder"], optional = true }
 
 [features]
 default = ["command"]

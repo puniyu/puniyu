@@ -1,6 +1,6 @@
 [package]
 name = "puniyu_common"
-version = "0.1.1"
+version = "0.1.2"
 description = "puniyu 的通用库"
 readme = "README.md"
 authors.workspace = true
