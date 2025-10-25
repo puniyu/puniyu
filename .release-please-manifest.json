@@ -1,7 +1,8 @@
 {
-  "puniyu": "0.2.0",
-  "puniyu_core": "0.2.0",
+  "puniyu": "0.3.0",
+  "puniyu_core": "0.3.0",
   "puniyu_build": "0.1.0",
-  "puniyu_plugin": "0.2.0",
-  "puniyu_adapter": "0.2.0"
+  "puniyu_plugin": "0.3.0",
+  "puniyu_adapter": "0.3.0",
+  "adapters/puniyu_adapter_console": "0.1.9"
 }
