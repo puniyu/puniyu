@@ -15,20 +15,25 @@ use puniyu_event_bus::init_event_bus;
 use puniyu_registry::{AdapterRegistry, PluginRegistry};
 use puniyu_task::{SCHEDULER, init_scheduler};
 use std::env::current_dir;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::{env, env::consts::DLL_EXTENSION};
 use tokio::{fs, signal};
 
 pub struct AppBuilder {
+	app_name: String,
+	working_dir: PathBuf,
 	plugins: Vec<&'static dyn PluginBuilder>,
 	adapters: Vec<&'static dyn AdapterBuilder>,
 }
 
 impl Default for AppBuilder {
 	fn default() -> Self {
-		APP_NAME.get_or_init(|| String::from("puniyu"));
-		set_working_dir(current_dir().unwrap().as_path());
-		Self { plugins: Vec::new(), adapters: Vec::new() }
+		Self {
+			app_name: String::from("puniyu"),
+			working_dir: current_dir().unwrap(),
+			plugins: Vec::new(),
+			adapters: Vec::new(),
+		}
 	}
 }
 
@@ -38,12 +43,12 @@ impl AppBuilder {
 	}
 
 	pub fn with_name(&mut self, name: &str) -> &mut Self {
-		APP_NAME.get_or_init(|| name.to_string());
+		self.app_name = name.to_string();
 		self
 	}
 
-	pub fn with_working_dir(&self, path: &Path) -> &Self {
-		set_working_dir(path);
+	pub fn with_working_dir(&mut self, path: &Path) -> &Self {
+		self.working_dir = path.to_path_buf();
 		self
 	}
 
@@ -58,6 +63,8 @@ impl AppBuilder {
 	}
 
 	pub fn build(&self) -> App {
+		set_working_dir(self.working_dir.as_path());
+		APP_NAME.get_or_init(|| self.app_name.clone());
 		App { plugins: self.plugins.clone(), adapters: self.adapters.clone() }
 	}
 }
