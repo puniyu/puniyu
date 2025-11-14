@@ -7,7 +7,7 @@ pub mod logger;
 mod system;
 pub use system::*;
 mod app;
-pub use app::App;
+pub use app::AppBuilder;
 pub use puniyu_common::APP_NAME;
 pub mod plugin;
 mod version;

@@ -77,11 +77,11 @@ pub struct BotStatusInfo {
 	/// 进程PID
 	pub pid: Pid,
 	/// CPU使用率
-	pub cpu_usage: Option<u8>,
+	pub cpu_usage: Option<f32>,
 	/// 内存使用率
-	pub memory_usage: Option<u8>,
+	pub memory_usage: Option<f32>,
 	/// 已用内存(单位: MB)
-	pub used_memory: f32,
+	pub used_memory: f64,
 	/// 运行时间
 	pub run_time: u64,
 }

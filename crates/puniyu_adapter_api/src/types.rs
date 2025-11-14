@@ -14,6 +14,23 @@ pub enum AvatarSize {
 	Large,
 }
 
+pub struct Avatar(pub String);
+
+impl Avatar {
+	pub async fn to_vec(&self) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
+		use tokio::fs;
+		if let Some(path) = self.0.strip_prefix("file://") {
+			Ok(fs::read(path).await?)
+		} else {
+			let bytes = reqwest::get(&self.0).await?.bytes().await?;
+			Ok(bytes.to_vec())
+		}
+	}
+
+	pub fn to_url(&self) -> &str {
+		&self.0
+	}
+}
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct SendMsgType {
 	/// 消息ID

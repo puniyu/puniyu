@@ -1,7 +1,7 @@
 pub mod types;
 
 use crate::types::{
-	AvatarSize, CreateGroupFolderInfo, DownloadFileInfo, GroupHighlightsType, GroupInfo,
+	Avatar, AvatarSize, CreateGroupFolderInfo, DownloadFileInfo, GroupHighlightsType, GroupInfo,
 	GroupMuteInfo, HighlightsAction, MessageType, MuteType, QQCredentialInfo,
 	QQGroupFileSystemInfo, QQRkeyInfo, SendMsgType, SetAdminType, SetFriendApplyType,
 	SetGroupApplyType, UserInfo,
@@ -38,27 +38,23 @@ impl From<u64> for GetHistoryMsgType {
 
 #[async_trait]
 pub trait AdapterApi: Send + Sync + 'static {
-	/// 获取头像URL
+	/// 获取头像, 默认返回url, http/https/file协议(一般来说只有console适配器返回这个)
 	///
 	/// ## 参数
 	/// `target_id` - 目标ID
 	/// `size` - 头像尺寸
 	///
-	async fn get_avatar_url(&self, _target_id: &str, _size: Option<AvatarSize>) -> Result<String> {
+	async fn get_avatar(&self, _target_id: &str, _size: Option<AvatarSize>) -> Result<Avatar> {
 		Err("此接口未实现".into())
 	}
 
-	/// 获取群头像URL
+	/// 获取群头像, 默认返回url, http/https/file协议(一般来说只有console适配器返回这个)
 	///
 	/// ## 参数
 	/// `group_id` - 群ID
 	/// `size` - 头像尺寸
 	///
-	async fn get_group_avatar_url(
-		&self,
-		_group_id: &str,
-		_size: Option<AvatarSize>,
-	) -> Result<String> {
+	async fn get_group_avatar(&self, _group_id: &str, _size: Option<AvatarSize>) -> Result<Avatar> {
 		Err("此接口未实现".into())
 	}
 

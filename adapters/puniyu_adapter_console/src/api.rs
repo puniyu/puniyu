@@ -20,18 +20,20 @@ pub struct ConsoleAdapterApi;
 
 #[async_trait]
 impl AdapterApi for ConsoleAdapterApi {
-	async fn get_avatar_url(&self, _target_id: &str, _size: Option<AvatarSize>) -> Result<String> {
-		let dir = ADAPTER_DATA_DIR.as_path().join("Console").join("data").join("avatar.png");
-		Ok(format!("file://{}", dir.to_string_lossy()))
+	async fn get_avatar(&self, _target_id: &str, _size: Option<AvatarSize>) -> Result<Avatar> {
+		let dir = ADAPTER_DATA_DIR
+			.as_path()
+			.join(AdapterProtocol::Console.to_string())
+			.join("data")
+			.join("avatar.png");
+		let avatar = Avatar(format!("file://{}", dir.to_string_lossy()));
+		Ok(avatar)
 	}
 
-	async fn get_group_avatar_url(
-		&self,
-		_group_id: &str,
-		_size: Option<AvatarSize>,
-	) -> Result<String> {
+	async fn get_group_avatar(&self, _group_id: &str, _size: Option<AvatarSize>) -> Result<Avatar> {
 		let dir = ADAPTER_DATA_DIR.as_path().join("Console").join("data").join("avatar.png");
-		Ok(format!("file://{}", dir.to_string_lossy()))
+		let avatar = Avatar(format!("file://{}", dir.to_string_lossy()));
+		Ok(avatar)
 	}
 
 	async fn send_msg(&self, contact: Contact, element: Message) -> Result<SendMsgType> {

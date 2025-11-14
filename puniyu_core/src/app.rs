@@ -9,59 +9,71 @@ use figlet_rs::FIGfont;
 use puniyu_builder::adapter::AdapterBuilder;
 use puniyu_builder::plugin::{PluginBuilder, PluginType};
 pub use puniyu_common::APP_NAME;
-use puniyu_common::path::{ADAPTER_DATA_DIR, ADAPTER_DIR, DATA_DIR, PLUGIN_DATA_DIR, PLUGIN_DIR};
+use puniyu_common::path::{DATA_DIR, PLUGIN_DATA_DIR, PLUGIN_DIR, set_working_dir};
 use puniyu_config::{init_config, init_config_watcher};
 use puniyu_event_bus::init_event_bus;
 use puniyu_registry::{AdapterRegistry, PluginRegistry};
 use puniyu_task::{SCHEDULER, init_scheduler};
-use std::sync::{OnceLock, RwLock};
+use std::env::current_dir;
+use std::path::Path;
 use std::{env, env::consts::DLL_EXTENSION};
 use tokio::{fs, signal};
 
-static REGISTERED_PLUGINS: OnceLock<RwLock<Vec<PluginType>>> = OnceLock::new();
-static REGISTERED_ADAPTER: OnceLock<RwLock<Vec<&'static dyn AdapterBuilder>>> = OnceLock::new();
+pub struct AppBuilder {
+	plugins: Vec<&'static dyn PluginBuilder>,
+	adapters: Vec<&'static dyn AdapterBuilder>,
+}
 
-pub struct App();
-
-impl Default for App {
+impl Default for AppBuilder {
 	fn default() -> Self {
 		APP_NAME.get_or_init(|| String::from("puniyu"));
-		Self {}
+		set_working_dir(current_dir().unwrap().as_path());
+		Self { plugins: Vec::new(), adapters: Vec::new() }
 	}
 }
 
-impl App {
+impl AppBuilder {
 	pub fn new() -> Self {
-		Self {}
+		Self::default()
 	}
+
 	pub fn with_name(&mut self, name: &str) -> &mut Self {
 		APP_NAME.get_or_init(|| name.to_string());
 		self
 	}
 
-	pub fn add_plugin(&mut self, plugin: &'static dyn PluginBuilder) -> &mut Self {
-		let plugins = REGISTERED_PLUGINS.get_or_init(|| RwLock::new(Vec::new()));
-		if let Ok(mut plugins_vec) = plugins.write() {
-			plugins_vec.push(PluginType::from(plugin));
-		}
+	pub fn with_working_dir(&self, path: &Path) -> &Self {
+		set_working_dir(path);
 		self
 	}
 
-	pub fn add_adapter(&mut self, adapter: &'static dyn AdapterBuilder) -> &mut Self {
-		let adapters = REGISTERED_ADAPTER.get_or_init(|| RwLock::new(Vec::new()));
-		if let Ok(mut adapters_vec) = adapters.write() {
-			adapters_vec.push(adapter);
-		}
+	pub fn with_plugin(&mut self, plugin: &'static dyn PluginBuilder) -> &mut Self {
+		self.plugins.push(plugin);
 		self
 	}
 
+	pub fn with_adapter(&mut self, adapter: &'static dyn AdapterBuilder) -> &mut Self {
+		self.adapters.push(adapter);
+		self
+	}
+
+	pub fn build(&self) -> App {
+		App { plugins: self.plugins.clone(), adapters: self.adapters.clone() }
+	}
+}
+pub struct App {
+	plugins: Vec<&'static dyn PluginBuilder>,
+	adapters: Vec<&'static dyn AdapterBuilder>,
+}
+
+impl App {
 	pub async fn run(&self) {
 		print_start_log();
 		init_config();
 		log_init();
 		let start_time = std::time::Instant::now();
 		let app_name = APP_NAME.get().unwrap();
-		init_app().await;
+		init_app(self.plugins.clone(), self.adapters.clone()).await;
 		let duration = start_time.elapsed();
 		let duration_str = format_duration(duration);
 		info!(
@@ -87,7 +99,10 @@ impl App {
 	}
 }
 
-async fn init_app() {
+async fn init_app(
+	plugins: Vec<&'static dyn PluginBuilder>,
+	adapters: Vec<&'static dyn AdapterBuilder>,
+) {
 	use crate::config::Config;
 	if env::var("APP_NAME").is_err() {
 		unsafe {
@@ -112,11 +127,11 @@ async fn init_app() {
 	event_bus.lock().unwrap().run();
 	init_scheduler().await;
 	SCHEDULER.get().unwrap().start().await.unwrap();
-	init_plugin().await;
-	init_adapter().await;
+	init_plugin(plugins).await;
+	init_adapter(adapters).await;
 }
 
-async fn init_plugin() {
+async fn init_plugin(plugins: Vec<&'static dyn PluginBuilder>) {
 	if !PLUGIN_DIR.as_path().exists() {
 		fs::create_dir(PLUGIN_DIR.as_path()).await.unwrap();
 	}
@@ -124,23 +139,17 @@ async fn init_plugin() {
 	if !PLUGIN_DATA_DIR.as_path().exists() {
 		fs::create_dir(PLUGIN_DATA_DIR.as_path()).await.unwrap();
 	}
-	let plugins = REGISTERED_PLUGINS.get_or_init(|| RwLock::new(Vec::new()));
+	let mut plugins_list =
+		plugins.iter().map(|p| PluginType::Builder(*p)).collect::<Vec<PluginType>>();
 
-	let pattern = PLUGIN_DIR.join(format!("*plugin*.{}", DLL_EXTENSION));
+	let pattern = PLUGIN_DIR.join(format!("*.{}", DLL_EXTENSION));
 	if let Ok(paths) = glob::glob(pattern.to_str().unwrap()) {
 		for entry in paths.filter_map(Result::ok) {
-			if let Ok(mut plugins_vec) = plugins.write() {
-				plugins_vec.push(PluginType::from(entry));
-			}
+			plugins_list.push(entry.into());
 		}
 	}
 
-	let plugin_list = {
-		let guard = plugins.read().unwrap();
-		guard.clone()
-	};
-
-	PluginRegistry::load_plugins(plugin_list).await.unwrap_or_else(|e| {
+	PluginRegistry::load_plugins(plugins_list).await.unwrap_or_else(|e| {
 		error!("插件加载失败: {:?}", e);
 	});
 
@@ -153,23 +162,8 @@ async fn init_plugin() {
 	)
 }
 
-async fn init_adapter() {
-	if !ADAPTER_DIR.as_path().exists() {
-		fs::create_dir(ADAPTER_DIR.as_path()).await.unwrap();
-	}
-
-	if !ADAPTER_DATA_DIR.as_path().exists() {
-		fs::create_dir(ADAPTER_DATA_DIR.as_path()).await.unwrap();
-	}
-
-	let adapters = REGISTERED_ADAPTER.get_or_init(|| RwLock::new(Vec::new()));
-
-	let adapter_list = {
-		let guard = adapters.read().unwrap();
-		guard.clone()
-	};
-
-	AdapterRegistry::load_adapters(adapter_list).await.unwrap_or_else(|e| {
+async fn init_adapter(adapters: Vec<&'static dyn AdapterBuilder>) {
+	AdapterRegistry::load_adapters(adapters).await.unwrap_or_else(|e| {
 		error!("适配器加载失败: {:?}", e);
 	});
 

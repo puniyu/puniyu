@@ -24,7 +24,7 @@ impl AdapterBuilder for Adapter {
 		use std::time::UNIX_EPOCH;
 		let start_time = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs();
 		adapter_info!(
-			name: "Console",
+			name: AdapterProtocol::Console.to_string(),
 			platform: AdapterPlatform::Other,
 			standard: AdapterStandard::Other,
 			protocol: AdapterProtocol::Console,
