@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.3.2](https://github.com/puniyu/puniyu/compare/core-v0.3.1...core-v0.3.2) (2025-11-15)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puniyu_config bumped from 0.3.0 to 0.4.0
+    * puniyu_bot bumped from 0.3.0 to 0.4.0
+    * puniyu_task bumped from 0.1.10 to 0.1.11
+    * puniyu_builder bumped from 0.3.0 to 0.4.0
+    * puniyu_registry bumped from 0.3.0 to 0.4.0
+    * puniyu_common bumped from 0.3.0 to 0.4.0
+    * puniyu_event_bus bumped from 0.3.0 to 0.4.0
+
 ## [0.3.1](https://github.com/puniyu/puniyu/compare/core-v0.3.0...core-v0.3.1) (2025-11-15)
 
 

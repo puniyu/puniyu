@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.2.3](https://github.com/puniyu/puniyu/compare/adapter-v0.2.2...adapter-v0.2.3) (2025-11-15)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puniyu_macros bumped from 0.3.0 to 0.4.0
+    * puniyu_bot bumped from 0.3.0 to 0.4.0
+    * puniyu_element bumped from 0.3.0 to 0.4.0
+    * puniyu_event bumped from 0.3.0 to 0.4.0
+    * puniyu_event_bus bumped from 0.3.0 to 0.4.0
+    * puniyu_common bumped from 0.3.0 to 0.4.0
+    * puniyu_builder bumped from 0.3.0 to 0.4.0
+    * puniyu_contact bumped from 0.1.10 to 0.1.11
+    * puniyu_sender bumped from 0.1.10 to 0.1.11
+    * puniyu_adapter_api bumped from 0.2.1 to 0.2.2
+
 ## [0.2.2](https://github.com/puniyu/puniyu/compare/adapter-v0.2.1...adapter-v0.2.2) (2025-11-15)
 
 
