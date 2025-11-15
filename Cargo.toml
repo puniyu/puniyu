@@ -50,7 +50,7 @@ puniyu_event_bus = { version = "0.1.8", path = "crates/puniyu_event_bus", defaul
 puniyu_handler = { version = "0.1.8", path = "crates/puniyu_handler" }
 puniyu_macros = { version = "0.1.8", path = "crates/puniyu_macros", default-features = false }
 puniyu_registry = { version = "0.1.8", path = "crates/puniyu_registry" }
-puniyu_server = { version = "0.1.8", path = "crates/puniyu_server" }
+puniyu_server = { version = "0.1.8", path = "crates/puniyu_server", default-features = false }
 
 puniyu_logger = { version = "0.6.1" }
 

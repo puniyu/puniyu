@@ -2,8 +2,6 @@ set windows-shell := ["powershell.exe", "-c"]
 set shell := ["bash", "-cu"]
 
 run:
-   just puniyu/run
-run-server:
-    just crates/puniyu_server/run
+   cargo run --features logger
 build:
-    just puniyu/build
+    cargo build --release

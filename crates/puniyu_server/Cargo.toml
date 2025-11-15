@@ -19,3 +19,7 @@ puniyu_logger.workspace = true
 tokio.workspace = true
 actix-web.workspace = true
 futures-util = "0.3.31"
+
+[features]
+default = ["logger"]
+logger = []

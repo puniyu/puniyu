@@ -1,3 +1,4 @@
+#[cfg(feature = "logger")]
 pub(crate) fn log_init() {
 	use puniyu_logger::{LoggerOptions, init};
 	use std::env;

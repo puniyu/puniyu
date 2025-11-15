@@ -1,4 +1,3 @@
-use crate::logger::log_init;
 use crate::{info, middleware};
 use actix_web::middleware::{NormalizePath, TrailingSlash};
 use actix_web::{App, HttpServer, web};
@@ -20,7 +19,10 @@ fn get_port_from_env() -> u16 {
 }
 
 pub async fn run_server(host: Option<IpAddr>, port: Option<u16>) -> std::io::Result<()> {
-	log_init();
+	#[cfg(feature = "logger")]
+	{
+		crate::logger::log_init();
+	}
 
 	let host = host.unwrap_or_else(get_host_from_env);
 	let port = port.unwrap_or_else(get_port_from_env);
