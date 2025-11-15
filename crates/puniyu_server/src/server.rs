@@ -19,11 +19,6 @@ fn get_port_from_env() -> u16 {
 }
 
 pub async fn run_server(host: Option<IpAddr>, port: Option<u16>) -> std::io::Result<()> {
-	#[cfg(feature = "logger")]
-	{
-		crate::logger::log_init();
-	}
-
 	let host = host.unwrap_or_else(get_host_from_env);
 	let port = port.unwrap_or_else(get_port_from_env);
 	let addr = format!("{}:{}", host, port);
