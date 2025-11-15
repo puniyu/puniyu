@@ -13,7 +13,7 @@ rust-version.workspace = true
 [dependencies]
 itertools = { workspace = true, optional = true }
 async-trait = { workspace = true, optional = true }
-puniyu_event = { workspace = true, features = ["context"], optional = true }
+puniyu_event = { version = "0.2.0", path = "../puniyu_event", features = ["context"], optional = true }
 
 [features]
 default = ["builder"]

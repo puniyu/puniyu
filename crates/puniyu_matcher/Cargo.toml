@@ -13,5 +13,5 @@ rust-version.workspace = true
 [dependencies]
 puniyu_logger.workspace = true
 
-puniyu_element = { workspace = true }
-puniyu_event = { workspace = true, features = ["message"] }
+puniyu_element = { version = "0.2.0", path = "../puniyu_element" }
+puniyu_event = { version = "0.2.0", path = "../puniyu_event", features = ["message"] }

@@ -15,8 +15,8 @@ async-trait.workspace = true
 serde.workspace = true
 reqwest.workspace = true
 tokio.workspace = true
-puniyu_common.workspace = true
 
+puniyu_common = { version = "0.2.0", path = "../puniyu_common" }
 puniyu_contact = { version = "0.1.9", path = "../puniyu_contact" }
 puniyu_sender = { version = "0.1.9", path = "../puniyu_sender" }
 puniyu_element = { version = "0.2.0", path = "../puniyu_element" }

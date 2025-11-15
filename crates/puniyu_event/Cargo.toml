@@ -12,11 +12,11 @@ rust-version.workspace = true
 
 [dependencies]
 strum.workspace = true
-puniyu_element.workspace = true
-puniyu_adapter_api = { workspace = true, optional = true }
-puniyu_sender = { workspace = true, optional = true }
-puniyu_contact = { workspace = true, optional = true }
-puniyu_config = { workspace = true, optional = true }
+puniyu_element = { version = "0.2.0", path = "../puniyu_element" }
+puniyu_adapter_api = { version = "0.2.0", path = "../puniyu_adapter_api", optional = true }
+puniyu_sender = { version = "0.1.9", path = "../puniyu_sender", optional = true }
+puniyu_contact = { version = "0.1.9", path = "../puniyu_contact", optional = true }
+puniyu_config = { version = "0.2.0", path = "../puniyu_config", optional = true }
 
 [features]
 default = []

@@ -13,8 +13,8 @@ rust-version.workspace = true
 [dependencies]
 puniyu_logger.workspace = true
 
-puniyu_common = { workspace = true }
-puniyu_element = { workspace = true }
-puniyu_adapter_api = { workspace = true }
-puniyu_contact = { workspace = true }
-puniyu_builder = { workspace = true, features = ["adapter"] }
+puniyu_common = { version = "0.2.0", path = "../puniyu_common" }
+puniyu_element = { version = "0.2.0", path = "../puniyu_element" }
+puniyu_adapter_api = { version = "0.2.0", path = "../puniyu_adapter_api" }
+puniyu_contact = { version = "0.1.9", path = "../puniyu_contact" }
+puniyu_builder = { version = "0.2.0", path = "../puniyu_builder", features = ["adapter"] }
