@@ -9,6 +9,7 @@ pub use system::*;
 mod app;
 pub use app::AppBuilder;
 pub use puniyu_common::APP_NAME;
+#[cfg(feature = "logger")]
 pub mod plugin;
 mod version;
 pub use plugin::get_plugin_info;

@@ -2,12 +2,6 @@ name: Build Package
 
 on:
   workflow_call:
-    inputs:
-      preview:
-        description: '是否为预览构建'
-        type: boolean
-        required: false
-        default: true
 
 env:
   APP_NAME: puniyu
@@ -34,6 +28,9 @@ jobs:
         with:
           targets: ${{ matrix.platform.target }}
 
+      - name: 设置just
+        uses: extractions/setup-just@v3
+
       - name: 设置 rust 缓存
         uses: swatinem/rust-cache@98c8021b550208e191a6a3145459bfc9fb29c4c0 # v2
         with:
@@ -42,11 +39,7 @@ jobs:
       - name: 构建
         shell: bash
         run: |
-          if [ "${{ inputs.preview }}" == "true" ]; then
-            cargo build --release --bin ${{ env.APP_NAME }} --target ${{ matrix.platform.target }} --features preview
-          else
-            cargo build --release --bin ${{ env.APP_NAME }} --target ${{ matrix.platform.target }}
-          fi
+          just build
 
 
       - name: 上传构建产物
@@ -80,6 +73,9 @@ jobs:
         with:
           targets: ${{ matrix.platform.target }}
 
+      - name: 设置just
+        uses: extractions/setup-just@v3
+
       - name: 添加目标平台
         run: |
           rustup target add ${{ matrix.platform.target }}
@@ -91,11 +87,7 @@ jobs:
 
       - name: 构建
         run: |
-          if [ "${{ inputs.preview }}" == "true" ]; then
-            cargo build --release --bin ${{ env.APP_NAME }} --target ${{ matrix.platform.target }} --features preview
-          else
-            cargo build --release --bin ${{ env.APP_NAME }} --target ${{ matrix.platform.target }}
-          fi
+          just build
 
       - name: 上传构建产物
         uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
@@ -129,10 +121,8 @@ jobs:
         with:
           targets: ${{ matrix.platform.target }}
 
-      - name: 设置apt 包
-        uses: awalsh128/cache-apt-pkgs-action@2c09a5e66da6c8016428a2172bd76e5e4f14bb17 # v1
-        with:
-          packages: libdrm-dev
+      - name: 设置just
+        uses: extractions/setup-just@v3
 
       - name: 设置 rust 缓存
         uses: swatinem/rust-cache@98c8021b550208e191a6a3145459bfc9fb29c4c0 # v2
@@ -141,11 +131,7 @@ jobs:
 
       - name: 构建
         run: |
-          if [ "${{ inputs.preview }}" == "true" ]; then
-            cargo build --release --bin ${{ env.APP_NAME }} --target ${{ matrix.platform.target }} --features preview
-          else
-            cargo build --release --bin ${{ env.APP_NAME }} --target ${{ matrix.platform.target }}
-          fi
+          just build
 
       - name: 上传构建产物
         uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5

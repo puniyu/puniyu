@@ -12,6 +12,19 @@
       "labels": [
         "dependencies"
       ]
+    },
+    {
+      "groupName": "github actions packages",
+      "matchManagers": [
+        "github-actions"
+      ],
+      "rangeStrategy": "auto",
+      "schedule": [
+        "at any time"
+      ],
+      "labels": [
+        "dependencies"
+      ]
     }
   ]
 }

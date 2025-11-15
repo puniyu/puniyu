@@ -18,9 +18,9 @@ thiserror.workspace = true
 tokio.workspace = true
 async-trait.workspace = true
 inventory.workspace = true
-puniyu_logger.workspace = true
 convert_case.workspace = true
 
+puniyu_logger = { workspace = true, optional = true }
 puniyu_config = { workspace = true }
 puniyu_bot = { workspace = true }
 puniyu_task = { workspace = true }
@@ -30,12 +30,8 @@ puniyu_registry = { workspace = true, features = ["plugin", "adapter"] }
 puniyu_common = { workspace = true }
 puniyu_event_bus = { workspace = true }
 
-
-
-[build-dependencies]
-puniyu_build = { path = "../../crates/puniyu_build", version = "0.1.0" }
-
 [features]
-default = ["server"]
+default = ["server", "logger"]
 server = []
-core_preview = ["puniyu_build/core_preview"]
+logger = ["dep:puniyu_logger"]
+
