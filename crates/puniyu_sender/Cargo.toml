@@ -1,6 +1,6 @@
 [package]
 name = "puniyu_sender"
-version = "0.1.9"
+version = "0.1.10"
 description = "puniyu 的事件发送者模块"
 readme = "README.md"
 authors.workspace = true
