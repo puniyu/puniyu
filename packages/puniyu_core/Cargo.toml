@@ -33,7 +33,7 @@ puniyu_event_bus = { workspace = true }
 
 
 [build-dependencies]
-puniyu_build = { path = "../puniyu_build", version = "0.1.0" }
+puniyu_build = { path = "../../crates/puniyu_build", version = "0.1.0" }
 
 [features]
 default = ["server"]

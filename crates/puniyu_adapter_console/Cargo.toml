@@ -13,9 +13,9 @@ publish = false
 [dependencies]
 async-trait.workspace = true
 rand = "0.10.0-rc.0"
-puniyu_adapter = { path = "../../puniyu_adapter" }
-puniyu_core = { path = "../../puniyu_core" }
-puniyu_common = { path = "../../crates/puniyu_common" }
+puniyu_adapter = { path = "../../packages/puniyu_adapter" }
+puniyu_core = { path = "../../packages/puniyu_core" }
+puniyu_common = { path = "../puniyu_common" }
 
 [build-dependencies]
-puniyu_build = { path = "../../puniyu_build" }
+puniyu_build = { path = "../puniyu_build" }

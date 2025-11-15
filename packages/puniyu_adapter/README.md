@@ -39,4 +39,4 @@ struct MyAdapter {}
 
 ## 许可证
 
-本项目采用 [LGPL](../LICENSE) 许可证。
+本项目采用 [LGPL](../../LICENSE) 许可证。

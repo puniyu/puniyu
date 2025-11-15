@@ -1,11 +1,7 @@
 [workspace]
 members = [
     "crates/*",
-    "adapters/*",
-    "puniyu",
-    "puniyu_core",
-    "puniyu_plugin",
-    "puniyu_adapter",
+    "packages/*"
 ]
 resolver = "2"
 
