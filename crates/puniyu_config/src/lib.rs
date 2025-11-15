@@ -3,7 +3,7 @@ use crate::{
 	bot::{BOT_CONFIG, BotConfig},
 	group::{GROUP_CONFIG, GroupConfig},
 };
-use notify::{Config as WatcherConfig, Event, RecommendedWatcher, RecursiveMode, Watcher};
+use notify_debouncer_mini::{DebounceEventResult, new_debouncer, notify};
 use puniyu_common::error::Config as Error;
 use puniyu_common::path::LOG_DIR;
 use puniyu_common::{path::CONFIG_DIR, toml::merge_config};
@@ -31,7 +31,7 @@ where
 	}
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Config;
 impl Config {
 	/// 获取app配置
@@ -106,36 +106,21 @@ pub fn init_config() {
 }
 
 pub fn init_config_watcher() {
-	let (tx, rx) = flume::bounded::<notify::Result<Event>>(50);
-
-	let mut watcher = RecommendedWatcher::new(
-		move |res| {
-			tx.send(res).unwrap();
-		},
-		WatcherConfig::default()
-			.with_follow_symlinks(false)
-			.with_poll_interval(Duration::from_secs(200)),
-	)
-	.unwrap();
-	watcher.watch(CONFIG_DIR.as_path(), RecursiveMode::NonRecursive).unwrap();
-
-	thread::spawn(move || {
+	thread::spawn(|| {
 		debug!("[Config] 配置文件监听器已启动");
-		for res in rx {
-			match res {
-				Ok(event) => {
-					info!(
-						"[Config] 文件变更: {}",
-						event
-							.paths
-							.iter()
-							.map(|p| p.display().to_string())
-							.collect::<Vec<_>>()
-							.join(", ")
-					);
 
-					for path in event.paths.iter() {
-						if let Some(file_name) = path.file_name().and_then(|n| n.to_str()) {
+		let mut debouncer =
+			new_debouncer(Duration::from_secs(2), |res: DebounceEventResult| match res {
+				Ok(events) => {
+					let paths = events
+						.iter()
+						.map(|e| e.path.display().to_string())
+						.collect::<Vec<String>>();
+
+					info!("[Config] 文件变更: {}", paths.join(", "));
+
+					for event in events.iter() {
+						if let Some(file_name) = event.path.file_name().and_then(|n| n.to_str()) {
 							match file_name {
 								"app.toml" => {
 									reload_config("app", &mut *APP_CONFIG.write().unwrap())
@@ -167,11 +152,16 @@ pub fn init_config_watcher() {
 						}
 					}
 				}
-				Err(e) => {
-					error!("[Config] 监听错误: {}", e);
-				}
-			}
-		}
+				Err(e) => error!("[Config] 监听错误: {}", e),
+			})
+			.unwrap();
+
+		debouncer
+			.watcher()
+			.watch(CONFIG_DIR.as_path(), notify::RecursiveMode::NonRecursive)
+			.unwrap();
+
+		thread::park();
 	});
 }
 fn init_env() {
@@ -192,7 +182,7 @@ fn init_env() {
 	});
 
 	env::var("LOGGER_PATH").unwrap_or_else(|_| {
-		let logger_path = logger_config.path();
+		let logger_path = LOG_DIR.as_path();
 		unsafe {
 			env::set_var("LOGGER_PATH", logger_path);
 		}

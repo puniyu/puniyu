@@ -70,19 +70,19 @@
     }
   ],
   "packages": {
-    "puniyu": {
+    "packages/puniyu": {
       "release-type": "rust",
       "component": "puniyu"
     },
-    "puniyu_core": {
+    "packages/puniyu_core": {
       "release-type": "rust",
       "component": "core"
     },
-    "puniyu_plugin": {
+    "packages/puniyu_plugin": {
       "release-type": "rust",
       "component": "plugin"
     },
-    "puniyu_adapter": {
+    "packages/puniyu_adapter": {
       "release-type": "rust",
       "component": "adapter"
     }

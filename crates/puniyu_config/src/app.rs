@@ -1,7 +1,7 @@
 use puniyu_common::path::CONFIG_DIR;
 use puniyu_common::toml;
 use serde::{Deserialize, Serialize};
-use std::path::{Path, PathBuf};
+use std::net::Ipv4Addr;
 use std::sync::{Arc, LazyLock, RwLock};
 
 pub(crate) static APP_CONFIG: LazyLock<Arc<RwLock<AppConfig>>> = LazyLock::new(|| {
@@ -18,9 +18,6 @@ pub struct LoggerConfig {
 	/// 日志等级
 	#[serde(default = "default_logger_level")]
 	level: String,
-	/// 日志路径
-	#[serde(default = "default_logger_path")]
-	path: PathBuf,
 	/// 日志保留天数
 	#[serde(default = "default_logger_retention_days")]
 	retention_days: u8,
@@ -32,7 +29,6 @@ impl Default for LoggerConfig {
 		Self {
 			enable_file: default_logger_file_enable(),
 			level: default_logger_level(),
-			path: default_logger_path(),
 			retention_days: default_logger_retention_days(),
 		}
 	}
@@ -43,10 +39,6 @@ fn default_logger_file_enable() -> bool {
 }
 fn default_logger_level() -> String {
 	String::from("info")
-}
-
-fn default_logger_path() -> PathBuf {
-	puniyu_common::path::LOG_DIR.to_path_buf()
 }
 
 fn default_logger_retention_days() -> u8 {
@@ -61,10 +53,6 @@ impl LoggerConfig {
 	/// 日志等级
 	pub fn level(&self) -> &str {
 		self.level.as_str()
-	}
-	/// 日志路径
-	pub fn path(&self) -> &Path {
-		self.path.as_path()
 	}
 	/// 日志保留天数
 	pub fn retention_days(&self) -> u8 {
@@ -107,7 +95,7 @@ pub struct ServerConfig {
 }
 
 fn default_server_host() -> String {
-	String::from("0.0.0.0")
+	Ipv4Addr::new(127, 0, 0, 1).to_string()
 }
 fn default_server_port() -> u16 {
 	33720
