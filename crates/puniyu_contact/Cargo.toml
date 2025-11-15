@@ -1,6 +1,6 @@
 [package]
 name = "puniyu_contact"
-version = "0.1.9"
+version = "0.1.10"
 description = "puniyu 的联系人相关"
 readme = "README.md"
 authors.workspace = true

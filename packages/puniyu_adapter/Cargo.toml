@@ -1,6 +1,6 @@
 [package]
 name = "puniyu_adapter"
-version = "0.2.1"
+version = "0.2.2"
 description = "puniyu 的适配器模块"
 readme = "README.md"
 authors.workspace = true
@@ -15,13 +15,13 @@ async-trait.workspace = true
 puniyu_logger.workspace = true
 serde_json.workspace = true
 
-puniyu_macros = { version = "0.2.0", path = "../../crates/puniyu_macros", features = ["adapter"] }
-puniyu_bot = { version = "0.2.0", path = "../../crates/puniyu_bot" }
-puniyu_element = { version = "0.2.0", path = "../../crates/puniyu_element" }
-puniyu_event = { version = "0.2.0", path = "../../crates/puniyu_event", features = ["message"] }
-puniyu_event_bus = { version = "0.2.0", path = "../../crates/puniyu_event_bus" }
-puniyu_common = { version = "0.2.0", path = "../../crates/puniyu_common" }
-puniyu_builder = { version = "0.2.0", path = "../../crates/puniyu_builder", features = ["adapter"] }
-puniyu_contact = { version = "0.1.9", path = "../../crates/puniyu_contact" }
-puniyu_sender = { version = "0.1.9", path = "../../crates/puniyu_sender" }
-puniyu_adapter_api = { version = "0.2.0", path = "../../crates/puniyu_adapter_api" }
+puniyu_macros = { version = "0.3.0", path = "../../crates/puniyu_macros", features = ["adapter"] }
+puniyu_bot = { version = "0.3.0", path = "../../crates/puniyu_bot" }
+puniyu_element = { version = "0.3.0", path = "../../crates/puniyu_element" }
+puniyu_event = { version = "0.3.0", path = "../../crates/puniyu_event", features = ["message"] }
+puniyu_event_bus = { version = "0.3.0", path = "../../crates/puniyu_event_bus" }
+puniyu_common = { version = "0.3.0", path = "../../crates/puniyu_common" }
+puniyu_builder = { version = "0.3.0", path = "../../crates/puniyu_builder", features = ["adapter"] }
+puniyu_contact = { version = "0.1.10", path = "../../crates/puniyu_contact" }
+puniyu_sender = { version = "0.1.10", path = "../../crates/puniyu_sender" }
+puniyu_adapter_api = { version = "0.2.1", path = "../../crates/puniyu_adapter_api" }

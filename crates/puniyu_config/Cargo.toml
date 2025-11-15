@@ -1,6 +1,6 @@
 [package]
 name = "puniyu_config"
-version = "0.2.0"
+version = "0.3.0"
 description = "puniyu 配置模块"
 readme = "README.md"
 authors.workspace = true
@@ -14,6 +14,6 @@ rust-version.workspace = true
 puniyu_logger.workspace = true
 serde.workspace = true
 
-puniyu_common = { version = "0.2.0", path = "../puniyu_common" }
+puniyu_common = { version = "0.3.0", path = "../puniyu_common" }
 notify-debouncer-mini = { version = "0.7.0", features = ["flume"] }
 

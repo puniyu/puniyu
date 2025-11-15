@@ -1,6 +1,6 @@
 [package]
 name = "puniyu_handler"
-version = "0.2.0"
+version = "0.3.0"
 description = "puniyu 的事件处理器模块"
 readme = "README.md"
 authors.workspace = true
@@ -12,6 +12,6 @@ rust-version.workspace = true
 
 [dependencies]
 async-trait.workspace = true
-puniyu_adapter_api = { version = "0.2.0", path = "../puniyu_adapter_api" }
-puniyu_event = { version = "0.2.0", path = "../puniyu_event", features = ["context"] }
-puniyu_command = { version = "0.2.0", path = "../puniyu_command", features = ["registry"] }
+puniyu_adapter_api = { version = "0.2.1", path = "../puniyu_adapter_api" }
+puniyu_event = { version = "0.3.0", path = "../puniyu_event", features = ["context"] }
+puniyu_command = { version = "0.3.0", path = "../puniyu_command", features = ["registry"] }
