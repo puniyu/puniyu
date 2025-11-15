@@ -1,6 +1,6 @@
 [package]
 name = "puniyu_event_bus"
-version = "0.1.8"
+version = "0.2.0"
 description = "puniyu 的事件总线处理库"
 readme = "README.md"
 authors.workspace = true
