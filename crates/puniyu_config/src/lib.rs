@@ -5,6 +5,7 @@ use crate::{
 };
 use notify::{Config as WatcherConfig, Event, RecommendedWatcher, RecursiveMode, Watcher};
 use puniyu_common::error::Config as Error;
+use puniyu_common::path::LOG_DIR;
 use puniyu_common::{path::CONFIG_DIR, toml::merge_config};
 use puniyu_logger::{debug, error, info};
 use serde::{Deserialize, Serialize, de::DeserializeOwned};
@@ -84,6 +85,10 @@ pub fn init_config() {
 	if !CONFIG_DIR.as_path().exists() {
 		std::fs::create_dir_all(CONFIG_DIR.as_path())
 			.unwrap_or_else(|_| error!("[配置文件] 初始化配置文件失败"));
+	}
+	if !LOG_DIR.as_path().exists() {
+		std::fs::create_dir_all(LOG_DIR.as_path())
+			.unwrap_or_else(|_| error!("[配置文件] 初始化日志目录失败"));
 	}
 	merge_config(CONFIG_DIR.as_path(), "app", &AppConfig::default(), &AppConfig::get())
 		.unwrap_or_else(|e| {
@@ -191,7 +196,7 @@ fn init_env() {
 		unsafe {
 			env::set_var("LOGGER_PATH", logger_path);
 		}
-		logger_path.to_string()
+		logger_path.to_string_lossy().to_string()
 	});
 
 	env::var("LOGGER_RETENTION_DAYS").unwrap_or_else(|_| {

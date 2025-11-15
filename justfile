@@ -1,4 +1,6 @@
 set windows-shell := ["powershell.exe", "-c"]
+set shell := ["bash", "-cu"]
+
 set working-directory := "./puniyu"
 run:
    cargo run --bin puniyu

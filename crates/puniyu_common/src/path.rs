@@ -19,20 +19,6 @@ pub fn set_working_dir(path: &Path) {
 pub static BASE_DIR: LazyLock<PathBuf> =
 	LazyLock::new(|| PathBuf::from(WORKING_DIR.get_or_init(|| current_dir().unwrap())));
 
-/// 日志文件夹路径
-///
-/// # 示例
-///
-/// ```rust
-/// use puniyu_common::path::LOG_DIR;
-/// let log_dir = LOG_DIR.as_path();
-/// ```
-pub static LOG_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
-	let mut path = BASE_DIR.to_path_buf();
-	path.push("logs");
-	path
-});
-
 /// 应用文件夹路径
 /// 此目录存放数据，如插件数据, 适配器数据等
 ///
@@ -45,6 +31,20 @@ pub static LOG_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
 pub static APP_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
 	let mut path = BASE_DIR.to_path_buf();
 	path.push(format!("@{}", APP_NAME.get().unwrap()));
+	path
+});
+
+/// 日志文件夹路径
+///
+/// # 示例
+///
+/// ```rust
+/// use puniyu_common::path::LOG_DIR;
+/// let log_dir = LOG_DIR.as_path();
+/// ```
+pub static LOG_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
+	let mut path = APP_DIR.to_path_buf();
+	path.push("logs");
 	path
 });
 

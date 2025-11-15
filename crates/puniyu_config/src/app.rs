@@ -1,6 +1,7 @@
 use puniyu_common::path::CONFIG_DIR;
 use puniyu_common::toml;
 use serde::{Deserialize, Serialize};
+use std::path::{Path, PathBuf};
 use std::sync::{Arc, LazyLock, RwLock};
 
 pub(crate) static APP_CONFIG: LazyLock<Arc<RwLock<AppConfig>>> = LazyLock::new(|| {
@@ -19,7 +20,7 @@ pub struct LoggerConfig {
 	level: String,
 	/// 日志路径
 	#[serde(default = "default_logger_path")]
-	path: String,
+	path: PathBuf,
 	/// 日志保留天数
 	#[serde(default = "default_logger_retention_days")]
 	retention_days: u8,
@@ -44,8 +45,8 @@ fn default_logger_level() -> String {
 	String::from("info")
 }
 
-fn default_logger_path() -> String {
-	String::from("logs")
+fn default_logger_path() -> PathBuf {
+	puniyu_common::path::LOG_DIR.to_path_buf()
 }
 
 fn default_logger_retention_days() -> u8 {
@@ -62,8 +63,8 @@ impl LoggerConfig {
 		self.level.as_str()
 	}
 	/// 日志路径
-	pub fn path(&self) -> &str {
-		self.path.as_str()
+	pub fn path(&self) -> &Path {
+		self.path.as_path()
 	}
 	/// 日志保留天数
 	pub fn retention_days(&self) -> u8 {
