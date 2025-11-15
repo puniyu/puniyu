@@ -25,19 +25,11 @@ impl From<PathBuf> for LibraryInfo {
 #[derive(Default)]
 struct LibraryStore(HashMap<String, Arc<LibraryInfo>>);
 impl LibraryStore {
-	pub fn insert_library(&mut self, name: String, lib: Arc<LibraryInfo>) {
+	pub fn insert(&mut self, name: String, lib: Arc<LibraryInfo>) {
 		if self.0.contains_key(&name) {
 			return;
 		}
 		self.0.insert(name, lib);
-	}
-	#[allow(dead_code)]
-	pub fn get_library(&self, name: &str) -> Option<Arc<LibraryInfo>> {
-		self.0.get(name).cloned()
-	}
-	#[allow(dead_code)]
-	pub fn remove_library(&mut self, name: &str) -> bool {
-		self.0.remove(name).is_some()
 	}
 }
 
@@ -64,7 +56,7 @@ impl PluginLibrary {
 
 		let lib_path = path.to_path_buf();
 		let library_info: LibraryInfo = lib_path.into();
-		self.store.insert_library(name.to_string(), library_info.into());
+		self.store.insert(name.to_string(), library_info.into());
 
 		Ok(self)
 	}
@@ -89,7 +81,7 @@ impl PluginLibrary {
 		}
 		let lib_path = self.get_plugin(name).unwrap().path.clone();
 		let library_info: LibraryInfo = lib_path.into();
-		self.store.insert_library(name.to_string(), library_info.into());
+		self.store.insert(name.to_string(), library_info.into());
 		Ok(())
 	}
 }
