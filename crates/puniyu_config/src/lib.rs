@@ -6,7 +6,7 @@ use crate::{
 use notify_debouncer_mini::{DebounceEventResult, new_debouncer, notify};
 use puniyu_common::error::Config as Error;
 use puniyu_common::path::LOG_DIR;
-use puniyu_common::{path::CONFIG_DIR, toml::merge_config};
+use puniyu_common::{APP_NAME, path::CONFIG_DIR, toml::merge_config};
 use puniyu_logger::{debug, error, info};
 use serde::{Deserialize, Serialize, de::DeserializeOwned};
 use std::{env, thread, time::Duration};
@@ -165,35 +165,11 @@ pub fn init_config_watcher() {
 	});
 }
 fn init_env() {
-	let logger_config = Config::app().logger();
-	env::var("LOGGER_ENABLE").unwrap_or_else(|_| {
-		let logger_enable = logger_config.enable_file();
+	env::var("APP_NAME").unwrap_or_else(|_| {
+		let app_name = APP_NAME.get().unwrap();
 		unsafe {
-			env::set_var("LOGGER_FILE_ENABLE", logger_enable.to_string());
+			env::set_var("APP_NAME", app_name);
 		}
-		logger_enable.to_string()
-	});
-	env::var("LOGGER_LEVEL").unwrap_or_else(|_| {
-		let logger_level = logger_config.level();
-		unsafe {
-			env::set_var("LOGGER_LEVEL", logger_level);
-		}
-		logger_level.to_string()
-	});
-
-	env::var("LOGGER_PATH").unwrap_or_else(|_| {
-		let logger_path = LOG_DIR.as_path();
-		unsafe {
-			env::set_var("LOGGER_PATH", logger_path);
-		}
-		logger_path.to_string_lossy().to_string()
-	});
-
-	env::var("LOGGER_RETENTION_DAYS").unwrap_or_else(|_| {
-		let logger_retention_days = logger_config.retention_days();
-		unsafe {
-			env::set_var("LOGGER_RETENTION_DAYS", logger_retention_days.to_string());
-		}
-		logger_retention_days.to_string()
+		app_name.to_owned()
 	});
 }

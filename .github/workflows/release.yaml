@@ -23,13 +23,13 @@ jobs:
       releases_created: ${{ steps.release-please.outputs.releases_created }}
       build: ${{ steps.release-please.outputs['crates/puniyu_build--release_created'] }}
       common: ${{ steps.release-please.outputs['crates/puniyu_common--release_created'] }}
-      config: ${{ steps.release-please.outputs['crates/puniyu_config--release_created'] }}
       element: ${{ steps.release-please.outputs['crates/puniyu_element--release_created'] }}
       contact: ${{ steps.release-please.outputs['crates/puniyu_contact--release_created'] }}
       sender: ${{ steps.release-please.outputs['crates/puniyu_sender--release_created'] }}
       macros: ${{ steps.release-please.outputs['crates/puniyu_macros--release_created'] }}
       library: ${{ steps.release-please.outputs['crates/puniyu_library--release_created'] }}
       server: ${{ steps.release-please.outputs['crates/puniyu_server--release_created'] }}
+      config: ${{ steps.release-please.outputs['crates/puniyu_config--release_created'] }}
       adapter_api: ${{ steps.release-please.outputs['crates/puniyu_adapter_api--release_created'] }}
       builder: ${{ steps.release-please.outputs['crates/puniyu_builder--release_created'] }}
       task: ${{ steps.release-please.outputs['crates/puniyu_task--release_created'] }}

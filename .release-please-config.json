@@ -78,10 +78,6 @@
       "release-type": "rust",
       "component": "common"
     },
-    "crates/puniyu_config": {
-      "release-type": "rust",
-      "component": "config"
-    },
     "crates/puniyu_element": {
       "release-type": "rust",
       "component": "element"
@@ -105,6 +101,10 @@
     "crates/puniyu_server": {
       "release-type": "rust",
       "component": "server"
+    },
+    "crates/puniyu_config": {
+      "release-type": "rust",
+      "component": "config"
     },
     "crates/puniyu_adapter_api": {
       "release-type": "rust",
