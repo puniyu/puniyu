@@ -54,25 +54,22 @@ jobs:
       - name: 设置 Rust 工具链
         uses: dtolnay/rust-toolchain@stable
 
+      - name: 设置just
+        uses: extractions/setup-just@v3
+
       - name: 设置 Rust 缓存
         uses: swatinem/rust-cache@98c8021b550208e191a6a3145459bfc9fb29c4c0 # v2
         with:
           prefix-key: ${{ env.APP_NAME }}
 
-      - name: 设置apt 包
-        uses: awalsh128/cache-apt-pkgs-action@2c09a5e66da6c8016428a2172bd76e5e4f14bb17 # v1
-        with:
-          packages: libdrm-dev
-
       - name: 单元测试
-        run: cargo test
+        run: |
+          just test
 
 
   build:
     needs: [ release, test ]
     uses: ./.github/workflows/build.yaml
-    with:
-      preview: ${{ needs.release.outputs.release_created != 'true' }}
 
 
   publish-crates-io:

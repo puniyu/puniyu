@@ -21,8 +21,17 @@ impl fmt::Display for Version {
 }
 
 pub const VERSION: Version = Version {
-	major: env!("CORE_VERSION_MAJOR"),
-	minor: env!("CORE_VERSION_MINOR"),
-	patch: env!("CORE_VERSION_PATCH"),
-	channel: env!("CORE_VERSION_CHANNEL"),
+	major: env!("CARGO_PKG_VERSION_MAJOR"),
+	minor: env!("CARGO_PKG_VERSION_MINOR"),
+	patch: env!("CARGO_PKG_VERSION_PATCH"),
+	channel: {
+		#[cfg(debug_assertions)]
+		{
+			"Preview"
+		}
+		#[cfg(not(debug_assertions))]
+		{
+			"Stable"
+		}
+	},
 };

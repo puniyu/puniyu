@@ -1745,7 +1745,6 @@ dependencies = [
  "glob",
  "inventory",
  "puniyu_bot",
- "puniyu_build",
  "puniyu_builder",
  "puniyu_common",
  "puniyu_config",

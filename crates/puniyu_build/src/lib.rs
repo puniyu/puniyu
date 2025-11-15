@@ -50,30 +50,3 @@ pub fn setup_adapter() {
 		env::var("CARGO_PKG_AUTHORS").expect("作者信息都没有...真是个粗心的杂鱼呢～");
 	println!("cargo:rustc-env=ADAPTER_AUTHOR={}", plugin_author);
 }
-
-/// 执行核心构建时需要设置的环境变量
-///
-/// CORE_VERSION: 完整版本号
-/// CORE_VERSION_MAJOR: 主版本号
-/// CORE_VERSION_MINOR: 次版本号
-/// CORE_VERSION_PATCH: 修订版本号
-/// CORE_VERSION_CHANNEL: 版本通道（根据 core_preview feature 设置为 "Preview" 或 "Stable"）
-pub fn setup_core() {
-	let version = env!("CARGO_PKG_VERSION");
-	println!("cargo:rustc-env=CORE_VERSION={}", version);
-
-	let version_parts: Vec<&str> = version.split(|c: char| !c.is_ascii_digit()).collect();
-	let major = version_parts.first().and_then(|s| s.parse::<u32>().ok()).unwrap_or(0);
-	let minor = version_parts.get(1).and_then(|s| s.parse::<u32>().ok()).unwrap_or(0);
-	let patch = version_parts.get(2).and_then(|s| s.parse::<u32>().ok()).unwrap_or(0);
-
-	println!("cargo:rustc-env=CORE_VERSION_MAJOR={}", major);
-	println!("cargo:rustc-env=CORE_VERSION_MINOR={}", minor);
-	println!("cargo:rustc-env=CORE_VERSION_PATCH={}", patch);
-
-	#[cfg(feature = "core_preview")]
-	println!("cargo:rustc-env=CORE_VERSION_CHANNEL=Preview");
-
-	#[cfg(not(feature = "core_preview"))]
-	println!("cargo:rustc-env=CORE_VERSION_CHANNEL=Stable");
-}
