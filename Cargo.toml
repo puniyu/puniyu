@@ -29,27 +29,31 @@ convert_case = { version = "0.9.0" }
 actix-web = "4.11.0"
 reqwest = { version = "0.12.24", default-features = false, features = ["json", "rustls-tls"] }
 
-puniyu_bot = { version = "0.1.8", path = "crates/puniyu_bot" }
-puniyu_adapter_api = { version = "0.1.8", path = "crates/puniyu_adapter_api" }
+puniyu_logger = { version = "0.6.1" }
+
+puniyu_build = { version = "0.1.8", path = "crates/puniyu_build" }
+puniyu_common = { version = "0.1.8", path = "crates/puniyu_common" }
+puniyu_config = { version = "0.1.8", path = "crates/puniyu_config" }
 puniyu_element = { version = "0.1.8", path = "crates/puniyu_element" }
 puniyu_contact = { version = "0.1.8", path = "crates/puniyu_contact" }
 puniyu_sender = { version = "0.1.8", path = "crates/puniyu_sender" }
-puniyu_builder = { version = "0.1.8", path = "crates/puniyu_builder", default-features = false }
-puniyu_command = { version = "0.1.8", path = "crates/puniyu_command", default-features = false }
-puniyu_common = { version = "0.1.8", path = "crates/puniyu_common" }
-puniyu_config = { version = "0.1.8", path = "crates/puniyu_config" }
-puniyu_library = { version = "0.1.8", path = "crates/puniyu_library" }
-puniyu_task = { version = "0.1.8", path = "crates/puniyu_task" }
-puniyu_event = { version = "0.1.8", path = "crates/puniyu_event", default-features = false }
-puniyu_matcher = { version = "0.1.8", path = "crates/puniyu_matcher" }
-puniyu_event_bus = { version = "0.1.8", path = "crates/puniyu_event_bus", default-features = false }
-puniyu_handler = { version = "0.1.8", path = "crates/puniyu_handler" }
 puniyu_macros = { version = "0.1.8", path = "crates/puniyu_macros", default-features = false }
-puniyu_registry = { version = "0.1.8", path = "crates/puniyu_registry" }
+puniyu_library = { version = "0.1.8", path = "crates/puniyu_library" }
 puniyu_server = { version = "0.1.8", path = "crates/puniyu_server" }
+puniyu_adapter_api = { version = "0.1.8", path = "crates/puniyu_adapter_api" }
+puniyu_builder = { version = "0.1.8", path = "crates/puniyu_builder", default-features = false }
+puniyu_task = { version = "0.1.8", path = "crates/puniyu_task" }
+puniyu_bot = { version = "0.1.8", path = "crates/puniyu_bot" }
+puniyu_event = { version = "0.1.8", path = "crates/puniyu_event", default-features = false }
+puniyu_command = { version = "0.1.8", path = "crates/puniyu_command", default-features = false }
+puniyu_registry = { version = "0.1.8", path = "crates/puniyu_registry" }
+puniyu_matcher = { version = "0.1.8", path = "crates/puniyu_matcher" }
+puniyu_handler = { version = "0.1.8", path = "crates/puniyu_handler" }
+puniyu_event_bus = { version = "0.1.8", path = "crates/puniyu_event_bus", default-features = false }
 
-puniyu_logger = { version = "0.6.1" }
-
+puniyu_plugin = { version = "0.1.8", path = "packages/puniyu_plugin" }
+puniyu_adapter = { version = "0.1.8", path = "packages/puniyu_adapter" }
+puniyu_core = { version = "0.1.8", path = "packages/puniyu_core" }
 
 [profile.release]
 lto = "thin"

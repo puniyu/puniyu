@@ -70,13 +70,81 @@
     }
   ],
   "packages": {
-    "packages/puniyu": {
+    "crates/puniyu_build": {
       "release-type": "rust",
-      "component": "puniyu"
+      "component": "build"
     },
-    "packages/puniyu_core": {
+    "crates/puniyu_common": {
       "release-type": "rust",
-      "component": "core"
+      "component": "common"
+    },
+    "crates/puniyu_config": {
+      "release-type": "rust",
+      "component": "config"
+    },
+    "crates/puniyu_element": {
+      "release-type": "rust",
+      "component": "element"
+    },
+    "crates/puniyu_contact": {
+      "release-type": "rust",
+      "component": "contact"
+    },
+    "crates/puniyu_sender": {
+      "release-type": "rust",
+      "component": "sender"
+    },
+    "crates/puniyu_macros": {
+      "release-type": "rust",
+      "component": "macros"
+    },
+    "crates/puniyu_library": {
+      "release-type": "rust",
+      "component": "library"
+    },
+    "crates/puniyu_server": {
+      "release-type": "rust",
+      "component": "server"
+    },
+    "crates/puniyu_adapter_api": {
+      "release-type": "rust",
+      "component": "adapter-api"
+    },
+    "crates/puniyu_builder": {
+      "release-type": "rust",
+      "component": "builder"
+    },
+    "crates/puniyu_task": {
+      "release-type": "rust",
+      "component": "task"
+    },
+    "crates/puniyu_bot": {
+      "release-type": "rust",
+      "component": "bot"
+    },
+    "crates/puniyu_event": {
+      "release-type": "rust",
+      "component": "event"
+    },
+    "crates/puniyu_command": {
+      "release-type": "rust",
+      "component": "command"
+    },
+    "crates/puniyu_registry": {
+      "release-type": "rust",
+      "component": "registry"
+    },
+    "crates/puniyu_matcher": {
+      "release-type": "rust",
+      "component": "matcher"
+    },
+    "crates/puniyu_handler": {
+      "release-type": "rust",
+      "component": "handler"
+    },
+    "crates/puniyu_event_bus": {
+      "release-type": "rust",
+      "component": "event-bus"
     },
     "packages/puniyu_plugin": {
       "release-type": "rust",
@@ -85,6 +153,18 @@
     "packages/puniyu_adapter": {
       "release-type": "rust",
       "component": "adapter"
+    },
+    "packages/puniyu_adapter_console": {
+      "release-type": "rust",
+      "component": "adapter-console"
+    },
+    "packages/puniyu_core": {
+      "release-type": "rust",
+      "component": "core"
+    },
+    "packages/puniyu": {
+      "release-type": "rust",
+      "component": "puniyu"
     }
   },
   "commit-search-depth": 100
