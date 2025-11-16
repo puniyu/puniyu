@@ -26,7 +26,8 @@ puniyu_command = { version = "0.4.1", path = "../puniyu_command", features = [
 
 [features]
 default = ["command"]
-adapter = ["dep:puniyu_element", "dep:puniyu_adapter_api", "server"]
+adapter = ["dep:puniyu_element", "dep:puniyu_adapter_api", "account", "server"]
+account = []
 plugin = ["task", "command", "adapter", "server"]
 command = ["dep:puniyu_command"]
 task = []

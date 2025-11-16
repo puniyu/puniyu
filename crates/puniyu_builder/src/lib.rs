@@ -1,3 +1,5 @@
+#[cfg(feature = "account")]
+pub mod account;
 #[cfg(feature = "adapter")]
 pub mod adapter;
 #[cfg(feature = "command")]
