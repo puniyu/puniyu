@@ -1,11 +1,40 @@
 {
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
   "release-type": "rust",
-  "include-component-in-tag": false,
+  "include-component-in-tag": true,
+  "sequential-calls": true,
   "plugins": [
     {
       "type": "cargo-workspace",
       "updatePeerDependencies": true
+    },
+    {
+      "type": "linked-versions",
+      "groupName": "puniyu",
+      "components": [
+        "puniyu",
+        "core",
+        "plugin",
+        "adapter",
+        "common",
+        "element",
+        "contact",
+        "sender",
+        "macros",
+        "library",
+        "server",
+        "config",
+        "adapter-api",
+        "event",
+        "command",
+        "builder",
+        "task",
+        "bot",
+        "registry",
+        "matcher",
+        "handler",
+        "event-bus"
+      ]
     }
   ],
   "changelog-sections": [
@@ -72,123 +101,82 @@
   "packages": {
     "crates/puniyu_build": {
       "release-type": "rust",
-      "component": "build",
-      "include-component-in-tag": true
+      "component": "build"
     },
     "crates/puniyu_common": {
       "release-type": "rust",
-      "component": "common",
-      "skip-github-release": true
+      "component": "common"
     },
     "crates/puniyu_element": {
       "release-type": "rust",
-      "component": "element",
-      "skip-github-release": true
+      "component": "element"
     },
     "crates/puniyu_contact": {
       "release-type": "rust",
-      "component": "contact",
-      "skip-github-release": true
+      "component": "contact"
     },
     "crates/puniyu_sender": {
       "release-type": "rust",
-      "component": "sender",
-      "skip-github-release": true
+      "component": "sender"
     },
     "crates/puniyu_macros": {
       "release-type": "rust",
-      "component": "macros",
-      "skip-github-release": true
+      "component": "macros"
     },
     "crates/puniyu_library": {
-      "release-type": "rust",
-      "component": "library",
-      "skip-github-release": true
+      "component": "library"
     },
     "crates/puniyu_server": {
-      "release-type": "rust",
-      "component": "server",
-      "include-component-in-tag": true
+      "component": "server"
     },
     "crates/puniyu_config": {
-      "release-type": "rust",
-      "component": "config",
-      "skip-github-release": true
+      "component": "config"
     },
     "crates/puniyu_adapter_api": {
-      "release-type": "rust",
-      "component": "adapter-api",
-      "include-component-in-tag": true
+      "component": "adapter-api"
     },
     "crates/puniyu_event": {
-      "release-type": "rust",
-      "component": "event",
-      "skip-github-release": true
+      "component": "event"
     },
     "crates/puniyu_command": {
-      "release-type": "rust",
-      "component": "command",
-      "skip-github-release": true
+      "component": "command"
     },
     "crates/puniyu_builder": {
-      "release-type": "rust",
-      "component": "builder",
-      "skip-github-release": true
+      "component": "builder"
     },
     "crates/puniyu_task": {
-      "release-type": "rust",
-      "component": "task",
-      "skip-github-release": true
+      "component": "task"
     },
     "crates/puniyu_bot": {
-      "release-type": "rust",
-      "component": "bot",
-      "skip-github-release": true
+      "component": "bot"
     },
     "crates/puniyu_registry": {
-      "release-type": "rust",
-      "component": "registry",
-      "skip-github-release": true
+      "component": "registry"
     },
     "crates/puniyu_matcher": {
-      "release-type": "rust",
-      "component": "matcher",
-      "skip-github-release": true
+      "component": "matcher"
     },
     "crates/puniyu_handler": {
-      "release-type": "rust",
-      "component": "handler",
-      "skip-github-release": true
+      "component": "handler"
     },
     "crates/puniyu_event_bus": {
-      "release-type": "rust",
-      "component": "event-bus",
-      "skip-github-release": true
+      "component": "event-bus"
     },
     "packages/puniyu_plugin": {
       "release-type": "rust",
-      "component": "plugin",
-      "include-component-in-tag": true
+      "component": "plugin"
     },
     "packages/puniyu_adapter": {
-      "release-type": "rust",
-      "component": "adapter",
-      "include-component-in-tag": true
+      "component": "adapter"
     },
     "packages/puniyu_core": {
-      "release-type": "rust",
-      "component": "core",
-      "include-component-in-tag": true
+      "component": "core"
     },
     "packages/puniyu_adapter_console": {
-      "release-type": "rust",
-      "component": "adapter-console",
-      "include-component-in-tag": true
+      "component": "adapter-console"
     },
     "packages/puniyu": {
-      "release-type": "rust",
-      "component": "puniyu",
-      "include-component-in-tag": true
+      "component": "puniyu"
     }
   },
   "commit-search-depth": 100
