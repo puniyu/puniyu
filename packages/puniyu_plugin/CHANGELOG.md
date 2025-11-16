@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.4.0](https://github.com/puniyu/puniyu/compare/plugin-v0.2.2...plugin-v0.4.0) (2025-11-16)
+
+
+### 🔧 其他更新
+
+* **plugin:** Synchronize puniyu versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puniyu_builder bumped from 0.3.0 to 0.4.0
+    * puniyu_command bumped from 0.3.0 to 0.4.0
+    * puniyu_adapter_api bumped from 0.2.1 to 0.4.0
+    * puniyu_element bumped from 0.3.0 to 0.4.0
+    * puniyu_event bumped from 0.3.0 to 0.4.0
+    * puniyu_common bumped from 0.3.0 to 0.4.0
+    * puniyu_macros bumped from 0.3.0 to 0.4.0
+    * puniyu_contact bumped from 0.1.10 to 0.4.0
+
 ## [0.2.2](https://github.com/puniyu/puniyu/compare/plugin-v0.2.1...plugin-v0.2.2) (2025-11-15)
 
 

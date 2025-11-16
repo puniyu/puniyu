@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.4.0](https://github.com/puniyu/puniyu/compare/adapter-api-v0.2.1...adapter-api-v0.4.0) (2025-11-16)
+
+
+### 🔧 其他更新
+
+* **adapter-api:** Synchronize puniyu versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puniyu_common bumped from 0.3.0 to 0.4.0
+    * puniyu_contact bumped from 0.1.10 to 0.4.0
+    * puniyu_sender bumped from 0.1.10 to 0.4.0
+    * puniyu_element bumped from 0.3.0 to 0.4.0
+
 ## [0.2.1](https://github.com/puniyu/puniyu/compare/adapter-api-v0.2.0...adapter-api-v0.2.1) (2025-11-15)
 
 
