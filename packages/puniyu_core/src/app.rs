@@ -9,7 +9,7 @@ use figlet_rs::FIGfont;
 use puniyu_builder::adapter::AdapterBuilder;
 use puniyu_builder::plugin::{PluginBuilder, PluginType};
 pub use puniyu_common::APP_NAME;
-use puniyu_common::path::{DATA_DIR, PLUGIN_DATA_DIR, PLUGIN_DIR, set_working_dir};
+use puniyu_common::path::{DATA_DIR, PLUGIN_DATA_DIR, PLUGIN_DIR, WORKING_DIR};
 use puniyu_config::{init_config, init_config_watcher};
 use puniyu_event_bus::init_event_bus;
 use puniyu_registry::{AdapterRegistry, PluginRegistry};
@@ -63,7 +63,7 @@ impl AppBuilder {
 	}
 
 	pub fn build(&self) -> App {
-		set_working_dir(self.working_dir.as_path());
+		WORKING_DIR.get_or_init(|| self.working_dir.clone());
 		APP_NAME.get_or_init(|| self.app_name.clone());
 		App { plugins: self.plugins.clone(), adapters: self.adapters.clone() }
 	}

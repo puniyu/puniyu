@@ -1,13 +1,8 @@
 use crate::APP_NAME;
-use std::path::Path;
 use std::sync::OnceLock;
 use std::{env::current_dir, path::PathBuf, sync::LazyLock};
 
-static WORKING_DIR: OnceLock<PathBuf> = OnceLock::new();
-
-pub fn set_working_dir(path: &Path) {
-	WORKING_DIR.get_or_init(|| path.to_path_buf());
-}
+pub static WORKING_DIR: OnceLock<PathBuf> = OnceLock::new();
 
 /// 应用根目录
 ///
@@ -30,7 +25,7 @@ pub static BASE_DIR: LazyLock<PathBuf> =
 /// ```
 pub static APP_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
 	let mut path = BASE_DIR.to_path_buf();
-	path.push(format!("@{}", APP_NAME.get().unwrap()));
+	path.push(format!("@{}", APP_NAME.get_or_init(|| String::from("puniyu"))));
 	path
 });
 
