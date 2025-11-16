@@ -18,3 +18,4 @@ pub use version::VERSION;
 pub use async_trait::async_trait;
 
 pub use inventory;
+pub use puniyu_common::path;
