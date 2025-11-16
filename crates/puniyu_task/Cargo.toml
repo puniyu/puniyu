@@ -1,6 +1,6 @@
 [package]
 name = "puniyu_task"
-version = "0.1.10"
+version = "0.4.0"
 description = "puniyu 的定时任务模块"
 readme = "README.md"
 authors.workspace = true
@@ -17,5 +17,5 @@ puniyu_logger.workspace = true
 tokio-cron-scheduler = "0.15.0"
 chrono-tz = "0.10.4"
 uuid = { version = "1.17.0", features = ["v4"] }
-puniyu_builder = { version = "0.3.0", path = "../puniyu_builder", features = ["task"] }
+puniyu_builder = { version = "0.4.0", path = "../puniyu_builder", features = ["task"] }
 
