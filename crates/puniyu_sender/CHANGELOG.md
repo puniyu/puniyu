@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.1](https://github.com/puniyu/puniyu/compare/sender-v0.4.0...sender-v0.4.1) (2025-11-16)
+
+
+### 🔧 其他更新
+
+* **sender:** Synchronize puniyu versions
+
 ## [0.4.0](https://github.com/puniyu/puniyu/compare/sender-v0.1.10...sender-v0.4.0) (2025-11-16)
 
 

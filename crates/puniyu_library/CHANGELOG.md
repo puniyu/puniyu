@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.1](https://github.com/puniyu/puniyu/compare/library-v0.4.0...library-v0.4.1) (2025-11-16)
+
+
+### 🔧 其他更新
+
+* **library:** Synchronize puniyu versions
+
 ## [0.4.0](https://github.com/puniyu/puniyu/compare/library-v0.3.0...library-v0.4.0) (2025-11-16)
 
 

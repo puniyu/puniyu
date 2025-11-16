@@ -1,6 +1,6 @@
 [package]
 name = "puniyu_bot"
-version = "0.4.0"
+version = "0.4.1"
 description = "puniyu 的bot相关"
 readme = "README.md"
 authors.workspace = true
@@ -13,8 +13,8 @@ rust-version.workspace = true
 [dependencies]
 puniyu_logger.workspace = true
 
-puniyu_common = { version = "0.4.0", path = "../puniyu_common" }
-puniyu_element = { version = "0.4.0", path = "../puniyu_element" }
-puniyu_adapter_api = { version = "0.4.0", path = "../puniyu_adapter_api" }
-puniyu_contact = { version = "0.4.0", path = "../puniyu_contact" }
-puniyu_builder = { version = "0.4.0", path = "../puniyu_builder", features = ["adapter"] }
+puniyu_common = { version = "0.4.1", path = "../puniyu_common" }
+puniyu_element = { version = "0.4.1", path = "../puniyu_element" }
+puniyu_adapter_api = { version = "0.4.1", path = "../puniyu_adapter_api" }
+puniyu_contact = { version = "0.4.1", path = "../puniyu_contact" }
+puniyu_builder = { version = "0.4.1", path = "../puniyu_builder", features = ["adapter"] }

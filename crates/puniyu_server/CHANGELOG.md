@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.1](https://github.com/puniyu/puniyu/compare/server-v0.4.0...server-v0.4.1) (2025-11-16)
+
+
+### 🔧 其他更新
+
+* **server:** Synchronize puniyu versions
+
 ## [0.4.0](https://github.com/puniyu/puniyu/compare/server-v0.2.0...server-v0.4.0) (2025-11-16)
 
 

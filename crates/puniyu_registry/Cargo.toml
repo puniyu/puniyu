@@ -1,6 +1,6 @@
 [package]
 name = "puniyu_registry"
-version = "0.4.0"
+version = "0.4.1"
 description = "puniyu 的注册中心模块"
 readme = "README.md"
 authors.workspace = true
@@ -16,13 +16,13 @@ thiserror.workspace = true
 puniyu_logger.workspace = true
 tokio.workspace = true
 
-puniyu_task = { version = "0.4.0", path = "../puniyu_task", optional = true }
-puniyu_bot = { version = "0.4.0", path = "../puniyu_bot", optional = true }
-puniyu_command = { version = "0.4.0", path = "../puniyu_command", optional = true, features = ["registry"] }
-puniyu_common = { version = "0.4.0", path = "../puniyu_common", optional = true }
-puniyu_builder = { version = "0.4.0", path = "../puniyu_builder", optional = true }
-puniyu_library = { version = "0.4.0", path = "../puniyu_library", optional = true }
-puniyu_config = { version = "0.4.0", path = "../puniyu_config", optional = true }
+puniyu_task = { version = "0.4.1", path = "../puniyu_task", optional = true }
+puniyu_bot = { version = "0.4.1", path = "../puniyu_bot", optional = true }
+puniyu_command = { version = "0.4.1", path = "../puniyu_command", optional = true, features = ["registry"] }
+puniyu_common = { version = "0.4.1", path = "../puniyu_common", optional = true }
+puniyu_builder = { version = "0.4.1", path = "../puniyu_builder", optional = true }
+puniyu_library = { version = "0.4.1", path = "../puniyu_library", optional = true }
+puniyu_config = { version = "0.4.1", path = "../puniyu_config", optional = true }
 
 
 [features]

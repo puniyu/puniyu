@@ -1,6 +1,6 @@
 [package]
 name = "puniyu_command"
-version = "0.4.0"
+version = "0.4.1"
 description = "puniyu 的命令相关"
 readme = "README.md"
 authors.workspace = true
@@ -13,7 +13,7 @@ rust-version.workspace = true
 [dependencies]
 itertools = { workspace = true, optional = true }
 async-trait = { workspace = true, optional = true }
-puniyu_event = { version = "0.4.0", path = "../puniyu_event", features = ["context"], optional = true }
+puniyu_event = { version = "0.4.1", path = "../puniyu_event", features = ["context"], optional = true }
 
 [features]
 default = ["builder"]

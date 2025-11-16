@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.1](https://github.com/puniyu/puniyu/compare/common-v0.4.0...common-v0.4.1) (2025-11-16)
+
+
+### 🐛 错误修复
+
+* **path:** 重构工作目录设置逻辑 ([df51eac](https://github.com/puniyu/puniyu/commit/df51eac9e4fe92b11df2867ebdeca78fe62b2022))
+
 ## [0.4.0](https://github.com/puniyu/puniyu/compare/common-v0.3.0...common-v0.4.0) (2025-11-16)
 
 

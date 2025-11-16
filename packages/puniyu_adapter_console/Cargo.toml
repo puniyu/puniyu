@@ -1,6 +1,6 @@
 [package]
 name = "puniyu_adapter_console"
-version = "0.1.11"
+version = "0.1.12"
 description = "puniyu的控制台适配器"
 authors.workspace = true
 license.workspace = true
@@ -13,9 +13,9 @@ rust-version.workspace = true
 [dependencies]
 async-trait.workspace = true
 rand = "0.10.0-rc.0"
-puniyu_adapter = { version = "0.4.0", path = "../puniyu_adapter" }
-puniyu_core = { version = "0.4.0", path = "../puniyu_core" }
-puniyu_common = { version = "0.4.0", path = "../../crates/puniyu_common" }
+puniyu_adapter = { version = "0.4.1", path = "../puniyu_adapter" }
+puniyu_core = { version = "0.4.1", path = "../puniyu_core" }
+puniyu_common = { version = "0.4.1", path = "../../crates/puniyu_common" }
 
 [build-dependencies]
 puniyu_build = { version = "0.2.0", path = "../../crates/puniyu_build" }

@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.4.1](https://github.com/puniyu/puniyu/compare/builder-v0.4.0...builder-v0.4.1) (2025-11-16)
+
+
+### 🔧 其他更新
+
+* **builder:** Synchronize puniyu versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puniyu_element bumped from 0.4.0 to 0.4.1
+    * puniyu_adapter_api bumped from 0.4.0 to 0.4.1
+    * puniyu_command bumped from 0.4.0 to 0.4.1
+
 ## [0.4.0](https://github.com/puniyu/puniyu/compare/builder-v0.3.0...builder-v0.4.0) (2025-11-16)
 
 
