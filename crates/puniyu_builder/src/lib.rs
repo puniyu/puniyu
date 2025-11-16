@@ -6,3 +6,6 @@ pub mod command;
 pub mod plugin;
 #[cfg(feature = "task")]
 pub mod task;
+
+#[cfg(feature = "server")]
+pub type ServerType = std::sync::Arc<dyn Fn(&mut actix_web::web::ServiceConfig) + Send + Sync>;

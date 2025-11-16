@@ -28,7 +28,6 @@ jobs:
       sender: ${{ steps.release-please.outputs['crates/puniyu_sender--release_created'] }}
       macros: ${{ steps.release-please.outputs['crates/puniyu_macros--release_created'] }}
       library: ${{ steps.release-please.outputs['crates/puniyu_library--release_created'] }}
-      server: ${{ steps.release-please.outputs['crates/puniyu_server--release_created'] }}
       config: ${{ steps.release-please.outputs['crates/puniyu_config--release_created'] }}
       adapter_api: ${{ steps.release-please.outputs['crates/puniyu_adapter_api--release_created'] }}
       event: ${{ steps.release-please.outputs['crates/puniyu_event--release_created'] }}
@@ -37,6 +36,7 @@ jobs:
       task: ${{ steps.release-please.outputs['crates/puniyu_task--release_created'] }}
       bot: ${{ steps.release-please.outputs['crates/puniyu_bot--release_created'] }}
       registry: ${{ steps.release-please.outputs['crates/puniyu_registry--release_created'] }}
+      server: ${{ steps.release-please.outputs['crates/puniyu_server--release_created'] }}
       matcher: ${{ steps.release-please.outputs['crates/puniyu_matcher--release_created'] }}
       handler: ${{ steps.release-please.outputs['crates/puniyu_handler--release_created'] }}
       event_bus: ${{ steps.release-please.outputs['crates/puniyu_event_bus--release_created'] }}
@@ -159,13 +159,6 @@ jobs:
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_API_TOKEN }}
 
-      - name: 发布 server
-        if: needs.release.outputs.server
-        run: |
-          cargo publish --package puniyu_server
-        env:
-          CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_API_TOKEN }}
-
       - name: 发布 adapter_api
         if: needs.release.outputs.adapter_api
         run: |
@@ -212,6 +205,13 @@ jobs:
         if: needs.release.outputs.registry
         run: |
           cargo publish --package puniyu_registry
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_API_TOKEN }}
+
+      - name: 发布 server
+        if: needs.release.outputs.server
+        run: |
+          cargo publish --package puniyu_server
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_API_TOKEN }}
 

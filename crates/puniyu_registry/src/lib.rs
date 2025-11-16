@@ -12,8 +12,12 @@ mod task;
 pub use task::TaskRegistry;
 #[cfg(feature = "plugin")]
 mod plugin;
+
 #[cfg(feature = "plugin")]
 pub use plugin::PluginRegistry;
 
 #[cfg(feature = "command")]
 pub use puniyu_command::CommandRegistry;
+mod server;
+#[cfg(feature = "server")]
+pub use server::ServerRegistry;

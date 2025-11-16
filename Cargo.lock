@@ -1664,6 +1664,7 @@ dependencies = [
 name = "puniyu_adapter"
 version = "0.4.1"
 dependencies = [
+ "actix-web",
  "async-trait",
  "puniyu_adapter_api",
  "puniyu_bot",
@@ -1725,10 +1726,12 @@ version = "0.2.0"
 name = "puniyu_builder"
 version = "0.4.1"
 dependencies = [
+ "actix-web",
  "async-trait",
  "puniyu_adapter_api",
  "puniyu_command",
  "puniyu_element",
+ "puniyu_logger",
  "serde",
  "strum",
 ]
@@ -1886,6 +1889,7 @@ dependencies = [
 name = "puniyu_plugin"
 version = "0.4.1"
 dependencies = [
+ "actix-web",
  "async-trait",
  "inventory",
  "puniyu_adapter_api",
@@ -1904,6 +1908,7 @@ dependencies = [
 name = "puniyu_registry"
 version = "0.4.1"
 dependencies = [
+ "actix-web",
  "futures",
  "puniyu_bot",
  "puniyu_builder",
@@ -1932,6 +1937,7 @@ dependencies = [
  "actix-web",
  "futures-util",
  "puniyu_logger",
+ "puniyu_registry",
  "tokio",
 ]
 

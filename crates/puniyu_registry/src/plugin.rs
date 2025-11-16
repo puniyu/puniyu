@@ -1,7 +1,7 @@
 mod store;
 
-use crate::TaskRegistry;
 use crate::error::Plugin as Error;
+use crate::{ServerRegistry, TaskRegistry};
 use futures::future::join_all;
 use puniyu_builder::plugin::{Plugin, PluginBuilder, PluginId, PluginType, VERSION as ABI_VERSION};
 use puniyu_command::register_command;
@@ -111,9 +111,13 @@ impl PluginRegistry {
 						plugin_builder.author()
 					);
 
+					if let Some(server) = plugin_builder.server() {
+						ServerRegistry::insert(plugin_name, server);
+					}
+
 					create_data_dir(plugin_name).await;
 					run_plugin_init(plugin_name, plugin_builder.init()).await?;
-					PLUGIN_STORE.insert_plugin(plugin_info);
+					PLUGIN_STORE.insert(plugin_info);
 				}
 			}
 			// 静态插件
@@ -163,6 +167,10 @@ impl PluginRegistry {
 					plugin_builder.author()
 				);
 
+				if let Some(server) = plugin_builder.server() {
+					ServerRegistry::insert(plugin_name, server);
+				}
+
 				debug!(
 					"[{}:{}] 正在加载插件",
 					"plugin".fg_rgb::<175, 238, 238>(),
@@ -171,7 +179,7 @@ impl PluginRegistry {
 
 				create_data_dir(plugin_name).await;
 				run_plugin_init(plugin_name, plugin_builder.init()).await?;
-				PLUGIN_STORE.insert_plugin(plugin_info);
+				PLUGIN_STORE.insert(plugin_info);
 			}
 		}
 		Ok(())
@@ -180,7 +188,6 @@ impl PluginRegistry {
 	pub async fn load_plugins(plugins: Vec<impl Into<PluginType>>) -> Result<(), Error> {
 		futures::future::try_join_all(plugins.into_iter().map(|plugin| Self::load_plugin(plugin)))
 			.await?;
-
 		Ok(())
 	}
 

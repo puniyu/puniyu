@@ -1,5 +1,6 @@
 mod store;
 
+use crate::ServerRegistry;
 use crate::adapter::store::AdapterStore;
 use crate::error::Adapter as Error;
 use puniyu_builder::adapter::{Adapter, AdapterBuilder};
@@ -26,6 +27,9 @@ impl AdapterRegistry {
 			adapter_name.fg_rgb::<240, 128, 128>()
 		);
 		create_data_dir(adapter_name.as_str()).await;
+		if let Some(server) = adapter.server() {
+			ServerRegistry::insert(adapter_name.clone(), server);
+		}
 		run_adapter_init(adapter_name.as_str(), adapter.init()).await?;
 		let adapter = Adapter { info: adapter_info, api: adapter.api() };
 		ADAPTER_STORE.insert_adapter(adapter);

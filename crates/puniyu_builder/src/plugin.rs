@@ -23,11 +23,16 @@ pub trait PluginBuilder: Send + Sync + 'static {
 
 	/// 命令列表
 	fn commands(&self) -> Vec<Box<dyn CommandBuilder>>;
+
+	/// 路由管理
+	fn server(&self) -> Option<crate::ServerType> {
+		None
+	}
 	/// 插件初始化函数
 	async fn init(&self) -> Result<(), Box<dyn std::error::Error>>;
 }
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone)]
 pub struct Plugin {
 	/// 插件名称
 	pub name: &'static str,

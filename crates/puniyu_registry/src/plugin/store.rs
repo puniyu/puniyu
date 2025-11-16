@@ -15,10 +15,10 @@ static PLUGIN_INDEX: AtomicU64 = AtomicU64::new(0);
 /// 插件存储器
 pub struct PluginStore(Arc<Mutex<HashMap<u64, Plugin>>>);
 impl PluginStore {
-	pub fn insert_plugin(&self, plugin: Plugin) {
+	pub fn insert(&self, plugin: Plugin) {
 		let mut plugins = self.0.lock().unwrap();
 		let exists = plugins.values().any(|p| p.name == plugin.name);
-		if exists {
+		if !exists {
 			let index = PLUGIN_INDEX.fetch_add(1, Ordering::Relaxed);
 			plugins.insert(index, plugin);
 		}

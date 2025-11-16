@@ -1,6 +1,7 @@
 use crate::{info, middleware};
 use actix_web::middleware::{NormalizePath, TrailingSlash};
 use actix_web::{App, HttpServer, web};
+use puniyu_registry::ServerRegistry;
 use std::net::{IpAddr, Ipv4Addr};
 use std::sync::{Arc, OnceLock};
 use tokio::sync::Mutex;
@@ -26,10 +27,14 @@ pub async fn run_server(host: Option<IpAddr>, port: Option<u16>) -> std::io::Res
 	info!("服务器在 {} 运行", addr);
 
 	let server = HttpServer::new(|| {
-		App::new()
+		let app = App::new()
 			.wrap(middleware::AccessLog)
 			.wrap(NormalizePath::new(TrailingSlash::Trim))
-			.service(web::resource("/").to(|| async { "Hello World!" }))
+			.service(web::resource("/").to(|| async { "Hello World!" }));
+
+		ServerRegistry::get_all()
+			.into_iter()
+			.fold(app, |app, service_cfg| app.configure(|cfg| service_cfg(cfg)))
 	})
 	.bind(addr)?;
 

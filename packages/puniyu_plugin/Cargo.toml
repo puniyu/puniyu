@@ -15,6 +15,7 @@ async-trait.workspace = true
 serde_json.workspace = true
 inventory.workspace = true
 puniyu_logger.workspace = true
+actix-web.workspace = true
 
 
 puniyu_builder = { version = "0.4.1", path = "../../crates/puniyu_builder", features = ["plugin"] }

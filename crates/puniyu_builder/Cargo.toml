@@ -14,14 +14,20 @@ rust-version.workspace = true
 async-trait.workspace = true
 serde.workspace = true
 strum.workspace = true
+puniyu_logger.workspace = true
+
+actix-web = { workspace = true, optional = true }
 
 puniyu_element = { version = "0.4.1", path = "../puniyu_element", optional = true }
 puniyu_adapter_api = { version = "0.4.1", path = "../puniyu_adapter_api", optional = true }
-puniyu_command = { version = "0.4.1", path = "../puniyu_command", features = ["builder"], optional = true }
+puniyu_command = { version = "0.4.1", path = "../puniyu_command", features = [
+  "builder",
+], optional = true }
 
 [features]
 default = ["command"]
-adapter = ["dep:puniyu_element", "dep:puniyu_adapter_api"]
-plugin = ["task", "command", "adapter"]
+adapter = ["dep:puniyu_element", "dep:puniyu_adapter_api", "server"]
+plugin = ["task", "command", "adapter", "server"]
 command = ["dep:puniyu_command"]
 task = []
+server = ["dep:actix-web"]

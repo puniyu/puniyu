@@ -126,9 +126,6 @@
     "crates/puniyu_library": {
       "component": "library"
     },
-    "crates/puniyu_server": {
-      "component": "server"
-    },
     "crates/puniyu_config": {
       "component": "config"
     },
@@ -152,6 +149,9 @@
     },
     "crates/puniyu_registry": {
       "component": "registry"
+    },
+    "crates/puniyu_server": {
+      "component": "server"
     },
     "crates/puniyu_matcher": {
       "component": "matcher"

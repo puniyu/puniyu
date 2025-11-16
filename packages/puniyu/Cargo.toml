@@ -15,7 +15,6 @@ tokio.workspace = true
 puniyu_core = { path = "../puniyu_core" }
 puniyu_adapter_console = { path = "../puniyu_adapter_console" }
 
-
 [[bin]]
 name = "puniyu"
 path = "src/main.rs"
