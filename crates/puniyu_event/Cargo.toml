@@ -1,6 +1,6 @@
 [package]
 name = "puniyu_event"
-version = "0.4.0"
+version = "0.4.1"
 description = "puniyu 的事件基础库"
 readme = "README.md"
 authors.workspace = true
@@ -12,11 +12,11 @@ rust-version.workspace = true
 
 [dependencies]
 strum.workspace = true
-puniyu_element = { version = "0.4.0", path = "../puniyu_element" }
-puniyu_adapter_api = { version = "0.4.0", path = "../puniyu_adapter_api", optional = true }
-puniyu_sender = { version = "0.4.0", path = "../puniyu_sender", optional = true }
-puniyu_contact = { version = "0.4.0", path = "../puniyu_contact", optional = true }
-puniyu_config = { version = "0.4.0", path = "../puniyu_config", optional = true }
+puniyu_element = { version = "0.4.1", path = "../puniyu_element" }
+puniyu_adapter_api = { version = "0.4.1", path = "../puniyu_adapter_api", optional = true }
+puniyu_sender = { version = "0.4.1", path = "../puniyu_sender", optional = true }
+puniyu_contact = { version = "0.4.1", path = "../puniyu_contact", optional = true }
+puniyu_config = { version = "0.4.1", path = "../puniyu_config", optional = true }
 
 [features]
 default = []

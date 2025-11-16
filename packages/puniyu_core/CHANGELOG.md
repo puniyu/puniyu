@@ -1,5 +1,31 @@
 # Changelog
 
+## [0.4.1](https://github.com/puniyu/puniyu/compare/core-v0.4.0...core-v0.4.1) (2025-11-16)
+
+
+### 🐛 错误修复
+
+* **path:** 重构工作目录设置逻辑 ([df51eac](https://github.com/puniyu/puniyu/commit/df51eac9e4fe92b11df2867ebdeca78fe62b2022))
+
+
+### 🔧 其他更新
+
+* **core:** 导出 puniyu_common 的 path 模块 ([a95c43e](https://github.com/puniyu/puniyu/commit/a95c43e1104b4bb4aadaeaddc3d07f43dc083968))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puniyu_config bumped from 0.4.0 to 0.4.1
+    * puniyu_bot bumped from 0.4.0 to 0.4.1
+    * puniyu_task bumped from 0.4.0 to 0.4.1
+    * puniyu_server bumped from 0.4.0 to 0.4.1
+    * puniyu_builder bumped from 0.4.0 to 0.4.1
+    * puniyu_registry bumped from 0.4.0 to 0.4.1
+    * puniyu_common bumped from 0.4.0 to 0.4.1
+    * puniyu_event_bus bumped from 0.4.0 to 0.4.1
+
 ## [0.4.0](https://github.com/puniyu/puniyu/compare/core-v0.3.1...core-v0.4.0) (2025-11-16)
 
 

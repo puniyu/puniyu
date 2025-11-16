@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.4.1](https://github.com/puniyu/puniyu/compare/event-v0.4.0...event-v0.4.1) (2025-11-16)
+
+
+### 🔧 其他更新
+
+* **event:** Synchronize puniyu versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puniyu_element bumped from 0.4.0 to 0.4.1
+    * puniyu_adapter_api bumped from 0.4.0 to 0.4.1
+    * puniyu_sender bumped from 0.4.0 to 0.4.1
+    * puniyu_contact bumped from 0.4.0 to 0.4.1
+    * puniyu_config bumped from 0.4.0 to 0.4.1
+
 ## [0.4.0](https://github.com/puniyu/puniyu/compare/event-v0.3.0...event-v0.4.0) (2025-11-16)
 
 

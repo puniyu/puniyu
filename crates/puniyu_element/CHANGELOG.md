@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.1](https://github.com/puniyu/puniyu/compare/element-v0.4.0...element-v0.4.1) (2025-11-16)
+
+
+### 🔧 其他更新
+
+* **element:** Synchronize puniyu versions
+
 ## [0.4.0](https://github.com/puniyu/puniyu/compare/element-v0.3.0...element-v0.4.0) (2025-11-16)
 
 

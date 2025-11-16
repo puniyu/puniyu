@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.4.1](https://github.com/puniyu/puniyu/compare/registry-v0.4.0...registry-v0.4.1) (2025-11-16)
+
+
+### 🔧 其他更新
+
+* **registry:** Synchronize puniyu versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puniyu_task bumped from 0.4.0 to 0.4.1
+    * puniyu_bot bumped from 0.4.0 to 0.4.1
+    * puniyu_command bumped from 0.4.0 to 0.4.1
+    * puniyu_common bumped from 0.4.0 to 0.4.1
+    * puniyu_builder bumped from 0.4.0 to 0.4.1
+    * puniyu_library bumped from 0.4.0 to 0.4.1
+    * puniyu_config bumped from 0.4.0 to 0.4.1
+
 ## [0.4.0](https://github.com/puniyu/puniyu/compare/registry-v0.3.0...registry-v0.4.0) (2025-11-16)
 
 

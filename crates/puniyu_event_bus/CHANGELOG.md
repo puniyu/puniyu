@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.4.1](https://github.com/puniyu/puniyu/compare/event-bus-v0.4.0...event-bus-v0.4.1) (2025-11-16)
+
+
+### 🔧 其他更新
+
+* **event-bus:** Synchronize puniyu versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puniyu_adapter_api bumped from 0.4.0 to 0.4.1
+    * puniyu_matcher bumped from 0.4.0 to 0.4.1
+    * puniyu_handler bumped from 0.4.0 to 0.4.1
+    * puniyu_event bumped from 0.4.0 to 0.4.1
+
 ## [0.4.0](https://github.com/puniyu/puniyu/compare/event-bus-v0.3.0...event-bus-v0.4.0) (2025-11-16)
 
 

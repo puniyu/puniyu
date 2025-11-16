@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.4.1](https://github.com/puniyu/puniyu/compare/task-v0.4.0...task-v0.4.1) (2025-11-16)
+
+
+### 🔧 其他更新
+
+* **task:** Synchronize puniyu versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puniyu_builder bumped from 0.4.0 to 0.4.1
+
 ## [0.4.0](https://github.com/puniyu/puniyu/compare/task-v0.1.10...task-v0.4.0) (2025-11-16)
 
 

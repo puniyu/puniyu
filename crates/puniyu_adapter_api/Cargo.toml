@@ -1,6 +1,6 @@
 [package]
 name = "puniyu_adapter_api"
-version = "0.4.0"
+version = "0.4.1"
 description = "puniyu 的适配器api"
 readme = "README.md"
 authors.workspace = true
@@ -16,8 +16,8 @@ serde.workspace = true
 reqwest.workspace = true
 tokio.workspace = true
 
-puniyu_common = { version = "0.4.0", path = "../puniyu_common" }
-puniyu_contact = { version = "0.4.0", path = "../puniyu_contact" }
-puniyu_sender = { version = "0.4.0", path = "../puniyu_sender" }
-puniyu_element = { version = "0.4.0", path = "../puniyu_element" }
+puniyu_common = { version = "0.4.1", path = "../puniyu_common" }
+puniyu_contact = { version = "0.4.1", path = "../puniyu_contact" }
+puniyu_sender = { version = "0.4.1", path = "../puniyu_sender" }
+puniyu_element = { version = "0.4.1", path = "../puniyu_element" }
 
