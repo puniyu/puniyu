@@ -1691,6 +1691,7 @@ dependencies = [
  "puniyu_sender",
  "reqwest",
  "serde",
+ "thiserror 2.0.17",
  "tokio",
 ]
 
@@ -1712,7 +1713,6 @@ version = "0.4.1"
 dependencies = [
  "puniyu_adapter_api",
  "puniyu_builder",
- "puniyu_common",
  "puniyu_contact",
  "puniyu_element",
  "puniyu_logger",
@@ -1910,6 +1910,7 @@ version = "0.4.1"
 dependencies = [
  "actix-web",
  "futures",
+ "puniyu_adapter_api",
  "puniyu_bot",
  "puniyu_builder",
  "puniyu_command",

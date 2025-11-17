@@ -3,6 +3,7 @@ use puniyu_element::Elements;
 use puniyu_sender::{Role, Sender, Sex};
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
+use crate::Result;
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub enum AvatarSize {
@@ -14,23 +15,39 @@ pub enum AvatarSize {
 	Large,
 }
 
-pub struct Avatar(pub String);
+#[derive(Debug, Clone)]
+pub struct Avatar(pub(crate) String);
 
 impl Avatar {
-	pub async fn to_vec(&self) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
-		use tokio::fs;
+
+	pub fn new(url: String) -> Avatar {
+		Self(url)
+	}
+	pub async fn to_vec(&self) -> Result<Vec<u8>> {
 		if let Some(path) = self.0.strip_prefix("file://") {
-			Ok(fs::read(path).await?)
+			Ok(tokio::fs::read(path).await?)
 		} else {
-			let bytes = reqwest::get(&self.0).await?.bytes().await?;
-			Ok(bytes.to_vec())
+			Ok(reqwest::get(&self.0).await?.bytes().await?.to_vec())
 		}
 	}
 
 	pub fn to_url(&self) -> &str {
+		&self.0.as_ref()
+	}
+}
+
+impl From<String> for Avatar {
+	fn from(url: String) -> Self {
+		Self(url)
+	}
+}
+
+impl AsRef<str> for Avatar {
+	fn as_ref(&self) -> &str {
 		&self.0
 	}
 }
+
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct SendMsgType {
 	/// 消息ID

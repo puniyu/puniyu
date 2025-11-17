@@ -1,5 +1,6 @@
 pub mod types;
-
+mod error;
+pub use error::Error;
 use crate::types::{
 	Avatar, AvatarSize, CreateGroupFolderInfo, DownloadFileInfo, GroupHighlightsType, GroupInfo,
 	GroupMuteInfo, HighlightsAction, MessageType, MuteType, QQCredentialInfo,
@@ -12,7 +13,7 @@ use puniyu_element::Message;
 use std::path::PathBuf;
 use std::time::Duration;
 
-use puniyu_common::Result;
+pub type Result<T> = std::result::Result<T, Error>;
 
 pub enum GetHistoryMsgType {
 	MessageId(String),
@@ -45,7 +46,7 @@ pub trait AdapterApi: Send + Sync + 'static {
 	/// `size` - 头像尺寸
 	///
 	async fn get_avatar(&self, _target_id: &str, _size: Option<AvatarSize>) -> Result<Avatar> {
-		Err("此接口未实现".into())
+		Err(Error::NotImpl)
 	}
 
 	/// 获取群头像, 默认返回url, http/https/file协议(一般来说只有console适配器返回这个)
@@ -55,7 +56,7 @@ pub trait AdapterApi: Send + Sync + 'static {
 	/// `size` - 头像尺寸
 	///
 	async fn get_group_avatar(&self, _group_id: &str, _size: Option<AvatarSize>) -> Result<Avatar> {
-		Err("此接口未实现".into())
+		Err(Error::NotImpl)
 	}
 
 	/// 发送消息
@@ -65,7 +66,7 @@ pub trait AdapterApi: Send + Sync + 'static {
 	/// `element` - 消息元素
 	///
 	async fn send_msg(&self, _contact: Contact, _element: Message) -> Result<SendMsgType> {
-		Err("此接口未实现".into())
+		Err(Error::NotImpl)
 	}
 
 	/// 发送长消息
@@ -74,7 +75,7 @@ pub trait AdapterApi: Send + Sync + 'static {
 	/// `res_id` - 资源ID
 	///
 	async fn send_long_msg(&self, _res_id: &str) -> Result<SendMsgType> {
-		Err("此接口未实现".into())
+		Err(Error::NotImpl)
 	}
 
 	/// 撤回消息
@@ -83,7 +84,7 @@ pub trait AdapterApi: Send + Sync + 'static {
 	/// `message_id` - 消息ID
 	///
 	async fn recall_msg(&self, _message_id: &str) -> Result<()> {
-		Err("此接口未实现".into())
+		Err(Error::NotImpl)
 	}
 
 	/// 获取消息
@@ -92,7 +93,7 @@ pub trait AdapterApi: Send + Sync + 'static {
 	/// `message_id` - 消息ID
 	///
 	async fn get_msg(&self, _message_id: &str) -> Result<MessageType> {
-		Err("此接口未实现".into())
+		Err(Error::NotImpl)
 	}
 
 	/// 获取历史消息
@@ -109,7 +110,7 @@ pub trait AdapterApi: Send + Sync + 'static {
 		_message: GetHistoryMsgType,
 		_count: u8,
 	) -> Result<Vec<MessageType>> {
-		Err("此接口未实现".into())
+		Err(Error::NotImpl)
 	}
 
 	/// 获取群精华消息
@@ -125,7 +126,7 @@ pub trait AdapterApi: Send + Sync + 'static {
 		_page: u8,
 		_page_size: u8,
 	) -> Result<Vec<GroupHighlightsType>> {
-		Err("此接口未实现".into())
+		Err(Error::NotImpl)
 	}
 
 	/// 设置群精华消息
@@ -141,7 +142,7 @@ pub trait AdapterApi: Send + Sync + 'static {
 		_message_id: &str,
 		_action: HighlightsAction,
 	) -> Result<()> {
-		Err("此接口未实现".into())
+		Err(Error::NotImpl)
 	}
 
 	/// 发送赞
@@ -151,7 +152,7 @@ pub trait AdapterApi: Send + Sync + 'static {
 	/// `count` - 赞的数量，默认为10
 	///
 	async fn send_like(&self, _target_id: &str, _count: Option<u8>) -> Result<()> {
-		Err("此接口未实现".into())
+		Err(Error::NotImpl)
 	}
 	/// 群踢人
 	///
@@ -168,7 +169,7 @@ pub trait AdapterApi: Send + Sync + 'static {
 		_reject_add_request: Option<bool>,
 		_reason: Option<&str>,
 	) -> Result<()> {
-		Err("此接口未实现".into())
+		Err(Error::NotImpl)
 	}
 
 	/// 群禁言
@@ -184,7 +185,7 @@ pub trait AdapterApi: Send + Sync + 'static {
 		_target_id: &str,
 		_duration: Duration,
 	) -> Result<()> {
-		Err("此接口未实现".into())
+		Err(Error::NotImpl)
 	}
 
 	/// 群全体禁言
@@ -193,7 +194,7 @@ pub trait AdapterApi: Send + Sync + 'static {
 	/// `group_id` - 群ID
 	/// `action` - 设置或取消全体禁言
 	async fn set_group_all_mute(&self, _group_id: &str, _action: MuteType) -> Result<()> {
-		Err("此接口未实现".into())
+		Err(Error::NotImpl)
 	}
 
 	/// 设置群管理员
@@ -209,7 +210,7 @@ pub trait AdapterApi: Send + Sync + 'static {
 		_target_id: &str,
 		_action: SetAdminType,
 	) -> Result<()> {
-		Err("此接口未实现".into())
+		Err(Error::NotImpl)
 	}
 
 	/// 设置群成员名片
@@ -225,7 +226,7 @@ pub trait AdapterApi: Send + Sync + 'static {
 		_target_id: &str,
 		_card: &str,
 	) -> Result<()> {
-		Err("此接口未实现".into())
+		Err(Error::NotImpl)
 	}
 
 	/// 设置群名称
@@ -235,7 +236,7 @@ pub trait AdapterApi: Send + Sync + 'static {
 	/// `name` - 群名称
 	///
 	async fn set_group_name(&self, _group_id: &str, _name: &str) -> Result<()> {
-		Err("此接口未实现".into())
+		Err(Error::NotImpl)
 	}
 
 	/// 退出群组
@@ -244,7 +245,7 @@ pub trait AdapterApi: Send + Sync + 'static {
 	/// `group_id` - 群ID
 	///
 	async fn set_group_quit(&self, _group_id: &str) -> Result<()> {
-		Err("此接口未实现".into())
+		Err(Error::NotImpl)
 	}
 
 	/// 设置群成员头衔
@@ -261,7 +262,7 @@ pub trait AdapterApi: Send + Sync + 'static {
 		_target_id: &str,
 		_title: &str,
 	) -> Result<()> {
-		Err("此接口未实现".into())
+		Err(Error::NotImpl)
 	}
 
 	/// 获取陌生人信息
@@ -270,12 +271,12 @@ pub trait AdapterApi: Send + Sync + 'static {
 	/// `target_id` - 陌生人ID
 	///
 	async fn get_stranger_info(&self, _target_id: &str) -> Result<UserInfo> {
-		Err("此接口未实现".into())
+		Err(Error::NotImpl)
 	}
 
 	/// 获取好友列表
 	async fn get_friend_list(&self) -> Result<Vec<UserInfo>> {
-		Err("此接口未实现".into())
+		Err(Error::NotImpl)
 	}
 
 	/// 获取群信息
@@ -284,12 +285,12 @@ pub trait AdapterApi: Send + Sync + 'static {
 	/// `group_id` - 群ID
 	///
 	async fn get_group_info(&self, _group_id: &str) -> Result<GroupInfo> {
-		Err("此接口未实现".into())
+		Err(Error::NotImpl)
 	}
 
 	/// 获取群列表
 	async fn get_group_list(&self) -> Result<Vec<GroupInfo>> {
-		Err("此接口未实现".into())
+		Err(Error::NotImpl)
 	}
 
 	/// 获取群成员列表
@@ -298,11 +299,11 @@ pub trait AdapterApi: Send + Sync + 'static {
 	/// `group_id` - 群ID
 	///
 	async fn get_group_member_list(&self, _group_id: &str) -> Result<Vec<UserInfo>> {
-		Err("此接口未实现".into())
+		Err(Error::NotImpl)
 	}
 
 	async fn get_group_honor(&self, _group_id: &str) -> Result<Vec<UserInfo>> {
-		Err("此接口未实现".into())
+		Err(Error::NotImpl)
 	}
 
 	/// 设置好友申请
@@ -311,7 +312,7 @@ pub trait AdapterApi: Send + Sync + 'static {
 	/// `action` - 设置或拒绝好友申请
 	///
 	async fn set_friend_apply(&self, _action: SetFriendApplyType) -> Result<()> {
-		Err("此接口未实现".into())
+		Err(Error::NotImpl)
 	}
 
 	/// 设置加群申请
@@ -325,7 +326,7 @@ pub trait AdapterApi: Send + Sync + 'static {
 		_group_id: &str,
 		_action: SetGroupApplyType,
 	) -> Result<()> {
-		Err("此接口未实现".into())
+		Err(Error::NotImpl)
 	}
 
 	/// 上传文件
@@ -340,7 +341,7 @@ pub trait AdapterApi: Send + Sync + 'static {
 		_file: Vec<u8>,
 		_folder: Option<&str>,
 	) -> Result<()> {
-		Err("此接口未实现".into())
+		Err(Error::NotImpl)
 	}
 
 	/// 下载文件到协议端
@@ -351,7 +352,7 @@ pub trait AdapterApi: Send + Sync + 'static {
 	/// `path` - 本地保存路径
 	///
 	async fn download_file(&self, _file: &str, _path: PathBuf) -> Result<DownloadFileInfo> {
-		Err("此接口未实现".into())
+		Err(Error::NotImpl)
 	}
 
 	/// 创建群文件目录
@@ -365,7 +366,7 @@ pub trait AdapterApi: Send + Sync + 'static {
 		_group_id: &str,
 		_folder: &str,
 	) -> Result<CreateGroupFolderInfo> {
-		Err("此接口未实现".into())
+		Err(Error::NotImpl)
 	}
 
 	/// 重命名群文件目录
@@ -381,7 +382,7 @@ pub trait AdapterApi: Send + Sync + 'static {
 		_folder_id: &str,
 		_folder_name: &str,
 	) -> Result<bool> {
-		Err("此接口未实现".into())
+		Err(Error::NotImpl)
 	}
 
 	/// 删除群文件目录
@@ -391,7 +392,7 @@ pub trait AdapterApi: Send + Sync + 'static {
 	/// `folder_id` - 目录ID
 	///
 	async fn delete_group_folder(&self, _group_id: &str, _folder_id: &str) -> Result<bool> {
-		Err("此接口未实现".into())
+		Err(Error::NotImpl)
 	}
 
 	/// 获取文件URL
@@ -401,7 +402,7 @@ pub trait AdapterApi: Send + Sync + 'static {
 	/// `file_id` - 文件ID
 	///
 	async fn get_file_url(&self, _contact: Contact, _file_id: &str) -> Result<bool> {
-		Err("此接口未实现".into())
+		Err(Error::NotImpl)
 	}
 
 	/// 删除群文件
@@ -411,7 +412,7 @@ pub trait AdapterApi: Send + Sync + 'static {
 	/// `file_id` - 文件ID
 	///
 	async fn del_group_file(&self, _group_id: &str, _file_id: &str) -> Result<bool> {
-		Err("此接口未实现".into())
+		Err(Error::NotImpl)
 	}
 
 	/// 获取群文件系统信息
@@ -420,7 +421,7 @@ pub trait AdapterApi: Send + Sync + 'static {
 	/// `group_id` - 群ID
 	///
 	async fn get_group_file_system_info(&self, _group_id: &str) -> Result<QQGroupFileSystemInfo> {
-		Err("此接口未实现".into())
+		Err(Error::NotImpl)
 	}
 
 	/// 获取群文件列表
@@ -434,7 +435,7 @@ pub trait AdapterApi: Send + Sync + 'static {
 		_group_id: &str,
 		_folder_id: Option<&str>,
 	) -> Result<Vec<DownloadFileInfo>> {
-		Err("此接口未实现".into())
+		Err(Error::NotImpl)
 	}
 
 	/// 获取群禁言列表
@@ -443,7 +444,7 @@ pub trait AdapterApi: Send + Sync + 'static {
 	/// `group_id` - 群ID
 	///
 	async fn get_group_mute_list(&self, _group_id: &str) -> Result<Vec<GroupMuteInfo>> {
-		Err("此接口未实现".into())
+		Err(Error::NotImpl)
 	}
 
 	/// 戳一戳
@@ -454,7 +455,7 @@ pub trait AdapterApi: Send + Sync + 'static {
 	/// `count` - 戳一戳次数，默认1次
 	///
 	async fn poke_user(&self, _contact: Contact, _count: Option<u8>) -> Result<bool> {
-		Err("此接口未实现".into())
+		Err(Error::NotImpl)
 	}
 
 	/// 设置头像
@@ -463,27 +464,27 @@ pub trait AdapterApi: Send + Sync + 'static {
 	/// `avatar` - 头像二进制数据
 	///
 	async fn set_avatar(&self, _avatar: Vec<u8>) -> Result<bool> {
-		Err("此接口未实现".into())
+		Err(Error::NotImpl)
 	}
 
 	/// 获取Cookie
 	///   支持获取指定域名下的Cookie
 	async fn get_cookie(&self, _domain: &str) -> Result<String> {
-		Err("此接口未实现".into())
+		Err(Error::NotImpl)
 	}
 
 	/// 获取QQ 相关接口凭证
 	///   支持获取指定域名下的相关凭证
 	async fn get_credentials(&self, _domain: &str) -> Result<QQCredentialInfo> {
-		Err("此接口未实现".into())
+		Err(Error::NotImpl)
 	}
 
 	/// 获取CSRF Token
 	async fn get_csrf_token(&self) -> Result<u64> {
-		Err("此接口未实现".into())
+		Err(Error::NotImpl)
 	}
 
 	async fn get_rkey(&self) -> Result<QQRkeyInfo> {
-		Err("此接口未实现".into())
+		Err(Error::NotImpl)
 	}
 }

@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use strum::{Display, EnumString, IntoStaticStr};
 
 use async_trait::async_trait;
-pub use puniyu_adapter_api::AdapterApi;
+pub use puniyu_adapter_api::{AdapterApi, Result};
 use puniyu_logger::info;
 
 #[derive(Clone)]
@@ -23,13 +23,12 @@ pub trait AdapterBuilder: Send + Sync + 'static {
 	fn api(&self) -> &'static dyn AdapterApi;
 
 	/// 路由管理
-	/// 默认返回 None，如果需要 HTTP 服务器可以重写此方法
 	fn server(&self) -> Option<crate::ServerType> {
 		None
 	}
 
 	/// 初始化
-	async fn init(&self) -> Result<(), Box<dyn std::error::Error>> {
+	async fn init(&self) -> Result<()> {
 		info!("适配器: {} 初始化完成", self.info().name);
 		Ok(())
 	}

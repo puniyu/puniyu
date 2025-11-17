@@ -62,7 +62,7 @@ impl AdapterRegistry {
 
 async fn run_adapter_init<F>(name: &str, init_fn: F) -> Result<(), Error>
 where
-	F: Future<Output = Result<(), Box<dyn std::error::Error>>>,
+	F: Future<Output = puniyu_adapter_api::Result<()>>,
 {
 	match init_fn.await {
 		Ok(()) => {

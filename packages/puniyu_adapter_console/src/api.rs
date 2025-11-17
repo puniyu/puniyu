@@ -26,13 +26,13 @@ impl AdapterApi for ConsoleAdapterApi {
 			.join(AdapterProtocol::Console.to_string())
 			.join("data")
 			.join("avatar.png");
-		let avatar = Avatar(format!("file://{}", dir.to_string_lossy()));
+		let avatar = Avatar::new(format!("file://{}", dir.to_string_lossy()));
 		Ok(avatar)
 	}
 
 	async fn get_group_avatar(&self, _group_id: &str, _size: Option<AvatarSize>) -> Result<Avatar> {
 		let dir = ADAPTER_DATA_DIR.as_path().join("Console").join("data").join("avatar.png");
-		let avatar = Avatar(format!("file://{}", dir.to_string_lossy()));
+		let avatar = Avatar::new(format!("file://{}", dir.to_string_lossy()));
 		Ok(avatar)
 	}
 

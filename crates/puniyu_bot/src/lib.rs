@@ -1,14 +1,12 @@
 mod registry;
 
-use puniyu_adapter_api::AdapterApi;
+use puniyu_adapter_api::{AdapterApi, Result};
 use puniyu_adapter_api::types::SendMsgType;
 use puniyu_builder::account::AccountInfo;
 use puniyu_builder::adapter::AdapterInfo;
 use puniyu_contact::Contact;
 use puniyu_element::Message;
 pub use registry::BotRegistry;
-
-use puniyu_common::Result;
 
 #[derive(Clone)]
 pub enum BotId {

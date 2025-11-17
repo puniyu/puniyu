@@ -25,11 +25,11 @@ puniyu_common = { version = "0.4.1", path = "../puniyu_common", optional = true 
 puniyu_builder = { version = "0.4.1", path = "../puniyu_builder", optional = true }
 puniyu_library = { version = "0.4.1", path = "../puniyu_library", optional = true }
 puniyu_config = { version = "0.4.1", path = "../puniyu_config", optional = true }
-
+puniyu_adapter_api = { version = "0.4.1", path = "../puniyu_adapter_api", optional = true }
 
 [features]
 default = []
-adapter = ["puniyu_builder/adapter", "dep:puniyu_bot"]
+adapter = ["puniyu_builder/adapter", "dep:puniyu_bot", "dep:puniyu_adapter_api"]
 plugin = ["dep:puniyu_config", "dep:puniyu_common", "dep:puniyu_library", "dep:puniyu_builder", "puniyu_builder/plugin", "puniyu_library/plugin", "task", "command"]
 task = ["dep:puniyu_task", "dep:puniyu_builder", "puniyu_builder/task"]
 command = ["dep:puniyu_command"]

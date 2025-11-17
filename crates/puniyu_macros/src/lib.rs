@@ -72,7 +72,7 @@ pub fn adapter(_: TokenStream, item: TokenStream) -> TokenStream {
 				}
 			}
 
-			async fn init(&self) -> ::std::result::Result<(), Box<dyn ::std::error::Error>> {
+			async fn init(&self) -> ::puniyu_adapter::Result<()> {
 				::puniyu_adapter::AdapterBuilder::init(&#struct_name).await
 			}
 		}
