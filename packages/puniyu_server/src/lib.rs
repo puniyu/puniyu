@@ -1,3 +1,4 @@
+mod api;
 mod logger;
 mod middleware;
 mod server;

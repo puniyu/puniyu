@@ -96,10 +96,10 @@ pub enum AdapterStandard {
 /// - Other: 其他协议实现
 #[derive(Debug, Default, Clone, Serialize, Deserialize, Display, EnumString, IntoStaticStr)]
 pub enum AdapterProtocol {
-	#[strum(serialize = "QQBOT")]
-	QQBOT,
-	#[strum(serialize = "ICQQ")]
-	ICQQ,
+	#[strum(serialize = "QQBot")]
+	QQBot,
+	#[strum(serialize = "Icqq")]
+	Icqq,
 	#[strum(serialize = "GoCqHttp")]
 	GoCqHttp,
 	#[strum(serialize = "NapCat")]

@@ -1,6 +1,6 @@
 use crate::EventBase;
 use crate::message::{FriendMessage, GroupMessage, MessageEvent};
-use puniyu_adapter_api::{AdapterApi, types, Result};
+use puniyu_adapter_api::{AdapterApi, Result, types};
 use puniyu_contact::Contact;
 use puniyu_element::Message;
 use puniyu_sender::Sender;
@@ -18,12 +18,9 @@ impl BotContext {
 		Self { contact, api }
 	}
 	pub fn api(&self) -> &dyn AdapterApi {
-		&*self.api
+		self.api
 	}
-	pub async fn reply(
-		&self,
-		message: Message,
-	) -> Result<types::SendMsgType> {
+	pub async fn reply(&self, message: Message) -> Result<types::SendMsgType> {
 		self.api.send_msg(self.contact.clone(), message).await
 	}
 }

@@ -16,23 +16,14 @@ pub enum AvatarSize {
 }
 
 #[derive(Debug, Clone)]
-pub struct Avatar(pub(crate) String);
+pub struct Avatar(String);
 
 impl Avatar {
-
-	pub fn new(url: String) -> Avatar {
-		Self(url)
-	}
+	/// 将头像 URL 转换为字节数组
+	/// 
+	/// 支持 `file://` 协议和 `HTTP(S)协议` URL
 	pub async fn to_vec(&self) -> Result<Vec<u8>> {
-		if let Some(path) = self.0.strip_prefix("file://") {
-			Ok(tokio::fs::read(path).await?)
-		} else {
-			Ok(reqwest::get(&self.0).await?.bytes().await?.to_vec())
-		}
-	}
-
-	pub fn to_url(&self) -> &str {
-		&self.0.as_ref()
+		Ok(reqwest::get(&self.0).await?.bytes().await?.to_vec())
 	}
 }
 
@@ -42,9 +33,29 @@ impl From<String> for Avatar {
 	}
 }
 
+impl From<&str> for Avatar {
+	fn from(url: &str) -> Self {
+		Self(url.to_string())
+	}
+}
+
 impl AsRef<str> for Avatar {
 	fn as_ref(&self) -> &str {
 		&self.0
+	}
+}
+
+impl std::ops::Deref for Avatar {
+	type Target = str;
+	
+	fn deref(&self) -> &Self::Target {
+		&self.0
+	}
+}
+
+impl std::fmt::Display for Avatar {
+	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+		write!(f, "{}", self.0)
 	}
 }
 

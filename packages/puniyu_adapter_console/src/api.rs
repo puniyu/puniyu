@@ -2,7 +2,8 @@ use crate::common::make_message_id;
 use async_trait::async_trait;
 use puniyu_adapter::Result;
 use puniyu_adapter::prelude::*;
-use puniyu_common::path::ADAPTER_DATA_DIR;
+use puniyu_core::Config;
+use std::sync::LazyLock;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 macro_rules! info {
@@ -16,24 +17,19 @@ macro_rules! info {
 			};
 		}
 
+static AVATAR_URL: LazyLock<String> = LazyLock::new(|| {
+	format!("http://{}:33720/logo.png", Config::app().server().host())
+});
 pub struct ConsoleAdapterApi;
 
 #[async_trait]
 impl AdapterApi for ConsoleAdapterApi {
 	async fn get_avatar(&self, _target_id: &str, _size: Option<AvatarSize>) -> Result<Avatar> {
-		let dir = ADAPTER_DATA_DIR
-			.as_path()
-			.join(AdapterProtocol::Console.to_string())
-			.join("data")
-			.join("avatar.png");
-		let avatar = Avatar::new(format!("file://{}", dir.to_string_lossy()));
-		Ok(avatar)
+		Ok(AVATAR_URL.clone().into())
 	}
 
 	async fn get_group_avatar(&self, _group_id: &str, _size: Option<AvatarSize>) -> Result<Avatar> {
-		let dir = ADAPTER_DATA_DIR.as_path().join("Console").join("data").join("avatar.png");
-		let avatar = Avatar::new(format!("file://{}", dir.to_string_lossy()));
-		Ok(avatar)
+		Ok(AVATAR_URL.clone().into())
 	}
 
 	async fn send_msg(&self, contact: Contact, element: Message) -> Result<SendMsgType> {

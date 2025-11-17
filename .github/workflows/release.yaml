@@ -208,13 +208,6 @@ jobs:
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_API_TOKEN }}
 
-      - name: 发布 server
-        if: needs.release.outputs.server
-        run: |
-          cargo publish --package puniyu_server
-        env:
-          CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_API_TOKEN }}
-
       - name: 发布 matcher
         if: needs.release.outputs.matcher
         run: |
@@ -233,6 +226,13 @@ jobs:
         if: needs.release.outputs.event_bus
         run: |
           cargo publish --package puniyu_event_bus
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_API_TOKEN }}
+
+      - name: 发布 server
+        if: needs.release.outputs.server
+        run: |
+          cargo publish --package puniyu_server
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_API_TOKEN }}
 

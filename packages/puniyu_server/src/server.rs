@@ -1,6 +1,7 @@
-use crate::{info, middleware};
+use crate::{api, info, middleware};
 use actix_web::middleware::{NormalizePath, TrailingSlash};
 use actix_web::{App, HttpServer, web};
+use puniyu_common::APP_NAME;
 use puniyu_registry::ServerRegistry;
 use std::net::{IpAddr, Ipv4Addr};
 use std::sync::{Arc, OnceLock};
@@ -30,7 +31,10 @@ pub async fn run_server(host: Option<IpAddr>, port: Option<u16>) -> std::io::Res
 		let app = App::new()
 			.wrap(middleware::AccessLog)
 			.wrap(NormalizePath::new(TrailingSlash::Trim))
-			.service(web::resource("/").to(|| async { "Hello World!" }));
+			.service(
+				web::resource("/").to(|| async { format!("weclome {}", APP_NAME.get().unwrap()) }),
+			)
+			.configure(api::logo_route);
 
 		ServerRegistry::get_all()
 			.into_iter()
