@@ -4,7 +4,7 @@ use puniyu_adapter_api::{AdapterApi, Result};
 use puniyu_adapter_api::types::SendMsgType;
 use puniyu_builder::account::AccountInfo;
 use puniyu_builder::adapter::AdapterInfo;
-use puniyu_contact::Contact;
+use puniyu_contact::ContactType;
 use puniyu_element::Message;
 pub use registry::BotRegistry;
 
@@ -50,7 +50,7 @@ pub struct BotInfo {
 }
 
 impl Bot {
-	pub async fn send_msg(&self, contact: Contact, message: Message) -> Result<SendMsgType> {
+	pub async fn send_msg(&self, contact: ContactType, message: Message) -> Result<SendMsgType> {
 		self.api.send_msg(contact, message).await
 	}
 }

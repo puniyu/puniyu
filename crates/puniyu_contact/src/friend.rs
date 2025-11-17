@@ -1,3 +1,5 @@
+use crate::Contact;
+
 use super::Scene;
 use serde::{Deserialize, Serialize};
 
@@ -8,8 +10,32 @@ pub struct FriendContact {
 	/// 好友ID
 	pub peer: String,
 	/// 好友名称
-	pub name: String,
+	pub name: Option<String>,
 }
+
+
+impl Contact for FriendContact {
+	fn scene(&self) -> Scene {
+		Scene::Friend
+	}
+
+	fn peer(&self) -> &str {
+		&self.peer
+	}
+
+	fn name(&self) -> Option<&str> {
+		self.name.as_deref()
+	}
+
+	fn is_friend(&self) -> bool {
+		true
+	}
+
+	fn is_group(&self) -> bool {
+		false
+	}
+}
+
 
 /// 构建好友事件
 ///
@@ -19,9 +45,15 @@ pub struct FriendContact {
 #[macro_export]
 macro_rules! contact_friend {
 	($peer:expr, $name:expr) => {
-		FriendContact { scene: Scene::Friend, peer: $peer.to_string(), name: $name.to_string() }
+		FriendContact { scene: Scene::Friend, peer: $peer.to_string(), name: Some($name.to_string()) }
 	};
 	(peer: $peer:expr, name: $name:expr) => {
-		FriendContact { scene: Scene::Friend, peer: $peer.to_string(), name: $name.to_string() }
+		FriendContact { scene: Scene::Friend, peer: $peer.to_string(), name: Some($name.to_string()) }
+	};
+	($peer:expr) => {
+		FriendContact { scene: Scene::Friend, peer: $peer.to_string(), name: None }
+	};
+	(peer: $peer:expr) => {
+		FriendContact { scene: Scene::Friend, peer: $peer.to_string(), name: None }
 	};
 }

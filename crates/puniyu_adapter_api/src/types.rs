@@ -1,9 +1,9 @@
-use puniyu_contact::Contact;
+use crate::Result;
+use puniyu_contact::ContactType;
 use puniyu_element::Elements;
-use puniyu_sender::{Role, Sender, Sex};
+use puniyu_sender::{Role, SenderType, Sex};
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
-use crate::Result;
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub enum AvatarSize {
@@ -20,7 +20,7 @@ pub struct Avatar(String);
 
 impl Avatar {
 	/// 将头像 URL 转换为字节数组
-	/// 
+	///
 	/// 支持 `file://` 协议和 `HTTP(S)协议` URL
 	pub async fn to_vec(&self) -> Result<Vec<u8>> {
 		Ok(reqwest::get(&self.0).await?.bytes().await?.to_vec())
@@ -47,7 +47,7 @@ impl AsRef<str> for Avatar {
 
 impl std::ops::Deref for Avatar {
 	type Target = str;
-	
+
 	fn deref(&self) -> &Self::Target {
 		&self.0
 	}
@@ -76,9 +76,9 @@ pub struct MessageType {
 	/// 消息序列号
 	pub message_seq: u64,
 	/// 消息联系人
-	pub contact: Contact,
+	pub contact: ContactType,
 	/// 消息发送者
-	pub sender: Sender,
+	pub sender: SenderType,
 	/// 消息元素
 	pub elements: Vec<Elements>,
 }

@@ -32,10 +32,10 @@ impl AdapterApi for ConsoleAdapterApi {
 		Ok(AVATAR_URL.clone().into())
 	}
 
-	async fn send_msg(&self, contact: Contact, element: Message) -> Result<SendMsgType> {
+	async fn send_msg(&self, contact: ContactType, element: Message) -> Result<SendMsgType> {
 		let source = match contact {
-			Contact::Friend(friend) => friend.scene,
-			Contact::Group(group) => group.scene,
+			ContactType::Friend(friend) => friend.scene,
+			ContactType::Group(group) => group.scene,
 		};
 		let message_id = make_message_id();
 		let timestamp = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs();

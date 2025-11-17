@@ -1,6 +1,5 @@
-pub mod types;
 mod error;
-pub use error::Error;
+pub mod types;
 use crate::types::{
 	Avatar, AvatarSize, CreateGroupFolderInfo, DownloadFileInfo, GroupHighlightsType, GroupInfo,
 	GroupMuteInfo, HighlightsAction, MessageType, MuteType, QQCredentialInfo,
@@ -8,7 +7,8 @@ use crate::types::{
 	SetGroupApplyType, UserInfo,
 };
 use async_trait::async_trait;
-use puniyu_contact::Contact;
+pub use error::Error;
+use puniyu_contact::ContactType;
 use puniyu_element::Message;
 use std::path::PathBuf;
 use std::time::Duration;
@@ -65,7 +65,7 @@ pub trait AdapterApi: Send + Sync + 'static {
 	/// `contact` - 联系人
 	/// `element` - 消息元素
 	///
-	async fn send_msg(&self, _contact: Contact, _element: Message) -> Result<SendMsgType> {
+	async fn send_msg(&self, _contact: ContactType, _element: Message) -> Result<SendMsgType> {
 		Err(Error::NotImpl)
 	}
 
@@ -106,7 +106,7 @@ pub trait AdapterApi: Send + Sync + 'static {
 	///
 	async fn get_history_msg(
 		&self,
-		_contact: Contact,
+		_contact: ContactType,
 		_message: GetHistoryMsgType,
 		_count: u8,
 	) -> Result<Vec<MessageType>> {
@@ -337,7 +337,7 @@ pub trait AdapterApi: Send + Sync + 'static {
 	/// `folder` - 目标文件夹
 	async fn upload_file(
 		&self,
-		_contact: Contact,
+		_contact: ContactType,
 		_file: Vec<u8>,
 		_folder: Option<&str>,
 	) -> Result<()> {
@@ -401,7 +401,7 @@ pub trait AdapterApi: Send + Sync + 'static {
 	/// `contact` - 联系人
 	/// `file_id` - 文件ID
 	///
-	async fn get_file_url(&self, _contact: Contact, _file_id: &str) -> Result<bool> {
+	async fn get_file_url(&self, _contact: ContactType, _file_id: &str) -> Result<bool> {
 		Err(Error::NotImpl)
 	}
 
@@ -454,7 +454,7 @@ pub trait AdapterApi: Send + Sync + 'static {
 	/// `contact` - 联系人
 	/// `count` - 戳一戳次数，默认1次
 	///
-	async fn poke_user(&self, _contact: Contact, _count: Option<u8>) -> Result<bool> {
+	async fn poke_user(&self, _contact: ContactType, _count: Option<u8>) -> Result<bool> {
 		Err(Error::NotImpl)
 	}
 

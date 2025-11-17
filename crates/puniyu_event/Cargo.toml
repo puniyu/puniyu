@@ -25,3 +25,7 @@ context = ["event", "dep:puniyu_config", "dep:puniyu_adapter_api"]
 message = ["dep:puniyu_sender", "dep:puniyu_contact", "event"]
 notion = ["dep:puniyu_sender", "dep:puniyu_contact", "dep:puniyu_adapter_api"]
 request = ["dep:puniyu_sender", "dep:puniyu_contact"]
+
+[dev-dependencies]
+puniyu_sender = { version = "0.4.1", path = "../puniyu_sender" }
+puniyu_contact = { version = "0.4.1", path = "../puniyu_contact" }

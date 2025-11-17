@@ -151,27 +151,158 @@ let at_segment = segment!(at, "123456");
 
 ## 使用示例
 
-```rust， ignore
-use puniyu_element::{element, Elements, Message, Segment};
-use puniyu_element::ElementType;
+### 基础元素创建
 
-// 创建文本元素
-let text_element = element!(text, "Hello World");
+```rust
+use puniyu_element::{element, TextElement, AtElement, ImageElement, Elements};
+
+// 使用宏创建文本元素
+let text = element!(text, "Hello World");
+
+// 直接创建文本元素
+let text_elem = Elements::Text(TextElement {
+    text: "Hello".to_string(),
+});
+
+// 创建 @ 元素
+let at = element!(at, "123456");
+
+// 创建图片元素
+let image = element!(image, vec![1, 2, 3]);
+
+// 创建闪照
+let flash_image = element!(image, vec![1, 2, 3], true);
+```
+
+### 复杂消息组合
+
+```rust
+use puniyu_element::{element, RawMessage};
 
 // 创建包含多个元素的消息
 let elements = vec![
     element!(text, "Hello "),
     element!(at, "123456"),
-    element!(text, " Welcome!")
+    element!(text, " Welcome!"),
+    element!(face, 1),
 ];
 
-// 转换为消息
-let message: Message = elements.into();
-
 // 转换为原始格式
-let raw_message = message.raw();
+let raw = elements.raw();
+// 输出: "[text:Hello ][at:123456][text: Welcome!][face:1]"
 ```
+
+### At 元素特殊用法
+
+```rust
+use puniyu_element::{element, AtElement};
+
+// @特定用户
+let at_user = element!(at, "user_id");
+
+// @全体成员
+let at_all = element!(at_all);
+
+// 检查是否为@全体
+if let Elements::At(at_elem) = &at_all {
+    assert!(at_elem.is_all());
+}
+```
+
+### 文件和媒体元素
+
+```rust
+use puniyu_element::element;
+
+// 文件元素 (文件数据, 文件ID, 大小, 文件名)
+let file = element!(file, vec![1, 2, 3], "file_id", 1024, "document.pdf");
+
+// 视频元素 (视频数据, 文件名)
+let video = element!(video, vec![1, 2, 3], "video.mp4");
+
+// 语音元素
+let record = element!(record, vec![1, 2, 3]);
+```
+
+### 回复和表情
+
+```rust
+use puniyu_element::element;
+
+// 回复某条消息
+let reply = element!(reply, "message_id_123");
+
+// 表情元素 (表情ID)
+let face = element!(face, 178);
+```
+
+### 提取文本内容
+
+```rust
+use puniyu_element::{element, Elements};
+
+let text_elem = element!(text, "Hello");
+
+// 使用 as_text 方法
+if let Some(text_content) = text_elem.as_text() {
+    println!("文本内容: {}", text_content);
+}
+```
+
+### 序列化和反序列化
+
+```rust
+use puniyu_element::{TextElement, Elements};
+use serde_json;
+
+let element = Elements::Text(TextElement {
+    text: "Hello".to_string(),
+});
+
+// 序列化
+let json = serde_json::to_string(&element).unwrap();
+
+// 反序列化
+let deserialized: Elements = serde_json::from_str(&json).unwrap();
+```
+
+## 最佳实践
+
+1. **使用宏简化创建**: 使用 `element!` 宏可以减少样板代码
+2. **类型匹配**: 使用模式匹配处理不同类型的元素
+3. **RawMessage trait**: 利用 `raw()` 方法生成日志或调试信息
+4. **批量处理**: 对于 `Vec<Elements>`，可以直接调用 `raw()` 方法
+
+## 常见问题
+
+### Q: 如何判断元素类型？
+
+使用模式匹配：
+
+```rust
+match element {
+    Elements::Text(t) => println!("文本: {}", t.text),
+    Elements::Image(i) => println!("图片，大小: {}", i.file.len()),
+    Elements::At(a) => println!("@了: {}", a.target_id),
+    _ => println!("其他类型"),
+}
+```
+
+### Q: 如何从多个元素中提取所有文本？
+
+```rust
+let texts: Vec<&str> = elements.iter()
+    .filter_map(|e| e.as_text())
+    .collect();
+```
+
+### Q: file 字段应该使用什么类型？
+
+`file` 字段是 `Vec<u8>`，可以存储：
+- 文件的二进制数据
+- URL 的 UTF-8 字节
+- Base64 编码的字节
 
 ## 许可证
 
-本项目采用 [LGPL](../../LICENSE) 许可证。
+本项目采用 [LGPL](../../LICENSE) 许可证.

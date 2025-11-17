@@ -1928,6 +1928,7 @@ name = "puniyu_sender"
 version = "0.4.1"
 dependencies = [
  "serde",
+ "serde_json",
  "strum",
 ]
 
@@ -1959,6 +1960,7 @@ dependencies = [
 name = "puniyu_task"
 version = "0.4.1"
 dependencies = [
+ "async-trait",
  "chrono-tz",
  "puniyu_builder",
  "puniyu_logger",

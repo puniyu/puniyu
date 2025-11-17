@@ -21,23 +21,33 @@ pub trait TextMessage: Send + Sync {
 #[strum(serialize_all = "snake_case")]
 pub enum ElementType {
 	#[strum(serialize = "at")]
+	/// 艾特元素
 	At,
 	#[strum(serialize = "reply")]
+	/// 回复元素
 	Reply,
 	#[strum(serialize = "text")]
+	/// 文本元素
 	Text,
 	#[strum(serialize = "image")]
+	/// 图片元素
 	Image,
 	#[strum(serialize = "file")]
+	/// 文件元素
 	File,
 	#[strum(serialize = "record")]
+	/// 语言元素
 	Record,
 	#[strum(serialize = "video")]
+	/// 视频元素
 	Video,
 	#[strum(serialize = "face")]
+	/// 表情元素
 	Face,
 	#[strum(serialize = "json")]
+	/// json元素
 	Json,
 	#[strum(serialize = "xml")]
+	//// xml元素
 	Xml,
 }

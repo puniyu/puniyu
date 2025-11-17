@@ -1,20 +1,20 @@
 use crate::EventBase;
 use crate::message::{FriendMessage, GroupMessage, MessageEvent};
 use puniyu_adapter_api::{AdapterApi, Result, types};
-use puniyu_contact::Contact;
+use puniyu_contact::ContactType;
 use puniyu_element::Message;
-use puniyu_sender::Sender;
+use puniyu_sender::SenderType;
 use std::collections::HashMap;
 use std::sync::Arc;
 
 #[derive(Clone)]
 pub struct BotContext {
-	contact: Contact,
+	contact: ContactType,
 	api: &'static dyn AdapterApi,
 }
 
 impl BotContext {
-	pub fn new(contact: Contact, api: &'static dyn AdapterApi) -> Self {
+	pub fn new(contact: ContactType, api: &'static dyn AdapterApi) -> Self {
 		Self { contact, api }
 	}
 	pub fn api(&self) -> &dyn AdapterApi {
@@ -107,18 +107,18 @@ impl MessageContext {
 	}
 
 	/// 联系人信息
-	pub fn contact(&self) -> Contact {
+	pub fn contact(&self) -> ContactType {
 		match &*self.event {
-			MessageEvent::Friend(ev) => Contact::from(ev.contact()),
-			MessageEvent::Group(ev) => Contact::from(ev.contact()),
+			MessageEvent::Friend(ev) => ContactType::Friend(ev.contact().clone()),
+			MessageEvent::Group(ev) => ContactType::Group(ev.contact().clone()),
 		}
 	}
 
 	/// 发送者信息
-	pub fn sender(&self) -> Sender {
+	pub fn sender(&self) -> SenderType {
 		match &*self.event {
-			MessageEvent::Friend(ev) => Sender::from(ev.sender()),
-			MessageEvent::Group(ev) => Sender::from(ev.sender()),
+			MessageEvent::Friend(ev) => SenderType::Friend(ev.sender().clone()),
+			MessageEvent::Group(ev) => SenderType::Group(ev.sender().clone()),
 		}
 	}
 }

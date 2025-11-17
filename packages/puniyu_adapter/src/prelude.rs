@@ -7,7 +7,7 @@ pub use puniyu_builder::adapter::{
 };
 pub use puniyu_builder::{account_info, adapter_info};
 pub use puniyu_contact::{
-	Contact, FriendContact, GroupContact, Scene, contact_friend, contact_group,
+	Contact, ContactType, FriendContact, GroupContact, Scene, contact_friend, contact_group,
 };
 pub use puniyu_element::{
 	AtElement, FileElement, ImageElement, JsonElement, RecordElement, ReplyElement, TextElement,
