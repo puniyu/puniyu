@@ -1,4 +1,3 @@
-mod common;
 use proc_macro::TokenStream;
 use quote::quote;
 #[cfg(any(feature = "plugin", feature = "command", feature = "adapter"))]
@@ -450,7 +449,6 @@ impl Parse for CommandArgs {
 #[cfg(feature = "command")]
 #[proc_macro_attribute]
 pub fn command(args: TokenStream, item: TokenStream) -> TokenStream {
-	use crate::common::get_plugin_name;
 	use convert_case::{Case, Casing};
 	let args = parse_macro_input!(args as CommandArgs);
 	let input_fn = parse_macro_input!(item as ItemFn);
@@ -497,10 +495,7 @@ pub fn command(args: TokenStream, item: TokenStream) -> TokenStream {
 	let command_rank = &args.rank;
 	let command_desc = &args.desc;
 
-	let crate_name = match get_plugin_name(fn_sig) {
-		Ok(name) => name,
-		Err(err) => return err.to_compile_error().into(),
-	};
+	let plugin_name = env!("CARGO_PKG_NAME");
 
 	let struct_name = Ident::new(&struct_name_str, fn_name.span());
 
@@ -540,7 +535,7 @@ pub fn command(args: TokenStream, item: TokenStream) -> TokenStream {
 
 		::puniyu_core::inventory::submit! {
 			crate::CommandRegistry {
-				plugin_name: #crate_name,
+				plugin_name: #plugin_name,
 				builder: || -> Box<dyn ::puniyu_plugin::CommandBuilder> { Box::new(#struct_name {}) },
 			}
 		}
@@ -636,7 +631,6 @@ impl Parse for TaskArgs {
 #[cfg(feature = "task")]
 #[proc_macro_attribute]
 pub fn task(args: TokenStream, item: TokenStream) -> TokenStream {
-	use crate::common::get_plugin_name;
 	use convert_case::{Case, Casing};
 	use croner::Cron;
 	use std::str::FromStr;
@@ -670,10 +664,7 @@ pub fn task(args: TokenStream, item: TokenStream) -> TokenStream {
 			.into();
 	}
 
-	let crate_name = match get_plugin_name(fn_sig) {
-		Ok(name) => name,
-		Err(err) => return err.to_compile_error().into(),
-	};
+	let plugin_name = env!("CARGO_PKG_NAME");
 
 	let cron_expr = &args.cron;
 
@@ -710,7 +701,7 @@ pub fn task(args: TokenStream, item: TokenStream) -> TokenStream {
 
 	::puniyu_core::inventory::submit! {
 		crate::TaskRegistry  {
-			plugin_name: #crate_name,
+			plugin_name: #plugin_name,
 			builder: || -> Box<dyn ::puniyu_plugin::TaskBuilder> { Box::new(#struct_name {}) },
 		}
 	}
@@ -764,17 +755,14 @@ pub fn server(_args: TokenStream, item: TokenStream) -> TokenStream {
 		.into();
 	}
 
-	let crate_name = match common::get_plugin_name(fn_sig) {
-		Ok(name) => name,
-		Err(err) => return err.to_compile_error().into(),
-	};
+	let plugin_name = env!("CARGO_PKG_NAME");
 
 	let expanded = quote! {
 		#fn_vis #fn_sig #fn_block
 
 		::puniyu_plugin::inventory::submit! {
 			crate::ServerRegistry {
-				plugin_name: #crate_name,
+				plugin_name: #plugin_name,
 				builder: || -> ::puniyu_plugin::ServerType { ::std::sync::Arc::new(#fn_name) },
 			}
 		}
