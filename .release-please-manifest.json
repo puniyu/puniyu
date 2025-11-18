@@ -21,6 +21,6 @@
   "packages/puniyu_plugin": "0.4.1",
   "packages/puniyu_adapter": "0.4.1",
   "packages/puniyu_core": "0.4.1",
-  "packages/puniyu_adapter_console": "0.1.12",
+  "adapters/console": "0.1.12",
   "packages/puniyu": "0.4.1"
 }

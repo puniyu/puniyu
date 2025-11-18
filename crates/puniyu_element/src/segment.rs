@@ -1,11 +1,21 @@
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
+use std::fmt;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Segment {
 	#[serde(rename = "type")]
 	pub r#type: String,
 	pub data: Value,
+}
+
+impl fmt::Display for Segment {
+	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+		match serde_json::to_string(self) {
+			Ok(json) => write!(f, "{}", json),
+			Err(_) => write!(f, "Segment {{ type: {}, data: {} }}", self.r#type, self.data),
+		}
+	}
 }
 
 #[macro_export]

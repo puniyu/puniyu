@@ -10,6 +10,7 @@ use std::env;
 /// - `PLUGIN_NAME`: 从 `CARGO_PKG_NAME` 获取
 /// - `PLUGIN_VERSION`: 从 `CARGO_PKG_VERSION` 获取
 /// - `PLUGIN_AUTHOR`: 从 `CARGO_PKG_AUTHORS` 获取
+#[deprecated(note = "不再需要此函数，宏现在直接使用 CARGO_PKG_* 环境变量")]
 pub fn setup_plugin() {
 	println!("cargo:rerun-if-changed=build.rs");
 	println!("cargo:rerun-if-changed=Cargo.toml");
@@ -33,6 +34,7 @@ pub fn setup_plugin() {
 /// ADAPTER_NAME: 从 CARGO_PKG_NAME 获取适配器名称
 /// ADAPTER_VERSION: 从 CARGO_PKG_VERSION 获取适配器版本
 /// ADAPTER_AUTHOR: 从 CARGO_PKG_AUTHORS 获取适配器作者信息
+#[deprecated(note = "不再需要此函数，宏现在直接使用 CARGO_PKG_* 环境变量")]
 pub fn setup_adapter() {
 	println!("cargo:rerun-if-changed=build.rs");
 	println!("cargo:rerun-if-changed=Cargo.toml");

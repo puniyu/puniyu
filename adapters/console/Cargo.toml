@@ -12,10 +12,7 @@ rust-version.workspace = true
 
 [dependencies]
 async-trait.workspace = true
-rand = "0.10.0-rc.0"
-puniyu_adapter = { version = "0.4.1", path = "../puniyu_adapter" }
-puniyu_core = { version = "0.4.1", path = "../puniyu_core" }
+rand = "0.9.2"
+puniyu_adapter = { version = "0.4.1", path = "../../packages/puniyu_adapter" }
+puniyu_core = { version = "0.4.1", path = "../../packages/puniyu_core" }
 puniyu_common = { version = "0.4.1", path = "../../crates/puniyu_common" }
-
-[build-dependencies]
-puniyu_build = { version = "0.2.0", path = "../../crates/puniyu_build" }

@@ -1,7 +1,6 @@
 mod common;
 use proc_macro::TokenStream;
 use quote::quote;
-use std::env;
 #[cfg(any(feature = "plugin", feature = "command", feature = "adapter"))]
 use syn::ItemFn;
 
@@ -25,18 +24,6 @@ pub fn adapter(_: TokenStream, item: TokenStream) -> TokenStream {
 		.into();
 	};
 
-	let adapter_name = match env::var("ADAPTER_NAME") {
-		Ok(name) => name,
-		Err(_) => {
-			return syn::Error::new_spanned(
-				&input_struct,
-				"呜哇~ADAPTER_NAME都没有设置！杂鱼程序员！",
-			)
-			.to_compile_error()
-			.into();
-		}
-	};
-
 	let struct_name = &input_struct.ident;
 	let adapter_struct_name = Ident::new("Adapter", proc_macro2::Span::call_site());
 
@@ -56,35 +43,13 @@ pub fn adapter(_: TokenStream, item: TokenStream) -> TokenStream {
 			}
 
 			fn server(&self) -> Option<::puniyu_adapter::ServerType> {
-				let adapter_name = #adapter_name;
-				let servers: Vec<_> = ::puniyu_core::inventory::iter::<ServerRegistry>
-					.into_iter()
-					.filter(|server| server.adapter_name == adapter_name)
-					.map(|server| (server.builder)())
-					.collect();
-
-				if !servers.is_empty() {
-					Some(::std::sync::Arc::new(move |cfg: &mut ::puniyu_adapter::actix_web::web::ServiceConfig| {
-						servers.iter().for_each(|server| server(cfg));
-					}))
-				} else {
-					None
-				}
+				::puniyu_adapter::AdapterBuilder::server(&#struct_name)
 			}
 
 			async fn init(&self) -> ::puniyu_adapter::Result<()> {
 				::puniyu_adapter::AdapterBuilder::init(&#struct_name).await
 			}
 		}
-
-		/// 服务器注册表
-		pub(crate) struct ServerRegistry {
-			/// 适配器名称
-			adapter_name: &'static str,
-			/// 服务器配置构造器
-			builder: fn() -> ::puniyu_adapter::ServerType,
-		}
-		::puniyu_core::inventory::collect!(ServerRegistry);
 	};
 
 	TokenStream::from(expanded)
@@ -197,42 +162,12 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
 			.into();
 	}
 
-	let plugin_name = match env::var("PLUGIN_NAME") {
-		Ok(name) => name,
-		Err(_) => {
-			return syn::Error::new_spanned(fn_sig, "呜哇~PLUGIN_NAME都没有设置！杂鱼程序员！")
-				.to_compile_error()
-				.into();
-		}
+	let plugin_name = env!("CARGO_PKG_NAME");
+	let plugin_version = env!("CARGO_PKG_VERSION");
+	let plugin_author = {
+		let authors = env!("CARGO_PKG_AUTHORS");
+		if authors.is_empty() { "Unknown" } else { authors }
 	};
-	let plugin_version = match env::var("PLUGIN_VERSION") {
-		Ok(version) => version,
-		Err(_) => {
-			return syn::Error::new_spanned(fn_sig, "呜哇~PLUGIN_VERSION都没有设置！杂鱼程序员！")
-				.to_compile_error()
-				.into();
-		}
-	};
-	let plugin_author = match env::var("PLUGIN_AUTHOR") {
-		Ok(author) => quote! { #author },
-		Err(_) => {
-			return syn::Error::new_spanned(fn_sig, "呜哇~PLUGIN_AUTHOR都没有设置！杂鱼程序员！")
-				.to_compile_error()
-				.into();
-		}
-	};
-
-	if !plugin_name.starts_with("puniyu_plugin_") {
-		return syn::Error::new_spanned(
-			fn_name,
-			format!(
-				"呜哇~杂鱼插件名！必须用'puniyu_plugin_'开头啦！你这个'{}'是什么啦！",
-				plugin_name
-			),
-		)
-		.to_compile_error()
-		.into();
-	}
 
 	let struct_name = Ident::new("Plugin", fn_name.span());
 
@@ -841,72 +776,6 @@ pub fn server(_args: TokenStream, item: TokenStream) -> TokenStream {
 			crate::ServerRegistry {
 				plugin_name: #crate_name,
 				builder: || -> ::puniyu_plugin::ServerType { ::std::sync::Arc::new(#fn_name) },
-			}
-		}
-	};
-
-	TokenStream::from(expanded)
-}
-
-/// 注册适配器服务路由
-///
-/// # 示例
-/// ```rust, ignore
-/// use puniyu_adapter::server;
-/// use actix_web::web::{self, ServiceConfig};
-///
-/// #[server]
-/// pub fn routes(cfg: &mut ServiceConfig) {
-///     cfg.service(
-///         web::resource("/adapter/hello")
-///             .route(web::get().to(|| async { "Hello from Adapter!" }))
-///     );
-/// }
-/// ```
-#[cfg(feature = "adapter")]
-#[proc_macro_attribute]
-pub fn adapter_server(_args: TokenStream, item: TokenStream) -> TokenStream {
-	let input_fn = if let Ok(fn_item) = syn::parse::<ItemFn>(item.clone()) {
-		fn_item
-	} else {
-		return syn::Error::new_spanned(
-			proc_macro2::TokenStream::from(item),
-			"杂鱼！这个宏只能用在函数上！",
-		)
-		.to_compile_error()
-		.into();
-	};
-
-	let fn_name = &input_fn.sig.ident;
-	let fn_vis = &input_fn.vis;
-	let fn_sig = &input_fn.sig;
-	let fn_block = &input_fn.block;
-
-	if input_fn.sig.inputs.len() != 1 {
-		return syn::Error::new_spanned(
-			&input_fn.sig,
-			"呜哇~函数必须接收一个参数 &mut ServiceConfig！",
-		)
-		.to_compile_error()
-		.into();
-	}
-
-	let adapter_name = match env::var("ADAPTER_NAME") {
-		Ok(name) => name,
-		Err(_) => {
-			return syn::Error::new_spanned(fn_sig, "呜哇~ADAPTER_NAME都没有设置！杂鱼程序员！")
-				.to_compile_error()
-				.into();
-		}
-	};
-
-	let expanded = quote! {
-		#fn_vis #fn_sig #fn_block
-
-		::puniyu_core::inventory::submit! {
-			crate::ServerRegistry {
-				adapter_name: #adapter_name,
-				builder: || -> ::puniyu_adapter::ServerType { ::std::sync::Arc::new(#fn_name) },
 			}
 		}
 	};

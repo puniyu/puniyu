@@ -56,24 +56,19 @@ macro_rules! handle_command {
 macro_rules! parse_command {
 	($input:expr) => {{
 		let mut args = $input.split_whitespace();
-		let command_name = args.next().map(|s| s.to_string()).unwrap();
+		let command_name = args.next().map(|s| s.to_string()).unwrap_or_default();
 
 		let mut params = HashMap::new();
-		let mut current_flag = None;
+		let mut current_flag: Option<String> = None;
 
 		for arg in args {
-			match (arg.strip_prefix("--"), current_flag.take()) {
-				(Some(flag), Some(prev_flag)) => {
+			if let Some(flag) = arg.strip_prefix("--") {
+				if let Some(prev_flag) = current_flag.take() {
 					params.insert(prev_flag, None);
-					current_flag = Some(flag.to_string());
 				}
-				(Some(flag), None) => {
-					current_flag = Some(flag.to_string());
-				}
-				(None, Some(flag)) => {
-					params.insert(flag, Some(arg.to_string()));
-				}
-				_ => {}
+				current_flag = Some(flag.to_string());
+			} else if let Some(flag) = current_flag.take() {
+				params.insert(flag, Some(arg.to_string()));
 			}
 		}
 

@@ -172,7 +172,7 @@
     "packages/puniyu_core": {
       "component": "core"
     },
-    "packages/puniyu_adapter_console": {
+    "adapters/console": {
       "component": "adapter-console"
     },
     "packages/puniyu": {
