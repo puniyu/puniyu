@@ -36,7 +36,7 @@ pub enum ElementType {
 	/// 文件元素
 	File,
 	#[strum(serialize = "record")]
-	/// 语言元素
+	/// 语音元素
 	Record,
 	#[strum(serialize = "video")]
 	/// 视频元素

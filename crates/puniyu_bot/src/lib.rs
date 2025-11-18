@@ -44,6 +44,7 @@ pub struct Bot {
 
 #[derive(Debug, Clone)]
 pub struct BotInfo {
+	/// 适配器信息
 	pub adapter: AdapterInfo,
 	/// 账户信息
 	pub account: AccountInfo,
