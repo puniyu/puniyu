@@ -18,7 +18,8 @@ macro_rules! info {
 		}
 
 static AVATAR_URL: LazyLock<String> = LazyLock::new(|| {
-	format!("http://{}:33720/logo.png", Config::app().server().host())
+	let server = Config::app().server();
+	format!("http://{}:{}/logo.png", server.host(), server.port())
 });
 pub struct ConsoleAdapterApi;
 
