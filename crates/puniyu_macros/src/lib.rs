@@ -151,9 +151,7 @@ impl Parse for PluginArg {
 /// use puniyu_plugin::plugin;
 ///
 /// #[plugin]
-/// pub async fn hello() -> Result<(), Box<dyn std::error::Error>> {
-///     Ok(())
-/// }
+/// pub async fn hello() {}
 /// ```
 ///
 /// ## 完整示例（自定义初始化逻辑）
