@@ -377,15 +377,6 @@ dependencies = [
 
 [[package]]
 name = "convert_case"
-version = "0.8.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "baaaa0ecca5b51987b9423ccdc971514dd8b0bb7b4060b983d3664dad3f1f89f"
-dependencies = [
- "unicode-segmentation",
-]
-
-[[package]]
-name = "convert_case"
 version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "db05ffb6856bf0ecdf6367558a76a0e8a77b1713044eb92845c692100ed50190"
@@ -1778,7 +1769,7 @@ name = "puniyu_core"
 version = "0.4.1"
 dependencies = [
  "async-trait",
- "convert_case 0.9.0",
+ "convert_case",
  "figlet-rs",
  "glob",
  "inventory",
@@ -1849,15 +1840,14 @@ dependencies = [
 
 [[package]]
 name = "puniyu_logger"
-version = "0.6.1"
+version = "0.6.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "416cf907fac9f197570e3b246d09f7661a6526594bfd5da58dd859a665ecc3d0"
+checksum = "347577b30962cff3eb202129753ed617ef53ce1833536d10066850e35c5d0f32"
 dependencies = [
  "chrono",
  "chrono-tz",
- "convert_case 0.8.0",
+ "convert_case",
  "owo-colors",
- "strip-ansi-escapes",
  "tracing",
  "tracing-appender",
  "tracing-log",
@@ -1869,7 +1859,7 @@ dependencies = [
 name = "puniyu_macros"
 version = "0.4.1"
 dependencies = [
- "convert_case 0.9.0",
+ "convert_case",
  "croner",
  "proc-macro2",
  "quote",
@@ -2427,15 +2417,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a2eb9349b6444b326872e140eb1cf5e7c522154d69e7a0ffb0fb81c06b37543f"
 
 [[package]]
-name = "strip-ansi-escapes"
-version = "0.2.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2a8f8038e7e7969abb3f1b7c2a811225e9296da208539e0f79c5251d6cac0025"
-dependencies = [
- "vte",
-]
-
-[[package]]
 name = "strsim"
 version = "0.11.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2840,9 +2821,9 @@ dependencies = [
 
 [[package]]
 name = "tracing-shared"
-version = "0.1.5"
+version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ba6ce98e2ac6c82f52c702ecdf07740259fc665e0e78bacf9c888ac39bec085c"
+checksum = "933a5d2bdc19a16d50d773c206ab95ad7997439e0223de2dd832c7fcf4079635"
 dependencies = [
  "log",
  "tracing",
@@ -2939,15 +2920,6 @@ name = "version_check"
 version = "0.9.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0b928f33d975fc6ad9f86c8f283853ad26bdd5b10b7f1542aa2fa15e2289105a"
-
-[[package]]
-name = "vte"
-version = "0.14.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "231fdcd7ef3037e8330d8e17e61011a2c244126acc0a982f4040ac3f9f0bc077"
-dependencies = [
- "memchr",
-]
 
 [[package]]
 name = "walkdir"

@@ -1,11 +1,11 @@
 use puniyu_logger::{LoggerOptions, init};
-use std::{env, sync::OnceLock};
+use std::{env, sync::Once};
 
-static LOGGER_INIT: OnceLock<()> = OnceLock::new();
+static INIT: Once = Once::new();
 
 /// 初始化日志系统
 pub(crate) fn log_init() {
-	LOGGER_INIT.get_or_init(|| {
+	INIT.call_once(|| {
 		let log_level = env::var("LOGGER_LEVEL").unwrap_or("info".to_string());
 		let log_path = LOG_DIR.as_path().to_string_lossy().to_string();
 		let log_retention_days =

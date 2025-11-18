@@ -206,7 +206,7 @@ fn test_at_with_name() {
 
 #[test]
 fn test_multiple_elements() {
-    let elements = vec![
+    let elements = [
         element!(text, "Test"),
         element!(at, "user1"),
         element!(image, vec![1, 2, 3]),

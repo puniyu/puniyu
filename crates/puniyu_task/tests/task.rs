@@ -222,7 +222,7 @@ async fn test_multiple() {
 
 #[tokio::test]
 async fn test_cron_patterns() {
-    let patterns = vec![
+    let patterns = &[
         "0 * * * * *",           // 每分钟
         "0 0 * * * *",           // 每小时
         "0 0 0 * * *",           // 每天
