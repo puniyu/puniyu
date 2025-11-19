@@ -1,4 +1,4 @@
-use puniyu_types::common::path::*;
+use puniyu_common::path::*;
 
 #[test]
 fn test_base_dir() {

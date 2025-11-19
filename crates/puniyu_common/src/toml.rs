@@ -1,4 +1,4 @@
-use crate::error::Config as Error;
+use super::Error;
 use serde::{de::DeserializeOwned, Serialize};
 use std::{fs, path::{Path, PathBuf}};
 use toml::{from_str, to_string_pretty, Value};

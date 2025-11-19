@@ -1,12 +1,10 @@
 mod registry;
 pub use registry::BotRegistry;
 
-use puniyu_adapter_api::{AdapterApi, Result};
-use puniyu_adapter_api::types::SendMsgType;
-use puniyu_builder::account::AccountInfo;
-use puniyu_builder::adapter::AdapterInfo;
-use puniyu_contact::ContactType;
-use puniyu_element::Message;
+use crate::account::AccountInfo;
+use crate::adapter::{AdapterApi, AdapterInfo, Result, SendMsgType};
+use crate::contact::ContactType;
+use crate::element::Message;
 
 #[derive(Clone)]
 pub enum BotId {
@@ -38,14 +36,6 @@ pub struct Bot {
 	pub adapter: AdapterInfo,
 	/// 适配器API
 	pub api: &'static dyn AdapterApi,
-	/// 账户信息
-	pub account: AccountInfo,
-}
-
-#[derive(Debug, Clone)]
-pub struct BotInfo {
-	/// 适配器信息
-	pub adapter: AdapterInfo,
 	/// 账户信息
 	pub account: AccountInfo,
 }

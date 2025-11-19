@@ -10,14 +10,19 @@ edition.workspace = true
 rust-version.workspace = true
 
 [dependencies]
+tokio = { workspace = true, optional = true }
+puniyu_logger = { workspace = true, optional = true }
 serde = { workspace = true, optional = true }
 strum = { workspace = true, optional = true }
 serde_json = { workspace = true, optional = true }
 thiserror = { workspace = true, optional = true }
-toml = { version = "0.9.5", optional = true }
-puniyu_system_info = { version = "0.8.0", features = ["gpu"], optional = true }
 reqwest = { workspace = true, optional = true }
 async-trait = { workspace = true, optional = true }
+actix-web = { workspace = true, optional = true }
+tokio-cron-scheduler = { version = "0.15.0", optional = true }
+chrono-tz = { version = "0.10.4", optional = true }
+uuid = { version = "1.17.0", features = ["v4"], optional = true }
+itertools = { workspace = true, optional = true }
 
 [features]
 default = []
@@ -25,11 +30,27 @@ adapter = [
     "dep:thiserror",
     "dep:reqwest",
     "dep:async-trait",
+    "dep:puniyu_logger",
     "contact",
     "sender",
     "element",
+    "server",
 ]
+event = ["dep:strum", "element", "sender", "contact"]
+context = ["adapter", "bot", "element", "event", "contact", "sender"]
+account = ["dep:serde"]
 contact = ["dep:serde", "dep:strum"]
+bot = ["adapter"]
 sender = ["dep:serde", "dep:strum"]
 element = ["dep:serde", "dep:strum", "dep:serde_json"]
-common = ["dep:thiserror", "dep:toml", "dep:puniyu_system_info"]
+server = ["dep:actix-web"]
+task = [
+    "dep:tokio-cron-scheduler",
+    "dep:chrono-tz",
+    "dep:uuid",
+    "dep:puniyu_logger",
+    "dep:async-trait",
+    "dep:tokio",
+]
+command  = ["dep:async-trait", "context", "dep:itertools"]
+plugin = []

@@ -1,5 +1,4 @@
-use crate::{Bot, BotInfo};
-use puniyu_adapter_api::AdapterApi;
+use super::Bot;
 use puniyu_logger::info;
 use std::collections::HashMap;
 use std::sync::{
@@ -29,30 +28,34 @@ impl BotRegistry {
 		bots.values().find(|bot| bot.account.self_id == self_id).cloned()
 	}
 
-	pub fn register(info: BotInfo, adapter_api: &'static dyn AdapterApi) {
+	pub fn register(bot: Bot) {
 		let index = BOT_INDEX.fetch_add(1, Ordering::Relaxed);
-		let self_id = info.account.self_id.clone();
-		let bot = Bot { adapter: info.adapter, api: adapter_api, account: info.account };
+		let self_id = bot.account.self_id.clone();
 		BOT_REGISTRY.0.write().unwrap().insert(index, bot);
 		info!("[Bot: {}] 注册成功", self_id);
 	}
 
 	pub fn unregister_with_index(index: u64) {
-		BOT_REGISTRY
-			.0
-			.write()
-			.unwrap()
-			.remove(&index)
-			.inspect(|bot| info!("[Bot: {}] 卸载成功", bot.account.self_id));
+		let mut bots = BOT_REGISTRY.0.write().unwrap();
+		let removed_bot = bots.remove(&index);
+		if let Some(bot) = removed_bot {
+			info!("[Bot: {}] 卸载成功", bot.account.self_id);
+		}
 	}
 
 	pub fn unregister_with_id(id: &str) {
 		let mut bots = BOT_REGISTRY.0.write().unwrap();
-		bots.iter()
-			.find(|(_, bot)| bot.account.self_id == id)
-			.map(|(index, _)| *index)
-			.and_then(|index| bots.remove(&index))
-			.inspect(|bot| info!("[Bot: {}] 卸载成功", bot.account.self_id));
+		let index_to_remove =
+			bots.iter().find(|(_, bot)| bot.account.self_id == id).map(|(index, _)| *index);
+
+		if let Some(index) = index_to_remove {
+			let removed_bot = bots.remove(&index);
+			if let Some(bot) = removed_bot {
+				info!("[Bot: {}] 卸载成功", bot.account.self_id);
+			}
+		}
+
+		info!("[Bot: {}] 卸载失败", id);
 	}
 }
 
@@ -62,15 +65,16 @@ impl BotRegistry {
 ///
 /// * `adapter` - 适配器信息
 /// * `account` - 账号信息
+#[cfg(feature = "bot")]
 #[macro_export]
 macro_rules! register_bot {
 	($adapter:expr, $account:expr, $api:expr) => {
-		let bot_info = BotInfo { adapter: $adapter, account: $account };
-		BotRegistry::register(bot_info, $api)
+		let bot = Bot { adapter: $adapter, api: $api, account: $account };
+		BotRegistry::register(bot)
 	};
 	(adapter: $adapter:expr, account: $account:expr, api: $api:expr) => {
-		let bot_info = BotInfo { adapter: $adapter, account: $account };
-		BotRegistry::register(bot_info, $api)
+		let bot = Bot { adapter: $adapter, api: $api, account: $account };
+		BotRegistry::register(bot)
 	};
 }
 
@@ -80,11 +84,9 @@ macro_rules! register_bot {
 ///
 /// * `id` - Bot的ID，可以是索引或self_id
 ///
+#[cfg(feature = "bot")]
 #[macro_export]
 macro_rules! unregister_bot {
-	($id:expr) => {
-		BotRegistry::unregister_with_id($id)
-	};
 	(index: $index:expr) => {
 		BotRegistry::unregister_with_index($index)
 	};

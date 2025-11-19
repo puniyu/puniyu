@@ -1951,14 +1951,19 @@ dependencies = [
 name = "puniyu_types"
 version = "0.1.0"
 dependencies = [
+ "actix-web",
  "async-trait",
- "puniyu_system_info",
+ "chrono-tz",
+ "itertools",
+ "puniyu_logger",
  "reqwest",
  "serde",
  "serde_json",
  "strum",
  "thiserror 2.0.17",
- "toml",
+ "tokio",
+ "tokio-cron-scheduler",
+ "uuid",
 ]
 
 [[package]]

@@ -1,4 +1,4 @@
-use crate::APP_NAME;
+use super::APP_NAME;
 use std::sync::OnceLock;
 use std::{env::current_dir, path::PathBuf, sync::LazyLock};
 
@@ -8,7 +8,7 @@ pub static WORKING_DIR: OnceLock<PathBuf> = OnceLock::new();
 ///
 /// ## 示例
 /// ```
-/// use puniyu_common::path::BASE_DIR;
+/// use puniyu_types::common::BASE_DIR;
 /// let base_dir = BASE_DIR.as_path();
 /// ```
 pub static BASE_DIR: LazyLock<PathBuf> =
@@ -20,7 +20,7 @@ pub static BASE_DIR: LazyLock<PathBuf> =
 /// # 示例
 ///
 /// ```rust
-/// use puniyu_common::path::APP_DIR;
+/// use puniyu_types::common::APP_DIR;
 /// let app_dir = APP_DIR.as_path();
 /// ```
 pub static APP_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
@@ -34,7 +34,7 @@ pub static APP_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
 /// # 示例
 ///
 /// ```rust
-/// use puniyu_common::path::LOG_DIR;
+/// use puniyu_types::common::LOG_DIR;
 /// let log_dir = LOG_DIR.as_path();
 /// ```
 pub static LOG_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
@@ -45,10 +45,11 @@ pub static LOG_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
 
 /// 配置文件夹路径
 ///
+/// 此目录会存放插件配置文件，适配器配置文件
 /// # 示例
 ///
 /// ```
-/// use puniyu_common::path::CONFIG_DIR;
+/// use puniyu_types::common::CONFIG_DIR;
 /// let config_dir = CONFIG_DIR.as_path();
 /// ```
 pub static CONFIG_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
@@ -62,7 +63,7 @@ pub static CONFIG_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
 /// # 示例
 ///
 /// ```
-/// use puniyu_common::path::TEMP_DIR;
+/// use puniyu_types::common::TEMP_DIR;
 /// let temp_dir = TEMP_DIR.as_path();
 /// ```
 pub static TEMP_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
@@ -82,20 +83,6 @@ pub static TEMP_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
 pub static PLUGIN_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
 	let mut path = BASE_DIR.to_path_buf();
 	path.push("plugins");
-	path
-});
-
-/// 适配器文件夹路径
-///
-/// # 示例
-///
-/// ```
-/// use puniyu_common::path::ADAPTER_DIR;
-/// let adapter_dir = ADAPTER_DIR.as_path();
-/// ```
-pub static ADAPTER_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
-	let mut path = BASE_DIR.to_path_buf();
-	path.push("adapters");
 	path
 });
 
