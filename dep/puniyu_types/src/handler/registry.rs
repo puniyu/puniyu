@@ -1,5 +1,5 @@
-pub mod command;
-
+mod command;
+pub use command::CommandHandler;
 use super::Handler;
 use super::store::HandlerStore;
 use std::sync::{Arc, LazyLock};

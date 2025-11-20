@@ -33,8 +33,8 @@ pub struct MessageContext {
 }
 
 impl MessageContext {
-	pub fn new(message_event: MessageEvent, args: HashMap<String, String>) -> Self {
-		Self { event: Arc::from(message_event), args }
+	pub fn new(event: MessageEvent, args: HashMap<String, String>) -> Self {
+		Self { event: Arc::from(event), args }
 	}
 
 	pub fn as_friend(&self) -> Option<FriendMessage> {
@@ -139,7 +139,12 @@ macro_rules! create_context_bot {
 		BotContext::new($bot, $contact)
 	};
 	($adapter:expr, $adapter_api:expr, $account:expr, $contact:expr) => {
-		BotContext::new(Bot::new($adapter, $adapter_api, $account), $contact)
+		let bot = Bot {
+			adapter: $adapter,
+			adapter_api: $adapter_api,
+			account: $account,
+		}
+		BotContext::new(bot, $contact)
 	};
 }
 

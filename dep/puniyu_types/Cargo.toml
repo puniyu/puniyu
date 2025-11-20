@@ -55,12 +55,6 @@ task = [
 command = ["dep:async-trait", "context", "dep:itertools"]
 plugin = []
 
-handler = [
-    "dep:async-trait",
-    "adapter",
-    "event",
-    "command",
-    "context",
-    "bot",
-    "contact",
-]
+handler = ["dep:async-trait", "event", "command", "context", "bot", "contact"]
+
+matcher = ["dep:async-trait", "dep:puniyu_logger", "event", "element"]
