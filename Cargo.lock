@@ -1955,6 +1955,7 @@ dependencies = [
  "async-trait",
  "chrono-tz",
  "itertools",
+ "libloading 0.9.0",
  "puniyu_logger",
  "reqwest",
  "serde",

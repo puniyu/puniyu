@@ -39,3 +39,6 @@ pub mod handler;
 
 #[cfg(feature = "matcher")]
 pub mod matcher;
+
+#[cfg(feature = "library")]
+pub mod library;
