@@ -2,6 +2,7 @@ use super::store::Command;
 use super::store::CommandStore;
 use itertools::Itertools;
 use std::sync::{Arc, LazyLock, Mutex};
+use super::CommandBuilder;
 
 static COMMAND_STORE: LazyLock<Arc<Mutex<CommandStore>>> =
 	LazyLock::new(|| Arc::new(Mutex::new(CommandStore::default())));
@@ -9,8 +10,12 @@ static COMMAND_STORE: LazyLock<Arc<Mutex<CommandStore>>> =
 pub struct CommandRegistry;
 
 impl CommandRegistry {
-	pub fn insert(builder: Command) {
-		COMMAND_STORE.lock().unwrap().insert(builder);
+	pub fn insert(plugin_name: &str, builder: Arc<dyn CommandBuilder>) {
+		let command = Command {
+			plugin_name: plugin_name.to_string(),
+			builder,
+		};
+		COMMAND_STORE.lock().unwrap().insert(command);
 	}
 
 	pub fn remove_with_id(id: u64) {

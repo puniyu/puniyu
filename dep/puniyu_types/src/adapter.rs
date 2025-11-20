@@ -6,6 +6,9 @@ mod api;
 pub use api::AdapterApi;
 mod info;
 pub use info::*;
+mod store;
+mod registry;
+pub use registry::AdapterRegistry;
 
 use async_trait::async_trait;
 use puniyu_logger::info;
@@ -13,6 +16,12 @@ use crate::server::ServerType;
 
 
 pub type Result<T> = std::result::Result<T, Error>;
+
+#[derive(Clone)]
+pub struct Adapter {
+	pub info: AdapterInfo,
+	pub api: &'static dyn AdapterApi,
+}
 
 
 /// 适配器构建器

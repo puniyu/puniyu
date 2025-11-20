@@ -6,7 +6,7 @@ use std::sync::{Arc, Mutex};
 #[derive(Clone)]
 pub struct Command {
 	/// 插件名称
-	pub plugin_name: &'static str,
+	pub plugin_name: String,
 	/// 命令名称
 	pub builder: Arc<dyn CommandBuilder>,
 }

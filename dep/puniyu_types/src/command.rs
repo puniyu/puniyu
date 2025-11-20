@@ -4,6 +4,7 @@ pub use registry::CommandRegistry;
 
 use async_trait::async_trait;
 use crate::context::{MessageContext, BotContext};
+use std::sync::Arc;
 
 #[derive(Debug, Clone)]
 pub enum HandlerResult {
@@ -12,6 +13,16 @@ pub enum HandlerResult {
 	/// 继续处理
 	Continue,
 }
+
+
+#[derive(Clone)]
+pub struct Command {
+	/// 插件名称
+	pub plugin_name: &'static str,
+	/// 命令名称
+	pub builder: Arc<dyn CommandBuilder>,
+}
+
 
 #[async_trait]
 pub trait CommandBuilder: Send + Sync + 'static {

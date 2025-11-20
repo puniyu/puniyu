@@ -10,6 +10,7 @@ edition.workspace = true
 rust-version.workspace = true
 
 [dependencies]
+futures = { workspace = true, optional = true }
 tokio = { workspace = true, optional = true }
 puniyu_logger = { workspace = true, optional = true }
 serde = { workspace = true, optional = true }
@@ -24,6 +25,8 @@ chrono-tz = { version = "0.10.4", optional = true }
 uuid = { version = "1.17.0", features = ["v4"], optional = true }
 itertools = { workspace = true, optional = true }
 libloading = { version = "0.9.0", optional = true }
+puniyu_common = { version = "0.4.0", path = "../../crates/puniyu_common", optional = true }
+puniyu_config = { version = "0.4.1", path = "../../crates/puniyu_config", optional = true }
 
 [features]
 default = []
@@ -32,10 +35,14 @@ adapter = [
     "dep:reqwest",
     "dep:async-trait",
     "dep:puniyu_logger",
+    "dep:puniyu_common",
+    "dep:futures",
+    "tokio/fs",
     "contact",
     "sender",
     "element",
     "server",
+    "bot",
 ]
 event = ["dep:strum", "element", "sender", "contact"]
 context = ["adapter", "bot", "element", "event", "contact", "sender"]
@@ -54,7 +61,16 @@ task = [
     "dep:tokio",
 ]
 command = ["dep:async-trait", "context", "dep:itertools"]
-plugin = []
+library = ["dep:async-trait", "dep:reqwest", "dep:libloading"]
+plugin = [
+    "dep:async-trait",
+    "dep:thiserror",
+    "dep:puniyu_config",
+    "task",
+    "command",
+    "tokio/fs",
+    "server",
+    "library"
+]
 handler = ["dep:async-trait", "event", "command", "context", "bot", "contact"]
 matcher = ["dep:async-trait", "dep:puniyu_logger", "event", "element"]
-library = ["dep:async-trait", "dep:reqwest", "dep:libloading"]
