@@ -81,6 +81,7 @@ impl From<FriendContact> for ContactType {
 	}
 }
 
+
 impl From<GroupContact> for ContactType {
 	fn from(contact: GroupContact) -> Self {
 		ContactType::Group(contact)

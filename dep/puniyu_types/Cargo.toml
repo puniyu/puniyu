@@ -52,5 +52,15 @@ task = [
     "dep:async-trait",
     "dep:tokio",
 ]
-command  = ["dep:async-trait", "context", "dep:itertools"]
+command = ["dep:async-trait", "context", "dep:itertools"]
 plugin = []
+
+handler = [
+    "dep:async-trait",
+    "adapter",
+    "event",
+    "command",
+    "context",
+    "bot",
+    "contact",
+]

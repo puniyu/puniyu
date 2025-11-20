@@ -33,3 +33,6 @@ pub mod command;
 
 #[cfg(feature = "plugin")]
 pub mod plugin;
+
+#[cfg(feature = "handler")]
+pub mod handler;

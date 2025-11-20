@@ -131,13 +131,19 @@ impl MessageContext {
 		}
 	}
 }
+
+#[cfg(feature = "context")]
 #[macro_export]
 macro_rules! create_context_bot {
 	($bot:expr, $contact:expr) => {
 		BotContext::new($bot, $contact)
 	};
+	($adapter:expr, $adapter_api:expr, $account:expr, $contact:expr) => {
+		BotContext::new(Bot::new($adapter, $adapter_api, $account), $contact)
+	};
 }
 
+#[cfg(feature = "context")]
 #[macro_export]
 macro_rules! create_message_event_context {
 	($event:expr, $args:expr) => {

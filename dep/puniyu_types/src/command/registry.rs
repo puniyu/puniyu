@@ -39,7 +39,7 @@ impl CommandRegistry {
 	pub fn get_all() -> Vec<Arc<Command>> {
 		COMMAND_STORE.lock().unwrap().get_all()
 	}
-	pub fn get_plugin(command_name: &str) -> Vec<String> {
+	pub fn get_plugins(command_name: &str) -> Vec<String> {
 		let command_list = COMMAND_STORE.lock().unwrap().get_all();
 		command_list
 			.iter()
