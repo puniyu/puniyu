@@ -4,6 +4,7 @@ pub use registry::PluginRegistry;
 
 
 use crate::task::TaskBuilder;
+use crate::version::Version;
 use async_trait::async_trait;
 use crate::command::CommandBuilder;
 use std::fmt;
@@ -15,7 +16,7 @@ pub trait PluginBuilder: Send + Sync + 'static {
 	/// 插件名称
 	fn name(&self) -> &'static str;
 	/// 插件版本
-	fn version(&self) -> &'static str;
+	fn version(&self) -> Version;
 
 	/// api版本
 	fn abi_version(&self) -> &'static str;
@@ -41,11 +42,11 @@ pub trait PluginBuilder: Send + Sync + 'static {
 #[derive(Debug, Clone)]
 pub struct Plugin {
 	/// 插件名称
-	pub name: &'static str,
+	pub name: String,
 	/// 插件版本
-	pub version: &'static str,
+	pub version: String,
 	/// 插件作者
-	pub author: &'static str,
+	pub author: String,
 }
 
 #[derive(Clone)]

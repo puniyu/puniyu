@@ -1,6 +1,8 @@
 use serde::{Deserialize, Serialize};
 use strum::{Display, EnumString, IntoStaticStr};
 
+use crate::version::Version;
+
 /// 适配器平台
 ///
 /// 用于标识适配器的平台，用于在不同平台之间进行消息传递。
@@ -116,7 +118,7 @@ pub struct AdapterInfo {
 	/// 适配器名称 如lagrange-onebot
 	pub name: String,
 	/// 适配器版本
-	pub version: String,
+	pub version: Version,
 	/// 适配器平台
 	pub platform: AdapterPlatform,
 	/// 适配器使用的协议标准 如onebot11

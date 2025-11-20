@@ -103,9 +103,9 @@ impl PluginRegistry {
 					join_all(tasks).await;
 
 					let plugin_info = create_plugin_info!(
-						plugin_name,
-						plugin_builder.version(),
-						plugin_builder.author()
+						plugin_name.to_string(),
+						plugin_builder.version().to_string(),
+						plugin_builder.author().to_string()
 					);
 
 					if let Some(server) = plugin_builder.server() {
@@ -157,9 +157,9 @@ impl PluginRegistry {
 				});
 
 				let plugin_info = create_plugin_info!(
-					plugin_name,
-					plugin_builder.version(),
-					plugin_builder.author()
+					plugin_name.to_string(),
+					plugin_builder.version().to_string(),
+					plugin_builder.author().to_string()
 				);
 
 				if let Some(server) = plugin_builder.server() {

@@ -50,8 +50,8 @@ impl PluginStore {
 				};
 
 				if let Some(name) = plugin_name {
-					TaskRegistry::remove_task(name).await;
-					CommandRegistry::remove_with_plugin_name(name);
+					TaskRegistry::remove_task(name.as_str()).await;
+					CommandRegistry::remove_with_plugin_name(name.as_str());
 					true
 				} else {
 					false

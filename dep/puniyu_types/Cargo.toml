@@ -1,6 +1,6 @@
 [package]
 name = "puniyu_types"
-version = "0.1.0"
+version = "0.4.1"
 authors.workspace = true
 license.workspace = true
 readme.workspace = true
@@ -37,6 +37,7 @@ adapter = [
     "dep:puniyu_logger",
     "dep:puniyu_common",
     "dep:futures",
+    "version",
     "tokio/fs",
     "contact",
     "sender",
@@ -66,6 +67,7 @@ plugin = [
     "dep:async-trait",
     "dep:thiserror",
     "dep:puniyu_config",
+    "version",
     "task",
     "command",
     "tokio/fs",
@@ -74,3 +76,4 @@ plugin = [
 ]
 handler = ["dep:async-trait", "event", "command", "context", "bot", "contact"]
 matcher = ["dep:async-trait", "dep:puniyu_logger", "event", "element"]
+version = ["dep:serde"]
