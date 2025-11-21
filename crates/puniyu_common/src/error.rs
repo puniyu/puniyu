@@ -2,12 +2,9 @@ use std::io;
 use thiserror::Error;
 
 #[derive(Error, Debug)]
-pub enum Config {
+pub enum Error {
 	#[error("配置文件错误: IO错误")]
 	Io(#[from] io::Error),
-	
-	#[error("配置文件错误: 写入错误")]
-	Write,
 	
 	#[error("配置文件错误: TOML解析错误")]
 	Parse(#[from] toml::de::Error),

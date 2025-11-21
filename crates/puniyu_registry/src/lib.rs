@@ -1,23 +1,26 @@
-extern crate core;
+#[cfg(feature = "bot")]
+pub mod bot;
 
 #[cfg(feature = "adapter")]
-mod adapter;
-#[cfg(feature = "adapter")]
-pub use adapter::AdapterRegistry;
-pub mod error;
+pub mod adapter;
 
 #[cfg(feature = "task")]
-mod task;
+pub mod task;
+
 #[cfg(feature = "task")]
 pub use task::TaskRegistry;
-#[cfg(feature = "plugin")]
-mod plugin;
-
-#[cfg(feature = "plugin")]
-pub use plugin::PluginRegistry;
 
 #[cfg(feature = "command")]
-pub use puniyu_command::CommandRegistry;
-mod server;
+pub mod command;
+
 #[cfg(feature = "server")]
-pub use server::ServerRegistry;
+pub mod server;
+
+#[cfg(feature = "plugin")]
+pub mod plugin;
+
+#[cfg(feature = "matcher")]
+pub mod matcher;
+
+#[cfg(feature = "handler")]
+pub mod handler;

@@ -1646,33 +1646,13 @@ version = "0.4.1"
 dependencies = [
  "actix-web",
  "async-trait",
- "puniyu_adapter_api",
- "puniyu_bot",
- "puniyu_builder",
+ "puniyu_bus",
  "puniyu_common",
- "puniyu_contact",
- "puniyu_element",
- "puniyu_event",
- "puniyu_event_bus",
  "puniyu_logger",
  "puniyu_macros",
- "puniyu_sender",
+ "puniyu_registry",
+ "puniyu_types",
  "serde_json",
-]
-
-[[package]]
-name = "puniyu_adapter_api"
-version = "0.4.1"
-dependencies = [
- "async-trait",
- "puniyu_common",
- "puniyu_contact",
- "puniyu_element",
- "puniyu_sender",
- "reqwest",
- "serde",
- "thiserror 2.0.17",
- "tokio",
 ]
 
 [[package]]
@@ -1687,41 +1667,18 @@ dependencies = [
 ]
 
 [[package]]
-name = "puniyu_bot"
-version = "0.4.1"
-dependencies = [
- "puniyu_adapter_api",
- "puniyu_builder",
- "puniyu_contact",
- "puniyu_element",
- "puniyu_logger",
-]
-
-[[package]]
 name = "puniyu_build"
 version = "0.2.0"
 
 [[package]]
-name = "puniyu_builder"
+name = "puniyu_bus"
 version = "0.4.1"
 dependencies = [
- "actix-web",
- "async-trait",
- "puniyu_adapter_api",
- "puniyu_command",
- "puniyu_element",
  "puniyu_logger",
- "serde",
+ "puniyu_registry",
+ "puniyu_types",
  "strum",
-]
-
-[[package]]
-name = "puniyu_command"
-version = "0.4.1"
-dependencies = [
- "async-trait",
- "itertools",
- "puniyu_event",
+ "tokio",
 ]
 
 [[package]]
@@ -1745,14 +1702,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "puniyu_contact"
-version = "0.4.1"
-dependencies = [
- "serde",
- "strum",
-]
-
-[[package]]
 name = "puniyu_core"
 version = "0.4.1"
 dependencies = [
@@ -1761,61 +1710,15 @@ dependencies = [
  "figlet-rs",
  "glob",
  "inventory",
- "puniyu_bot",
- "puniyu_builder",
+ "puniyu_bus",
  "puniyu_common",
  "puniyu_config",
- "puniyu_event_bus",
  "puniyu_logger",
  "puniyu_registry",
  "puniyu_server",
- "puniyu_task",
+ "puniyu_types",
  "thiserror 2.0.17",
  "tokio",
-]
-
-[[package]]
-name = "puniyu_element"
-version = "0.4.1"
-dependencies = [
- "serde",
- "serde_json",
- "strum",
-]
-
-[[package]]
-name = "puniyu_event"
-version = "0.4.1"
-dependencies = [
- "puniyu_adapter_api",
- "puniyu_config",
- "puniyu_contact",
- "puniyu_element",
- "puniyu_sender",
- "strum",
-]
-
-[[package]]
-name = "puniyu_event_bus"
-version = "0.4.1"
-dependencies = [
- "puniyu_adapter_api",
- "puniyu_event",
- "puniyu_handler",
- "puniyu_logger",
- "puniyu_matcher",
- "strum",
- "tokio",
-]
-
-[[package]]
-name = "puniyu_handler"
-version = "0.4.1"
-dependencies = [
- "async-trait",
- "puniyu_adapter_api",
- "puniyu_command",
- "puniyu_event",
 ]
 
 [[package]]
@@ -1855,30 +1758,17 @@ dependencies = [
 ]
 
 [[package]]
-name = "puniyu_matcher"
-version = "0.4.1"
-dependencies = [
- "puniyu_element",
- "puniyu_event",
- "puniyu_logger",
-]
-
-[[package]]
 name = "puniyu_plugin"
 version = "0.4.1"
 dependencies = [
  "actix-web",
  "async-trait",
  "inventory",
- "puniyu_adapter_api",
- "puniyu_builder",
- "puniyu_command",
  "puniyu_common",
- "puniyu_contact",
- "puniyu_element",
- "puniyu_event",
  "puniyu_logger",
  "puniyu_macros",
+ "puniyu_registry",
+ "puniyu_types",
  "serde_json",
 ]
 
@@ -1887,27 +1777,19 @@ name = "puniyu_registry"
 version = "0.4.1"
 dependencies = [
  "actix-web",
+ "async-trait",
+ "chrono-tz",
  "futures",
- "puniyu_adapter_api",
- "puniyu_bot",
- "puniyu_builder",
- "puniyu_command",
+ "itertools",
  "puniyu_common",
  "puniyu_config",
  "puniyu_library",
  "puniyu_logger",
- "puniyu_task",
+ "puniyu_types",
  "thiserror 2.0.17",
  "tokio",
-]
-
-[[package]]
-name = "puniyu_sender"
-version = "0.4.1"
-dependencies = [
- "serde",
- "serde_json",
- "strum",
+ "tokio-cron-scheduler",
+ "uuid",
 ]
 
 [[package]]
@@ -1919,6 +1801,7 @@ dependencies = [
  "puniyu_common",
  "puniyu_logger",
  "puniyu_registry",
+ "puniyu_types",
  "tokio",
 ]
 
@@ -1935,16 +1818,19 @@ dependencies = [
 ]
 
 [[package]]
-name = "puniyu_task"
+name = "puniyu_types"
 version = "0.4.1"
 dependencies = [
+ "actix-web",
  "async-trait",
- "chrono-tz",
- "puniyu_builder",
+ "puniyu_config",
  "puniyu_logger",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "strum",
+ "thiserror 2.0.17",
  "tokio",
- "tokio-cron-scheduler",
- "uuid",
 ]
 
 [[package]]

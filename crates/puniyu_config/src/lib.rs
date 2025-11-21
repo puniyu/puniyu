@@ -4,7 +4,7 @@ use crate::{
 	group::{GROUP_CONFIG, GroupConfig},
 };
 use notify_debouncer_mini::{DebounceEventResult, new_debouncer, notify};
-use puniyu_common::error::Config as Error;
+use puniyu_common::Error;
 use puniyu_common::path::LOG_DIR;
 use puniyu_common::{APP_NAME, path::CONFIG_DIR, toml::merge_config};
 use puniyu_logger::{debug, error, info};

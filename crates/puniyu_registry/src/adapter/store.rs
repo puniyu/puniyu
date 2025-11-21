@@ -1,5 +1,5 @@
-use puniyu_bot::BotRegistry;
-use puniyu_builder::adapter::Adapter;
+use crate::bot::BotRegistry;
+use super::Adapter;
 use std::collections::HashMap;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Arc, Mutex};

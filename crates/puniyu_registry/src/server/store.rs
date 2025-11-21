@@ -1,4 +1,4 @@
-use puniyu_builder::ServerType;
+use puniyu_types::server::ServerType;
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 

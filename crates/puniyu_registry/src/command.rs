@@ -1,0 +1,72 @@
+mod store;
+
+use itertools::Itertools;
+use puniyu_types::command::CommandBuilder;
+use std::sync::{Arc, LazyLock, Mutex};
+use store::CommandStore;
+
+#[derive(Clone)]
+pub struct Command {
+	/// 插件名称
+	pub plugin_name: String,
+	/// 命令名称
+	pub builder: Arc<dyn CommandBuilder>,
+}
+
+impl From<Command> for puniyu_types::command::Command {
+	fn from(cmd: Command) -> Self {
+		Self {
+			name: cmd.builder.name(),
+			description: cmd.builder.description(),
+			args: cmd.builder.args(),
+			rank: cmd.builder.rank(),
+		}
+	}
+}
+static COMMAND_STORE: LazyLock<Arc<Mutex<CommandStore>>> =
+	LazyLock::new(|| Arc::new(Mutex::new(CommandStore::default())));
+
+pub struct CommandRegistry;
+
+impl CommandRegistry {
+	pub fn insert(plugin_name: &str, builder: Arc<dyn CommandBuilder>) {
+		let command = Command { plugin_name: plugin_name.to_string(), builder };
+		COMMAND_STORE.lock().unwrap().insert(command);
+	}
+
+	pub fn remove_with_id(id: u64) {
+		COMMAND_STORE.lock().unwrap().remove_with_id(id);
+	}
+
+	pub fn remove_with_name(name: &str) {
+		COMMAND_STORE.lock().unwrap().remove_with_name(name)
+	}
+
+	pub fn remove_with_plugin_name(plugin_name: &str) {
+		COMMAND_STORE.lock().unwrap().remove_with_plugin_name(plugin_name)
+	}
+	pub fn get_with_id(id: u64) -> Option<Arc<Command>> {
+		COMMAND_STORE.lock().unwrap().get_with_id(id)
+	}
+
+	pub fn get_with_name(name: &str) -> Option<Arc<Command>> {
+		COMMAND_STORE.lock().unwrap().get_with_name(name)
+	}
+
+	pub fn get_with_plugin(plugin_name: &str, name: &str) -> Option<Arc<Command>> {
+		COMMAND_STORE.lock().unwrap().get_with_plugin(plugin_name, name)
+	}
+
+	pub fn get_all() -> Vec<Arc<Command>> {
+		COMMAND_STORE.lock().unwrap().get_all()
+	}
+	pub fn get_plugins(command_name: &str) -> Vec<String> {
+		let command_list = COMMAND_STORE.lock().unwrap().get_all();
+		command_list
+			.iter()
+			.filter(|command| command.builder.name() == command_name)
+			.sorted_by_key(|command| command.builder.rank())
+			.map(|command| command.plugin_name.to_string())
+			.collect()
+	}
+}

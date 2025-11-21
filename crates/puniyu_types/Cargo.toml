@@ -1,0 +1,70 @@
+[package]
+name = "puniyu_types"
+version = "0.4.1"
+authors.workspace = true
+license.workspace = true
+readme.workspace = true
+homepage.workspace = true
+repository.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+tokio = { workspace = true, optional = true }
+puniyu_logger = { workspace = true, optional = true }
+serde = { workspace = true, optional = true }
+strum = { workspace = true, optional = true }
+serde_json = { workspace = true, optional = true }
+thiserror = { workspace = true, optional = true }
+reqwest = { workspace = true, optional = true }
+async-trait = { workspace = true, optional = true }
+actix-web = { workspace = true, optional = true }
+puniyu_config = { version = "0.4.1", path = "../puniyu_config", optional = true }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["full"] }
+async-trait = { workspace = true }
+
+[features]
+default = ["full"]
+adapter = [
+    "dep:thiserror",
+    "dep:reqwest",
+    "dep:async-trait",
+    "dep:puniyu_logger",
+    "version",
+    "contact",
+    "sender",
+    "element",
+]
+event = ["dep:strum", "element", "sender", "contact"]
+context = ["adapter", "bot", "element", "event", "contact", "sender"]
+account = ["dep:serde"]
+contact = ["dep:serde", "dep:strum"]
+bot = ["adapter", "account"]
+sender = ["dep:serde", "dep:strum"]
+element = ["dep:serde", "dep:strum", "dep:serde_json"]
+server = ["dep:actix-web"]
+task = ["dep:async-trait"]
+command = ["dep:async-trait", "context"]
+plugin = ["dep:async-trait", "version", "task", "command", "server"]
+handler = ["dep:async-trait", "event", "bot"]
+matcher = ["dep:async-trait", "event"]
+version = ["dep:serde"]
+full = [
+    "adapter",
+    "event",
+    "context",
+    "account",
+    "contact",
+    "bot",
+    "sender",
+    "element",
+    "server",
+    "task",
+    "command",
+    "plugin",
+    "handler",
+    "matcher",
+    "version",
+]

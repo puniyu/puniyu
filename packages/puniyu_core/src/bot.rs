@@ -1,5 +1,6 @@
-pub use puniyu_bot::Bot;
-use puniyu_bot::{BotId, BotRegistry};
+use puniyu_registry::bot::BotRegistry;
+pub use puniyu_types::bot::Bot;
+use puniyu_types::bot::BotId;
 
 /// 获取Bot实例
 ///

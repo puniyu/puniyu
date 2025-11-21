@@ -1,12 +1,13 @@
+mod error;
 mod store;
 
-use crate::ServerRegistry;
-use crate::adapter::store::AdapterStore;
-use crate::error::Adapter as Error;
-use puniyu_builder::adapter::{Adapter, AdapterBuilder};
+use crate::server::ServerRegistry;
+pub use error::Error;
 use puniyu_common::path::ADAPTER_DATA_DIR;
 use puniyu_logger::{debug, error, owo_colors::OwoColorize};
+use puniyu_types::adapter::{Adapter, AdapterBuilder};
 use std::sync::LazyLock;
+use store::AdapterStore;
 use tokio::fs;
 
 static ADAPTER_STORE: LazyLock<AdapterStore> = LazyLock::new(AdapterStore::new);
@@ -43,18 +44,14 @@ impl AdapterRegistry {
 	}
 
 	/// 卸载一个适配器，包括适配器中的Bot实例
-	#[inline]
 	pub fn unload_adapter(name: &str) -> Result<(), Error> {
 		ADAPTER_STORE.remove_adapter(name);
 		Ok(())
 	}
 
-	#[inline]
 	pub fn get_adapter(name: &str) -> Option<Adapter> {
 		ADAPTER_STORE.get_adapter(name)
 	}
-
-	#[inline]
 	pub fn get_all_adapters() -> Vec<Adapter> {
 		ADAPTER_STORE.get_all_adapters().values().cloned().collect()
 	}
@@ -62,7 +59,7 @@ impl AdapterRegistry {
 
 async fn run_adapter_init<F>(name: &str, init_fn: F) -> Result<(), Error>
 where
-	F: Future<Output = puniyu_adapter_api::Result<()>>,
+	F: Future<Output = puniyu_types::adapter::Result<()>>,
 {
 	match init_fn.await {
 		Ok(()) => {

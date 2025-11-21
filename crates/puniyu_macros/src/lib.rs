@@ -2,7 +2,6 @@ use proc_macro::TokenStream;
 use quote::quote;
 #[cfg(any(feature = "plugin", feature = "command", feature = "adapter"))]
 use syn::ItemFn;
-
 #[cfg(any(feature = "command", feature = "task"))]
 use syn::{Token, parse::Parse, parse::ParseStream, parse_macro_input, punctuated::Punctuated};
 
@@ -162,7 +161,10 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
 	}
 
 	let plugin_name = env!("CARGO_PKG_NAME");
-	let plugin_version = env!("CARGO_PKG_VERSION");
+	let version_major = env!("CARGO_PKG_VERSION_MAJOR");
+	let version_minor = env!("CARGO_PKG_VERSION_MINOR");
+	let version_patch = env!("CARGO_PKG_VERSION_PATCH");
+	let version_string = env!("CARGO_PKG_VERSION");
 	let plugin_author = {
 		let authors = env!("CARGO_PKG_AUTHORS");
 		if authors.is_empty() { "Unknown" } else { authors }
@@ -176,7 +178,7 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
 				puniyu_plugin::logger::info!(
 					"{} v{} 初始化完成",
 					#plugin_name,
-					#plugin_version,
+					#version_string,
 				);
 				Ok(())
 			}
@@ -202,8 +204,12 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
 				#plugin_name
 			}
 
-			fn version(&self) -> &'static str {
-				#plugin_version
+			fn version(&self) -> ::puniyu_plugin::Version {
+				Version {
+					major: #version_major.to_string(),
+					minor: #version_minor.to_string(),
+					patch: #version_patch.to_string(),
+				}
 			}
 
 			fn author(&self) -> &'static str {
@@ -524,7 +530,7 @@ pub fn command(args: TokenStream, item: TokenStream) -> TokenStream {
 				vec![#(#command_args.to_string()),*]
 			}
 
-			fn rank(&self) -> usize {
+			fn rank(&self) -> u64 {
 				#command_rank.to_string().parse().unwrap_or(100)
 			}
 
