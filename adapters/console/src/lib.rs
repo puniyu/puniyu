@@ -44,7 +44,7 @@ impl AdapterBuilder for Console {
 		let account_info = account_info!(
 			uin: bot_id,
 			name: format!("{}/{}", name, bot_id),
-			avatar: "".to_string()
+			avatar: api::AVATAR_URL
 		);
 		register_bot!(self.info(), account_info.clone(), self.api());
 

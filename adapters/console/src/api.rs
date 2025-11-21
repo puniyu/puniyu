@@ -17,7 +17,7 @@ macro_rules! info {
 			};
 		}
 
-static AVATAR_URL: LazyLock<String> = LazyLock::new(|| {
+pub(crate) static AVATAR_URL: LazyLock<String> = LazyLock::new(|| {
 	let server = Config::app().server();
 	format!("http://{}:{}/logo.png", server.host(), server.port())
 });
