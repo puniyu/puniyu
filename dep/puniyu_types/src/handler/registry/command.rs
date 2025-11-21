@@ -13,8 +13,7 @@ use std::collections::HashMap;
 
 /// TODO: 此结构体需重构, 宏简化
 macro_rules! handle_command {
-	// 处理 FriendMessage
-	($bot:expr, $message:expr, Friend) => {{
+	($bot:expr, $message:expr, $message_type:ident) => {{
 		let bot = create_context_bot!($bot, $message.contact().into());
 
 		let (command_name, command_args) = {
@@ -40,47 +39,7 @@ macro_rules! handle_command {
 			} else {
 				HashMap::new()
 			};
-		let event = create_message_event_context!(MessageEvent::Friend($message.clone()), plugin_args);
-
-		let plugins = CommandRegistry::get_plugins(command_name.as_str());
-		for name in plugins {
-			let func = CommandRegistry::get_with_plugin(name.as_str(), command_name.as_str());
-			if let Some(command) = func {
-				let result = command.builder.run(&bot, &event).await;
-				match result {
-					HandlerResult::Ok => break,
-					HandlerResult::Continue => continue,
-				}
-			}
-		}
-	}};
-	($bot:expr, $message:expr, Group) => {{
-		let bot = create_context_bot!($bot, $message.contact().into());
-
-		let (command_name, command_args) = {
-			let text_content = $message
-				.elements()
-				.iter()
-				.filter_map(|element| element.as_text())
-				.collect::<Vec<_>>()
-				.join(" ");
-			parse_command!(&text_content)
-		};
-
-		let plugin_args =
-			if let Some(command) = CommandRegistry::get_with_name(command_name.as_str()) {
-				let arg_definitions = command.builder.args();
-				let mut args_map = HashMap::new();
-				for arg_name in arg_definitions {
-					if let Some(value) = command_args.get(arg_name.as_str()).cloned().flatten() {
-						args_map.insert(arg_name.clone(), value);
-					}
-				}
-				args_map
-			} else {
-				HashMap::new()
-			};
-		let event = create_message_event_context!(MessageEvent::Group($message.clone()), plugin_args);
+		let event = create_message_event_context!(MessageEvent::$message_type($message.clone()), plugin_args);
 
 		let plugins = CommandRegistry::get_plugins(command_name.as_str());
 		for name in plugins {
