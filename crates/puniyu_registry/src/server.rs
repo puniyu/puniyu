@@ -1,7 +1,8 @@
-use puniyu_builder::ServerType;
+mod store;
+
+use puniyu_types::server::ServerType;
 use std::sync::LazyLock;
 
-mod store;
 
 static SERVER_STORE: LazyLock<store::ServerStore> = LazyLock::new(store::ServerStore::default);
 

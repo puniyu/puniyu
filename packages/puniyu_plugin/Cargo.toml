@@ -17,12 +17,14 @@ inventory.workspace = true
 puniyu_logger.workspace = true
 actix-web.workspace = true
 
-
-puniyu_builder = { version = "0.4.1", path = "../../crates/puniyu_builder", features = ["plugin"] }
-puniyu_command = { version = "0.4.1", path = "../../crates/puniyu_command", features = ["registry"] }
-puniyu_adapter_api = { version = "0.4.1", path = "../../crates/puniyu_adapter_api" }
-puniyu_element = { version = "0.4.1", path = "../../crates/puniyu_element" }
-puniyu_event = { version = "0.4.1", path = "../../crates/puniyu_event" }
 puniyu_common = { version = "0.4.1", path = "../../crates/puniyu_common" }
-puniyu_macros = { version = "0.4.1", path = "../../crates/puniyu_macros", features = ["plugin"] }
-puniyu_contact = { version = "0.4.1", path = "../../crates/puniyu_contact" }
+puniyu_macros = { version = "0.4.1", path = "../../crates/puniyu_macros", features = [
+  "plugin",
+] }
+puniyu_types = { version = "0.4.1", path = "../../crates/puniyu_types", default-features = false, features = [
+  "plugin",
+  "event",
+] }
+puniyu_registry = { version = "0.4.1", path = "../../crates/puniyu_registry", default-features = false, features = [
+  "plugin",
+] }

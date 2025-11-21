@@ -21,4 +21,9 @@ actix-web.workspace = true
 futures-util = "0.3.31"
 
 puniyu_common = { version = "0.4.1", path = "../../crates/puniyu_common" }
-puniyu_registry = { version = "0.4.1", path = "../../crates/puniyu_registry", default-features = false, features = ["server"] }
+puniyu_types = { version = "0.4.1", path = "../../crates/puniyu_types", default-features = false, features = [
+  "server",
+] }
+puniyu_registry = { version = "0.4.1", path = "../../crates/puniyu_registry", default-features = false, features = [
+  "server",
+] }

@@ -46,10 +46,12 @@ impl AdapterBuilder for Console {
 			name: format!("{}/{}", name, bot_id),
 			avatar: "".to_string()
 		);
-		register_bot!(self.info(), account_info, self.api());
+		register_bot!(self.info(), account_info.clone(), self.api());
 
 		info!("适配器: {} 初始化完成", self.info().name);
 
+		let account_info = account_info.clone();
+		let adapter_info = self.info().clone();
 		thread::spawn(move || {
 			loop {
 				let message = {
@@ -103,13 +105,15 @@ impl AdapterBuilder for Console {
 				let adapter = &api::ConsoleAdapterApi as &'static dyn AdapterApi;
 				let event_id = EVENT_ID.fetch_add(1, Ordering::Relaxed).to_string();
 
+				let bot = Bot { adapter: adapter_info.clone(), account: account_info.clone(), api: adapter };
+
 				match msg_type {
 					"group" => {
 						let contact = contact_group!(name, name);
 						let sender = group_sender!(user_id: name, nick: name, sex: Sex::Unknown, age: 0, role: Role::Member);
 
 						create_group_message!(
-							adapter, event_id, contact, bot_id, name, message_id, elements, sender,
+							bot, event_id, contact, bot_id, name, message_id, elements, sender,
 							timestamp
 						);
 					}
@@ -119,7 +123,7 @@ impl AdapterBuilder for Console {
 							friend_sender!(user_id: name, nick: name, sex: Sex::Unknown, age: 0);
 
 						create_friend_message!(
-							adapter, event_id, contact, bot_id, name, message_id, elements, sender,
+							bot, event_id, contact, bot_id, name, message_id, elements, sender,
 							timestamp
 						);
 					}
@@ -129,7 +133,7 @@ impl AdapterBuilder for Console {
 							friend_sender!(user_id: name, nick: name, sex: Sex::Unknown, age: 0);
 
 						create_friend_message!(
-							adapter, event_id, contact, bot_id, name, message_id, elements, sender,
+							bot, event_id, contact, bot_id, name, message_id, elements, sender,
 							timestamp
 						);
 					}

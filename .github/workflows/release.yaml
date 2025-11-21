@@ -23,23 +23,13 @@ jobs:
       releases_created: ${{ steps.release-please.outputs.releases_created }}
       build: ${{ steps.release-please.outputs['crates/puniyu_build--release_created'] }}
       common: ${{ steps.release-please.outputs['crates/puniyu_common--release_created'] }}
-      element: ${{ steps.release-please.outputs['crates/puniyu_element--release_created'] }}
-      contact: ${{ steps.release-please.outputs['crates/puniyu_contact--release_created'] }}
-      sender: ${{ steps.release-please.outputs['crates/puniyu_sender--release_created'] }}
-      macros: ${{ steps.release-please.outputs['crates/puniyu_macros--release_created'] }}
       library: ${{ steps.release-please.outputs['crates/puniyu_library--release_created'] }}
+      macros: ${{ steps.release-please.outputs['crates/puniyu_macros--release_created'] }}
       config: ${{ steps.release-please.outputs['crates/puniyu_config--release_created'] }}
-      adapter_api: ${{ steps.release-please.outputs['crates/puniyu_adapter_api--release_created'] }}
-      event: ${{ steps.release-please.outputs['crates/puniyu_event--release_created'] }}
-      command: ${{ steps.release-please.outputs['crates/puniyu_command--release_created'] }}
-      builder: ${{ steps.release-please.outputs['crates/puniyu_builder--release_created'] }}
-      task: ${{ steps.release-please.outputs['crates/puniyu_task--release_created'] }}
-      bot: ${{ steps.release-please.outputs['crates/puniyu_bot--release_created'] }}
+      types: ${{ steps.release-please.outputs['crates/puniyu_types--release_created'] }}
       registry: ${{ steps.release-please.outputs['crates/puniyu_registry--release_created'] }}
-      server: ${{ steps.release-please.outputs['crates/puniyu_server--release_created'] }}
-      matcher: ${{ steps.release-please.outputs['crates/puniyu_matcher--release_created'] }}
-      handler: ${{ steps.release-please.outputs['crates/puniyu_handler--release_created'] }}
-      event_bus: ${{ steps.release-please.outputs['crates/puniyu_event_bus--release_created'] }}
+      bus: ${{ steps.release-please.outputs['crates/puniyu_bus--release_created'] }}
+      server: ${{ steps.release-please.outputs['packages/puniyu_server--release_created'] }}
       plugin: ${{ steps.release-please.outputs['packages/puniyu_plugin--release_created'] }}
       adapter: ${{ steps.release-please.outputs['packages/puniyu_adapter--release_created'] }}
       core: ${{ steps.release-please.outputs['packages/puniyu_core--release_created'] }}
@@ -124,27 +114,6 @@ jobs:
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_API_TOKEN }}
 
-      - name: 发布 element
-        if: needs.release.outputs.element
-        run: |
-          cargo publish --package puniyu_element
-        env:
-          CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_API_TOKEN }}
-
-      - name: 发布 contact
-        if: needs.release.outputs.contact
-        run: |
-          cargo publish --package puniyu_contact
-        env:
-          CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_API_TOKEN }}
-
-      - name: 发布 sender
-        if: needs.release.outputs.sender
-        run: |
-          cargo publish --package puniyu_sender
-        env:
-          CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_API_TOKEN }}
-
       - name: 发布 macros
         if: needs.release.outputs.macros
         run: |
@@ -159,45 +128,10 @@ jobs:
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_API_TOKEN }}
 
-      - name: 发布 adapter_api
-        if: needs.release.outputs.adapter_api
+      - name: 发布 types
+        if: needs.release.outputs.types
         run: |
-          cargo publish --package puniyu_adapter_api
-        env:
-          CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_API_TOKEN }}
-
-      - name: 发布 event
-        if: needs.release.outputs.event
-        run: |
-          cargo publish --package puniyu_event
-        env:
-          CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_API_TOKEN }}
-
-      - name: 发布 command
-        if: needs.release.outputs.command
-        run: |
-          cargo publish --package puniyu_command
-        env:
-          CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_API_TOKEN }}
-
-      - name: 发布 builder
-        if: needs.release.outputs.builder
-        run: |
-          cargo publish --package puniyu_builder
-        env:
-          CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_API_TOKEN }}
-
-      - name: 发布 task
-        if: needs.release.outputs.task
-        run: |
-          cargo publish --package puniyu_task
-        env:
-          CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_API_TOKEN }}
-
-      - name: 发布 bot
-        if: needs.release.outputs.bot
-        run: |
-          cargo publish --package puniyu_bot
+          cargo publish --package puniyu_types
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_API_TOKEN }}
 
@@ -208,24 +142,10 @@ jobs:
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_API_TOKEN }}
 
-      - name: 发布 matcher
-        if: needs.release.outputs.matcher
+      - name: 发布 bus
+        if: needs.release.outputs.bus
         run: |
-          cargo publish --package puniyu_matcher
-        env:
-          CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_API_TOKEN }}
-
-      - name: 发布 handler
-        if: needs.release.outputs.handler
-        run: |
-          cargo publish --package puniyu_handler
-        env:
-          CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_API_TOKEN }}
-
-      - name: 发布 event_bus
-        if: needs.release.outputs.event_bus
-        run: |
-          cargo publish --package puniyu_event_bus
+          cargo publish --package puniyu_bus
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_API_TOKEN }}
 

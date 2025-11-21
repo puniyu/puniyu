@@ -17,23 +17,12 @@
         "plugin",
         "adapter",
         "common",
-        "element",
-        "contact",
-        "sender",
+        "types",
         "macros",
         "library",
         "server",
         "config",
-        "adapter-api",
-        "event",
-        "command",
-        "builder",
-        "task",
-        "bot",
-        "registry",
-        "matcher",
-        "handler",
-        "event-bus"
+        "bus"
       ]
     }
   ],
@@ -107,56 +96,24 @@
       "release-type": "rust",
       "component": "common"
     },
-    "crates/puniyu_element": {
+    "crates/puniyu_config": {
       "release-type": "rust",
-      "component": "element"
+      "component": "config"
     },
-    "crates/puniyu_contact": {
-      "release-type": "rust",
-      "component": "contact"
-    },
-    "crates/puniyu_sender": {
-      "release-type": "rust",
-      "component": "sender"
+    "crates/puniyu_library": {
+      "component": "library"
     },
     "crates/puniyu_macros": {
       "release-type": "rust",
       "component": "macros"
     },
-    "crates/puniyu_library": {
-      "component": "library"
-    },
-    "crates/puniyu_config": {
-      "component": "config"
-    },
-    "crates/puniyu_adapter_api": {
-      "component": "adapter-api"
-    },
-    "crates/puniyu_event": {
-      "component": "event"
-    },
-    "crates/puniyu_command": {
-      "component": "command"
-    },
-    "crates/puniyu_builder": {
-      "component": "builder"
-    },
-    "crates/puniyu_task": {
-      "component": "task"
-    },
-    "crates/puniyu_bot": {
-      "component": "bot"
+    "crates/puniyu_types": {
+      "component": "types"
     },
     "crates/puniyu_registry": {
       "component": "registry"
     },
-    "crates/puniyu_matcher": {
-      "component": "matcher"
-    },
-    "crates/puniyu_handler": {
-      "component": "handler"
-    },
-    "crates/puniyu_event_bus": {
+    "crates/puniyu_bus": {
       "component": "event-bus"
     },
     "packages/puniyu_server": {

@@ -1,30 +1,30 @@
+mod error;
 mod store;
 
-use crate::error::Plugin as Error;
-use crate::{ServerRegistry, TaskRegistry};
+pub use error::Error;
+
+use crate::command::CommandRegistry;
+use crate::server::ServerRegistry;
+use crate::task::TaskRegistry;
 use futures::future::join_all;
-use puniyu_builder::plugin::{Plugin, PluginBuilder, PluginId, PluginType, VERSION as ABI_VERSION};
-use puniyu_command::register_command;
-use puniyu_command::{Command, CommandRegistry};
 use puniyu_common::APP_NAME;
 use puniyu_common::path::PLUGIN_DATA_DIR;
 use puniyu_config::Config;
-use puniyu_library::PluginLibrary;
-use puniyu_library::libloading::Symbol;
+use puniyu_library::{LibraryRegistry, libloading};
 use puniyu_logger::{SharedLogger, debug, error, owo_colors::OwoColorize, warn};
-use puniyu_task::Task;
-use std::sync::{LazyLock, Mutex, OnceLock};
+use puniyu_types::plugin::{Plugin, PluginBuilder, PluginId, PluginType};
+use puniyu_types::version::Version;
+use std::sync::{Arc, LazyLock};
 use store::PluginStore;
 use tokio::fs;
 
-static LIBRARY: OnceLock<Mutex<PluginLibrary>> = OnceLock::new();
-static PLUGIN_STORE: LazyLock<PluginStore> = LazyLock::new(PluginStore::default);
+pub const VERSION: Version = Version {
+	major: env!("CARGO_PKG_VERSION_MAJOR"),
+	minor: env!("CARGO_PKG_VERSION_MINOR"),
+	patch: env!("CARGO_PKG_VERSION_PATCH"),
+};
 
-macro_rules! create_task_registry {
-	($plugin_name:expr, $task_builder:expr) => {
-		Task { plugin_name: $plugin_name, builder: $task_builder.into() }
-	};
-}
+static PLUGIN_STORE: LazyLock<PluginStore> = LazyLock::new(PluginStore::default);
 
 macro_rules! create_plugin_info {
 	($name:expr, $version:expr, $author:expr) => {
@@ -42,19 +42,18 @@ impl PluginRegistry {
 		match plugin_id {
 			// 动态链接插件
 			PluginType::Path(path) => {
-				let client = LIBRARY.get_or_init(|| Mutex::new(PluginLibrary::new()));
 				let lib = {
-					let mut library = client.lock().unwrap();
-					library.load_plugin(&path).unwrap();
+					LibraryRegistry::load_library(&path).unwrap();
 					let name = path
 						.file_name()
 						.map(|n| n.to_string_lossy().to_string())
 						.ok_or_else(|| Error::NotFound(path.to_string_lossy().to_string()))?;
-					library.get_plugin(&name).unwrap().library.clone()
+					LibraryRegistry::get_library(&name).unwrap().library.clone()
 				};
 				unsafe {
-					let symbol: Symbol<unsafe extern "C" fn() -> *mut dyn PluginBuilder> =
-						lib.get(b"plugin_info").unwrap();
+					let symbol: libloading::Symbol<
+						unsafe extern "C" fn() -> *mut dyn PluginBuilder,
+					> = lib.get(b"plugin_info").unwrap();
 					let plugin_builder = &*symbol();
 					let set_logger: fn(&SharedLogger) = *lib.get(b"setup_logger").unwrap();
 					set_logger(&SharedLogger::new());
@@ -74,13 +73,16 @@ impl PluginRegistry {
 					let plugin_abi_version = plugin_builder.abi_version();
 					let force_plugin = Config::app().load().force_plugin();
 
-					if plugin_abi_version != ABI_VERSION {
+					if plugin_abi_version != VERSION {
 						let plugin_tag = "plugin".fg_rgb::<175, 238, 238>();
 						let plugin_name = plugin_name.fg_rgb::<240, 128, 128>();
 
 						warn!(
 							"[{}:{}] ABI版本不匹配, 当前ABI版本: {}, 插件ABI版本: {}",
-							plugin_tag, plugin_name, plugin_abi_version, ABI_VERSION
+							plugin_tag,
+							plugin_name,
+							plugin_abi_version,
+							VERSION.to_string()
 						);
 
 						if !force_plugin {
@@ -94,21 +96,21 @@ impl PluginRegistry {
 						.tasks()
 						.into_iter()
 						.map(|task_builder| {
-							TaskRegistry::add_task(create_task_registry!(plugin_name, task_builder))
+							TaskRegistry::add_task(plugin_name, task_builder.into())
 						})
 						.collect();
 
 					let commands = plugin_builder.commands();
 					commands.into_iter().for_each(|command| {
-						register_command!(plugin_name, command);
+						CommandRegistry::insert(plugin_name, Arc::from(command));
 					});
 
 					join_all(tasks).await;
 
 					let plugin_info = create_plugin_info!(
-						plugin_name,
-						plugin_builder.version(),
-						plugin_builder.author()
+						plugin_name.to_string(),
+						plugin_builder.version().to_string(),
+						plugin_builder.author().to_string()
 					);
 
 					if let Some(server) = plugin_builder.server() {
@@ -130,13 +132,16 @@ impl PluginRegistry {
 				let plugin_abi_version = plugin_builder.abi_version();
 				let force_plugin = Config::app().load().force_plugin();
 
-				if plugin_abi_version != ABI_VERSION {
+				if plugin_abi_version != VERSION {
 					let plugin_tag = "plugin".fg_rgb::<175, 238, 238>();
 					let plugin_name = plugin_name.fg_rgb::<240, 128, 128>();
 
 					warn!(
 						"[{}:{}] ABI版本不匹配, 当前ABI版本: {}, 插件ABI版本: {}",
-						plugin_tag, plugin_name, plugin_abi_version, ABI_VERSION
+						plugin_tag,
+						plugin_name,
+						plugin_abi_version,
+						VERSION.to_string()
 					);
 
 					if !force_plugin {
@@ -149,22 +154,20 @@ impl PluginRegistry {
 				let tasks: Vec<_> = plugin_builder
 					.tasks()
 					.into_iter()
-					.map(|task_builder| {
-						TaskRegistry::add_task(create_task_registry!(plugin_name, task_builder))
-					})
+					.map(|task_builder| TaskRegistry::add_task(plugin_name, task_builder.into()))
 					.collect();
 
 				join_all(tasks).await;
 
 				let commands = plugin_builder.commands();
 				commands.into_iter().for_each(|command| {
-					register_command!(plugin_name, command);
+					CommandRegistry::insert(plugin_name, Arc::from(command));
 				});
 
 				let plugin_info = create_plugin_info!(
-					plugin_name,
-					plugin_builder.version(),
-					plugin_builder.author()
+					plugin_name.to_string(),
+					plugin_builder.version().to_string(),
+					plugin_builder.author().to_string()
 				);
 
 				if let Some(server) = plugin_builder.server() {

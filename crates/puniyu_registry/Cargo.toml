@@ -11,26 +11,84 @@ edition.workspace = true
 rust-version.workspace = true
 
 [dependencies]
-futures.workspace = true
-thiserror.workspace = true
-puniyu_logger.workspace = true
-tokio.workspace = true
-
+async-trait = { workspace = true, optional = true }
+futures = { workspace = true, optional = true }
+thiserror = { workspace = true, optional = true }
+tokio = { workspace = true, optional = true }
 actix-web = { workspace = true, optional = true }
+tokio-cron-scheduler = { version = "0.15.0", optional = true }
+chrono-tz = { version = "0.10.4", optional = true }
+uuid = { version = "1.17.0", features = ["v4"], optional = true }
+itertools = { workspace = true, optional = true }
 
-puniyu_task = { version = "0.4.1", path = "../puniyu_task", optional = true }
-puniyu_bot = { version = "0.4.1", path = "../puniyu_bot", optional = true }
-puniyu_command = { version = "0.4.1", path = "../puniyu_command", optional = true, features = ["registry"] }
+puniyu_logger = { workspace = true, optional = true }
 puniyu_common = { version = "0.4.1", path = "../puniyu_common", optional = true }
-puniyu_builder = { version = "0.4.1", path = "../puniyu_builder", optional = true }
+puniyu_types = { version = "0.4.1", path = "../puniyu_types", default-features = false, optional = true }
 puniyu_library = { version = "0.4.1", path = "../puniyu_library", optional = true }
 puniyu_config = { version = "0.4.1", path = "../puniyu_config", optional = true }
-puniyu_adapter_api = { version = "0.4.1", path = "../puniyu_adapter_api", optional = true }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["full"] }
+async-trait = { workspace = true }
 
 [features]
-default = []
-adapter = ["puniyu_builder/adapter", "dep:puniyu_bot", "dep:puniyu_adapter_api", "server"]
-plugin = ["dep:puniyu_config", "dep:puniyu_common", "dep:puniyu_library", "dep:puniyu_builder", "puniyu_builder/plugin", "puniyu_library/plugin", "task", "command"]
-task = ["dep:puniyu_task", "dep:puniyu_builder", "puniyu_builder/task"]
-command = ["dep:puniyu_command"]
-server = ["dep:actix-web", "puniyu_builder/server"]
+default = ["full"]
+adapter = [
+  "dep:puniyu_common",
+  "dep:puniyu_logger",
+  "puniyu_types/adapter",
+  "puniyu_types/bot",
+  "dep:thiserror",
+  "bot",
+  "server",
+]
+bot = ["puniyu_types/bot"]
+server = ["puniyu_types/server"]
+task = [
+  "dep:tokio",
+  "dep:tokio-cron-scheduler",
+  "dep:chrono-tz",
+  "dep:uuid",
+  "puniyu_types/task",
+]
+command = ["dep:itertools", "puniyu_types/command", "puniyu_types/server"]
+plugin = [
+  "dep:thiserror",
+  "dep:futures",
+  "dep:puniyu_library",
+  "dep:puniyu_config",
+  "tokio/fs",
+  "puniyu_types/plugin",
+  "puniyu_types/server",
+  "puniyu_types/version",
+  "task",
+  "command",
+]
+matcher = [
+  "dep:async-trait",
+  "dep:puniyu_logger",
+  "puniyu_types/matcher",
+  "puniyu_types/event",
+  "puniyu_types/element",
+]
+handler = [
+  "dep:async-trait",
+  "dep:puniyu_logger",
+  "puniyu_types/handler",
+  "puniyu_types/event",
+  "puniyu_types/command",
+  "puniyu_types/context",
+  "puniyu_types/bot",
+  "puniyu_types/contact",
+  "command",
+]
+full = [
+  "adapter",
+  "bot",
+  "server",
+  "task",
+  "command",
+  "plugin",
+  "matcher",
+  "handler",
+]

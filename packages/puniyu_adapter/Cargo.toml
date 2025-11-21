@@ -19,16 +19,13 @@ actix-web.workspace = true
 puniyu_macros = { version = "0.4.1", path = "../../crates/puniyu_macros", features = [
   "adapter",
 ] }
-puniyu_bot = { version = "0.4.1", path = "../../crates/puniyu_bot" }
-puniyu_element = { version = "0.4.1", path = "../../crates/puniyu_element" }
-puniyu_event = { version = "0.4.1", path = "../../crates/puniyu_event", features = [
-  "message",
-] }
-puniyu_event_bus = { version = "0.4.1", path = "../../crates/puniyu_event_bus" }
 puniyu_common = { version = "0.4.1", path = "../../crates/puniyu_common" }
-puniyu_builder = { version = "0.4.1", path = "../../crates/puniyu_builder", features = [
+puniyu_types = { version = "0.4.1", path = "../../crates/puniyu_types", default-features = false, features = [
+  "adapter",
+  "event",
+  "bot",
+] }
+puniyu_registry = { version = "0.4.1", path = "../../crates/puniyu_registry", default-features = false, features = [
   "adapter",
 ] }
-puniyu_contact = { version = "0.4.1", path = "../../crates/puniyu_contact" }
-puniyu_sender = { version = "0.4.1", path = "../../crates/puniyu_sender" }
-puniyu_adapter_api = { version = "0.4.1", path = "../../crates/puniyu_adapter_api" }
+puniyu_bus = { version = "0.4.1", path = "../../crates/puniyu_bus" }

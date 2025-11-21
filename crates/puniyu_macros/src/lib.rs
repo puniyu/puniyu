@@ -530,7 +530,7 @@ pub fn command(args: TokenStream, item: TokenStream) -> TokenStream {
 				vec![#(#command_args.to_string()),*]
 			}
 
-			fn rank(&self) -> usize {
+			fn rank(&self) -> u64 {
 				#command_rank.to_string().parse().unwrap_or(100)
 			}
 

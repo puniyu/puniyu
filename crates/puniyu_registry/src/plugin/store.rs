@@ -1,6 +1,6 @@
-use crate::TaskRegistry;
-use puniyu_builder::plugin::{Plugin, PluginId};
-use puniyu_command::CommandRegistry;
+use super::{Plugin, PluginId};
+use crate::command::CommandRegistry;
+use crate::task::TaskRegistry;
 use std::{
 	collections::HashMap,
 	sync::{
@@ -50,8 +50,8 @@ impl PluginStore {
 				};
 
 				if let Some(name) = plugin_name {
-					TaskRegistry::remove_task(name).await;
-					CommandRegistry::remove_with_plugin_name(name);
+					TaskRegistry::remove_task(name.as_str()).await;
+					CommandRegistry::remove_with_plugin_name(name.as_str());
 					true
 				} else {
 					false

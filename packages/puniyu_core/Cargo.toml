@@ -21,14 +21,12 @@ inventory.workspace = true
 convert_case.workspace = true
 
 puniyu_logger = { workspace = true, optional = true }
-puniyu_config = { version = "0.4.1", path = "../../crates/puniyu_config" }
-puniyu_bot = { version = "0.4.1", path = "../../crates/puniyu_bot" }
-puniyu_task = { version = "0.4.1", path = "../../crates/puniyu_task" }
 puniyu_server = { version = "0.4.1", path = "../puniyu_server", optional = true }
-puniyu_builder = { version = "0.4.1", path = "../../crates/puniyu_builder", features = ["plugin"] }
-puniyu_registry = { version = "0.4.1", path = "../../crates/puniyu_registry", features = ["plugin", "adapter"] }
+puniyu_config = { version = "0.4.1", path = "../../crates/puniyu_config" }
+puniyu_bus = { version = "0.4.1", path = "../../crates/puniyu_bus" }
 puniyu_common = { version = "0.4.1", path = "../../crates/puniyu_common" }
-puniyu_event_bus = { version = "0.4.1", path = "../../crates/puniyu_event_bus" }
+puniyu_types = { version = "0.4.1", path = "../../crates/puniyu_types" }
+puniyu_registry = { version = "0.4.1", path = "../../crates/puniyu_registry" }
 
 [features]
 default = ["server", "logger"]

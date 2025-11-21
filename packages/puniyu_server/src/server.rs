@@ -2,7 +2,7 @@ use crate::{api, info, middleware};
 use actix_web::middleware::{NormalizePath, TrailingSlash};
 use actix_web::{App, HttpServer, web};
 use puniyu_common::APP_NAME;
-use puniyu_registry::ServerRegistry;
+use puniyu_registry::server::ServerRegistry;
 use std::net::{IpAddr, Ipv4Addr};
 use std::sync::{Arc, OnceLock};
 use tokio::sync::Mutex;
