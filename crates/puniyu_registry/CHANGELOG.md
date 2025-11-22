@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.4.2](https://github.com/puniyu/puniyu/compare/registry-v0.4.1...registry-v0.4.2) (2025-11-22)
+
+
+### 🐛 错误修复
+
+* **puniyu_registry:** 为 adapter 特性添加 server 支持 ([1c71c3e](https://github.com/puniyu/puniyu/commit/1c71c3e3f223048a55d5bf8bd27f6654e0015064))
+
+
+### ♻️ 代码重构
+
+* **error:** 统一错误处理机制 ([586272d](https://github.com/puniyu/puniyu/commit/586272ddf8828cfa7af809bc01de95d1245c4d9b))
+* 重构工作区crates ([#53](https://github.com/puniyu/puniyu/issues/53)) ([f55ab51](https://github.com/puniyu/puniyu/commit/f55ab519b9275c19773f16acfddff0c44db8e48c))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puniyu_common bumped from 0.4.1 to 0.4.2
+    * puniyu_types bumped from 0.4.1 to 0.4.2
+    * puniyu_library bumped from 0.4.1 to 0.4.2
+    * puniyu_config bumped from 0.4.1 to 0.4.2
+
 ## [0.4.1](https://github.com/puniyu/puniyu/compare/registry-v0.4.0...registry-v0.4.1) (2025-11-16)
 
 

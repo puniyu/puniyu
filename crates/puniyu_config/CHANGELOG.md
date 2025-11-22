@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.4.2](https://github.com/puniyu/puniyu/compare/config-v0.4.1...config-v0.4.2) (2025-11-22)
+
+
+### ♻️ 代码重构
+
+* 重构工作区crates ([#53](https://github.com/puniyu/puniyu/issues/53)) ([f55ab51](https://github.com/puniyu/puniyu/commit/f55ab519b9275c19773f16acfddff0c44db8e48c))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puniyu_common bumped from 0.4.1 to 0.4.2
+
 ## [0.4.1](https://github.com/puniyu/puniyu/compare/config-v0.4.0...config-v0.4.1) (2025-11-16)
 
 

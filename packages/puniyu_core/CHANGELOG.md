@@ -1,5 +1,31 @@
 # Changelog
 
+## [0.4.2](https://github.com/puniyu/puniyu/compare/core-v0.4.1...core-v0.4.2) (2025-11-22)
+
+
+### 🔧 其他更新
+
+* **deps:** 更新依赖版本 ([63551d7](https://github.com/puniyu/puniyu/commit/63551d722a048e4e5e0479fe421d7190a8b7c7e9))
+
+
+### ♻️ 代码重构
+
+* **adapter:** 优化 Avatar 类型实现并添加服务器 logo 接口 ([952c18b](https://github.com/puniyu/puniyu/commit/952c18b3008a5e31fd00127dc6d2fb55568c9796))
+* **core:** 调整Bot模块导出方式 ([d94d88c](https://github.com/puniyu/puniyu/commit/d94d88cf891d9e222fb996c54895fa062bc17fe7))
+* 重构工作区crates ([#53](https://github.com/puniyu/puniyu/issues/53)) ([f55ab51](https://github.com/puniyu/puniyu/commit/f55ab519b9275c19773f16acfddff0c44db8e48c))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puniyu_server bumped from 0.4.1 to 0.4.2
+    * puniyu_config bumped from 0.4.1 to 0.4.2
+    * puniyu_bus bumped from 0.4.1 to 0.4.2
+    * puniyu_common bumped from 0.4.1 to 0.4.2
+    * puniyu_types bumped from 0.4.1 to 0.4.2
+    * puniyu_registry bumped from 0.4.1 to 0.4.2
+
 ## [0.4.1](https://github.com/puniyu/puniyu/compare/core-v0.4.0...core-v0.4.1) (2025-11-16)
 
 
