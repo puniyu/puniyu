@@ -16,6 +16,7 @@ pub trait PluginBuilder: Send + Sync + 'static {
 	/// api版本
 	fn abi_version(&self) -> Version;
 
+	/// 插件描述
 	fn description(&self) -> &'static str;
 	/// 插件作者
 	fn author(&self) -> &'static str;

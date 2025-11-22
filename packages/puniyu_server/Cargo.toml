@@ -16,7 +16,7 @@ path = "src/main.rs"
 
 [dependencies]
 puniyu_logger.workspace = true
-tokio.workspace = true
+tokio = { workspace = true, features = ["full"] }
 actix-web.workspace = true
 futures-util = "0.3.31"
 
