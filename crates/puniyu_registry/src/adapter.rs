@@ -2,8 +2,10 @@ mod error;
 mod store;
 
 use crate::server::ServerRegistry;
+use convert_case::{Case, Casing};
 pub use error::Error;
-use puniyu_common::path::ADAPTER_DATA_DIR;
+use puniyu_common::path::{ADAPTER_CONFIG_DIR, ADAPTER_DATA_DIR};
+use puniyu_common::write_config;
 use puniyu_logger::{debug, error, owo_colors::OwoColorize};
 use puniyu_types::adapter::{Adapter, AdapterBuilder};
 use std::sync::LazyLock;
@@ -22,11 +24,37 @@ impl AdapterRegistry {
 		if adapters.values().any(|adapter| adapter.info.name == adapter_name) {
 			return Err(Error::Exists(adapter_name));
 		}
+
+		if let Some(config) = adapter.config()
+			&& let Some(first_config) = config.first()
+		{
+			debug!(
+				"[{}:{}] 配置: {} - {}",
+				"adapter".fg_rgb::<175, 238, 238>(),
+				adapter_name.fg_rgb::<240, 128, 128>(),
+				first_config.name(),
+				first_config.config()
+			);
+		}
 		debug!(
 			"[{}:{}] 正在加载适配器",
 			"adapter".fg_rgb::<175, 238, 238>(),
 			adapter_name.fg_rgb::<240, 128, 128>()
 		);
+		let config_dir =
+			ADAPTER_CONFIG_DIR.as_path().join(adapter_name.as_str().to_case(Case::Snake));
+
+		if !config_dir.exists() {
+			let _ = std::fs::create_dir_all(&config_dir);
+		}
+
+		if let Some(configs) = adapter.config() {
+			configs.iter().for_each(|config| {
+				write_config(&config_dir, config.name(), &config.config())
+					.expect("配置文件创建失败");
+			});
+		}
+
 		create_data_dir(adapter_name.as_str()).await;
 		if let Some(server) = adapter.server() {
 			ServerRegistry::insert(adapter_name.clone(), server);

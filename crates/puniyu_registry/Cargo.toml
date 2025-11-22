@@ -20,6 +20,7 @@ tokio-cron-scheduler = { version = "0.15.0", optional = true }
 chrono-tz = { version = "0.10.4", optional = true }
 uuid = { version = "1.17.0", features = ["v4"], optional = true }
 itertools = { workspace = true, optional = true }
+convert_case = { workspace = true, optional = true }
 
 puniyu_logger = { workspace = true, optional = true }
 puniyu_common = { version = "0.4.1", path = "../puniyu_common", optional = true }
@@ -34,6 +35,7 @@ async-trait = { workspace = true }
 [features]
 default = ["full"]
 adapter = [
+  "dep:convert_case",
   "dep:puniyu_common",
   "dep:puniyu_logger",
   "puniyu_types/adapter",

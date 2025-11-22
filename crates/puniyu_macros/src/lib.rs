@@ -10,6 +10,57 @@ use syn::Ident;
 
 #[cfg(feature = "adapter")]
 #[proc_macro_attribute]
+pub fn adapter_config(args: TokenStream, item: TokenStream) -> TokenStream {
+	let input_struct = if let Ok(struct_item) = syn::parse::<syn::ItemStruct>(item.clone()) {
+		struct_item
+	} else {
+		return syn::Error::new_spanned(
+			proc_macro2::TokenStream::from(item),
+			"这个宏只能用在结构体上！",
+		)
+		.to_compile_error()
+		.into();
+	};
+
+	let struct_name = &input_struct.ident;
+	
+	let config_name = if args.is_empty() {
+		struct_name.to_string().to_lowercase()
+	} else {
+		let name_lit: syn::LitStr = syn::parse(args).expect("配置名称必须是字符串字面量");
+		name_lit.value()
+	};
+	let adapter_name = env!("CARGO_PKG_NAME");
+
+	let expanded = quote! {
+		#input_struct
+
+		impl ::puniyu_adapter::Config for #struct_name {
+			fn name(&self) -> &'static str {
+				#config_name
+			}
+
+			fn config(&self) -> ::puniyu_adapter::serde_json::Value {
+				::puniyu_adapter::serde_json::to_value(Self::default())
+					.unwrap_or(::puniyu_adapter::serde_json::Value::Null)
+			}
+		}
+
+		::puniyu_core::inventory::submit! {
+			crate::ConfigRegistry {
+				adapter_name: #adapter_name,
+				builder: || -> Box<dyn ::puniyu_adapter::Config> {
+					Box::new(#struct_name::default())
+				}
+			}
+		}
+	};
+
+	TokenStream::from(expanded)
+}
+
+#[cfg(feature = "adapter")]
+#[proc_macro_attribute]
 pub fn adapter(_: TokenStream, item: TokenStream) -> TokenStream {
 	let input_struct = if let Ok(struct_item) = syn::parse::<syn::ItemStruct>(item.clone()) {
 		struct_item
@@ -40,6 +91,14 @@ pub fn adapter(_: TokenStream, item: TokenStream) -> TokenStream {
 				::puniyu_adapter::AdapterBuilder::api(&#struct_name)
 			}
 
+			fn config(&self) -> Option<Vec<Box<dyn ::puniyu_adapter::Config>>> {
+				::puniyu_adapter::inventory::iter::<ConfigRegistry>
+					.into_iter()
+					.map(|registry| (registry.builder)())
+					.collect::<Vec<_>>()
+					.into()
+			}
+
 			fn server(&self) -> Option<::puniyu_adapter::ServerType> {
 				::puniyu_adapter::AdapterBuilder::server(&#struct_name)
 			}
@@ -48,6 +107,14 @@ pub fn adapter(_: TokenStream, item: TokenStream) -> TokenStream {
 				::puniyu_adapter::AdapterBuilder::init(&#struct_name).await
 			}
 		}
+
+		/// 配置注册表
+		pub(crate) struct ConfigRegistry {
+			adapter_name: &'static str,
+			/// 配置构造器
+			builder: fn() -> Box<dyn ::puniyu_adapter::Config>,
+		}
+		::puniyu_core::inventory::collect!(ConfigRegistry);
 	};
 
 	TokenStream::from(expanded)

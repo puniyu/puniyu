@@ -9,7 +9,7 @@ pub use info::*;
 
 use async_trait::async_trait;
 use puniyu_logger::info;
-use crate::server::ServerType;
+use crate::{config::Config, server::ServerType};
 
 
 pub type Result<T> = std::result::Result<T, Error>;
@@ -29,6 +29,10 @@ pub trait AdapterBuilder: Send + Sync + 'static {
 
 	/// 获取适配器API
 	fn api(&self) -> &'static dyn AdapterApi;
+
+	fn config(&self) -> Option<Vec<Box<dyn Config>>> {
+		None
+	}
 
 	/// 路由管理
 	fn server(&self) -> Option<ServerType> {

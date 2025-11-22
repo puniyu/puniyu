@@ -42,3 +42,6 @@ pub mod matcher;
 
 #[cfg(feature = "version")]
 pub mod version;
+
+#[cfg(feature = "config")]
+pub mod config;

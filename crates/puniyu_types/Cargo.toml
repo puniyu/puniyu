@@ -36,6 +36,7 @@ adapter = [
     "contact",
     "sender",
     "element",
+    "config"
 ]
 event = ["dep:strum", "element", "sender", "contact"]
 context = ["adapter", "bot", "element", "event", "contact", "sender"]
@@ -51,6 +52,7 @@ plugin = ["dep:async-trait", "version", "task", "command", "server"]
 handler = ["dep:async-trait", "event", "bot"]
 matcher = ["dep:async-trait", "event"]
 version = ["dep:serde"]
+config = ["dep:serde_json"]
 full = [
     "adapter",
     "event",
@@ -67,4 +69,5 @@ full = [
     "handler",
     "matcher",
     "version",
+    "config"
 ]

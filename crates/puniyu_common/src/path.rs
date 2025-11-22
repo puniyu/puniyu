@@ -8,7 +8,7 @@ pub static WORKING_DIR: OnceLock<PathBuf> = OnceLock::new();
 ///
 /// ## 示例
 /// ```
-/// use puniyu_types::common::BASE_DIR;
+/// use puniyu_common::path::BASE_DIR;
 /// let base_dir = BASE_DIR.as_path();
 /// ```
 pub static BASE_DIR: LazyLock<PathBuf> =
@@ -20,7 +20,7 @@ pub static BASE_DIR: LazyLock<PathBuf> =
 /// # 示例
 ///
 /// ```rust
-/// use puniyu_types::common::APP_DIR;
+/// use puniyu_common::path::APP_DIR;
 /// let app_dir = APP_DIR.as_path();
 /// ```
 pub static APP_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
@@ -49,7 +49,7 @@ pub static LOG_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
 /// # 示例
 ///
 /// ```
-/// use puniyu_types::common::CONFIG_DIR;
+/// use puniyu_common::path::CONFIG_DIR;
 /// let config_dir = CONFIG_DIR.as_path();
 /// ```
 pub static CONFIG_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
@@ -58,12 +58,27 @@ pub static CONFIG_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
 	path
 });
 
+/// 适配器配置文件夹路径
+/// 
+/// 存放适配器配置文件
+/// 
+/// # 示例
+/// ```
+/// use puniyu_common::path::ADAPTER_CONFIG_DIR;
+/// let adapter_config_dir = ADAPTER_CONFIG_DIR.as_path();
+/// ```
+pub static ADAPTER_CONFIG_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
+	let mut path = CONFIG_DIR.to_path_buf();
+	path.push("adapters");
+	path
+});
+
 /// 临时文件夹路径
 ///
 /// # 示例
 ///
 /// ```
-/// use puniyu_types::common::TEMP_DIR;
+/// use puniyu_common::path::TEMP_DIR;
 /// let temp_dir = TEMP_DIR.as_path();
 /// ```
 pub static TEMP_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
@@ -125,5 +140,20 @@ pub static PLUGIN_DATA_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
 pub static ADAPTER_DATA_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
 	let mut path = DATA_DIR.to_path_buf();
 	path.push("adapters");
+	path
+});
+
+/// 资源文件夹路径
+/// 
+/// 此目录存放插件资源文件，如图片，字体等
+/// 
+/// # 示例
+/// ```
+/// use puniyu_common::path::RESOURCE_DIR;
+/// let resource_dir = RESOURCE_DIR.as_path();
+/// ```
+pub static RESOURCE_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
+	let mut path = APP_DIR.to_path_buf();
+	path.push("resources");
 	path
 });

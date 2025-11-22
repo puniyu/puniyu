@@ -1646,6 +1646,7 @@ version = "0.4.1"
 dependencies = [
  "actix-web",
  "async-trait",
+ "inventory",
  "puniyu_bus",
  "puniyu_common",
  "puniyu_logger",
@@ -1664,6 +1665,7 @@ dependencies = [
  "puniyu_common",
  "puniyu_core",
  "rand",
+ "serde",
 ]
 
 [[package]]
@@ -1779,6 +1781,7 @@ dependencies = [
  "actix-web",
  "async-trait",
  "chrono-tz",
+ "convert_case",
  "futures",
  "itertools",
  "puniyu_common",

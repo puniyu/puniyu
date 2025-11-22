@@ -35,7 +35,6 @@ impl AdapterBuilder for Console {
 	fn api(&self) -> &'static dyn AdapterApi {
 		&api::ConsoleAdapterApi
 	}
-
 	async fn init(&self) -> Result<()> {
 		use std::time::{SystemTime, UNIX_EPOCH};
 

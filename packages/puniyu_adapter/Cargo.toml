@@ -12,10 +12,10 @@ rust-version.workspace = true
 
 [dependencies]
 async-trait.workspace = true
+inventory.workspace = true
 puniyu_logger.workspace = true
 serde_json.workspace = true
 actix-web.workspace = true
-
 puniyu_macros = { version = "0.4.1", path = "../../crates/puniyu_macros", features = [
   "adapter",
 ] }

@@ -8,7 +8,7 @@ use convert_case::{Case, Casing};
 use figlet_rs::FIGfont;
 use puniyu_bus::{EVENT_BUS, init_event_bus};
 pub use puniyu_common::APP_NAME;
-use puniyu_common::path::{DATA_DIR, PLUGIN_DATA_DIR, PLUGIN_DIR, WORKING_DIR};
+use puniyu_common::path::{DATA_DIR, PLUGIN_DATA_DIR, PLUGIN_DIR, WORKING_DIR, RESOURCE_DIR};
 use puniyu_config::{init_config, init_config_watcher};
 use puniyu_registry::{adapter::AdapterRegistry, plugin::PluginRegistry};
 use puniyu_types::adapter::AdapterBuilder;
@@ -127,6 +127,10 @@ async fn init_app(
 	}
 	if !DATA_DIR.as_path().exists() {
 		fs::create_dir(DATA_DIR.as_path()).await.unwrap();
+	}
+
+	if !RESOURCE_DIR.as_path().exists() {
+		fs::create_dir(RESOURCE_DIR.as_path()).await.unwrap();
 	}
 	init_config_watcher();
 	init_event_bus();

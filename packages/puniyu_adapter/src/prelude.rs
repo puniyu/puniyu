@@ -1,5 +1,5 @@
 pub use puniyu_bus::{EVENT_BUS, EventBus, send_event, setup_event_bus};
-pub use puniyu_macros::adapter;
+pub use puniyu_macros::{adapter, adapter_config as config};
 pub use puniyu_registry::bot::BotRegistry;
 pub use puniyu_registry::{register_bot, unregister_bot};
 pub use puniyu_types::account::AccountInfo;
@@ -9,6 +9,7 @@ pub use puniyu_types::adapter::{
 	AdapterProtocol, AdapterStandard,
 };
 pub use puniyu_types::bot::Bot;
+pub use puniyu_types::config::Config;
 pub use puniyu_types::contact::{Contact, ContactType, FriendContact, GroupContact, Scene};
 pub use puniyu_types::element::{
 	AtElement, FileElement, ImageElement, JsonElement, RecordElement, ReplyElement, TextElement,
