@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.4.2](https://github.com/puniyu/puniyu/compare/common-v0.4.1...common-v0.4.2) (2025-11-22)
+
+
+### 🔧 其他更新
+
+* **deps:** update actions/checkout action to v5.0.1 ([1c68c9c](https://github.com/puniyu/puniyu/commit/1c68c9c096e16d77d1c632e8f6f4b65191878d33))
+
+
+### ♻️ 代码重构
+
+* **config:** 重构配置文件错误处理和TOML操作函数 ([a18e37b](https://github.com/puniyu/puniyu/commit/a18e37b5be5fcf8b64cd461eb21dffdaa7807aab))
+* **error:** 统一错误处理机制 ([586272d](https://github.com/puniyu/puniyu/commit/586272ddf8828cfa7af809bc01de95d1245c4d9b))
+* 重构工作区crates ([#53](https://github.com/puniyu/puniyu/issues/53)) ([f55ab51](https://github.com/puniyu/puniyu/commit/f55ab519b9275c19773f16acfddff0c44db8e48c))
+
 ## [0.4.1](https://github.com/puniyu/puniyu/compare/common-v0.4.0...common-v0.4.1) (2025-11-16)
 
 

@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.1.13](https://github.com/puniyu/puniyu/compare/adapter-console-v0.1.12...adapter-console-v0.1.13) (2025-11-22)
+
+
+### 🐛 错误修复
+
+* **console:** 优化控制台适配器配置与资源管理 ([31184f1](https://github.com/puniyu/puniyu/commit/31184f134328fc0b193972675e2274ea53a38864))
+
+
+### ♻️ 代码重构
+
+* **console:** 在账户信息中使用AVATAR_URL ([5184612](https://github.com/puniyu/puniyu/commit/5184612f4ff1a3e484cac09d9929ceb8d67233e6))
+* **workspace:** 重构项目结构和依赖管理 ([520087e](https://github.com/puniyu/puniyu/commit/520087e38b49ff9e3aabe04be946038b81114b4d))
+* 重构工作区crates ([#53](https://github.com/puniyu/puniyu/issues/53)) ([f55ab51](https://github.com/puniyu/puniyu/commit/f55ab519b9275c19773f16acfddff0c44db8e48c))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puniyu_adapter bumped from 0.4.1 to 0.4.2
+    * puniyu_core bumped from 0.4.1 to 0.4.2
+    * puniyu_common bumped from 0.4.1 to 0.4.2
+
 ## [0.1.12](https://github.com/puniyu/puniyu/compare/adapter-console-v0.1.11...adapter-console-v0.1.12) (2025-11-16)
 
 
