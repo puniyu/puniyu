@@ -1,5 +1,29 @@
 # Changelog
 
+## [0.5.0](https://github.com/puniyu/puniyu/compare/plugin-v0.4.1...plugin-v0.5.0) (2025-11-23)
+
+
+### ✨ 新功能
+
+* **config:** 将配置序列化格式从 JSON 切换为 TOML ([48fc976](https://github.com/puniyu/puniyu/commit/48fc976274386311b62fa1d344807a68432b99f0))
+* **plugin:** 添加插件配置支持 ([dc7d1eb](https://github.com/puniyu/puniyu/commit/dc7d1ebcf2245f53f3a58b203edd405aa7cc8c1c))
+
+
+### ♻️ 代码重构
+
+* **adapter:** 独立account模块 ([0f4c175](https://github.com/puniyu/puniyu/commit/0f4c1758ecc817c2048fec38265edbf630252cb0))
+* 重构工作区crates ([#53](https://github.com/puniyu/puniyu/issues/53)) ([f55ab51](https://github.com/puniyu/puniyu/commit/f55ab519b9275c19773f16acfddff0c44db8e48c))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puniyu_common bumped from 0.4.1 to 0.5.0
+    * puniyu_macros bumped from 0.4.1 to 0.5.0
+    * puniyu_types bumped from 0.4.1 to 0.5.0
+    * puniyu_registry bumped from 0.4.1 to 0.5.0
+
 ## [0.4.1](https://github.com/puniyu/puniyu/compare/plugin-v0.4.0...plugin-v0.4.1) (2025-11-16)
 
 

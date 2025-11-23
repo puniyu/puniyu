@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.5.0](https://github.com/puniyu/puniyu/compare/config-v0.4.1...config-v0.5.0) (2025-11-23)
+
+
+### ✨ 新功能
+
+* **config:** 将配置序列化格式从 JSON 切换为 TOML ([48fc976](https://github.com/puniyu/puniyu/commit/48fc976274386311b62fa1d344807a68432b99f0))
+* **config:** 重构配置管理模块以支持动态注册与热重载 ([f3234c1](https://github.com/puniyu/puniyu/commit/f3234c16ea7d49b4cae2cdd0bda024f390778497))
+
+
+### ♻️ 代码重构
+
+* 重构工作区crates ([#53](https://github.com/puniyu/puniyu/issues/53)) ([f55ab51](https://github.com/puniyu/puniyu/commit/f55ab519b9275c19773f16acfddff0c44db8e48c))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puniyu_common bumped from 0.4.1 to 0.5.0
+
 ## [0.4.1](https://github.com/puniyu/puniyu/compare/config-v0.4.0...config-v0.4.1) (2025-11-16)
 
 

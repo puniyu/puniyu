@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/puniyu/puniyu/compare/build-v0.2.0...build-v0.2.1) (2025-11-23)
+
+
+### ♻️ 代码重构
+
+* **workspace:** 重构项目结构和依赖管理 ([520087e](https://github.com/puniyu/puniyu/commit/520087e38b49ff9e3aabe04be946038b81114b4d))
+
 ## [0.2.0](https://github.com/puniyu/puniyu/compare/build-v0.1.8...build-v0.2.0) (2025-11-15)
 
 

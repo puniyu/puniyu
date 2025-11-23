@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.0](https://github.com/puniyu/puniyu/compare/library-v0.4.1...library-v0.5.0) (2025-11-23)
+
+
+### ♻️ 代码重构
+
+* 重构工作区crates ([#53](https://github.com/puniyu/puniyu/issues/53)) ([f55ab51](https://github.com/puniyu/puniyu/commit/f55ab519b9275c19773f16acfddff0c44db8e48c))
+
 ## [0.4.1](https://github.com/puniyu/puniyu/compare/library-v0.4.0...library-v0.4.1) (2025-11-16)
 
 

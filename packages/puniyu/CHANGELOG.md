@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.5.0](https://github.com/puniyu/puniyu/compare/puniyu-v0.4.1...puniyu-v0.5.0) (2025-11-23)
+
+
+### ♻️ 代码重构
+
+* **workspace:** 重构项目结构和依赖管理 ([520087e](https://github.com/puniyu/puniyu/commit/520087e38b49ff9e3aabe04be946038b81114b4d))
+* 重构工作区crates ([#53](https://github.com/puniyu/puniyu/issues/53)) ([f55ab51](https://github.com/puniyu/puniyu/commit/f55ab519b9275c19773f16acfddff0c44db8e48c))
+
 ## [0.4.1](https://github.com/puniyu/puniyu/compare/puniyu-v0.4.0...puniyu-v0.4.1) (2025-11-16)
 
 
