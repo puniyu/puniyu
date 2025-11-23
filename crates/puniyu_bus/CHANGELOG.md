@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.4](https://github.com/puniyu/puniyu/compare/event-bus-v0.4.3...event-bus-v0.4.4) (2025-11-23)
+
+
+### 🔧 其他更新
+
+* **puniyu_bus:** 添加包描述信息 ([f627108](https://github.com/puniyu/puniyu/commit/f6271084dd478c2709b3bedfd1c9eb5a3b7db67e))
+
 ## [0.4.3](https://github.com/puniyu/puniyu/compare/event-bus-v0.4.2...event-bus-v0.4.3) (2025-11-23)
 
 

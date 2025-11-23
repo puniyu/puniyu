@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.5.2](https://github.com/puniyu/puniyu/compare/adapter-v0.5.1...adapter-v0.5.2) (2025-11-23)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puniyu_bus bumped from 0.4.3 to 0.4.4
+
 ## [0.5.1](https://github.com/puniyu/puniyu/compare/adapter-v0.5.0...adapter-v0.5.1) (2025-11-23)
 
 
