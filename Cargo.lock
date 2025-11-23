@@ -1662,7 +1662,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_adapter_console"
-version = "0.2.6"
+version = "0.2.7"
 dependencies = [
  "async-trait",
  "puniyu_adapter",
@@ -1678,7 +1678,7 @@ version = "0.2.1"
 
 [[package]]
 name = "puniyu_bus"
-version = "0.4.8"
+version = "0.4.9"
 dependencies = [
  "puniyu_logger",
  "puniyu_registry",
@@ -1689,7 +1689,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_common"
-version = "0.5.4"
+version = "0.5.6"
 dependencies = [
  "puniyu_system_info",
  "serde",
@@ -1699,7 +1699,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_config"
-version = "0.5.4"
+version = "0.5.6"
 dependencies = [
  "notify-debouncer-mini",
  "puniyu_common",
@@ -1756,7 +1756,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_macros"
-version = "0.5.4"
+version = "0.5.6"
 dependencies = [
  "convert_case",
  "croner",
@@ -1783,7 +1783,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_registry"
-version = "0.5.5"
+version = "0.5.6"
 dependencies = [
  "actix-web",
  "async-trait",
@@ -1832,7 +1832,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_types"
-version = "0.5.4"
+version = "0.5.6"
 dependencies = [
  "actix-web",
  "async-trait",

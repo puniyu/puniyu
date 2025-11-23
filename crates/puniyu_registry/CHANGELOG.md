@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.5.6](https://github.com/puniyu/puniyu/compare/registry-v0.5.5...registry-v0.5.6) (2025-11-23)
+
+
+### 🔧 其他更新
+
+* **deps:** 更新依赖配置 ([84a5c1e](https://github.com/puniyu/puniyu/commit/84a5c1ea0f1d31510a3ee438d4fe408f28686022))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puniyu_common bumped from 0.5.4 to 0.5.6
+    * puniyu_types bumped from 0.5.4 to 0.5.6
+    * puniyu_config bumped from 0.5.4 to 0.5.6
+
 ## [0.5.5](https://github.com/puniyu/puniyu/compare/registry-v0.5.4...registry-v0.5.5) (2025-11-23)
 
 
