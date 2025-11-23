@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.5.6](https://github.com/puniyu/puniyu/compare/types-v0.5.4...types-v0.5.6) (2025-11-23)
+
+
+### 🔧 其他更新
+
+* **types:** Synchronize puniyu versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puniyu_config bumped from 0.5.4 to 0.5.6
+
 ## [0.5.4](https://github.com/puniyu/puniyu/compare/types-v0.5.1...types-v0.5.4) (2025-11-23)
 
 

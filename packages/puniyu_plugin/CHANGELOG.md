@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.5.6](https://github.com/puniyu/puniyu/compare/plugin-v0.5.6...plugin-v0.5.6) (2025-11-23)
+
+
+### 🔧 其他更新
+
+* **plugin:** Synchronize puniyu versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puniyu_common bumped from 0.5.4 to 0.5.6
+    * puniyu_macros bumped from 0.5.4 to 0.5.6
+    * puniyu_types bumped from 0.5.4 to 0.5.6
+    * puniyu_registry bumped from 0.5.5 to 0.5.6
+
 ## [0.5.6](https://github.com/puniyu/puniyu/compare/plugin-v0.5.5...plugin-v0.5.6) (2025-11-23)
 
 
