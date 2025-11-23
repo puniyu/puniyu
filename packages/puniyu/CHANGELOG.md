@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.4](https://github.com/puniyu/puniyu/compare/puniyu-v0.5.3...puniyu-v0.5.4) (2025-11-23)
+
+
+### 🔧 其他更新
+
+* **core:** 支持设置app_logo ([3f4f713](https://github.com/puniyu/puniyu/commit/3f4f71344917f671468edfef639ec201440a1251))
+
 ## [0.5.3](https://github.com/puniyu/puniyu/compare/puniyu-v0.5.2...puniyu-v0.5.3) (2025-11-23)
 
 ## [0.5.2](https://github.com/puniyu/puniyu/compare/puniyu-v0.5.1...puniyu-v0.5.2) (2025-11-23)
