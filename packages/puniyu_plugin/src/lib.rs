@@ -1,5 +1,3 @@
-pub mod prelude;
-
 pub use actix_web;
 pub use actix_web::web::ServiceConfig;
 pub use async_trait::async_trait;
@@ -11,11 +9,14 @@ pub use puniyu_logger as logger;
 pub use puniyu_macros::{command, plugin, plugin_config as config, server, task};
 pub use puniyu_registry::command::CommandRegistry;
 pub use puniyu_registry::plugin::VERSION as ABI_VERSION;
-pub use puniyu_types::command::{CommandBuilder, HandlerResult};
+pub use puniyu_types::command::{CommandBuilder, HandlerAction, HandlerResult};
 pub use puniyu_types::config::Config;
+pub use puniyu_types::context::{BotContext, MessageContext};
 pub use puniyu_types::plugin::PluginBuilder;
 pub use puniyu_types::server::ServerType;
 pub use puniyu_types::task::TaskBuilder;
 pub use puniyu_types::version::Version;
 pub use serde_json;
 pub use toml;
+
+pub mod prelude;

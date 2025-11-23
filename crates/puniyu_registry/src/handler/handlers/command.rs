@@ -1,7 +1,7 @@
 use crate::command::CommandRegistry;
 use async_trait::async_trait;
 use puniyu_types::bot::Bot;
-use puniyu_types::command::HandlerResult;
+use puniyu_types::command::HandlerAction;
 use puniyu_types::context::{BotContext, MessageContext};
 use puniyu_types::event::{
 	Event, EventBase,
@@ -51,8 +51,11 @@ macro_rules! handle_command {
 			if let Some(command) = func {
 				let result = command.builder.run(&bot, &event).await;
 				match result {
-					HandlerResult::Ok => break,
-					HandlerResult::Continue => continue,
+					Ok(action) => match action {
+						HandlerAction::Done => break,
+						HandlerAction::Continue => continue,
+					},
+					Err(_) => continue,
 				}
 			}
 		}

@@ -645,6 +645,33 @@ pub fn command(args: TokenStream, item: TokenStream) -> TokenStream {
 		.into();
 	}
 
+	let mut params = input_fn.sig.inputs.iter();
+	
+	if let Some(syn::FnArg::Typed(pat_type)) = params.next() {
+		let ty = &*pat_type.ty;
+		let ty_str = quote!(#ty).to_string();
+		if !ty_str.contains("BotContext") {
+			return syn::Error::new_spanned(
+				ty,
+				"第一个参数必须是 &BotContext 类型！你这个笨蛋写成什么了？",
+			)
+			.to_compile_error()
+			.into();
+		}
+	}
+	if let Some(syn::FnArg::Typed(pat_type)) = params.next() {
+		let ty = &*pat_type.ty;
+		let ty_str = quote!(#ty).to_string();
+		if !ty_str.contains("MessageContext") {
+			return syn::Error::new_spanned(
+				ty,
+				"第二个参数必须是 &MessageContext 类型！杂鱼连参数类型都写不对吗？",
+			)
+			.to_compile_error()
+			.into();
+		}
+	}
+
 	let struct_name_str = {
 		let fn_name_str = fn_name.to_string();
 		let pascal_case_name = fn_name_str.to_case(Case::Pascal);
@@ -692,15 +719,15 @@ pub fn command(args: TokenStream, item: TokenStream) -> TokenStream {
 				}
 			}
 
-			fn args(&self) -> Vec<String> {
-				vec![#(#command_args.to_string()),*]
+			fn args(&self) -> Vec<&'static str> {
+				vec![#(#command_args),*]
 			}
 
 			fn rank(&self) -> u64 {
 				#command_rank.to_string().parse().unwrap_or(100)
 			}
 
-			async fn run(&self, bot: &BotContext, ev: &MessageContext) -> ::puniyu_plugin::HandlerResult {
+			async fn run(&self, bot: &::puniyu_plugin::BotContext, ev: &::puniyu_plugin::MessageContext) -> ::puniyu_plugin::HandlerResult {
 				#fn_name(bot, ev).await
 			}
 		}

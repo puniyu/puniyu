@@ -58,9 +58,9 @@ impl MessageContext {
 	/// args = ["name"],
 	/// rank = 50,
 	/// )]
-	/// async fn test(bot: &Bot, ev: &EventContext) -> HandlerResult {
+	/// async fn test(bot: &Bot, ev: &MessageContext) -> HandlerResult {
 	///     let name = ev.arg("name").unwrap();
-	///     HandlerResult::Ok
+	///     Ok(HandlerAction::Done)
 	/// }
 	/// ```
 	pub fn arg(&self, name: &str) -> Option<String> {

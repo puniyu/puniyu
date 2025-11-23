@@ -1,13 +1,31 @@
 use crate::context::{BotContext, MessageContext};
 use async_trait::async_trait;
 
-#[derive(Debug, Clone)]
-pub enum HandlerResult {
-	/// 处理完成
-	Ok,
-	/// 继续处理
+/// 命令处理动作
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum HandlerAction {
+	/// 处理完成，停止传播
+	Done,
+	/// 继续传播给其他处理器
 	Continue,
 }
+
+impl HandlerAction {
+	pub const fn done() -> HandlerResult {
+		Ok(HandlerAction::Done)
+	}
+}
+
+impl From<()> for HandlerAction {
+	fn from(_: ()) -> Self {
+		HandlerAction::Done
+	}
+}
+
+/// 命令处理结果
+pub type HandlerResult = Result<HandlerAction, Box<dyn std::error::Error + Send + Sync>>;
+
+
 
 #[derive(Debug, Clone)]
 pub struct Command {

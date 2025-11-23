@@ -5,7 +5,7 @@ pub use puniyu_types::adapter::{
 	AdapterApi, AdapterBuilder, AdapterCommunication, AdapterInfo, AdapterPlatform,
 	AdapterProtocol, AdapterStandard,
 };
-pub use puniyu_types::command::{CommandBuilder, HandlerResult};
+pub use puniyu_types::command::{CommandBuilder, HandlerAction, HandlerResult};
 pub use puniyu_types::config::Config;
 pub use puniyu_types::contact::{Contact, FriendContact, GroupContact, Scene};
 pub use puniyu_types::context::{BotContext, MessageContext};
