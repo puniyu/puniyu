@@ -1,5 +1,28 @@
 # Changelog
 
+## 0.5.0 (2025-11-23)
+
+
+### 🔧 其他更新
+
+* **deps:** 更新 tokio 依赖并启用完整特性 ([1b717fa](https://github.com/puniyu/puniyu/commit/1b717faacc17a23de1ec0a7856744c80d97b1a85))
+
+
+### ♻️ 代码重构
+
+* **adapter:** 优化 Avatar 类型实现并添加服务器 logo 接口 ([952c18b](https://github.com/puniyu/puniyu/commit/952c18b3008a5e31fd00127dc6d2fb55568c9796))
+* **api:** 简化logo路由注册方式 ([4337b56](https://github.com/puniyu/puniyu/commit/4337b569d4abf62f53366710e19c0f049f898938))
+* 重构工作区crates ([#53](https://github.com/puniyu/puniyu/issues/53)) ([f55ab51](https://github.com/puniyu/puniyu/commit/f55ab519b9275c19773f16acfddff0c44db8e48c))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puniyu_common bumped from 0.4.1 to 0.5.0
+    * puniyu_types bumped from 0.4.1 to 0.5.0
+    * puniyu_registry bumped from 0.4.1 to 0.5.0
+
 ## [0.4.1](https://github.com/puniyu/puniyu/compare/server-v0.4.0...server-v0.4.1) (2025-11-16)
 
 
