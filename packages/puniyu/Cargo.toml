@@ -18,4 +18,3 @@ puniyu_adapter_console = { path = "../../adapters/console" }
 [[bin]]
 name = "puniyu"
 path = "src/main.rs"
-
