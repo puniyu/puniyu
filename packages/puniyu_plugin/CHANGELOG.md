@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.5.7](https://github.com/puniyu/puniyu/compare/plugin-v0.5.6...plugin-v0.5.7) (2025-11-23)
+
+
+### 🔧 其他更新
+
+* release main ([45cd505](https://github.com/puniyu/puniyu/commit/45cd5054d26007f5a499cf3a0329f1e0435b1deb))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puniyu_common bumped from 0.5.6 to 0.5.7
+    * puniyu_macros bumped from 0.5.6 to 0.5.7
+    * puniyu_types bumped from 0.5.6 to 0.5.7
+    * puniyu_registry bumped from 0.5.6 to 0.5.7
+
 ## [0.5.6](https://github.com/puniyu/puniyu/compare/plugin-v0.5.6...plugin-v0.5.6) (2025-11-23)
 
 
