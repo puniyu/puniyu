@@ -37,6 +37,7 @@ async-trait = { workspace = true }
 default = ["full"]
 adapter = [
   "dep:convert_case",
+  "dep:futures",
   "dep:puniyu_common",
   "dep:puniyu_config",
   "dep:puniyu_logger",
