@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.11](https://github.com/puniyu/puniyu/compare/puniyu-v0.5.10...puniyu-v0.5.11) (2025-11-23)
+
+
+### 🔧 其他更新
+
+* **cargo:** 更新配置以支持本地包路径依赖 ([469cd82](https://github.com/puniyu/puniyu/commit/469cd8220e88d77898cc82944c91d75479c4665f))
+
 ## [0.5.10](https://github.com/puniyu/puniyu/compare/puniyu-v0.5.9...puniyu-v0.5.10) (2025-11-23)
 
 

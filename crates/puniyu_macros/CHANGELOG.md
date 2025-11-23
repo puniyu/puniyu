@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.11](https://github.com/puniyu/puniyu/compare/macros-v0.5.10...macros-v0.5.11) (2025-11-23)
+
+
+### ♻️ 代码重构
+
+* **macro:** 更新宏定义中的模块路径引用 ([46afc41](https://github.com/puniyu/puniyu/commit/46afc41f42dc44febb072f8372fa7be5dc24d082))
+
 ## [0.5.10](https://github.com/puniyu/puniyu/compare/macros-v0.5.9...macros-v0.5.10) (2025-11-23)
 
 
