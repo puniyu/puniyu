@@ -11,6 +11,7 @@ use syn::Ident;
 #[cfg(feature = "adapter")]
 #[proc_macro_attribute]
 pub fn adapter_config(args: TokenStream, item: TokenStream) -> TokenStream {
+		use convert_case::{Case, Casing};
 	let input_struct = if let Ok(struct_item) = syn::parse::<syn::ItemStruct>(item.clone()) {
 		struct_item
 	} else {
@@ -25,7 +26,7 @@ pub fn adapter_config(args: TokenStream, item: TokenStream) -> TokenStream {
 	let struct_name = &input_struct.ident;
 
 	let config_name = if args.is_empty() {
-		struct_name.to_string().to_lowercase()
+		struct_name.to_string().to_case(Case::Lower)
 	} else {
 		let name_lit: syn::LitStr = syn::parse(args).expect("配置名称必须是字符串字面量");
 		name_lit.value()
@@ -121,6 +122,64 @@ pub fn adapter(_: TokenStream, item: TokenStream) -> TokenStream {
 			builder: fn() -> Box<dyn ::puniyu_adapter::Config>,
 		}
 		::puniyu_core::inventory::collect!(ConfigRegistry);
+	};
+
+	TokenStream::from(expanded)
+}
+
+#[cfg(feature = "plugin")]
+#[proc_macro_attribute]
+pub fn plugin_config(args: TokenStream, item: TokenStream) -> TokenStream {
+			use convert_case::{Case, Casing};
+	let input_struct = if let Ok(struct_item) = syn::parse::<syn::ItemStruct>(item.clone()) {
+		struct_item
+	} else {
+		return syn::Error::new_spanned(
+			proc_macro2::TokenStream::from(item),
+			"这个宏只能用在结构体上！",
+		)
+		.to_compile_error()
+		.into();
+	};
+
+	let struct_name = &input_struct.ident;
+
+	let config_name = if args.is_empty() {
+		struct_name.to_string().to_case(Case::Lower)
+	} else {
+		let name_lit: syn::LitStr = syn::parse(args).expect("配置名称必须是字符串字面量");
+		name_lit.value()
+	};
+	let plugin_name = env!("CARGO_PKG_NAME");
+
+	let expanded = quote! {
+		#input_struct
+
+		impl ::puniyu_plugin::Config for #struct_name {
+			fn name(&self) -> &'static str {
+				#config_name
+			}
+
+			fn config(&self) -> ::puniyu_plugin::serde_json::Value {
+				::puniyu_plugin::serde_json::to_value(Self::default())
+					.unwrap_or(::puniyu_plugin::serde_json::Value::Null)
+			}
+		}
+
+		impl #struct_name {
+			pub fn get() -> Self {
+				::puniyu_plugin::read_config::<#struct_name>(::puniyu_plugin::PLUGIN_CONFIG_DIR.as_path(), #config_name).unwrap_or_default()
+			}
+		}
+
+		::puniyu_core::inventory::submit! {
+			crate::ConfigRegistry {
+				plugin_name: #plugin_name,
+				builder: || -> Box<dyn ::puniyu_plugin::Config> {
+					Box::new(#struct_name::default())
+				}
+			}
+		}
 	};
 
 	TokenStream::from(expanded)
@@ -315,6 +374,20 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
 					.collect()
 			}
 
+			fn config(&self) -> Option<Vec<Box<dyn ::puniyu_plugin::Config>>> {
+				let plugin_name = self.name();
+				let configs: Vec<_> = ::puniyu_plugin::inventory::iter::<ConfigRegistry>
+					.into_iter()
+					.filter(|config| config.plugin_name == plugin_name)
+					.map(|config| (config.builder)())
+					.collect();
+				if configs.is_empty() {
+					None
+				} else {
+					Some(configs)
+				}
+			}
+
 			fn server(&self) -> Option<::puniyu_plugin::ServerType> {
 				let plugin_name = self.name();
 				let servers: Vec<_> = ::puniyu_plugin::inventory::iter::<ServerRegistry>
@@ -359,6 +432,14 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
 			builder: fn() -> Box<dyn ::puniyu_plugin::CommandBuilder>,
 		}
 		::puniyu_plugin::inventory::collect!(CommandRegistry);
+
+		/// 配置注册表
+		pub(crate) struct ConfigRegistry {
+			plugin_name: &'static str,
+			/// 配置构造器
+			builder: fn() -> Box<dyn ::puniyu_plugin::Config>,
+		}
+		::puniyu_plugin::inventory::collect!(ConfigRegistry);
 
 		/// 服务器注册表
 		pub(crate) struct ServerRegistry {

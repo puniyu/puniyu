@@ -4,7 +4,7 @@ mod store;
 use crate::server::ServerRegistry;
 use convert_case::{Case, Casing};
 pub use error::Error;
-use puniyu_common::path::{ADAPTER_CONFIG_DIR, ADAPTER_DATA_DIR};
+use puniyu_common::path::{ADAPTER_CONFIG_DIR, ADAPTER_DATA_DIR, ADAPTER_RESOURCE_DIR};
 use puniyu_common::{merge_config, read_config, write_config};
 use puniyu_logger::{debug, error, owo_colors::OwoColorize};
 use puniyu_types::adapter::{Adapter, AdapterBuilder};
@@ -45,7 +45,7 @@ impl AdapterRegistry {
 			ADAPTER_CONFIG_DIR.as_path().join(adapter_name.as_str().to_case(Case::Snake));
 
 		if !config_dir.exists() {
-			let _ = std::fs::create_dir_all(&config_dir);
+			let _ = fs::create_dir_all(&config_dir).await;
 		}
 
 		if let Some(configs) = adapter.config() {
@@ -70,8 +70,14 @@ impl AdapterRegistry {
 				}
 			});
 		}
-
-		create_data_dir(adapter_name.as_str()).await;
+		let data_dir = ADAPTER_DATA_DIR.as_path().join(adapter_name.as_str());
+		if !data_dir.exists() {
+			let _ = fs::create_dir_all(&data_dir).await;
+		}
+		let resource_dir = ADAPTER_RESOURCE_DIR.as_path().join(adapter_name.as_str());
+		if !resource_dir.exists() {
+			let _ = fs::create_dir_all(&resource_dir).await;
+		}
 		if let Some(server) = adapter.server() {
 			ServerRegistry::insert(adapter_name.clone(), server);
 		}
@@ -122,20 +128,6 @@ where
 				e.to_string()
 			);
 			Err(Error::Init(e.to_string()))
-		}
-	}
-}
-
-async fn create_data_dir(name: &str) {
-	let data_dir = ADAPTER_DATA_DIR.as_path();
-	let adapter_data_dir = data_dir.join(name);
-	if !adapter_data_dir.exists() {
-		let _ = fs::create_dir_all(&adapter_data_dir).await;
-	}
-	for subdir in ["data", "config", "resource"] {
-		let path = adapter_data_dir.join(subdir);
-		if !path.exists() {
-			let _ = fs::create_dir_all(&path).await;
 		}
 	}
 }

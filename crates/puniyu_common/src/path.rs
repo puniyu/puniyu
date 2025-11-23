@@ -58,6 +58,21 @@ pub static CONFIG_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
 	path
 });
 
+/// 插件配置文件夹路径
+/// 
+/// 存放插件配置文件
+/// 
+/// # 示例
+/// ```
+/// use puniyu_common::path::PLUGIN_CONFIG_DIR;
+/// let plugin_config_dir = PLUGIN_CONFIG_DIR.as_path();
+/// ```
+pub static PLUGIN_CONFIG_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
+	let mut path = CONFIG_DIR.to_path_buf();
+	path.push("plugins");
+	path
+});
+
 /// 适配器配置文件夹路径
 /// 
 /// 存放适配器配置文件
@@ -73,6 +88,8 @@ pub static ADAPTER_CONFIG_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
 	path
 });
 
+
+
 /// 临时文件夹路径
 ///
 /// # 示例
@@ -84,6 +101,36 @@ pub static ADAPTER_CONFIG_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
 pub static TEMP_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
 	let mut path = APP_DIR.to_path_buf();
 	path.push("temp");
+	path
+});
+
+/// 适配器临时文件夹路径
+/// 
+/// 存放适配器临时文件
+/// 
+/// ## 示例
+/// ```
+/// use puniyu_common::path::ADAPTER_TEMP_DIR;
+/// let adapter_temp_dir = ADAPTER_TEMP_DIR.as_path();
+/// ```
+pub static ADAPTER_TEMP_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
+	let mut path = TEMP_DIR.to_path_buf();
+	path.push("adapters");
+	path
+});
+
+/// 插件临时文件夹路径
+/// 
+/// 存放插件临时文件
+/// 
+/// # 示例
+/// ```
+/// use puniyu_common::path::PLUGIN_TEMP_DIR;
+/// let plugin_temp_dir = PLUGIN_TEMP_DIR.as_path();
+/// ```
+pub static PLUGIN_TEMP_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
+	let mut path = TEMP_DIR.to_path_buf();
+	path.push("plugins");
 	path
 });
 
@@ -155,5 +202,35 @@ pub static ADAPTER_DATA_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
 pub static RESOURCE_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
 	let mut path = APP_DIR.to_path_buf();
 	path.push("resources");
+	path
+});
+
+/// 插件资源文件夹路径
+/// 
+/// 此目录存放插件资源文件，如图片，字体等
+/// 
+/// # 示例
+/// ```
+/// use puniyu_common::path::PLUGIN_RESOURCE_DIR;
+/// let plugin_resource_dir = PLUGIN_RESOURCE_DIR.as_path();
+/// ```
+pub static PLUGIN_RESOURCE_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
+	let mut path = RESOURCE_DIR.to_path_buf();
+	path.push("plugins");
+	path
+});
+
+/// 适配器资源文件夹路径
+/// 
+/// 此目录存放适配器资源文件，如图片，字体等
+/// 
+/// # 示例
+/// ```
+/// use puniyu_common::path::ADAPTER_RESOURCE_DIR;
+/// let adapter_resource_dir = ADAPTER_RESOURCE_DIR.as_path();
+/// ```
+pub static ADAPTER_RESOURCE_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
+	let mut path = RESOURCE_DIR.to_path_buf();
+	path.push("adapters");
 	path
 });

@@ -57,6 +57,8 @@ task = [
 ]
 command = ["dep:itertools", "puniyu_types/command", "puniyu_types/server"]
 plugin = [
+  "dep:convert_case",
+  "dep:puniyu_common",
   "dep:thiserror",
   "dep:futures",
   "dep:puniyu_library",

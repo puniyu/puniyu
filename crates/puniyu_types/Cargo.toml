@@ -36,7 +36,7 @@ adapter = [
     "contact",
     "sender",
     "element",
-    "config"
+    "config",
 ]
 event = ["dep:strum", "element", "sender", "contact"]
 context = ["adapter", "bot", "element", "event", "contact", "sender"]
@@ -48,7 +48,7 @@ element = ["dep:serde", "dep:strum", "dep:serde_json"]
 server = ["dep:actix-web"]
 task = ["dep:async-trait"]
 command = ["dep:async-trait", "context"]
-plugin = ["dep:async-trait", "version", "task", "command", "server"]
+plugin = ["dep:async-trait", "version", "task", "command", "server", "config"]
 handler = ["dep:async-trait", "event", "bot"]
 matcher = ["dep:async-trait", "event"]
 version = ["dep:serde"]
@@ -69,5 +69,5 @@ full = [
     "handler",
     "matcher",
     "version",
-    "config"
+    "config",
 ]

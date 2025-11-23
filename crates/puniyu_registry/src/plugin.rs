@@ -6,9 +6,11 @@ pub use error::Error;
 use crate::command::CommandRegistry;
 use crate::server::ServerRegistry;
 use crate::task::TaskRegistry;
+use convert_case::{Case, Casing};
 use futures::future::join_all;
 use puniyu_common::APP_NAME;
-use puniyu_common::path::PLUGIN_DATA_DIR;
+use puniyu_common::path::{PLUGIN_CONFIG_DIR, PLUGIN_DATA_DIR, PLUGIN_RESOURCE_DIR};
+use puniyu_common::{merge_config, read_config, write_config};
 use puniyu_config::Config;
 use puniyu_library::{LibraryRegistry, libloading};
 use puniyu_logger::{SharedLogger, debug, error, owo_colors::OwoColorize, warn};
@@ -74,13 +76,10 @@ impl PluginRegistry {
 					let force_plugin = Config::app().load().force_plugin();
 
 					if plugin_abi_version != VERSION {
-						let plugin_tag = "plugin".fg_rgb::<175, 238, 238>();
-						let plugin_name = plugin_name.fg_rgb::<240, 128, 128>();
-
 						warn!(
 							"[{}:{}] ABI版本不匹配, 当前ABI版本: {}, 插件ABI版本: {}",
-							plugin_tag,
-							plugin_name,
+							"plugin".fg_rgb::<175, 238, 238>(),
+							plugin_name.fg_rgb::<240, 128, 128>(),
 							plugin_abi_version,
 							VERSION.to_string()
 						);
@@ -89,7 +88,11 @@ impl PluginRegistry {
 							return Ok(());
 						}
 
-						debug!("[{}:{}] 检测到配置，开始强制加载", plugin_tag, plugin_name);
+						debug!(
+							"[{}:{}] 检测到配置，开始强制加载",
+							"plugin".fg_rgb::<175, 238, 238>(),
+							plugin_name.fg_rgb::<240, 128, 128>()
+						);
 					}
 
 					let tasks: Vec<_> = plugin_builder
@@ -117,7 +120,43 @@ impl PluginRegistry {
 						ServerRegistry::insert(plugin_name, server);
 					}
 
+					let config_dir =
+						PLUGIN_CONFIG_DIR.as_path().join(plugin_name.to_case(Case::Snake));
+
+					if !config_dir.exists() {
+						let _ = fs::create_dir_all(&config_dir).await;
+					}
+
+					if let Some(configs) = plugin_builder.config() {
+						configs.iter().for_each(|config| {
+							let cfg = read_config::<toml::Value>(&config_dir, config.name());
+
+							match cfg {
+								Ok(cfg) => {
+									merge_config(
+										&config_dir,
+										config.name(),
+										&config.config(),
+										&cfg,
+									)
+									.expect("合并插件配置文件失败");
+								}
+								Err(_) => {
+									debug!(
+										"[{}:{}] 配置文件 {} 不存在，正在创建默认配置",
+										"plugin".fg_rgb::<175, 238, 238>(),
+										plugin_name.fg_rgb::<240, 128, 128>(),
+										config.name()
+									);
+									write_config(&config_dir, config.name(), &config.config())
+										.expect("创建默认配置文件失败");
+								}
+							}
+						});
+					}
+
 					create_data_dir(plugin_name).await;
+					create_resource_dir(plugin_name).await;
 					run_plugin_init(plugin_name, plugin_builder.init()).await?;
 					PLUGIN_STORE.insert(plugin_info);
 				}
@@ -180,7 +219,37 @@ impl PluginRegistry {
 					plugin_name.fg_rgb::<240, 128, 128>()
 				);
 
+				let config_dir = PLUGIN_CONFIG_DIR.as_path().join(plugin_name.to_case(Case::Snake));
+
+				if !config_dir.exists() {
+					let _ = fs::create_dir_all(&config_dir).await;
+				}
+
+				if let Some(configs) = plugin_builder.config() {
+					configs.iter().for_each(|config| {
+						let cfg = read_config::<toml::Value>(&config_dir, config.name());
+
+						match cfg {
+							Ok(cfg) => {
+								merge_config(&config_dir, config.name(), &config.config(), &cfg)
+									.expect("合并插件配置文件失败");
+							}
+							Err(_) => {
+								debug!(
+									"[{}:{}] 配置文件 {} 不存在，正在创建默认配置",
+									"plugin".fg_rgb::<175, 238, 238>(),
+									plugin_name.fg_rgb::<240, 128, 128>(),
+									config.name()
+								);
+								write_config(&config_dir, config.name(), &config.config())
+									.expect("创建默认配置文件失败");
+							}
+						}
+					});
+				}
+
 				create_data_dir(plugin_name).await;
+				create_resource_dir(plugin_name).await;
 				run_plugin_init(plugin_name, plugin_builder.init()).await?;
 				PLUGIN_STORE.insert(plugin_info);
 			}
@@ -242,15 +311,15 @@ where
 }
 
 async fn create_data_dir(name: &str) {
-	let data_dir = PLUGIN_DATA_DIR.as_path();
-	let adapter_data_dir = data_dir.join(name);
-	if !adapter_data_dir.exists() {
-		let _ = fs::create_dir_all(&adapter_data_dir).await;
+	let data_dir = PLUGIN_DATA_DIR.as_path().join(name);
+	if !data_dir.exists() {
+		let _ = fs::create_dir_all(&data_dir).await;
 	}
-	for subdir in ["data", "config", "resource"] {
-		let path = adapter_data_dir.join(subdir);
-		if !path.exists() {
-			let _ = fs::create_dir_all(&path).await;
-		}
+}
+
+async fn create_resource_dir(name: &str) {
+	let resource_dir = PLUGIN_RESOURCE_DIR.as_path().join(name);
+	if !resource_dir.exists() {
+		let _ = fs::create_dir_all(&resource_dir).await;
 	}
 }

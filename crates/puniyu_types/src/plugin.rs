@@ -5,6 +5,7 @@ use crate::command::CommandBuilder;
 use std::fmt;
 use std::path::PathBuf;
 use crate::server::ServerType;
+use crate::config::Config;
 
 #[async_trait]
 pub trait PluginBuilder: Send + Sync + 'static {
@@ -26,6 +27,11 @@ pub trait PluginBuilder: Send + Sync + 'static {
 
 	/// 命令列表
 	fn commands(&self) -> Vec<Box<dyn CommandBuilder>>;
+
+	/// 插件配置文件
+	fn config(&self) -> Option<Vec<Box<dyn Config>>> {
+		None
+	}
 
 	/// 路由管理
 	fn server(&self) -> Option<ServerType> {

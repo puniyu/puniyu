@@ -30,6 +30,7 @@ pub trait AdapterBuilder: Send + Sync + 'static {
 	/// 获取适配器API
 	fn api(&self) -> &'static dyn AdapterApi;
 
+	/// 配置文件
 	fn config(&self) -> Option<Vec<Box<dyn Config>>> {
 		None
 	}
