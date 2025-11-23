@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.8](https://github.com/puniyu/puniyu/compare/common-v0.5.7...common-v0.5.8) (2025-11-23)
+
+
+### 🔧 其他更新
+
+* **common:** Synchronize puniyu versions
+
 ## [0.5.7](https://github.com/puniyu/puniyu/compare/common-v0.5.6...common-v0.5.7) (2025-11-23)
 
 

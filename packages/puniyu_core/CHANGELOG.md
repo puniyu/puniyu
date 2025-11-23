@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.5.8](https://github.com/puniyu/puniyu/compare/core-v0.5.7...core-v0.5.8) (2025-11-23)
+
+
+### 🔧 其他更新
+
+* **core:** Synchronize puniyu versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puniyu_server bumped from 0.5.7 to 0.5.8
+    * puniyu_config bumped from 0.5.7 to 0.5.8
+    * puniyu_bus bumped from 0.4.10 to 0.5.8
+    * puniyu_common bumped from 0.5.7 to 0.5.8
+    * puniyu_types bumped from 0.5.7 to 0.5.8
+    * puniyu_registry bumped from 0.5.7 to 0.5.8
+
 ## [0.5.7](https://github.com/puniyu/puniyu/compare/core-v0.5.6...core-v0.5.7) (2025-11-23)
 
 

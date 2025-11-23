@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.8](https://github.com/puniyu/puniyu/compare/puniyu-v0.5.7...puniyu-v0.5.8) (2025-11-23)
+
+
+### 🔧 其他更新
+
+* **deps:** 调整 tokio 依赖特性 ([6ff270b](https://github.com/puniyu/puniyu/commit/6ff270b32b584a3867193635939194daa9699f51))
+
 ## [0.5.7](https://github.com/puniyu/puniyu/compare/puniyu-v0.5.6...puniyu-v0.5.7) (2025-11-23)
 
 
