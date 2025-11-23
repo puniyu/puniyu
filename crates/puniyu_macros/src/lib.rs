@@ -59,7 +59,7 @@ pub fn adapter_config(args: TokenStream, item: TokenStream) -> TokenStream {
 			}
 		}
 
-		::puniyu_core::inventory::submit! {
+		::puniyu_adapter::inventory::submit! {
 			crate::ConfigRegistry {
 				adapter_name: #adapter_name,
 				builder: || -> Box<dyn ::puniyu_adapter::Config> {
@@ -94,7 +94,7 @@ pub fn adapter(_: TokenStream, item: TokenStream) -> TokenStream {
 
 		pub struct #adapter_struct_name;
 
-		#[::puniyu_core::async_trait]
+		#[::puniyu_adapter::async_trait]
 		impl ::puniyu_adapter::AdapterBuilder for #adapter_struct_name {
 			fn info(&self) -> ::puniyu_adapter::AdapterInfo {
 				::puniyu_adapter::AdapterBuilder::info(&#struct_name)
@@ -127,7 +127,7 @@ pub fn adapter(_: TokenStream, item: TokenStream) -> TokenStream {
 			/// 配置构造器
 			builder: fn() -> Box<dyn ::puniyu_adapter::Config>,
 		}
-		::puniyu_core::inventory::collect!(ConfigRegistry);
+		::puniyu_adapter::inventory::collect!(ConfigRegistry);
 	};
 
 	TokenStream::from(expanded)
@@ -184,7 +184,7 @@ pub fn plugin_config(args: TokenStream, item: TokenStream) -> TokenStream {
 			}
 		}
 
-		::puniyu_core::inventory::submit! {
+		::puniyu_plugin::inventory::submit! {
 			crate::ConfigRegistry {
 				plugin_name: #plugin_name,
 				builder: || -> Box<dyn ::puniyu_plugin::Config> {
@@ -340,9 +340,7 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
 
 		#fn_vis #fn_sig #fn_block
 
-		use puniyu_plugin::{APP_NAME, async_trait};
-
-		#[async_trait]
+		#[::puniyu_plugin::async_trait]
 		impl ::puniyu_plugin::PluginBuilder for #struct_name {
 			fn name(&self) -> &'static str {
 				#plugin_name
@@ -436,7 +434,7 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
 			/// 任务构造器
 			builder: fn() -> Box<dyn ::puniyu_plugin::TaskBuilder>,
 		}
-		::puniyu_core::inventory::collect!(TaskRegistry);
+		::puniyu_plugin::inventory::collect!(TaskRegistry);
 
 		pub(crate) struct CommandRegistry {
 			plugin_name: &'static str,
@@ -703,9 +701,8 @@ pub fn command(args: TokenStream, item: TokenStream) -> TokenStream {
 
 		#fn_vis #fn_sig #fn_block
 
-		use puniyu_core::async_trait;
 
-		#[async_trait]
+		#[::puniyu_plugin::async_trait]
 		impl ::puniyu_plugin::CommandBuilder for #struct_name {
 			fn name(&self) -> &'static str {
 				#command_name
@@ -732,7 +729,7 @@ pub fn command(args: TokenStream, item: TokenStream) -> TokenStream {
 			}
 		}
 
-		::puniyu_core::inventory::submit! {
+		::puniyu_plugin::inventory::submit! {
 			crate::CommandRegistry {
 				plugin_name: #plugin_name,
 				builder: || -> Box<dyn ::puniyu_plugin::CommandBuilder> { Box::new(#struct_name {}) },
@@ -881,9 +878,7 @@ pub fn task(args: TokenStream, item: TokenStream) -> TokenStream {
 
 	#fn_vis #fn_sig #fn_block
 
-		use puniyu_core::async_trait;
-
-		#[async_trait]
+		#[::puniyu_plugin::async_trait]
 		impl ::puniyu_plugin::TaskBuilder for #struct_name {
 			fn name(&self) -> &'static str {
 				#task_name
@@ -898,7 +893,7 @@ pub fn task(args: TokenStream, item: TokenStream) -> TokenStream {
 			}
 	}
 
-	::puniyu_core::inventory::submit! {
+	::puniyu_plugin::inventory::submit! {
 		crate::TaskRegistry  {
 			plugin_name: #plugin_name,
 			builder: || -> Box<dyn ::puniyu_plugin::TaskBuilder> { Box::new(#struct_name {}) },
