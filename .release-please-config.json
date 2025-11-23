@@ -108,15 +108,19 @@
       "component": "macros"
     },
     "crates/puniyu_types": {
+      "release-type": "rust",
       "component": "types"
     },
     "crates/puniyu_registry": {
+      "release-type": "rust",
       "component": "registry"
     },
     "crates/puniyu_bus": {
+      "release-type": "rust",
       "component": "event-bus"
     },
     "packages/puniyu_server": {
+      "release-type": "rust",
       "component": "server"
     },
     "packages/puniyu_plugin": {
@@ -124,15 +128,19 @@
       "component": "plugin"
     },
     "packages/puniyu_adapter": {
+      "release-type": "rust",
       "component": "adapter"
     },
     "packages/puniyu_core": {
+      "release-type": "rust",
       "component": "core"
     },
     "adapters/console": {
+      "release-type": "rust",
       "component": "adapter-console"
     },
     "packages/puniyu": {
+      "release-type": "rust",
       "component": "puniyu"
     }
   },
