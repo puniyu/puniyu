@@ -19,7 +19,6 @@
         "common",
         "types",
         "macros",
-        "library",
         "server",
         "config",
         "bus"
