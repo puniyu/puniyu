@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.4.6](https://github.com/puniyu/puniyu/compare/event-bus-v0.4.5...event-bus-v0.4.6) (2025-11-23)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puniyu_types bumped from 0.5.1 to 0.5.4
+    * puniyu_registry bumped from 0.5.2 to 0.5.3
+
 ## [0.4.5](https://github.com/puniyu/puniyu/compare/event-bus-v0.4.4...event-bus-v0.4.5) (2025-11-23)
 
 

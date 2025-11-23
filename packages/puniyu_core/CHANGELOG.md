@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.5.4](https://github.com/puniyu/puniyu/compare/core-v0.5.3...core-v0.5.4) (2025-11-23)
+
+
+### 🔧 其他更新
+
+* **core:** 支持设置app_logo ([3f4f713](https://github.com/puniyu/puniyu/commit/3f4f71344917f671468edfef639ec201440a1251))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puniyu_server bumped from 0.5.2 to 0.5.4
+    * puniyu_config bumped from 0.5.1 to 0.5.4
+    * puniyu_bus bumped from 0.4.5 to 0.4.6
+    * puniyu_common bumped from 0.5.1 to 0.5.4
+    * puniyu_types bumped from 0.5.1 to 0.5.4
+    * puniyu_registry bumped from 0.5.2 to 0.5.3
+
 ## [0.5.3](https://github.com/puniyu/puniyu/compare/core-v0.5.2...core-v0.5.3) (2025-11-23)
 
 
