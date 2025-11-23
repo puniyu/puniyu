@@ -1,5 +1,7 @@
 # Changelog
 
+## [0.5.5](https://github.com/puniyu/puniyu/compare/puniyu-v0.5.4...puniyu-v0.5.5) (2025-11-23)
+
 ## [0.5.4](https://github.com/puniyu/puniyu/compare/puniyu-v0.5.3...puniyu-v0.5.4) (2025-11-23)
 
 

@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.5.5](https://github.com/puniyu/puniyu/compare/server-v0.5.4...server-v0.5.5) (2025-11-23)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puniyu_registry bumped from 0.5.3 to 0.5.4
+
 ## [0.5.4](https://github.com/puniyu/puniyu/compare/server-v0.5.2...server-v0.5.4) (2025-11-23)
 
 

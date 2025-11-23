@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.4](https://github.com/puniyu/puniyu/compare/registry-v0.5.3...registry-v0.5.4) (2025-11-23)
+
+
+### 🐛 错误修复
+
+* **puniyu_registry:** 补充缺少的依赖 ([8a33e67](https://github.com/puniyu/puniyu/commit/8a33e6775884cf8e65cf3f3baab536d0e3fe4dd6))
+
 ## [0.5.3](https://github.com/puniyu/puniyu/compare/registry-v0.5.2...registry-v0.5.3) (2025-11-23)
 
 

@@ -1,6 +1,6 @@
 [package]
 name = "puniyu_registry"
-version = "0.5.3"
+version = "0.5.4"
 description = "puniyu 的注册中心模块"
 readme = "README.md"
 authors.workspace = true
