@@ -5,7 +5,7 @@ use crate::server::ServerRegistry;
 use convert_case::{Case, Casing};
 pub use error::Error;
 use puniyu_common::path::{ADAPTER_CONFIG_DIR, ADAPTER_DATA_DIR};
-use puniyu_common::write_config;
+use puniyu_common::{merge_config, read_config, write_config};
 use puniyu_logger::{debug, error, owo_colors::OwoColorize};
 use puniyu_types::adapter::{Adapter, AdapterBuilder};
 use std::sync::LazyLock;
@@ -50,8 +50,24 @@ impl AdapterRegistry {
 
 		if let Some(configs) = adapter.config() {
 			configs.iter().for_each(|config| {
-				write_config(&config_dir, config.name(), &config.config())
-					.expect("配置文件创建失败");
+				let cfg = read_config::<toml::Value>(&config_dir, config.name());
+
+				match cfg {
+					Ok(cfg) => {
+						merge_config(&config_dir, config.name(), &config.config(), &cfg)
+							.expect("合并插件配置文件失败");
+					}
+					Err(_) => {
+						debug!(
+							"[{}:{}] 配置文件 {} 不存在，正在创建默认配置",
+							"adapter".fg_rgb::<175, 238, 238>(),
+							adapter_name.fg_rgb::<240, 128, 128>(),
+							config.name()
+						);
+						write_config(&config_dir, config.name(), &config.config())
+							.expect("创建默认配置文件失败");
+					}
+				}
 			});
 		}
 

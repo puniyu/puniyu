@@ -12,6 +12,7 @@ rust-version.workspace = true
 
 [dependencies]
 async-trait = { workspace = true, optional = true }
+toml = { version = "0.9.5", optional = true }
 futures = { workspace = true, optional = true }
 thiserror = { workspace = true, optional = true }
 tokio = { workspace = true, optional = true }
@@ -38,6 +39,7 @@ adapter = [
   "dep:convert_case",
   "dep:puniyu_common",
   "dep:puniyu_logger",
+  "dep:toml",
   "puniyu_types/adapter",
   "puniyu_types/bot",
   "dep:thiserror",

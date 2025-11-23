@@ -23,7 +23,7 @@ pub fn adapter_config(args: TokenStream, item: TokenStream) -> TokenStream {
 	};
 
 	let struct_name = &input_struct.ident;
-	
+
 	let config_name = if args.is_empty() {
 		struct_name.to_string().to_lowercase()
 	} else {
@@ -43,6 +43,12 @@ pub fn adapter_config(args: TokenStream, item: TokenStream) -> TokenStream {
 			fn config(&self) -> ::puniyu_adapter::serde_json::Value {
 				::puniyu_adapter::serde_json::to_value(Self::default())
 					.unwrap_or(::puniyu_adapter::serde_json::Value::Null)
+			}
+		}
+
+		impl #struct_name {
+			pub fn get() -> Self {
+				::puniyu_adapter::read_config::<#struct_name>(::puniyu_adapter::ADAPTER_CONFIG_DIR.as_path(), #config_name).unwrap_or_default()
 			}
 		}
 

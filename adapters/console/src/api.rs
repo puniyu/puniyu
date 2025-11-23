@@ -46,3 +46,4 @@ impl AdapterApi for ConsoleAdapterApi {
 		Ok(SendMsgType { message_id, time: timestamp })
 	}
 }
+
