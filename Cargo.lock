@@ -1813,6 +1813,8 @@ dependencies = [
  "puniyu_logger",
  "puniyu_registry",
  "puniyu_types",
+ "serde",
+ "serde_json",
  "tokio",
 ]
 
