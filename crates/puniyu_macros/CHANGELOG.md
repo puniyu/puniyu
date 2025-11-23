@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.9](https://github.com/puniyu/puniyu/compare/macros-v0.5.8...macros-v0.5.9) (2025-11-23)
+
+
+### 🐛 错误修复
+
+* **plugin:** 修复缺少的导入 ([69e01e4](https://github.com/puniyu/puniyu/commit/69e01e4d80ae0e0c47e2d7e2d27ce24de70ae227))
+
 ## [0.5.8](https://github.com/puniyu/puniyu/compare/macros-v0.5.7...macros-v0.5.8) (2025-11-23)
 
 

@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.5.9](https://github.com/puniyu/puniyu/compare/adapter-v0.5.8...adapter-v0.5.9) (2025-11-23)
+
+
+### 🔧 其他更新
+
+* **adapter:** Synchronize puniyu versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puniyu_config bumped from 0.5.8 to 0.5.9
+    * puniyu_macros bumped from 0.5.8 to 0.5.9
+    * puniyu_common bumped from 0.5.8 to 0.5.9
+    * puniyu_types bumped from 0.5.8 to 0.5.9
+    * puniyu_registry bumped from 0.5.8 to 0.5.9
+    * puniyu_bus bumped from 0.5.8 to 0.5.9
+
 ## [0.5.8](https://github.com/puniyu/puniyu/compare/adapter-v0.5.7...adapter-v0.5.8) (2025-11-23)
 
 

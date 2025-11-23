@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.5.9](https://github.com/puniyu/puniyu/compare/plugin-v0.5.8...plugin-v0.5.9) (2025-11-23)
+
+
+### 🐛 错误修复
+
+* **plugin:** 修复缺少的导入 ([69e01e4](https://github.com/puniyu/puniyu/commit/69e01e4d80ae0e0c47e2d7e2d27ce24de70ae227))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puniyu_common bumped from 0.5.8 to 0.5.9
+    * puniyu_macros bumped from 0.5.8 to 0.5.9
+    * puniyu_types bumped from 0.5.8 to 0.5.9
+    * puniyu_registry bumped from 0.5.8 to 0.5.9
+
 ## [0.5.8](https://github.com/puniyu/puniyu/compare/plugin-v0.5.7...plugin-v0.5.8) (2025-11-23)
 
 
