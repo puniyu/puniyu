@@ -366,9 +366,9 @@ dependencies = [
 
 [[package]]
 name = "convert_case"
-version = "0.9.0"
+version = "0.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "db05ffb6856bf0ecdf6367558a76a0e8a77b1713044eb92845c692100ed50190"
+checksum = "633458d4ef8c78b72454de2d54fd6ab2e60f9e02be22f3c6104cdc8a4e0fceb9"
 dependencies = [
  "unicode-segmentation",
 ]
@@ -1739,9 +1739,9 @@ dependencies = [
 
 [[package]]
 name = "puniyu_logger"
-version = "0.6.2"
+version = "0.6.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "347577b30962cff3eb202129753ed617ef53ce1833536d10066850e35c5d0f32"
+checksum = "0b68de8fe483e345ecf03a979c79ee4c269badf9c1694ee5ed7f6941e0eb4738"
 dependencies = [
  "chrono",
  "chrono-tz",
