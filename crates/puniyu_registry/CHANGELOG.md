@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.5.9](https://github.com/puniyu/puniyu/compare/registry-v0.5.8...registry-v0.5.9) (2025-11-23)
+
+
+### 🔧 其他更新
+
+* **registry:** 在加载日志中显示插件和适配器版本号 ([0184a74](https://github.com/puniyu/puniyu/commit/0184a74b1dc267690d15bd8e1f6ba25669f7c194))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puniyu_common bumped from 0.5.8 to 0.5.9
+    * puniyu_types bumped from 0.5.8 to 0.5.9
+    * puniyu_config bumped from 0.5.8 to 0.5.9
+
 ## [0.5.8](https://github.com/puniyu/puniyu/compare/registry-v0.5.7...registry-v0.5.8) (2025-11-23)
 
 

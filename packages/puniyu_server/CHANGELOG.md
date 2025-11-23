@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.5.9](https://github.com/puniyu/puniyu/compare/server-v0.5.8...server-v0.5.9) (2025-11-23)
+
+
+### 🔧 其他更新
+
+* **server:** Synchronize puniyu versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puniyu_common bumped from 0.5.8 to 0.5.9
+    * puniyu_types bumped from 0.5.8 to 0.5.9
+    * puniyu_registry bumped from 0.5.8 to 0.5.9
+
 ## [0.5.8](https://github.com/puniyu/puniyu/compare/server-v0.5.7...server-v0.5.8) (2025-11-23)
 
 
