@@ -225,7 +225,7 @@ impl PluginRegistry {
 					plugin_name.fg_rgb::<240, 128, 128>()
 				);
 
-				let config_dir = PLUGIN_CONFIG_DIR.as_path().join(plugin_name.to_case(Case::Snake));
+				let config_dir = PLUGIN_CONFIG_DIR.as_path().join(plugin_name.to_case(Case::Lower));
 
 				if !config_dir.exists() {
 					let _ = fs::create_dir_all(&config_dir).await;
@@ -321,14 +321,14 @@ where
 }
 
 async fn create_data_dir(name: &str) {
-	let data_dir = PLUGIN_DATA_DIR.as_path().join(name);
+	let data_dir = PLUGIN_DATA_DIR.as_path().join(name.to_case(Case::Lower));
 	if !data_dir.exists() {
 		let _ = fs::create_dir_all(&data_dir).await;
 	}
 }
 
 async fn create_resource_dir(name: &str) {
-	let resource_dir = PLUGIN_RESOURCE_DIR.as_path().join(name);
+	let resource_dir = PLUGIN_RESOURCE_DIR.as_path().join(name.to_case(Case::Lower));
 	if !resource_dir.exists() {
 		let _ = fs::create_dir_all(&resource_dir).await;
 	}

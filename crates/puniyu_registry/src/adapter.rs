@@ -74,11 +74,11 @@ impl AdapterRegistry {
 				}
 			});
 		}
-		let data_dir = ADAPTER_DATA_DIR.as_path().join(adapter_name.as_str());
+		let data_dir = ADAPTER_DATA_DIR.as_path().join(adapter_name.to_case(Case::Lower));
 		if !data_dir.exists() {
 			let _ = fs::create_dir_all(&data_dir).await;
 		}
-		let resource_dir = ADAPTER_RESOURCE_DIR.as_path().join(adapter_name.as_str());
+		let resource_dir = ADAPTER_RESOURCE_DIR.as_path().join(adapter_name.to_case(Case::Lower));
 		if !resource_dir.exists() {
 			let _ = fs::create_dir_all(&resource_dir).await;
 		}

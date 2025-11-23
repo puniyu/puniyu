@@ -8,7 +8,7 @@ use convert_case::{Case, Casing};
 use figlet_rs::FIGfont;
 use puniyu_bus::{EVENT_BUS, init_event_bus};
 pub use puniyu_common::APP_NAME;
-use puniyu_common::path::{DATA_DIR, PLUGIN_DATA_DIR, PLUGIN_DIR, WORKING_DIR, RESOURCE_DIR};
+use puniyu_common::path::{DATA_DIR, PLUGIN_DATA_DIR, PLUGIN_DIR, RESOURCE_DIR, WORKING_DIR};
 use puniyu_config::{init_config, start_config_watcher};
 use puniyu_registry::{adapter::AdapterRegistry, plugin::PluginRegistry};
 use puniyu_types::adapter::AdapterBuilder;
@@ -20,6 +20,7 @@ use tokio::{fs, signal};
 
 pub struct AppBuilder {
 	app_name: String,
+	app_logo: Vec<u8>,
 	working_dir: PathBuf,
 	plugins: Vec<&'static dyn PluginBuilder>,
 	adapters: Vec<&'static dyn AdapterBuilder>,
@@ -29,6 +30,7 @@ impl Default for AppBuilder {
 	fn default() -> Self {
 		Self {
 			app_name: String::from("puniyu"),
+			app_logo: Vec::new(),
 			working_dir: current_dir().unwrap(),
 			plugins: Vec::new(),
 			adapters: Vec::new(),
@@ -43,6 +45,11 @@ impl AppBuilder {
 
 	pub fn with_name(&mut self, name: &str) -> &mut Self {
 		self.app_name = name.to_string();
+		self
+	}
+
+	pub fn with_logo(&mut self, logo: Vec<u8>) -> &mut Self {
+		self.app_logo = logo;
 		self
 	}
 
@@ -64,10 +71,17 @@ impl AppBuilder {
 	pub fn build(&self) -> App {
 		WORKING_DIR.get_or_init(|| self.working_dir.clone());
 		APP_NAME.get_or_init(|| self.app_name.clone());
-		App { plugins: self.plugins.clone(), adapters: self.adapters.clone() }
+		App { 
+			app_name: self.app_name.clone(),
+			app_logo: self.app_logo.clone(),
+			plugins: self.plugins.clone(), 
+			adapters: self.adapters.clone() 
+		}
 	}
 }
 pub struct App {
+	app_name: String,
+	app_logo: Vec<u8>,
 	plugins: Vec<&'static dyn PluginBuilder>,
 	adapters: Vec<&'static dyn AdapterBuilder>,
 }
@@ -78,8 +92,13 @@ impl App {
 		init_config();
 		log_init();
 		let start_time = std::time::Instant::now();
-		let app_name = APP_NAME.get().unwrap();
+		let app_name = self.app_name.clone();
 		init_app(self.plugins.clone(), self.adapters.clone()).await;
+		let logo_path = RESOURCE_DIR.join("logo.png");
+		if !logo_path.exists() {
+			fs::write(&logo_path, &self.app_logo).await.expect("写入logo失败");
+			puniyu_server::LOGO.get_or_init(|| self.app_logo.clone());
+		}
 		start_config_watcher();
 		let duration = start_time.elapsed();
 		let duration_str = format_duration(duration);
