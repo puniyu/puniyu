@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.10](https://github.com/puniyu/puniyu/compare/macros-v0.5.9...macros-v0.5.10) (2025-11-23)
+
+
+### ♻️ 代码重构
+
+* **command:** 重构命令处理结果类型和参数验证 ([58d4eeb](https://github.com/puniyu/puniyu/commit/58d4eebb41cacabc7663b40a93181b789feb1e0a))
+
 ## [0.5.9](https://github.com/puniyu/puniyu/compare/macros-v0.5.8...macros-v0.5.9) (2025-11-23)
 
 

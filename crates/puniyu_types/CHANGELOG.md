@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.5.10](https://github.com/puniyu/puniyu/compare/types-v0.5.9...types-v0.5.10) (2025-11-23)
+
+
+### ♻️ 代码重构
+
+* **command:** 重构命令处理结果类型和参数验证 ([58d4eeb](https://github.com/puniyu/puniyu/commit/58d4eebb41cacabc7663b40a93181b789feb1e0a))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puniyu_config bumped from 0.5.9 to 0.5.10
+
 ## [0.5.9](https://github.com/puniyu/puniyu/compare/types-v0.5.8...types-v0.5.9) (2025-11-23)
 
 
