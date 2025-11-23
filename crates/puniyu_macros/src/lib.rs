@@ -11,7 +11,7 @@ use syn::Ident;
 #[cfg(feature = "adapter")]
 #[proc_macro_attribute]
 pub fn adapter_config(args: TokenStream, item: TokenStream) -> TokenStream {
-		use convert_case::{Case, Casing};
+	use convert_case::{Case, Casing};
 	let input_struct = if let Ok(struct_item) = syn::parse::<syn::ItemStruct>(item.clone()) {
 		struct_item
 	} else {
@@ -136,7 +136,7 @@ pub fn adapter(_: TokenStream, item: TokenStream) -> TokenStream {
 #[cfg(feature = "plugin")]
 #[proc_macro_attribute]
 pub fn plugin_config(args: TokenStream, item: TokenStream) -> TokenStream {
-			use convert_case::{Case, Casing};
+	use convert_case::{Case, Casing};
 	let input_struct = if let Ok(struct_item) = syn::parse::<syn::ItemStruct>(item.clone()) {
 		struct_item
 	} else {
@@ -349,10 +349,10 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
 			}
 
 			fn version(&self) -> ::puniyu_plugin::Version {
-				Version {
-					major: #version_major.to_string(),
-					minor: #version_minor.to_string(),
-					patch: #version_patch.to_string(),
+				::puniyu_plugin::Version {
+					major: #version_major,
+					minor: #version_minor,
+					patch: #version_patch,
 				}
 			}
 
@@ -360,7 +360,7 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
 				#plugin_author
 			}
 
-			fn abi_version(&self) -> &'static str {
+			fn abi_version(&self) -> ::puniyu_plugin::Version {
 				::puniyu_plugin::ABI_VERSION
 			}
 
