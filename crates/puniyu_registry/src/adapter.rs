@@ -22,25 +22,16 @@ impl AdapterRegistry {
 		let adapters = ADAPTER_STORE.get_all_adapters();
 		let adapter_info = adapter.info();
 		let adapter_name = adapter_info.name.clone();
+		let adapter_version = adapter_info.version.to_string();
 		if adapters.values().any(|adapter| adapter.info.name == adapter_name) {
 			return Err(Error::Exists(adapter_name));
 		}
 
-		if let Some(config) = adapter.config()
-			&& let Some(first_config) = config.first()
-		{
-			debug!(
-				"[{}:{}] 配置: {} - {}",
-				"adapter".fg_rgb::<175, 238, 238>(),
-				adapter_name.fg_rgb::<240, 128, 128>(),
-				first_config.name(),
-				first_config.config()
-			);
-		}
 		debug!(
-			"[{}:{}] 正在加载适配器",
+			"[{}:{}({})] 正在加载适配器",
 			"adapter".fg_rgb::<175, 238, 238>(),
-			adapter_name.fg_rgb::<240, 128, 128>()
+			adapter_name.fg_rgb::<240, 128, 128>(),
+			format!("v {}", adapter_version).fg_rgb::<144, 238, 144>()
 		);
 		let config_dir =
 			ADAPTER_CONFIG_DIR.as_path().join(adapter_name.as_str().to_case(Case::Snake));

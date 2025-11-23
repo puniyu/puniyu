@@ -64,10 +64,12 @@ impl PluginRegistry {
 					setup_app_name(APP_NAME.get().unwrap().to_string());
 					let plugins = PLUGIN_STORE.get_all_plugins();
 					let plugin_name = plugin_builder.name();
+					let plugin_version = plugin_builder.version().to_string();
 					debug!(
-						"[{}:{}] 正在加载插件",
+						"[{}:{}({})] 正在加载插件",
 						"plugin".fg_rgb::<175, 238, 238>(),
-						plugin_name.fg_rgb::<240, 128, 128>()
+						plugin_name.fg_rgb::<240, 128, 128>(),
+						format!("v {}", plugin_version).fg_rgb::<144, 238, 144>()
 					);
 					if plugins.iter().any(|(_, plugin)| plugin.name == plugin_name) {
 						return Err(Error::Exists(plugin_name.to_string()));
@@ -171,9 +173,18 @@ impl PluginRegistry {
 			PluginType::Builder(plugin_builder) => {
 				let plugins = PLUGIN_STORE.get_all_plugins();
 				let plugin_name = plugin_builder.name();
+				let plugin_version = plugin_builder.version().to_string();
 				if plugins.iter().any(|(_, plugin)| plugin.name == plugin_name) {
 					return Err(Error::Exists(plugin_name.to_string()));
 				}
+
+				debug!(
+					"[{}:{}({})] 正在加载插件",
+					"plugin".fg_rgb::<175, 238, 238>(),
+					plugin_name.fg_rgb::<240, 128, 128>(),
+					format!("v {}", plugin_version).fg_rgb::<144, 238, 144>()
+				);
+
 				let plugin_abi_version = plugin_builder.abi_version();
 				let force_plugin = Config::app().load().force_plugin();
 
@@ -218,12 +229,6 @@ impl PluginRegistry {
 				if let Some(server) = plugin_builder.server() {
 					ServerRegistry::insert(plugin_name, server);
 				}
-
-				debug!(
-					"[{}:{}] 正在加载插件",
-					"plugin".fg_rgb::<175, 238, 238>(),
-					plugin_name.fg_rgb::<240, 128, 128>()
-				);
 
 				let config_dir = PLUGIN_CONFIG_DIR.as_path().join(plugin_name.to_case(Case::Lower));
 
