@@ -5,13 +5,13 @@
   "crates/puniyu_macros": "0.5.4",
   "crates/puniyu_config": "0.5.4",
   "crates/puniyu_types": "0.5.4",
-  "crates/puniyu_registry": "0.5.4",
-  "crates/puniyu_bus": "0.4.7",
+  "crates/puniyu_registry": "0.5.5",
+  "crates/puniyu_bus": "0.4.8",
   "crates/puniyu_server": "0.4.1",
-  "packages/puniyu_plugin": "0.5.5",
-  "packages/puniyu_adapter": "0.5.5",
-  "packages/puniyu_core": "0.5.5",
-  "adapters/console": "0.2.5",
-  "packages/puniyu": "0.5.5",
-  "packages/puniyu_server": "0.5.5"
+  "packages/puniyu_plugin": "0.5.6",
+  "packages/puniyu_adapter": "0.5.6",
+  "packages/puniyu_core": "0.5.6",
+  "adapters/console": "0.2.6",
+  "packages/puniyu": "0.5.6",
+  "packages/puniyu_server": "0.5.6"
 }

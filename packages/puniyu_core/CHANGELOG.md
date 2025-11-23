@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.5.6](https://github.com/puniyu/puniyu/compare/core-v0.5.5...core-v0.5.6) (2025-11-23)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puniyu_server bumped from 0.5.5 to 0.5.6
+    * puniyu_bus bumped from 0.4.7 to 0.4.8
+    * puniyu_registry bumped from 0.5.4 to 0.5.5
+
 ## [0.5.5](https://github.com/puniyu/puniyu/compare/core-v0.5.4...core-v0.5.5) (2025-11-23)
 
 

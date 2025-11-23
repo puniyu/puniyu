@@ -1633,7 +1633,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu"
-version = "0.5.5"
+version = "0.5.6"
 dependencies = [
  "puniyu_adapter_console",
  "puniyu_core",
@@ -1642,7 +1642,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_adapter"
-version = "0.5.5"
+version = "0.5.6"
 dependencies = [
  "actix-web",
  "async-trait",
@@ -1662,7 +1662,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_adapter_console"
-version = "0.2.5"
+version = "0.2.6"
 dependencies = [
  "async-trait",
  "puniyu_adapter",
@@ -1678,7 +1678,7 @@ version = "0.2.1"
 
 [[package]]
 name = "puniyu_bus"
-version = "0.4.7"
+version = "0.4.8"
 dependencies = [
  "puniyu_logger",
  "puniyu_registry",
@@ -1710,7 +1710,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_core"
-version = "0.5.5"
+version = "0.5.6"
 dependencies = [
  "async-trait",
  "convert_case",
@@ -1767,7 +1767,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_plugin"
-version = "0.5.5"
+version = "0.5.6"
 dependencies = [
  "actix-web",
  "async-trait",
@@ -1783,7 +1783,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_registry"
-version = "0.5.4"
+version = "0.5.5"
 dependencies = [
  "actix-web",
  "async-trait",
@@ -1805,7 +1805,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_server"
-version = "0.5.5"
+version = "0.5.6"
 dependencies = [
  "actix-web",
  "futures-util",
