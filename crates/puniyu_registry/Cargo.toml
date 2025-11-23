@@ -52,6 +52,7 @@ bot = ["puniyu_types/bot"]
 server = ["puniyu_types/server"]
 task = [
   "dep:tokio",
+  "dep:puniyu_logger",
   "dep:tokio-cron-scheduler",
   "dep:chrono-tz",
   "dep:uuid",
@@ -65,6 +66,7 @@ plugin = [
   "dep:futures",
   "dep:puniyu_library",
   "dep:puniyu_config",
+  "dep:puniyu_logger",
   "tokio/fs",
   "puniyu_types/plugin",
   "puniyu_types/server",
