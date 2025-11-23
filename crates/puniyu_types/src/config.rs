@@ -1,4 +1,4 @@
-use serde_json::Value;
+use toml::Value;
 
 pub trait Config: Send + Sync {
     /// 配置文件名称

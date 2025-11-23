@@ -20,6 +20,7 @@ chrono = { version = "0.4" }
 tokio = { version = "1.47.1", features = ["macros", "rt-multi-thread"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0"}
+toml = { version = "0.9.5" }
 itertools = { version = "0.14.0" }
 futures = { version = "0.3.31" }
 async-trait = { version = "0.1.89" }

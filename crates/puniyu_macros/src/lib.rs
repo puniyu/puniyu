@@ -41,9 +41,9 @@ pub fn adapter_config(args: TokenStream, item: TokenStream) -> TokenStream {
 				#config_name
 			}
 
-			fn config(&self) -> ::puniyu_adapter::serde_json::Value {
-				::puniyu_adapter::serde_json::to_value(Self::default())
-					.unwrap_or(::puniyu_adapter::serde_json::Value::Null)
+			fn config(&self) -> ::puniyu_adapter::toml::Value {
+				::puniyu_adapter::toml::to_value(Self::default())
+					.unwrap_or(::puniyu_adapter::toml::Value::Null)
 			}
 		}
 
@@ -160,9 +160,9 @@ pub fn plugin_config(args: TokenStream, item: TokenStream) -> TokenStream {
 				#config_name
 			}
 
-			fn config(&self) -> ::puniyu_plugin::serde_json::Value {
-				::puniyu_plugin::serde_json::to_value(Self::default())
-					.unwrap_or(::puniyu_plugin::serde_json::Value::Null)
+			fn config(&self) -> ::puniyu_plugin::toml::Value {
+				::puniyu_plugin::toml::to_value(Self::default())
+					.unwrap_or(::puniyu_plugin::toml::Value::Null)
 			}
 		}
 

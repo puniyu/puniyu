@@ -14,3 +14,4 @@ pub use puniyu_types::server::ServerType;
 pub use serde_json;
 pub use puniyu_common::toml::read_config;
 pub use puniyu_common::path::{ADAPTER_CONFIG_DIR, ADAPTER_DATA_DIR};
+pub use toml;

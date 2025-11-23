@@ -13,8 +13,9 @@ rust-version.workspace = true
 tokio = { workspace = true, optional = true }
 puniyu_logger = { workspace = true, optional = true }
 serde = { workspace = true, optional = true }
-strum = { workspace = true, optional = true }
 serde_json = { workspace = true, optional = true }
+strum = { workspace = true, optional = true }
+toml = { workspace = true, optional = true }
 thiserror = { workspace = true, optional = true }
 reqwest = { workspace = true, optional = true }
 async-trait = { workspace = true, optional = true }
@@ -52,7 +53,7 @@ plugin = ["dep:async-trait", "version", "task", "command", "server", "config"]
 handler = ["dep:async-trait", "event", "bot"]
 matcher = ["dep:async-trait", "event"]
 version = ["dep:serde"]
-config = ["dep:serde_json"]
+config = ["dep:toml"]
 full = [
     "adapter",
     "event",

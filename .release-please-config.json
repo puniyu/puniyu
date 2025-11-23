@@ -101,6 +101,7 @@
       "component": "config"
     },
     "crates/puniyu_library": {
+      "release-type": "rust",
       "component": "library"
     },
     "crates/puniyu_macros": {

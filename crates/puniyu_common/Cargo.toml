@@ -14,7 +14,7 @@ rust-version.workspace = true
 doctest = false
 
 [dependencies]
-toml = { version = "0.9.5" }
+toml = { workspace = true }
 puniyu_system_info = { version = "0.8.0", features = ["gpu"] }
 
 serde.workspace = true

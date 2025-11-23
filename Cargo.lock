@@ -1655,6 +1655,7 @@ dependencies = [
  "puniyu_types",
  "serde",
  "serde_json",
+ "toml",
 ]
 
 [[package]]
@@ -1702,6 +1703,7 @@ dependencies = [
  "puniyu_common",
  "puniyu_logger",
  "serde",
+ "toml",
 ]
 
 [[package]]
@@ -1774,6 +1776,7 @@ dependencies = [
  "puniyu_registry",
  "puniyu_types",
  "serde_json",
+ "toml",
 ]
 
 [[package]]
@@ -1837,6 +1840,7 @@ dependencies = [
  "strum",
  "thiserror 2.0.17",
  "tokio",
+ "toml",
 ]
 
 [[package]]
