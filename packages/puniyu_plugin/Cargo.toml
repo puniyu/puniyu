@@ -1,6 +1,6 @@
 [package]
 name = "puniyu_plugin"
-version = "0.5.1"
+version = "0.5.2"
 description = "puniyu 的插件模块"
 readme = "README.md"
 authors.workspace = true
@@ -26,6 +26,6 @@ puniyu_types = { version = "0.5.1", path = "../../crates/puniyu_types", default-
   "plugin",
   "event",
 ] }
-puniyu_registry = { version = "0.5.1", path = "../../crates/puniyu_registry", default-features = false, features = [
+puniyu_registry = { version = "0.5.2", path = "../../crates/puniyu_registry", default-features = false, features = [
   "plugin",
 ] }

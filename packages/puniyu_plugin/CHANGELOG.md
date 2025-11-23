@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.5.2](https://github.com/puniyu/puniyu/compare/plugin-v0.5.1...plugin-v0.5.2) (2025-11-23)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puniyu_registry bumped from 0.5.1 to 0.5.2
+
 ## [0.5.1](https://github.com/puniyu/puniyu/compare/plugin-v0.5.0...plugin-v0.5.1) (2025-11-23)
 
 

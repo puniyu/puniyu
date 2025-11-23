@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.2](https://github.com/puniyu/puniyu/compare/registry-v0.5.1...registry-v0.5.2) (2025-11-23)
+
+
+### 🔧 其他更新
+
+* **deps:** 添加 futures 依赖项 ([45fc941](https://github.com/puniyu/puniyu/commit/45fc941dced932cbd5e8642f45af1d115d80fea1))
+
 ## [0.5.1](https://github.com/puniyu/puniyu/compare/registry-v0.5.0...registry-v0.5.1) (2025-11-23)
 
 
