@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.2.3](https://github.com/puniyu/puniyu/compare/adapter-console-v0.2.2...adapter-console-v0.2.3) (2025-11-23)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puniyu_adapter bumped from 0.5.2 to 0.5.3
+    * puniyu_core bumped from 0.5.2 to 0.5.3
+
 ## [0.2.2](https://github.com/puniyu/puniyu/compare/adapter-console-v0.2.1...adapter-console-v0.2.2) (2025-11-23)
 
 
