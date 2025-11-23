@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.5.1](https://github.com/puniyu/puniyu/compare/types-v0.5.0...types-v0.5.1) (2025-11-23)
+
+
+### 🔧 其他更新
+
+* **puniyu_types:** 添加包描述信息 ([ec9bf4d](https://github.com/puniyu/puniyu/commit/ec9bf4de5ffe6f2747437e0e9f387946713ce1bc))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puniyu_config bumped from 0.5.0 to 0.5.1
+
 ## [0.5.0](https://github.com/puniyu/puniyu/compare/types-v0.4.1...types-v0.5.0) (2025-11-23)
 
 
