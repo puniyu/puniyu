@@ -12,6 +12,7 @@ use puniyu_common::APP_NAME;
 use puniyu_common::path::{PLUGIN_CONFIG_DIR, PLUGIN_DATA_DIR, PLUGIN_RESOURCE_DIR};
 use puniyu_common::{merge_config, read_config, write_config};
 use puniyu_config::Config;
+use puniyu_config::ConfigRegistry;
 use puniyu_library::{LibraryRegistry, libloading};
 use puniyu_logger::{SharedLogger, debug, error, owo_colors::OwoColorize, warn};
 use puniyu_types::plugin::{Plugin, PluginBuilder, PluginId, PluginType};
@@ -140,6 +141,11 @@ impl PluginRegistry {
 										&cfg,
 									)
 									.expect("合并插件配置文件失败");
+									let cfg =
+										read_config::<toml::Value>(&config_dir, config.name())
+											.unwrap();
+									let path = config_dir.join(format!("{}.toml", config.name()));
+									ConfigRegistry::register(path.as_path(), cfg);
 								}
 								Err(_) => {
 									debug!(
@@ -233,6 +239,10 @@ impl PluginRegistry {
 							Ok(cfg) => {
 								merge_config(&config_dir, config.name(), &config.config(), &cfg)
 									.expect("合并插件配置文件失败");
+								let cfg =
+									read_config::<toml::Value>(&config_dir, config.name()).unwrap();
+								let path = config_dir.join(format!("{}.toml", config.name()));
+								ConfigRegistry::register(path.as_path(), cfg);
 							}
 							Err(_) => {
 								debug!(

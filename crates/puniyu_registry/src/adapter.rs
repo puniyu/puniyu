@@ -6,6 +6,7 @@ use convert_case::{Case, Casing};
 pub use error::Error;
 use puniyu_common::path::{ADAPTER_CONFIG_DIR, ADAPTER_DATA_DIR, ADAPTER_RESOURCE_DIR};
 use puniyu_common::{merge_config, read_config, write_config};
+use puniyu_config::ConfigRegistry;
 use puniyu_logger::{debug, error, owo_colors::OwoColorize};
 use puniyu_types::adapter::{Adapter, AdapterBuilder};
 use std::sync::LazyLock;
@@ -56,6 +57,9 @@ impl AdapterRegistry {
 					Ok(cfg) => {
 						merge_config(&config_dir, config.name(), &config.config(), &cfg)
 							.expect("合并插件配置文件失败");
+						let cfg = read_config::<toml::Value>(&config_dir, config.name()).unwrap();
+						let path = config_dir.join(format!("{}.toml", config.name()));
+						ConfigRegistry::register(path.as_path(), cfg);
 					}
 					Err(_) => {
 						debug!(

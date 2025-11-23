@@ -42,14 +42,20 @@ pub fn adapter_config(args: TokenStream, item: TokenStream) -> TokenStream {
 			}
 
 			fn config(&self) -> ::puniyu_adapter::toml::Value {
-				::puniyu_adapter::toml::to_value(Self::default())
-					.unwrap_or(::puniyu_adapter::toml::Value::Null)
+				let config_str = ::puniyu_adapter::toml::to_string(&Self::default())
+					.expect("Failed to serialize config");
+				::puniyu_adapter::toml::from_str(&config_str)
+					.expect("Failed to deserialize config")
 			}
 		}
 
 		impl #struct_name {
 			pub fn get() -> Self {
-				::puniyu_adapter::read_config::<#struct_name>(::puniyu_adapter::ADAPTER_CONFIG_DIR.as_path(), #config_name).unwrap_or_default()
+				let adapter_name = crate::Adapter.info().name.to_lowercase();
+				let path = ::puniyu_adapter::ADAPTER_CONFIG_DIR.join(adapter_name).join(format!("{}.toml", #config_name));
+				::puniyu_adapter::ConfigRegistry::get(&path)
+					.and_then(|cfg| cfg.try_into::<#struct_name>().ok())
+					.unwrap_or_default()
 			}
 		}
 
@@ -161,14 +167,20 @@ pub fn plugin_config(args: TokenStream, item: TokenStream) -> TokenStream {
 			}
 
 			fn config(&self) -> ::puniyu_plugin::toml::Value {
-				::puniyu_plugin::toml::to_value(Self::default())
-					.unwrap_or(::puniyu_plugin::toml::Value::Null)
+				let config_str = ::puniyu_plugin::toml::to_string(&Self::default())
+					.expect("Failed to serialize config");
+				::puniyu_plugin::toml::from_str(&config_str)
+					.expect("Failed to deserialize config")
 			}
 		}
 
 		impl #struct_name {
 			pub fn get() -> Self {
-				::puniyu_plugin::read_config::<#struct_name>(::puniyu_plugin::PLUGIN_CONFIG_DIR.as_path(), #config_name).unwrap_or_default()
+				let plugin_name = crate::Plugin.name().to_lowercase();
+				let path = ::puniyu_plugin::PLUGIN_CONFIG_DIR.join(plugin_name).join(format!("{}.toml", #config_name));
+				::puniyu_plugin::ConfigRegistry::get(&path)
+					.and_then(|cfg| cfg.try_into::<#struct_name>().ok())
+					.unwrap_or_default()
 			}
 		}
 

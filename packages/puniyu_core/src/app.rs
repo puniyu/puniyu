@@ -9,7 +9,7 @@ use figlet_rs::FIGfont;
 use puniyu_bus::{EVENT_BUS, init_event_bus};
 pub use puniyu_common::APP_NAME;
 use puniyu_common::path::{DATA_DIR, PLUGIN_DATA_DIR, PLUGIN_DIR, WORKING_DIR, RESOURCE_DIR};
-use puniyu_config::{init_config, init_config_watcher};
+use puniyu_config::{init_config, start_config_watcher};
 use puniyu_registry::{adapter::AdapterRegistry, plugin::PluginRegistry};
 use puniyu_types::adapter::AdapterBuilder;
 use puniyu_types::plugin::{PluginBuilder, PluginType};
@@ -80,6 +80,7 @@ impl App {
 		let start_time = std::time::Instant::now();
 		let app_name = APP_NAME.get().unwrap();
 		init_app(self.plugins.clone(), self.adapters.clone()).await;
+		start_config_watcher();
 		let duration = start_time.elapsed();
 		let duration_str = format_duration(duration);
 		info!(
@@ -132,7 +133,6 @@ async fn init_app(
 	if !RESOURCE_DIR.as_path().exists() {
 		fs::create_dir(RESOURCE_DIR.as_path()).await.unwrap();
 	}
-	init_config_watcher();
 	init_event_bus();
 	let event_bus = EVENT_BUS.get().unwrap();
 	event_bus.run();

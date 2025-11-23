@@ -1,3 +1,10 @@
+mod registry;
+pub mod store;
+pub use registry::ConfigRegistry;
+mod app;
+mod bot;
+mod group;
+
 use crate::{
 	app::{APP_CONFIG, AppConfig},
 	bot::{BOT_CONFIG, BotConfig},
@@ -6,20 +13,20 @@ use crate::{
 use notify_debouncer_mini::{DebounceEventResult, new_debouncer, notify};
 use puniyu_common::Error;
 use puniyu_common::path::LOG_DIR;
-use puniyu_common::{APP_NAME, path::CONFIG_DIR, toml::merge_config};
+use puniyu_common::{
+	APP_NAME,
+	path::CONFIG_DIR,
+	toml::{merge_config, read_config},
+};
 use puniyu_logger::{debug, error, info};
 use serde::{Deserialize, Serialize, de::DeserializeOwned};
 use std::{env, thread, time::Duration};
-
-mod app;
-mod bot;
-mod group;
 
 fn reload_config<T>(name: &str, config: &mut T) -> Result<(), Error>
 where
 	T: Default + DeserializeOwned,
 {
-	match puniyu_common::toml::read_config(CONFIG_DIR.as_path(), name) {
+	match read_config(CONFIG_DIR.as_path(), name) {
 		Ok(new_config) => {
 			*config = new_config;
 			Ok(())
@@ -105,7 +112,7 @@ pub fn init_config() {
 	init_env();
 }
 
-pub fn init_config_watcher() {
+pub fn start_config_watcher() {
 	thread::spawn(|| {
 		debug!("[Config] 配置文件监听器已启动");
 
@@ -149,6 +156,15 @@ pub fn init_config_watcher() {
 										.unwrap();
 								}
 							}
+
+							if ConfigRegistry::all().iter().any(|c| c.path == event.path)
+								&& let Some(name) = event.path.file_stem().and_then(|s| s.to_str())
+								&& let Some(dir) = event.path.parent()
+								&& let Ok(value) = read_config::<toml::Value>(dir, name)
+							{
+								ConfigRegistry::update(&event.path, value.clone());
+								debug!("[Config] 更新配置: {:#?}", value.clone());
+							}
 						}
 					}
 				}
@@ -158,7 +174,7 @@ pub fn init_config_watcher() {
 
 		debouncer
 			.watcher()
-			.watch(CONFIG_DIR.as_path(), notify::RecursiveMode::NonRecursive)
+			.watch(CONFIG_DIR.as_path(), notify::RecursiveMode::Recursive)
 			.unwrap();
 
 		thread::park();

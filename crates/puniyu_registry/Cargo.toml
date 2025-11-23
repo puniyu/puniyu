@@ -38,6 +38,7 @@ default = ["full"]
 adapter = [
   "dep:convert_case",
   "dep:puniyu_common",
+  "dep:puniyu_config",
   "dep:puniyu_logger",
   "dep:toml",
   "puniyu_types/adapter",

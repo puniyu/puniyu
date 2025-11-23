@@ -1646,9 +1646,11 @@ version = "0.4.1"
 dependencies = [
  "actix-web",
  "async-trait",
+ "convert_case",
  "inventory",
  "puniyu_bus",
  "puniyu_common",
+ "puniyu_config",
  "puniyu_logger",
  "puniyu_macros",
  "puniyu_registry",
