@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.5.10](https://github.com/puniyu/puniyu/compare/config-v0.5.9...config-v0.5.10) (2025-11-23)
+
+
+### 🔧 其他更新
+
+* **config:** Synchronize puniyu versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puniyu_common bumped from 0.5.9 to 0.5.10
+
 ## [0.5.9](https://github.com/puniyu/puniyu/compare/config-v0.5.8...config-v0.5.9) (2025-11-23)
 
 
