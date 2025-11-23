@@ -1,6 +1,6 @@
 [package]
 name = "puniyu_bus"
-version = "0.4.6"
+version = "0.4.7"
 description = "puniyu 事件总线库"
 authors.workspace = true
 license.workspace = true
@@ -20,7 +20,7 @@ puniyu_types = { version = "0.5.4", path = "../puniyu_types", default-features =
   "context",
   "bot",
 ] }
-puniyu_registry = { version = "0.5.3", path = "../puniyu_registry", default-features = false, features = [
+puniyu_registry = { version = "0.5.4", path = "../puniyu_registry", default-features = false, features = [
   "matcher",
   "handler",
 ] }
