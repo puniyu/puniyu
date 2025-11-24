@@ -30,7 +30,8 @@ impl Default for AppBuilder {
 	fn default() -> Self {
 		Self {
 			app_name: String::from("puniyu"),
-			app_logo: Vec::new(),
+			app_logo: include_bytes!(concat!(env!("CARGO_MANIFEST_DIR"), "/assets/logo.png"))
+				.to_vec(),
 			working_dir: current_dir().unwrap(),
 			plugins: Vec::new(),
 			adapters: Vec::new(),
@@ -71,11 +72,11 @@ impl AppBuilder {
 	pub fn build(&self) -> App {
 		WORKING_DIR.get_or_init(|| self.working_dir.clone());
 		APP_NAME.get_or_init(|| self.app_name.clone());
-		App { 
+		App {
 			app_name: self.app_name.clone(),
 			app_logo: self.app_logo.clone(),
-			plugins: self.plugins.clone(), 
-			adapters: self.adapters.clone() 
+			plugins: self.plugins.clone(),
+			adapters: self.adapters.clone(),
 		}
 	}
 }
