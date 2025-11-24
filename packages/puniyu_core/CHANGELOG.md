@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.5.12](https://github.com/puniyu/puniyu/compare/core-v0.5.11...core-v0.5.12) (2025-11-24)
+
+
+### ♻️ 代码重构
+
+* **core:** 移动logo资源到core包并优化构建配置 ([4e2d787](https://github.com/puniyu/puniyu/commit/4e2d787dd92318b45d1128d11ffc26c2451729c3))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puniyu_server bumped from 0.5.11 to 0.5.12
+    * puniyu_config bumped from 0.5.11 to 0.5.12
+    * puniyu_bus bumped from 0.5.11 to 0.5.12
+    * puniyu_common bumped from 0.5.11 to 0.5.12
+    * puniyu_types bumped from 0.5.11 to 0.5.12
+    * puniyu_registry bumped from 0.5.11 to 0.5.12
+
 ## [0.5.11](https://github.com/puniyu/puniyu/compare/core-v0.5.10...core-v0.5.11) (2025-11-23)
 
 
