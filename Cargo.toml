@@ -25,10 +25,10 @@ itertools = { version = "0.14.0" }
 futures = { version = "0.3.31" }
 async-trait = { version = "0.1.89" }
 thiserror = { version = "2.0.17" }
-inventory = "0.3.21"
+inventory = { version = "0.3.21" }
 strum = { version = "0.27.2", features = ["derive"] }
 convert_case = { version = "0.10.0" }
-actix-web = "4.11.0"
+actix-web = { version = "4.11.0" }
 reqwest = { version = "0.12.24", default-features = false, features = ["json", "rustls-tls"] }
 
 puniyu_logger = { version = "0.6.2" }

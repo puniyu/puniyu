@@ -7,9 +7,6 @@ pub mod adapter;
 #[cfg(feature = "task")]
 pub mod task;
 
-#[cfg(feature = "task")]
-pub use task::TaskRegistry;
-
 #[cfg(feature = "command")]
 pub mod command;
 
