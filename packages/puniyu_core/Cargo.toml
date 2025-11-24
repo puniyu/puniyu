@@ -9,6 +9,7 @@ homepage.workspace = true
 repository.workspace = true
 edition.workspace = true
 rust-version.workspace = true
+include = ["src", "Cargo.toml", "README.md", "build.rs", "assets"]
 
 [dependencies]
 figlet-rs = "0.1.5"
