@@ -96,7 +96,7 @@ jobs:
       - name: 移除本地环境
         shell: bash
         run: |
-          rm -rf ./cargo/
+          rm -rf ./.cargo/
 
       - name: 发布 build
         if: needs.release.outputs.build
