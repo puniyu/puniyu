@@ -5,17 +5,7 @@ use puniyu_adapter::prelude::*;
 use puniyu_core::Config;
 use std::sync::LazyLock;
 use std::time::{SystemTime, UNIX_EPOCH};
-
-macro_rules! info {
-			($($arg:tt)*) => {
-				{
-					use puniyu_adapter::logger::owo_colors::OwoColorize;
-					let prefix = "adapter".fg_rgb::<176, 196, 222>();
-					let func_name = env!("CARGO_PKG_NAME").fg_rgb::<255, 192, 203>();
-					puniyu_adapter::logger::info!("[{}:{}] {}", prefix, func_name, format!($($arg)*))
-				}
-			};
-		}
+use puniyu_adapter::logger::debug;
 
 pub(crate) static AVATAR_URL: LazyLock<String> = LazyLock::new(|| {
 	let server = Config::app().server();
@@ -34,16 +24,15 @@ impl AdapterApi for ConsoleAdapterApi {
 	}
 
 	async fn send_msg(&self, contact: ContactType, element: Message) -> Result<SendMsgType> {
-		let source = match contact {
-			ContactType::Friend(friend) => friend.scene,
-			ContactType::Group(group) => group.scene,
+		let (msg_type, source) = match &contact {
+			ContactType::Friend(friend) => ("私聊消息", &friend.scene),
+			ContactType::Group(group) => ("群聊消息", &group.scene),
 		};
 		let message_id = make_message_id();
 		let timestamp = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs();
 
-		info!("[发送消息:{}] {:?}", source.to_string(), element);
+		debug!("[发送{}:{}]\n{:#}", msg_type, source, element);
 
 		Ok(SendMsgType { message_id, time: timestamp })
 	}
 }
-

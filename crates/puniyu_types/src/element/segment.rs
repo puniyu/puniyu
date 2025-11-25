@@ -1,7 +1,7 @@
+use super::RawMessage;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::fmt;
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Segment {
 	#[serde(rename = "type")]
@@ -11,12 +11,37 @@ pub struct Segment {
 
 impl fmt::Display for Segment {
 	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-		match serde_json::to_string(self) {
-			Ok(json) => write!(f, "{}", json),
-			Err(_) => write!(f, "Segment {{ type: {}, data: {} }}", self.r#type, self.data),
+		if f.alternate() {
+			// 使用 {:#} 格式时，显示美化的 JSON
+			match serde_json::to_string_pretty(self) {
+				Ok(json) => write!(f, "{}", json),
+				Err(_) => write!(f, "Segment {{ type: {}, data: {} }}", self.r#type, self.data),
+			}
+		} else {
+			// 使用 {} 格式时，显示紧凑的 JSON
+			match serde_json::to_string(self) {
+				Ok(json) => write!(f, "{}", json),
+				Err(_) => write!(f, "Segment {{ type: {}, data: {} }}", self.r#type, self.data),
+			}
 		}
 	}
 }
+
+impl RawMessage for Segment {
+	fn raw(&self) -> String {
+		match self.r#type.as_str() {
+			"at" => format!("[at:{}]", self.data),
+			"text" => format!("[text:{}]", self.data),
+			"image" => format!("[image:{}]", self.data),
+			"video" => format!("[video:{}]", self.data),
+			"record" => format!("[record:{}]", self.data),
+			"reply" => format!("[reply:{}]", self.data),
+			"file" => format!("[file:{}]", self.data),
+			_ => format!("[unkonwn:{}]", self.data),
+		}
+	}
+}
+
 
 #[macro_export]
 macro_rules! segment {
