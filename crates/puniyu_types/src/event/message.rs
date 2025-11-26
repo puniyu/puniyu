@@ -40,10 +40,15 @@ pub trait MessageBase: Send + Sync + EventBase {
 			.collect()
 	}
 
-	fn get_at_all(&self) -> bool {
+	/// 是否提及所有人
+	/// 艾特全体成员
+	fn mentions_everyone(&self) -> bool {
 		self.elements().iter().any(|e| matches!(e, Elements::At(at) if at.is_all()))
 	}
-	fn get_at_bot(&self) -> bool {
+
+	/// 是否提及自身
+	/// 艾特Bot
+	fn mentions_me(&self) -> bool {
 		self.elements()
 			.iter()
 			.any(|e| matches!(e, Elements::At(at) if at.target_id.contains(self.self_id())))
@@ -60,6 +65,8 @@ pub trait MessageBase: Send + Sync + EventBase {
 			.next()
 	}
 
+	/// 获取语音元素
+
 	fn get_record(&self) -> Option<Vec<u8>> {
 		self.elements()
 			.into_iter()
@@ -70,6 +77,7 @@ pub trait MessageBase: Send + Sync + EventBase {
 			.next()
 	}
 
+	/// 获取回复Id
 	fn get_reply_id(&self) -> Option<String> {
 		self.elements()
 			.iter()

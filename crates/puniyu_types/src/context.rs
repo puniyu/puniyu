@@ -3,7 +3,7 @@ use crate::bot::Bot;
 use crate::contact::ContactType;
 use crate::element::Message;
 use crate::event::EventBase;
-use crate::event::message::{FriendMessage, GroupMessage, MessageEvent};
+use crate::event::message::{FriendMessage, GroupMessage, MessageBase, MessageEvent};
 use crate::sender::SenderType;
 use std::collections::HashMap;
 use std::sync::Arc;
@@ -97,6 +97,46 @@ impl MessageContext {
 		match &*self.event {
 			MessageEvent::Friend(ev) => ev.sub_event().to_string(),
 			MessageEvent::Group(ev) => ev.sub_event().to_string(),
+		}
+	}
+
+	/// 获取艾特用户
+	/// 
+	/// 此api只返回第一个
+	pub fn get_at(&self) -> Option<String>
+	{
+		self.get_at_list().first().cloned()
+	}
+
+	/// 获取艾特列表
+	pub fn get_at_list(&self) -> Vec<String> {
+		match &*self.event {
+			MessageEvent::Friend(ev) => ev.get_at(),
+			MessageEvent::Group(ev) => ev.get_at(),
+		}
+	}
+
+	/// 是否为艾特全体成员
+	pub fn mentions_everyone(&self) -> bool {
+		match &*self.event {
+			MessageEvent::Friend(ev) => ev.mentions_everyone(),
+			MessageEvent::Group(ev) => ev.mentions_everyone(),
+		}
+	}
+
+	/// 是否为艾特Bot
+	pub fn mentions_me(&self) -> bool {
+		match &*self.event {
+			MessageEvent::Friend(ev) => ev.mentions_me(),
+			MessageEvent::Group(ev) => ev.mentions_me(),
+		}
+	}
+
+	/// 获取图片
+	pub fn get_image(&self) -> Option<Vec<u8>> {
+		match &*self.event {
+			MessageEvent::Friend(ev) => ev.get_image(),
+			MessageEvent::Group(ev) => ev.get_image(),
 		}
 	}
 

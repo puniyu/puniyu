@@ -21,7 +21,7 @@ pub struct Avatar(String);
 impl Avatar {
 	/// 将头像 URL 转换为字节数组
 	///
-	/// 支持 `file://` 协议和 `HTTP(S)协议` URL
+	/// 支持`HTTP(S)协议` URL
 	pub async fn to_vec(&self) -> Result<Vec<u8>> {
 		Ok(reqwest::get(&self.0).await?.bytes().await?.to_vec())
 	}
