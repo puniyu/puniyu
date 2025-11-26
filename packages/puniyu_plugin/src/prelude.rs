@@ -9,7 +9,7 @@ pub use puniyu_types::command::{CommandBuilder, HandlerAction, HandlerResult};
 pub use puniyu_types::config::Config;
 pub use puniyu_types::contact::{Contact, FriendContact, GroupContact, Scene};
 pub use puniyu_types::context::{BotContext, MessageContext};
-pub use puniyu_types::element::{ElementType, Message, Segment};
+pub use puniyu_types::element::{ElementType, Message};
 pub use puniyu_types::event::EventBase;
 pub use puniyu_types::event::message::{
 	FriendMessage, GroupMessage, MessageBase, MessageBuilder, MessageEvent,

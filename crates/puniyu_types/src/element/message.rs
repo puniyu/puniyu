@@ -1,11 +1,9 @@
-use super::ElementType;
-use super::segment::Segment;
+use super::send::Elements;
 use serde::{Deserialize, Serialize};
-use serde_json::json;
 use std::fmt;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Message(Vec<Segment>);
+pub struct Message(Vec<Elements>);
 
 impl fmt::Display for Message {
 	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -19,19 +17,19 @@ impl fmt::Display for Message {
 	}
 }
 
-impl From<Vec<Segment>> for Message {
-	fn from(message: Vec<Segment>) -> Self {
+impl From<Vec<Elements>> for Message {
+	fn from(message: Vec<Elements>) -> Self {
 		Message(message)
 	}
 }
 
-impl From<Segment> for Message {
-	fn from(segment: Segment) -> Self {
-		Message(vec![segment])
+impl From<Elements> for Message {
+	fn from(elements: Elements) -> Self {
+		Message(vec![elements])
 	}
 }
 
-impl From<Message> for Vec<Segment> {
+impl From<Message> for Vec<Elements> {
 	fn from(message: Message) -> Self {
 		message.0
 	}
@@ -39,33 +37,18 @@ impl From<Message> for Vec<Segment> {
 
 impl From<&str> for Message {
 	fn from(v: &str) -> Self {
-		Message(vec![Segment {
-			r#type: ElementType::Text.to_string(),
-			data: json!({
-				"text":v,
-			}),
-		}])
+		Message(vec![Elements::Text(v.to_string().into())])
 	}
 }
 
 impl From<String> for Message {
 	fn from(v: String) -> Self {
-		Message(vec![Segment {
-			r#type: ElementType::Text.to_string(),
-			data: json!({
-				"text":v,
-			}),
-		}])
+		Message(vec![Elements::Text(v.into())])
 	}
 }
 
 impl From<&String> for Message {
 	fn from(v: &String) -> Self {
-		Message(vec![Segment {
-			r#type: ElementType::Text.to_string(),
-			data: json!({
-				"text":v,
-			}),
-		}])
+		Message(vec![Elements::Text(v.into())])
 	}
 }

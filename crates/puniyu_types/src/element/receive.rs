@@ -58,6 +58,10 @@ pub struct ImageElement {
 	pub is_flash: bool,
 	/// 图片外显
 	pub summary: Option<String>,
+	/// 图片宽度
+	pub width: u64,
+	/// 图片高度
+	pub height: u64,
 }
 
 impl RawMessage for ImageElement {
@@ -69,7 +73,7 @@ impl RawMessage for ImageElement {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct JsonElement {
 	/// Json数据，未序列化
-	pub data: serde_json::Value,
+	pub data: String,
 }
 
 impl RawMessage for JsonElement {
@@ -121,6 +125,11 @@ impl RawMessage for ReplyElement {
 pub struct TextElement {
 	/// 文本元素内容
 	pub text: String,
+}
+impl From<TextElement> for String {
+	fn from(elem: TextElement) -> Self {
+		elem.text
+	}
 }
 
 impl RawMessage for TextElement {
@@ -189,76 +198,4 @@ impl RawMessage for Vec<Elements> {
 	fn raw(&self) -> String {
 		self.iter().map(|element| element.raw()).collect::<Vec<_>>().join("")
 	}
-}
-#[macro_export]
-macro_rules! element {
-	// 文本元素
-	(text,$text:expr) => {
-		Elements::Text(TextElement { text: $text.to_string() })
-	};
-
-	// 图片元素
-	(image,$image:expr) => {
-		Elements::Image(ImageElement { file: $image.into(), is_flash: false, summary: None })
-	};
-	(image,$image:expr,$is_flash:expr) => {
-		Elements::Image(ImageElement { file: $image.into(), is_flash: $is_flash, summary: None })
-	};
-	(image,$image:expr,$is_flash:expr,$summary:expr) => {
-		Elements::Image(ImageElement {
-			file: $image.into(),
-			is_flash: $is_flash,
-			summary: Some($summary.to_string()),
-		})
-	};
-
-	// @元素
-	(at,$target_id:expr) => {
-		Elements::At(AtElement { target_id: $target_id.to_string(), name: None })
-	};
-
-	// @全体成员
-	(at_all) => {
-		Elements::At(AtElement {
-			target_id: "all".to_string(), name: Some("全体成员".to_string())
-		})
-	};
-
-	// 表情元素
-	(face,$id:expr) => {
-		Elements::Face(FaceElement { id: $id })
-	};
-
-	// 回复元素
-	(reply,$message_id:expr) => {
-		Elements::Reply(ReplyElement { message_id: $message_id.to_string() })
-	};
-
-	// 语音元素
-	(record,$record:expr) => {
-		Elements::Record(RecordElement { file: $record.into() })
-	};
-
-	// 文件元素
-	(file,$file:expr,$file_id:expr,$file_size:expr,$file_name:expr) => {
-		Elements::File(FileElement {
-			file: $file.into(),
-			file_id: $file_id.to_string(),
-			file_size: $file_size,
-			file_name: $file_name.to_string(),
-		})
-	};
-	// 视频元素
-	(video,$video:expr,$video_name:expr) => {
-		Elements::Video(VideoElement { file: $video.into(), file_name: $video_name.to_string() })
-	};
-	// JSON元素
-	(json,$data:expr) => {
-		Elements::Json(JsonElement { data: serde_json::Value::String($data.to_string()) })
-	};
-
-	// XML元素
-	(xml,$data:expr) => {
-		Elements::Xml(XmlElement { data: String::from($data) })
-	};
 }

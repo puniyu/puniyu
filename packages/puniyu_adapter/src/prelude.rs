@@ -11,11 +11,11 @@ pub use puniyu_types::adapter::{
 pub use puniyu_types::bot::Bot;
 pub use puniyu_types::config::Config;
 pub use puniyu_types::contact::{Contact, ContactType, FriendContact, GroupContact, Scene};
-pub use puniyu_types::element::{
+pub use puniyu_types::element::receive::{
 	AtElement, FileElement, ImageElement, JsonElement, RecordElement, ReplyElement, TextElement,
 	VideoElement, XmlElement,
 };
-pub use puniyu_types::element::{ElementType, Elements, Message, Segment};
+pub use puniyu_types::element::{ElementType, Message, receive::Elements};
 pub use puniyu_types::event::message::{
 	FriendMessage, GroupMessage, MessageBase, MessageBuilder, MessageEvent,
 };

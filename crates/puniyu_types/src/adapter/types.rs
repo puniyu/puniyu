@@ -1,6 +1,6 @@
 use super::Result;
 use crate::contact::ContactType;
-use crate::element::Elements;
+use crate::element::receive::Elements;
 use crate::sender::{Role, SenderType, Sex};
 use serde::Serialize;
 use std::path::PathBuf;
@@ -82,7 +82,6 @@ pub struct MessageType {
 	/// 消息元素
 	pub elements: Vec<Elements>,
 }
-
 
 pub enum GetHistoryMsgType {
 	MessageId(String),

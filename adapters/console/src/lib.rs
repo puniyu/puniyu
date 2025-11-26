@@ -53,6 +53,7 @@ impl AdapterBuilder for Console {
 		let adapter_info = self.info().clone();
 		thread::spawn(move || {
 			loop {
+				static FILE_ID: AtomicU64 = AtomicU64::new(0);
 				let message = {
 					let mut input = String::new();
 					std::io::stdin().read_line(&mut input).unwrap();
@@ -69,33 +70,50 @@ impl AdapterBuilder for Console {
 					_ => ("friend", message.clone()),
 				};
 
-				let elements = match content.split_once(':') {
+				let elements: Vec<Elements> = match content.split_once(':') {
 					Some(("at", target_id)) if !target_id.is_empty() => {
-						vec![element!(text, target_id)]
+						vec![Elements::At(AtElement {
+							target_id: target_id.to_string(),
+							name: None,
+						})]
 					}
 					Some(("text", text_content)) => {
-						vec![element!(text, text_content.to_string())]
+						vec![Elements::Text(TextElement { text: text_content.to_string() })]
 					}
 					Some(("image", image_url)) => {
-						vec![element!(image, image_url)]
+						vec![Elements::Image(ImageElement {
+							file: Vec::from(image_url),
+							is_flash: false,
+							height: 0,
+							width: 0,
+							summary: None,
+						})]
 					}
 					Some(("json", json_content)) => {
-						vec![element!(json, json_content)]
+						vec![Elements::Json(JsonElement { data: json_content.to_string() })]
 					}
 					Some(("video", video_url)) => {
-						vec![element!(video, video_url, name)]
+						vec![Elements::Video(VideoElement {
+							file: Vec::from(video_url),
+							file_name: AdapterProtocol::Console.to_string(),
+						})]
 					}
 					Some(("record", record_url)) => {
-						vec![element!(record, record_url)]
+						vec![Elements::Record(RecordElement { file: Vec::from(record_url) })]
 					}
 					Some(("file", file_url)) => {
-						vec![element!(file, file_url, name, 100u64, name)]
+						vec![Elements::File(FileElement {
+							file: Vec::from(file_url),
+							file_id: FILE_ID.fetch_add(1, Ordering::Relaxed).to_string(),
+							file_name: AdapterProtocol::Console.to_string(),
+							file_size: 100,
+						})]
 					}
 					Some(("xml", xml_content)) => {
-						vec![element!(xml, xml_content)]
+						vec![Elements::Xml(XmlElement { data: xml_content.to_string() })]
 					}
 					_ => {
-						vec![element!(text, content)]
+						vec![Elements::Text(TextElement { text: content.to_string() })]
 					}
 				};
 
@@ -104,7 +122,11 @@ impl AdapterBuilder for Console {
 				let adapter = &api::ConsoleAdapterApi as &'static dyn AdapterApi;
 				let event_id = EVENT_ID.fetch_add(1, Ordering::Relaxed).to_string();
 
-				let bot = Bot { adapter: adapter_info.clone(), account: account_info.clone(), api: adapter };
+				let bot = Bot {
+					adapter: adapter_info.clone(),
+					account: account_info.clone(),
+					api: adapter,
+				};
 
 				match msg_type {
 					"group" => {

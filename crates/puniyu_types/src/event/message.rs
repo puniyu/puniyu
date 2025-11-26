@@ -4,7 +4,7 @@ mod group;
 pub use group::GroupMessage;
 
 use super::EventBase;
-use crate::element::Elements;
+use crate::element::receive::Elements;
 use strum::{Display, EnumString, IntoStaticStr};
 
 #[derive(Debug, Clone, EnumString, Display, IntoStaticStr)]

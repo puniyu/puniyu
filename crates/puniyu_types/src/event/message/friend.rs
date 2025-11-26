@@ -1,8 +1,8 @@
-use crate::sender::FriendSender;
-use crate::contact::FriendContact;
-use crate::element::Elements;
 use super::{MessageBase, MessageBuilder, MessageSubType};
+use crate::contact::FriendContact;
+use crate::element::receive::Elements;
 use crate::event::{EventBase, EventType};
+use crate::sender::FriendSender;
 use std::fmt;
 
 #[derive(Debug, Clone)]

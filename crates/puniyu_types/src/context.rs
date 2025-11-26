@@ -1,7 +1,7 @@
 use crate::adapter::{AdapterApi, Result, types};
 use crate::bot::Bot;
 use crate::contact::ContactType;
-use crate::element::{Elements, Message};
+use crate::element::{Message, receive::Elements};
 use crate::event::EventBase;
 use crate::event::message::{FriendMessage, GroupMessage, MessageBase, MessageEvent};
 use crate::sender::SenderType;

@@ -1,8 +1,8 @@
-use crate::sender::GroupSender;
-use crate::contact::GroupContact;
-use crate::element::Elements;
 use super::{MessageBase, MessageBuilder, MessageSubType};
+use crate::contact::GroupContact;
+use crate::element::receive::Elements;
 use crate::event::{EventBase, EventType};
+use crate::sender::GroupSender;
 use std::fmt;
 
 #[derive(Debug, Clone)]

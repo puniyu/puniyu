@@ -1,10 +1,8 @@
-mod types;
-pub use types::*;
 mod message;
 pub use message::Message;
+pub mod receive;
 mod segment;
-
-pub use segment::Segment;
+pub mod send;
 
 use serde::{Deserialize, Serialize};
 use strum::{Display, EnumString, IntoStaticStr};
