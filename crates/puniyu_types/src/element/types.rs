@@ -1,7 +1,6 @@
 use super::{RawMessage, TextMessage};
 use serde::{Deserialize, Serialize};
 
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AtElement {
 	/// at元素目标id

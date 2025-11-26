@@ -1,7 +1,7 @@
 use crate::adapter::{AdapterApi, Result, types};
 use crate::bot::Bot;
 use crate::contact::ContactType;
-use crate::element::Message;
+use crate::element::{Elements, Message};
 use crate::event::EventBase;
 use crate::event::message::{FriendMessage, GroupMessage, MessageBase, MessageEvent};
 use crate::sender::SenderType;
@@ -100,46 +100,6 @@ impl MessageContext {
 		}
 	}
 
-	/// 获取艾特用户
-	/// 
-	/// 此api只返回第一个
-	pub fn get_at(&self) -> Option<String>
-	{
-		self.get_at_list().first().cloned()
-	}
-
-	/// 获取艾特列表
-	pub fn get_at_list(&self) -> Vec<String> {
-		match &*self.event {
-			MessageEvent::Friend(ev) => ev.get_at(),
-			MessageEvent::Group(ev) => ev.get_at(),
-		}
-	}
-
-	/// 是否为艾特全体成员
-	pub fn mentions_everyone(&self) -> bool {
-		match &*self.event {
-			MessageEvent::Friend(ev) => ev.mentions_everyone(),
-			MessageEvent::Group(ev) => ev.mentions_everyone(),
-		}
-	}
-
-	/// 是否为艾特Bot
-	pub fn mentions_me(&self) -> bool {
-		match &*self.event {
-			MessageEvent::Friend(ev) => ev.mentions_me(),
-			MessageEvent::Group(ev) => ev.mentions_me(),
-		}
-	}
-
-	/// 获取图片
-	pub fn get_image(&self) -> Option<Vec<u8>> {
-		match &*self.event {
-			MessageEvent::Friend(ev) => ev.get_image(),
-			MessageEvent::Group(ev) => ev.get_image(),
-		}
-	}
-
 	/// Bot自身Id
 	pub fn self_id(&self) -> String {
 		match &*self.event {
@@ -169,6 +129,63 @@ impl MessageContext {
 		match &*self.event {
 			MessageEvent::Friend(ev) => SenderType::Friend(ev.sender().clone()),
 			MessageEvent::Group(ev) => SenderType::Group(ev.sender().clone()),
+		}
+	}
+
+	/// 消息元素
+	pub fn elements(&self) -> Vec<Elements> {
+		match &*self.event {
+			MessageEvent::Friend(ev) => ev.elements(),
+			MessageEvent::Group(ev) => ev.elements(),
+		}
+	}
+	/// 获取艾特用户
+	///
+	pub fn get_at(&self) -> Option<String> {
+		if let Some(at_list) = self.get_at_list() { at_list.first().cloned() } else { None }
+	}
+
+	/// 获取艾特列表
+	pub fn get_at_list(&self) -> Option<Vec<String>> {
+		match &*self.event {
+			MessageEvent::Friend(ev) => ev.get_at(),
+			MessageEvent::Group(ev) => ev.get_at(),
+		}
+	}
+
+	/// 是否为艾特全体成员
+	pub fn mentions_everyone(&self) -> bool {
+		self.elements().iter().any(|e| matches!(e, Elements::At(at) if !at.is_all()))
+	}
+
+	/// 是否为艾特Bot
+	pub fn mentions_me(&self) -> bool {
+		self.elements()
+			.iter()
+			.any(|e| matches!(e, Elements::At(at) if at.target_id.contains(&self.self_id())))
+	}
+
+	/// 获取图片
+	pub fn get_image(&self) -> Option<Vec<u8>> {
+		match &*self.event {
+			MessageEvent::Friend(ev) => ev.get_image(),
+			MessageEvent::Group(ev) => ev.get_image(),
+		}
+	}
+
+	/// 获取语音元素
+	pub fn get_record(&self) -> Option<Vec<u8>> {
+		match &*self.event {
+			MessageEvent::Friend(ev) => ev.get_record(),
+			MessageEvent::Group(ev) => ev.get_record(),
+		}
+	}
+
+	/// 获取回复id
+	pub fn get_reply_id(&self) -> Option<String> {
+		match &*self.event {
+			MessageEvent::Friend(ev) => ev.get_reply_id(),
+			MessageEvent::Group(ev) => ev.get_reply_id(),
 		}
 	}
 }

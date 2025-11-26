@@ -3,9 +3,9 @@ pub use friend::FriendMessage;
 mod group;
 pub use group::GroupMessage;
 
-use strum::{Display, EnumString, IntoStaticStr};
 use super::EventBase;
 use crate::element::Elements;
+use strum::{Display, EnumString, IntoStaticStr};
 
 #[derive(Debug, Clone, EnumString, Display, IntoStaticStr)]
 pub enum MessageSubType {
@@ -30,28 +30,16 @@ pub trait MessageBase: Send + Sync + EventBase {
 	fn elements(&self) -> Vec<Elements>;
 
 	/// 获取艾特元素
-	fn get_at(&self) -> Vec<String> {
-		self.elements()
+	fn get_at(&self) -> Option<Vec<String>> {
+		let at_list = self
+			.elements()
 			.iter()
 			.filter_map(|e| match e {
 				Elements::At(at) => Some(at.target_id.to_string()),
 				_ => None,
 			})
-			.collect()
-	}
-
-	/// 是否提及所有人
-	/// 艾特全体成员
-	fn mentions_everyone(&self) -> bool {
-		self.elements().iter().any(|e| matches!(e, Elements::At(at) if at.is_all()))
-	}
-
-	/// 是否提及自身
-	/// 艾特Bot
-	fn mentions_me(&self) -> bool {
-		self.elements()
-			.iter()
-			.any(|e| matches!(e, Elements::At(at) if at.target_id.contains(self.self_id())))
+			.collect::<Vec<String>>();
+		if at_list.is_empty() { None } else { Some(at_list) }
 	}
 
 	/// 获取图片元素
@@ -66,7 +54,6 @@ pub trait MessageBase: Send + Sync + EventBase {
 	}
 
 	/// 获取语音元素
-
 	fn get_record(&self) -> Option<Vec<u8>> {
 		self.elements()
 			.into_iter()
