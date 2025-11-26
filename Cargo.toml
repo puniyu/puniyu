@@ -31,7 +31,7 @@ convert_case = { version = "0.10.0" }
 actix-web = { version = "4.11.0" }
 reqwest = { version = "0.12.24", default-features = false, features = ["json", "rustls-tls"] }
 
-puniyu_logger = { version = "0.6.2" }
+puniyu_logger = { version = "0.6.4" }
 
 [profile.release]
 lto = "thin"

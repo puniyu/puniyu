@@ -14,7 +14,7 @@ pub(crate) fn log_init() {
 			.unwrap_or("true".to_string())
 			.parse::<bool>()
 			.unwrap_or(true);
-		let options = LoggerOptions::new()
+		let options = LoggerOptions::default()
 			.with_level(&log_level)
 			.with_file_logging(is_file_logging)
 			.with_log_directory(log_path)
