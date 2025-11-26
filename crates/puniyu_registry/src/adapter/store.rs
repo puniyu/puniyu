@@ -45,7 +45,7 @@ impl AdapterStore {
 		BotRegistry::get_all()
 			.into_iter()
 			.filter(|bot| bot.adapter.name == name)
-			.for_each(|bot| BotRegistry::unregister_with_id(bot.account.self_id.as_str()));
+			.for_each(|bot| { BotRegistry::unregister_with_id(bot.account.self_id.as_str()); });
 		for id in ids {
 			adapters.remove(&id);
 		}
