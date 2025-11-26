@@ -3,6 +3,7 @@ pub use types::*;
 mod message;
 pub use message::Message;
 mod segment;
+
 pub use segment::Segment;
 
 use serde::{Deserialize, Serialize};

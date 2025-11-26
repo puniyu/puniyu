@@ -1,5 +1,7 @@
-use puniyu_types::bot::Bot;
 use puniyu_logger::info;
+use puniyu_logger::warn;
+use puniyu_types::bot::Bot;
+use puniyu_types::bot::BotId;
 use std::collections::HashMap;
 use std::sync::{
 	Arc, LazyLock, RwLock,
@@ -13,37 +15,45 @@ static BOT_INDEX: AtomicU64 = AtomicU64::new(0);
 pub struct BotRegistry(Arc<RwLock<HashMap<u64, Bot>>>);
 
 impl BotRegistry {
-	pub fn get_all() -> Vec<Bot> {
+	pub(crate) fn get_all() -> Vec<Bot> {
 		let bots = BOT_REGISTRY.0.read().unwrap();
 		bots.values().cloned().collect()
 	}
 
-	pub fn get_with_index(index: u64) -> Option<Bot> {
+	pub(crate) fn get_with_index(index: u64) -> Option<Bot> {
 		let bots = BOT_REGISTRY.0.read().unwrap();
 		bots.get(&index).cloned()
 	}
 
-	pub fn get_with_self_id(self_id: &str) -> Option<Bot> {
+	pub(crate) fn get_with_self_id(self_id: &str) -> Option<Bot> {
 		let bots = BOT_REGISTRY.0.read().unwrap();
 		bots.values().find(|bot| bot.account.self_id == self_id).cloned()
 	}
 
-	pub fn register(bot: Bot) {
+	pub fn register(bot: Bot) -> u64 {
 		let index = BOT_INDEX.fetch_add(1, Ordering::Relaxed);
 		let self_id = bot.account.self_id.clone();
+		let adapter = bot.adapter.clone();
 		BOT_REGISTRY.0.write().unwrap().insert(index, bot);
-		info!("[Bot: {}] 注册成功", self_id);
+		info!("[Bot: {}][adapter:{} v{}] 注册成功", self_id, adapter.name, adapter.version);
+		index
 	}
 
-	pub fn unregister_with_index(index: u64) {
+	pub fn unregister_with_index(index: u64) -> bool {
 		let mut bots = BOT_REGISTRY.0.write().unwrap();
 		let removed_bot = bots.remove(&index);
 		if let Some(bot) = removed_bot {
-			info!("[Bot: {}] 卸载成功", bot.account.self_id);
+			info!(
+				"[Bot: index-{}][adapter:{} v{}] 卸载成功",
+				bot.account.self_id, bot.adapter.name, bot.adapter.version
+			);
+			return true;
 		}
+		warn!("[Bot: index-{}] 卸载失败未找到指定的Bot", index);
+		false
 	}
 
-	pub fn unregister_with_id(id: &str) {
+	pub fn unregister_with_id(id: &str) -> bool {
 		let mut bots = BOT_REGISTRY.0.write().unwrap();
 		let index_to_remove =
 			bots.iter().find(|(_, bot)| bot.account.self_id == id).map(|(index, _)| *index);
@@ -51,11 +61,15 @@ impl BotRegistry {
 		if let Some(index) = index_to_remove {
 			let removed_bot = bots.remove(&index);
 			if let Some(bot) = removed_bot {
-				info!("[Bot: {}] 卸载成功", bot.account.self_id);
+				info!(
+					"[Bot: {}][adapter:{} v{}] 卸载成功",
+					bot.account.self_id, bot.adapter.name, bot.adapter.version
+				);
+				return true;
 			}
 		}
-
-		info!("[Bot: {}] 卸载失败", id);
+		warn!("[Bot: id-{}] 卸载失败未找到指定的Bot", id);
+		false
 	}
 }
 
@@ -65,6 +79,18 @@ impl BotRegistry {
 ///
 /// * `adapter` - 适配器信息
 /// * `account` - 账号信息
+/// * `api` - 适配器API
+/// 
+/// ## 示例
+/// ```rust, ignore
+/// use puniyu_registry::register_bot;
+/// use puniyu_registry::bot::BotRegistry;
+/// use puniyu_types::bot::Bot;
+/// use puniyu_types::adapter::{AdapterInfo, AdapterApi};
+/// use puniyu_types::account::AccountInfo;
+///
+/// register_bot!(adapter: adapter, account: account, api: api);
+/// ```
 #[cfg(feature = "bot")]
 #[macro_export]
 macro_rules! register_bot {
@@ -84,13 +110,66 @@ macro_rules! register_bot {
 ///
 /// * `id` - Bot的ID，可以是索引或self_id
 ///
+/// ## 示例
+/// ```rust
+/// use puniyu_registry::unregister_bot;
+/// use puniyu_registry::bot::BotRegistry;
+///
+/// unregister_bot!("123");
+/// unregister_bot!(id: "123");
+/// unregister_bot!(index: 0);
+/// ```
 #[cfg(feature = "bot")]
 #[macro_export]
 macro_rules! unregister_bot {
+	($id:expr) => {
+		BotRegistry::unregister_with_id($id)
+	};
 	(index: $index:expr) => {
 		BotRegistry::unregister_with_index($index)
 	};
 	(id: $id:expr) => {
 		BotRegistry::unregister_with_id($id)
 	};
+}
+
+
+/// 获取Bot实例
+///
+/// # 参数
+///
+/// * `id` - Bot的ID
+///
+/// # 返回值
+///
+/// * `Option<Bot>` - 如果找到Bot，则返回Bot实例，否则返回None
+/// 
+/// ## 示例
+/// ```rust
+/// use puniyu_registry::bot::get_bot;
+/// assert!(get_bot("123").is_none());
+/// ```
+///
+///
+pub fn get_bot(id: impl Into<BotId>) -> Option<Bot> {
+	let bot_id: BotId = id.into();
+	match bot_id {
+		BotId::Index(index) => BotRegistry::get_with_index(index),
+		BotId::SelfId(id) => BotRegistry::get_with_self_id(id.as_str()),
+	}
+}
+
+/// 获取Bot数量
+///
+/// # 返回值
+///
+/// * `u64` - Bot数量
+/// ## 示例
+/// ```rust
+/// use puniyu_registry::bot::get_bot_count;
+/// assert_eq!(get_bot_count(), 0);
+/// ```
+///
+pub fn get_bot_count() -> u64 {
+	BotRegistry::get_all().len() as u64
 }
