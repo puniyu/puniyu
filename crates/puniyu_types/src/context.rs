@@ -51,14 +51,15 @@ impl MessageContext {
 	}
 
 	/// 从上下文中获取参数值
-	/// ## 实例
+	///
+	/// ## 示例
 	/// ```rust,ignore
 	/// #[command(
 	/// name = "echo",
 	/// args = ["name"],
 	/// rank = 50,
 	/// )]
-	/// async fn test(bot: &Bot, ev: &MessageContext) -> HandlerResult {
+	/// async fn test(bot: &BotContext, ev: &MessageContext) -> HandlerResult {
 	///     let name = ev.arg("name").unwrap();
 	///     Ok(HandlerAction::Done)
 	/// }

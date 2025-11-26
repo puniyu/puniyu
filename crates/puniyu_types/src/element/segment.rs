@@ -12,13 +12,11 @@ pub struct Segment {
 impl fmt::Display for Segment {
 	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
 		if f.alternate() {
-			// 使用 {:#} 格式时，显示美化的 JSON
 			match serde_json::to_string_pretty(self) {
 				Ok(json) => write!(f, "{}", json),
 				Err(_) => write!(f, "Segment {{ type: {}, data: {} }}", self.r#type, self.data),
 			}
 		} else {
-			// 使用 {} 格式时，显示紧凑的 JSON
 			match serde_json::to_string(self) {
 				Ok(json) => write!(f, "{}", json),
 				Err(_) => write!(f, "Segment {{ type: {}, data: {} }}", self.r#type, self.data),
@@ -41,7 +39,6 @@ impl RawMessage for Segment {
 		}
 	}
 }
-
 
 #[macro_export]
 macro_rules! segment {
