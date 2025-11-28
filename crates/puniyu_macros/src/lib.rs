@@ -51,6 +51,7 @@ pub fn adapter_config(args: TokenStream, item: TokenStream) -> TokenStream {
 
 		impl #struct_name {
 			pub fn get() -> Self {
+				use ::puniyu_adapter::AdapterBuilder;
 				let adapter_name = crate::Adapter.info().name.to_lowercase();
 				let path = ::puniyu_adapter::ADAPTER_CONFIG_DIR.join(adapter_name).join(format!("{}.toml", #config_name));
 				::puniyu_adapter::ConfigRegistry::get(&path)
@@ -176,6 +177,7 @@ pub fn plugin_config(args: TokenStream, item: TokenStream) -> TokenStream {
 
 		impl #struct_name {
 			pub fn get() -> Self {
+				use ::puniyu_plugin::PluginBuilder;
 				let plugin_name = crate::Plugin.name().to_lowercase();
 				let path = ::puniyu_plugin::PLUGIN_CONFIG_DIR.join(plugin_name).join(format!("{}.toml", #config_name));
 				::puniyu_plugin::ConfigRegistry::get(&path)

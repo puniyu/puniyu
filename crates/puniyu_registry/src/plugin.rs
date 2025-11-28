@@ -230,7 +230,7 @@ impl PluginRegistry {
 					ServerRegistry::insert(plugin_name, server);
 				}
 
-				let config_dir = PLUGIN_CONFIG_DIR.as_path().join(plugin_name.to_case(Case::Lower));
+				let config_dir = PLUGIN_CONFIG_DIR.as_path().join(plugin_name.to_case(Case::Snake));
 
 				if !config_dir.exists() {
 					let _ = fs::create_dir_all(&config_dir).await;
@@ -326,14 +326,14 @@ where
 }
 
 async fn create_data_dir(name: &str) {
-	let data_dir = PLUGIN_DATA_DIR.as_path().join(name.to_case(Case::Lower));
+	let data_dir = PLUGIN_DATA_DIR.as_path().join(name.to_case(Case::Snake));
 	if !data_dir.exists() {
 		let _ = fs::create_dir_all(&data_dir).await;
 	}
 }
 
 async fn create_resource_dir(name: &str) {
-	let resource_dir = PLUGIN_RESOURCE_DIR.as_path().join(name.to_case(Case::Lower));
+	let resource_dir = PLUGIN_RESOURCE_DIR.as_path().join(name.to_case(Case::Snake));
 	if !resource_dir.exists() {
 		let _ = fs::create_dir_all(&resource_dir).await;
 	}

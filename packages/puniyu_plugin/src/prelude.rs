@@ -22,5 +22,6 @@ pub use puniyu_types::event::notion::{
 pub use puniyu_types::event::request::{
 	GroupApply, GroupInvite, PrivateApply, RequestBase, RequestBuilder, RequestEvent,
 };
+pub use puniyu_types::plugin::PluginBuilder;
 pub use puniyu_types::{contact_friend, contact_group, segment};
 pub use serde_json;

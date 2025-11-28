@@ -6,7 +6,6 @@ pub mod toml;
 pub use toml::{delete_config, merge_config, read_config, update_config, write_config};
 pub mod system;
 
-/// TODO: 获取插件指定插件的配置文件
 use std::sync::OnceLock;
 /// 当前程序名称, 也就是此实例的名称
 ///

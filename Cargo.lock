@@ -1774,6 +1774,7 @@ dependencies = [
  "async-trait",
  "inventory",
  "puniyu_common",
+ "puniyu_config",
  "puniyu_logger",
  "puniyu_macros",
  "puniyu_registry",

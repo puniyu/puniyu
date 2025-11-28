@@ -5,6 +5,7 @@ pub use inventory;
 pub use puniyu_common::APP_NAME;
 pub use puniyu_common::path::{PLUGIN_CONFIG_DIR, PLUGIN_DATA_DIR};
 pub use puniyu_common::toml::read_config;
+pub use puniyu_config::ConfigRegistry;
 pub use puniyu_logger as logger;
 pub use puniyu_macros::{command, plugin, plugin_config as config, server, task};
 pub use puniyu_registry::command::CommandRegistry;
