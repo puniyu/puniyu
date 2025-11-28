@@ -47,7 +47,7 @@ impl AdapterBuilder for Console {
 		);
 		register_bot!(self.info(), account_info.clone(), self.api());
 
-		info!("适配器: {} 初始化完成", self.info().name);
+		info!("{} v{} 初始化完成", env!("CARGO_PKG_NAME"), self.info().version);
 
 		let account_info = account_info.clone();
 		let adapter_info = self.info().clone();

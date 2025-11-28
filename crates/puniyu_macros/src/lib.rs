@@ -156,7 +156,7 @@ pub fn plugin_config(args: TokenStream, item: TokenStream) -> TokenStream {
 		let name_lit: syn::LitStr = syn::parse(args).expect("配置名称必须是字符串字面量");
 		name_lit.value()
 	};
-	let plugin_name = env!("CARGO_PKG_NAME");
+	let plugin_name = quote! { env!("CARGO_PKG_NAME") };
 
 	let expanded = quote! {
 		#input_struct
@@ -304,14 +304,16 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
 			.into();
 	}
 
-	let plugin_name = env!("CARGO_PKG_NAME");
-	let version_major = env!("CARGO_PKG_VERSION_MAJOR");
-	let version_minor = env!("CARGO_PKG_VERSION_MINOR");
-	let version_patch = env!("CARGO_PKG_VERSION_PATCH");
-	let version_string = env!("CARGO_PKG_VERSION");
-	let plugin_author = {
-		let authors = env!("CARGO_PKG_AUTHORS");
-		if authors.is_empty() { "Unknown" } else { authors }
+	let plugin_name = quote! { env!("CARGO_PKG_NAME") };
+	let version_major = quote! { env!("CARGO_PKG_VERSION_MAJOR") };
+	let version_minor = quote! { env!("CARGO_PKG_VERSION_MINOR") };
+	let version_patch = quote! { env!("CARGO_PKG_VERSION_PATCH") };
+	let version_string = quote! { env!("CARGO_PKG_VERSION") };
+	let plugin_author = quote! {
+		{
+			let authors = env!("CARGO_PKG_AUTHORS");
+			if authors.is_empty() { "Unknown" } else { authors }
+		}
 	};
 
 	let struct_name = Ident::new("Plugin", fn_name.span());
@@ -644,7 +646,7 @@ pub fn command(args: TokenStream, item: TokenStream) -> TokenStream {
 	}
 
 	let mut params = input_fn.sig.inputs.iter();
-	
+
 	if let Some(syn::FnArg::Typed(pat_type)) = params.next() {
 		let ty = &*pat_type.ty;
 		let ty_str = quote!(#ty).to_string();
@@ -692,7 +694,7 @@ pub fn command(args: TokenStream, item: TokenStream) -> TokenStream {
 	let command_rank = &args.rank;
 	let command_desc = &args.desc;
 
-	let plugin_name = env!("CARGO_PKG_NAME");
+	let plugin_name = quote! { env!("CARGO_PKG_NAME") };
 
 	let struct_name = Ident::new(&struct_name_str, fn_name.span());
 
@@ -860,7 +862,7 @@ pub fn task(args: TokenStream, item: TokenStream) -> TokenStream {
 			.into();
 	}
 
-	let plugin_name = env!("CARGO_PKG_NAME");
+	let plugin_name = quote! { env!("CARGO_PKG_NAME") };
 
 	let cron_expr = &args.cron;
 
@@ -949,7 +951,7 @@ pub fn server(_args: TokenStream, item: TokenStream) -> TokenStream {
 		.into();
 	}
 
-	let plugin_name = env!("CARGO_PKG_NAME");
+	let plugin_name = quote! { env!("CARGO_PKG_NAME") };
 
 	let expanded = quote! {
 		#fn_vis #fn_sig #fn_block

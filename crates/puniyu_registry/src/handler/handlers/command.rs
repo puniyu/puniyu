@@ -10,6 +10,7 @@ use puniyu_types::event::{
 use puniyu_types::handler::Handler;
 use puniyu_types::{create_context_bot, create_message_event_context};
 
+use puniyu_logger::{info, owo_colors::OwoColorize};
 use std::collections::HashMap;
 
 /// TODO: 此结构体需重构, 宏简化
@@ -27,19 +28,18 @@ macro_rules! handle_command {
 			parse_command!(&text_content)
 		};
 
-		let plugin_args =
-			if let Some(command) = CommandRegistry::get_with_name(&command_name) {
-				let arg_definitions = command.builder.args();
-				let mut args_map = HashMap::new();
-				for arg_name in arg_definitions {
-					if let Some(value) = command_args.get(arg_name).cloned().flatten() {
-						args_map.insert(arg_name.to_string(), value);
-					}
+		let plugin_args = if let Some(command) = CommandRegistry::get_with_name(&command_name) {
+			let arg_definitions = command.builder.args();
+			let mut args_map = HashMap::new();
+			for arg_name in arg_definitions {
+				if let Some(value) = command_args.get(arg_name).cloned().flatten() {
+					args_map.insert(arg_name.to_string(), value);
 				}
-				args_map
-			} else {
-				HashMap::new()
-			};
+			}
+			args_map
+		} else {
+			HashMap::new()
+		};
 		let event = create_message_event_context!(
 			MessageEvent::$message_type($message.clone()),
 			plugin_args
@@ -47,9 +47,17 @@ macro_rules! handle_command {
 
 		let plugins = CommandRegistry::get_plugins(&command_name);
 		for name in plugins {
+			println!("{}", &name);
 			let func = CommandRegistry::get_with_plugin(&name, &command_name);
 			if let Some(command) = func {
+				let start_time = std::time::Instant::now();
+				info!("{} 开始执行", format!("[command:{}:{}]", &name, &command_name).yellow());
 				let result = command.builder.run(&bot, &event).await;
+				info!(
+					"{} 执行完毕, 耗时{}ms",
+					format!("[command:{}:{}]", &name, &command_name).yellow(),
+					start_time.elapsed().as_millis()
+				);
 				match result {
 					Ok(action) => match action {
 						HandlerAction::Done => break,
@@ -93,6 +101,10 @@ pub struct CommandHandler;
 
 #[async_trait]
 impl Handler for CommandHandler {
+	fn name(&self) -> &str {
+		"message"
+	}
+
 	async fn handle(&self, bot: Bot, event: Event) {
 		if let Event::Message(message_event) = event {
 			match message_event.as_ref() {
@@ -104,9 +116,5 @@ impl Handler for CommandHandler {
 				}
 			}
 		}
-	}
-
-	fn name(&self) -> &str {
-		"message"
 	}
 }

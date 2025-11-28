@@ -1,7 +1,3 @@
-mod store;
-mod registry;
-pub use registry::ServerRegistry;
-
 use actix_web::web::ServiceConfig;
 use std::sync::Arc;
 

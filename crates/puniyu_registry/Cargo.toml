@@ -16,7 +16,6 @@ toml = { workspace = true, optional = true }
 futures = { workspace = true, optional = true }
 thiserror = { workspace = true, optional = true }
 tokio = { workspace = true, optional = true }
-actix-web = { workspace = true, optional = true }
 tokio-cron-scheduler = { version = "0.15.0", optional = true }
 chrono-tz = { version = "0.10.4", optional = true }
 uuid = { version = "1.17.0", features = ["v4"], optional = true }

@@ -1,9 +1,9 @@
-use super::{Error, types::*, Result};
+use super::{Error, Result, types::*};
 use crate::contact::ContactType;
 use crate::element::Message;
-use std::time::Duration;
-use std::path::PathBuf;
 use async_trait::async_trait;
+use std::path::PathBuf;
+use std::time::Duration;
 #[async_trait]
 pub trait AdapterApi: Send + Sync + 'static {
 	/// 获取头像, 默认返回url, http/https/file协议(一般来说只有console适配器返回这个)
@@ -32,7 +32,7 @@ pub trait AdapterApi: Send + Sync + 'static {
 	/// `contact` - 联系人
 	/// `element` - 消息元素
 	///
-	async fn send_msg(&self, _contact: ContactType, _element: Message) -> Result<SendMsgType> {
+	async fn send_msg(&self, _contact: ContactType, _message: Message) -> Result<SendMsgType> {
 		Err(Error::NotImpl)
 	}
 

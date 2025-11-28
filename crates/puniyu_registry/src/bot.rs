@@ -1,5 +1,4 @@
-use puniyu_logger::info;
-use puniyu_logger::warn;
+use puniyu_logger::{info, owo_colors::OwoColorize, warn};
 use puniyu_types::bot::Bot;
 use puniyu_types::bot::BotId;
 use std::collections::HashMap;
@@ -35,7 +34,11 @@ impl BotRegistry {
 		let self_id = bot.account.self_id.clone();
 		let adapter = bot.adapter.clone();
 		BOT_REGISTRY.0.write().unwrap().insert(index, bot);
-		info!("[Bot: {}][adapter:{} v{}] 注册成功", self_id, adapter.name, adapter.version);
+		info!(
+			"{} [{}] 注册成功",
+			format!("[Bot: {}]", self_id).fg_rgb::<221, 160, 221>(),
+			format!("adapter:{} v{}", adapter.name, adapter.version).fg_rgb::<255, 182, 193>()
+		);
 		index
 	}
 
@@ -80,7 +83,7 @@ impl BotRegistry {
 /// * `adapter` - 适配器信息
 /// * `account` - 账号信息
 /// * `api` - 适配器API
-/// 
+///
 /// ## 示例
 /// ```rust, ignore
 /// use puniyu_registry::register_bot;
@@ -133,7 +136,6 @@ macro_rules! unregister_bot {
 	};
 }
 
-
 /// 获取Bot实例
 ///
 /// # 参数
@@ -143,7 +145,7 @@ macro_rules! unregister_bot {
 /// # 返回值
 ///
 /// * `Option<Bot>` - 如果找到Bot，则返回Bot实例，否则返回None
-/// 
+///
 /// ## 示例
 /// ```rust
 /// use puniyu_registry::bot::get_bot;
