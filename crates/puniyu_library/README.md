@@ -1,65 +1,72 @@
 # puniyu_library
 
-动态库加载管理模块
+puniyu 的共享动态库管理模块。
 
 ## 概述
 
-`puniyu_library` 是 puniyu 项目中负责动态库加载和管理的核心库。它提供了插件和适配器动态库的加载、卸载、重载等功能，基于
-`libloading` crate 实现安全的动态库操作。
+`puniyu_library` 基于 `libloading` 实现动态库的加载、获取、卸载和重载功能，使用全局注册表统一管理所有已加载的动态库。
 
 ## 核心组件
 
-### Error 枚举
+### LibraryInfo
 
-定义库操作相关的错误类型：
+库信息结构体：
 
-- `NotFound(String)`: 库不存在错误
-- `Exists(String)`: 库已存在错误
-- `Close(String)`: 库关闭失败错误
+- `name` - 库名称（从文件名提取）
+- `path` - 库文件路径
+- `library` - `Arc<Library>` 包装的动态库句柄
 
-### LibraryInfo 结构体
+支持从 `PathBuf` 直接转换：
 
-库信息结构体，包含：
+```rust
+let info: LibraryInfo = path.into();
+```
 
-- `name`: 库名称
-- `path`: 库文件路径
-- `library`: 使用 `Arc<Library>` 包装的动态库实例
+### LibraryRegistry
 
-### LibraryStore 结构体
+全局库注册表，提供静态方法管理动态库：
 
-库存储管理器：
+| 方法 | 说明 |
+|------|------|
+| `load_library(path)` | 加载动态库，已存在则跳过 |
+| `get_library(name)` | 获取已加载的库 |
+| `remove_library(name)` | 卸载库 |
+| `reload_library(name)` | 重新加载库 |
 
-- 使用 `HashMap<String, Arc<LibraryInfo>>` 存储库信息
-- 提供 `insert_library`、`get_library`、`remove_library` 方法
+### Error
 
-## 功能模块
+错误类型：
 
-### PluginLibrary（需要 `plugin` 特性）
+- `NotFound` - 库不存在
+- `Exists` - 库已存在
 
-插件库管理器：
+## 使用示例
 
-- `load_plugin`: 加载插件库
-- `get_plugin`: 获取已加载的插件库
-- `remove_plugin`: 移除插件库
-- `reload_plugin`: 重新加载插件库
+```rust
+use puniyu_library::{LibraryRegistry, LibraryInfo};
+use std::path::Path;
 
-### AdapterLibrary（需要 `adapter` 特性）
+// 加载动态库
+LibraryRegistry::load_library(Path::new("plugin.dll"))?;
 
-适配器库管理器：
+// 获取库信息
+if let Some(lib) = LibraryRegistry::get_library("plugin.dll") {
+    // 使用 lib.library 调用动态库函数
+}
 
-- `load_adapter`: 加载适配器库
-- `get_adapter`: 获取已加载的适配器库
-- `remove_adapter`: 移除适配器库
-- `reload`: 重新加载适配器库
+// 重载
+LibraryRegistry::reload_library("plugin.dll")?;
 
-## 特性
+// 卸载
+LibraryRegistry::remove_library("plugin.dll");
+```
 
-- **线程安全**: 使用 `Arc` 确保多线程环境下的安全访问
-- **内存安全**: 基于 `libloading` 实现安全的动态库加载
-- **模块化**: 通过特性功能分离插件和适配器管理
-- **错误处理**: 完善的错误类型定义和处理机制
-- **自动清理**: 通过 `drop` 机制自动清理不再使用的库资源
+## 注意事项
+
+- 动态库加载后会被持有，文件将保持锁定状态直到调用 `remove_library`
+- 使用 `Mutex` 保证线程安全
+- `reload_library` 会先卸载再重新加载
 
 ## 许可证
 
-本项目采用 [LGPL](../../LICENSE) 许可证。
+[LGPL](../../LICENSE)

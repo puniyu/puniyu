@@ -15,7 +15,7 @@ async fn logo() -> HttpResponse {
 	match logo_data {
 		Some(data) => HttpResponse::Ok().content_type("image/png").body(data),
 		None =>
-			BaseResponse::<()> {
+			BaseResponse {
 				code: StatusCode::NOT_FOUND.as_u16(),
 				data: None,
 				message: "Logo not found".to_string(),

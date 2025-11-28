@@ -22,7 +22,7 @@ impl From<PathBuf> for LibraryInfo {
 	}
 }
 
-static LIBRARY_STORE: LazyLock<Mutex<HashMap<String, Arc<LibraryInfo>>>> = 
+static LIBRARY_STORE: LazyLock<Mutex<HashMap<String, Arc<LibraryInfo>>>> =
 	LazyLock::new(|| Mutex::new(HashMap::new()));
 
 pub struct LibraryRegistry;
@@ -33,15 +33,13 @@ impl LibraryRegistry {
 			.file_name()
 			.map(|n| n.to_string_lossy().to_string())
 			.ok_or_else(|| Error::NotFound(path.to_string_lossy().to_string()))?;
-		
+
 		let mut store = LIBRARY_STORE.lock().unwrap();
 		if store.contains_key(&name) {
 			return Ok(());
 		}
 
-		let lib_path = path.to_path_buf();
-		let library_info: LibraryInfo = lib_path.into();
-		store.insert(name, Arc::new(library_info));
+		store.insert(name, Arc::new(path.to_path_buf().into()));
 
 		Ok(())
 	}
@@ -58,17 +56,19 @@ impl LibraryRegistry {
 
 	pub fn reload_library(name: &str) -> Result<(), Error> {
 		let mut store = LIBRARY_STORE.lock().unwrap();
-		
-		if !store.contains_key(name) {
-			return Err(Error::NotFound(name.to_string()));
+
+		let lib_info = store.remove(name).ok_or_else(|| Error::NotFound(name.to_string()))?;
+
+		let lib_path = lib_info.path.clone();
+
+		if Arc::strong_count(&lib_info) > 1 {
+			store.insert(name.to_string(), lib_info);
+			return Err(Error::InUse(name.to_string()));
 		}
-		
-		let lib_path = store.get(name).unwrap().path.clone();
-		store.remove(name);
-		
+
 		let library_info: LibraryInfo = lib_path.into();
 		store.insert(name.to_string(), Arc::new(library_info));
-		
+
 		Ok(())
 	}
 }

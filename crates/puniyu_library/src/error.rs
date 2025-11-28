@@ -8,4 +8,6 @@ pub enum Error {
 	Exists(String),
 	#[error("库: {0}关闭失败")]
 	Close(String),
+	#[error("库: {0}正在使用中")]
+	InUse(String),
 }
