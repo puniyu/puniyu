@@ -38,15 +38,15 @@ impl FileElement {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ImageElement {
 	/// 图片元素
-	pub file: Vec<u8>,
+	pub file: String,
 	/// 是否为闪照
 	pub is_flash: bool,
 	/// 图片外显
-	pub summary: Option<String>,
+	pub summary: String,
 }
 
 impl ImageElement {
-	pub fn new(file: Vec<u8>, is_flash: bool, summary: Option<String>) -> Self {
+	pub fn new(file: String, is_flash: bool, summary: String) -> Self {
 		Self { file, is_flash, summary }
 	}
 }

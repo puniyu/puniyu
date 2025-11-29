@@ -53,11 +53,11 @@ impl RawMessage for FileElement {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ImageElement {
 	/// 图片元素
-	pub file: Vec<u8>,
+	pub file: String,
 	/// 是否为闪照
 	pub is_flash: bool,
 	/// 图片外显
-	pub summary: Option<String>,
+	pub summary: String,
 	/// 图片宽度
 	pub width: u64,
 	/// 图片高度
@@ -66,7 +66,7 @@ pub struct ImageElement {
 
 impl RawMessage for ImageElement {
 	fn raw(&self) -> String {
-		format!("[image:{}]", self.summary.clone().unwrap_or(String::from("图片")))
+		format!("[image:{}]", self.summary.clone())
 	}
 }
 

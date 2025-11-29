@@ -166,7 +166,7 @@ impl MessageContext {
 	}
 
 	/// 获取图片
-	pub fn get_image(&self) -> Option<Vec<u8>> {
+	pub fn get_image(&self) -> Option<String> {
 		match &*self.event {
 			MessageEvent::Friend(ev) => ev.get_image(),
 			MessageEvent::Group(ev) => ev.get_image(),

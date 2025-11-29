@@ -1,4 +1,5 @@
 use puniyu_logger::{debug, info};
+use puniyu_types::event::EventBase;
 use puniyu_types::matcher::Matcher;
 use puniyu_types::{
 	element::RawMessage,
@@ -16,17 +17,36 @@ use puniyu_types::{
 pub struct CommandMatcher;
 
 impl CommandMatcher {
-	fn check_message<M: MessageBase + std::fmt::Display>(message: &M, msg_type: &str) -> bool {
-		let has_valid_text = message
-			.elements()
-			.iter()
-			.any(|element| element.as_text().is_some_and(|text| !text.trim().is_empty()));
+	fn check_message(event: &Event) -> bool {
+		if let Event::Message(message_event) = event {
+			match message_event.as_ref() {
+				MessageEvent::Friend(m) => {
+					debug!("收到{}消息: {:?}", "好友", m.elements());
+					info!(
+						"[Bot:{}] [{}消息:{}] {}",
+						m.self_id(),
+						"好友",
+						m.user_id(),
+						m.elements().raw()
+					);
+				}
+				MessageEvent::Group(m) => {
+					debug!("收到{}消息: {:?}", "群", m.elements());
+					info!(
+						"[Bot:{}] [{}消息:{}-{}] {}",
+						m.self_id(),
+						"群",
+						m.group_id(),
+						m.user_id(),
+						m.elements().raw()
+					);
+				}
+			};
 
-		if has_valid_text {
-			debug!("收到{}消息: {}", msg_type, message);
+			true
+		} else {
+			false
 		}
-		info!("{}", message.elements().raw());
-		has_valid_text
 	}
 }
 
@@ -36,12 +56,6 @@ impl Matcher for CommandMatcher {
 	}
 
 	fn matches(&self, event: &Event) -> bool {
-		match event {
-			Event::Message(message_event) => match message_event.as_ref() {
-				MessageEvent::Friend(message) => Self::check_message(message, "好友"),
-				MessageEvent::Group(message) => Self::check_message(message, "群"),
-			},
-			_ => false,
-		}
+		Self::check_message(event)
 	}
 }
