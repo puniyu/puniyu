@@ -81,11 +81,11 @@ impl AdapterBuilder for Console {
 					}
 					Some(("image", image_url)) => {
 						vec![Elements::Image(ImageElement {
-							file: Vec::from(image_url),
+							file: image_url.to_string(),
 							is_flash: false,
 							height: 0,
 							width: 0,
-							summary: None,
+							summary: "图片".to_string(),
 						})]
 					}
 					Some(("json", json_content)) => {

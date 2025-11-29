@@ -43,7 +43,7 @@ pub trait MessageBase: Send + Sync + EventBase {
 	}
 
 	/// 获取图片元素
-	fn get_image(&self) -> Option<Vec<u8>> {
+	fn get_image(&self) -> Option<String> {
 		self.elements()
 			.into_iter()
 			.filter_map(|e| match e {
