@@ -53,8 +53,9 @@ pub struct Task {
 ///         "0 0 * * * *" // 每小时执行一次
 ///     }
 ///     
-///     async fn run(&self) {
+///     async fn run(&self) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
 ///         println!("Task running!");
+///         Ok(())
 ///     }
 /// }
 /// ```
@@ -66,5 +67,5 @@ pub trait TaskBuilder: Send + Sync + 'static {
 	fn cron(&self) -> &'static str;
 
 	/// 执行任务
-	async fn run(&self);
+	async fn run(&self) -> Result<(), Box<dyn std::error::Error + Send + Sync>>;
 }

@@ -1,5 +1,6 @@
 use crate::adapter::{AdapterApi, Result, types};
 use crate::bot::Bot;
+use crate::command::ArgValue;
 use crate::contact::ContactType;
 use crate::element::{Message, receive::Elements};
 use crate::event::EventBase;
@@ -29,11 +30,11 @@ impl BotContext {
 #[derive(Debug, Clone)]
 pub struct MessageContext {
 	event: Arc<MessageEvent>,
-	args: HashMap<String, String>,
+	args: HashMap<String, ArgValue>,
 }
 
 impl MessageContext {
-	pub fn new(event: MessageEvent, args: HashMap<String, String>) -> Self {
+	pub fn new(event: MessageEvent, args: HashMap<String, ArgValue>) -> Self {
 		Self { event: Arc::from(event), args }
 	}
 
@@ -50,22 +51,21 @@ impl MessageContext {
 		}
 	}
 
-	/// 从上下文中获取参数值
+	/// 获取参数值
 	///
 	/// ## 示例
 	/// ```rust,ignore
-	/// #[command(
-	/// name = "echo",
-	/// args = ["name"],
-	/// rank = 50,
-	/// )]
-	/// async fn test(bot: &BotContext, ev: &MessageContext) -> HandlerResult {
-	///     let name = ev.arg("name").unwrap();
-	///     Ok(HandlerAction::Done)
+	/// #[command(name = "echo", desc = "回显命令")]
+	/// #[arg(name = "message", desc = "要回显的消息")]
+	/// #[arg(name = "count", arg_type = "int", default = 1)]
+	/// async fn echo(bot: &BotContext, ev: &MessageContext) -> HandlerResult {
+	///     let message = ev.arg("message").and_then(|v| v.as_str()).unwrap_or("默认值");
+	///     let count = ev.arg("count").and_then(|v| v.as_int()).unwrap_or(1);
+	///     HandlerAction::done()
 	/// }
 	/// ```
-	pub fn arg(&self, name: &str) -> Option<String> {
-		self.args.get(name).cloned()
+	pub fn arg(&self, name: &str) -> Option<&ArgValue> {
+		self.args.get(name)
 	}
 
 	/// 事件Id

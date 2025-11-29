@@ -63,9 +63,10 @@ impl TaskBuilder for TestTask {
 		self.cron
 	}
 
-	async fn run(&self) {
+	async fn run(&self) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
 		let mut count = self.run_count.lock().unwrap();
 		*count += 1;
+		Ok(())
 	}
 }
 
@@ -87,10 +88,10 @@ async fn test_task_run() {
 
 	assert_eq!(task.get_run_count(), 0);
 
-	task.run().await;
+	task.run().await.unwrap();
 	assert_eq!(task.get_run_count(), 1);
 
-	task.run().await;
+	task.run().await.unwrap();
 	assert_eq!(task.get_run_count(), 2);
 }
 
@@ -102,9 +103,9 @@ async fn test_task_multiple_tasks() {
 	assert_eq!(task1.name(), "task1");
 	assert_eq!(task2.name(), "task2");
 
-	task1.run().await;
-	task2.run().await;
-	task2.run().await;
+	task1.run().await.unwrap();
+	task2.run().await.unwrap();
+	task2.run().await.unwrap();
 
 	assert_eq!(task1.get_run_count(), 1);
 	assert_eq!(task2.get_run_count(), 2);

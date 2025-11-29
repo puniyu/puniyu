@@ -9,7 +9,6 @@ use puniyu_adapter::prelude::*;
 use puniyu_core::APP_NAME;
 use std::env;
 use std::sync::atomic::{AtomicU64, Ordering};
-use std::thread;
 
 static EVENT_ID: AtomicU64 = AtomicU64::new(0);
 
@@ -51,7 +50,7 @@ impl AdapterBuilder for Console {
 
 		let account_info = account_info.clone();
 		let adapter_info = self.info().clone();
-		thread::spawn(move || {
+		std::thread::spawn(move || {
 			loop {
 				static FILE_ID: AtomicU64 = AtomicU64::new(0);
 				let message = {

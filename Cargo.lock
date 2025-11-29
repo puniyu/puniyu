@@ -1637,6 +1637,7 @@ version = "0.5.12"
 dependencies = [
  "puniyu_adapter_console",
  "puniyu_core",
+ "puniyu_plugin_echo",
  "tokio",
 ]
 
@@ -1781,6 +1782,15 @@ dependencies = [
  "puniyu_types",
  "serde_json",
  "toml",
+]
+
+[[package]]
+name = "puniyu_plugin_echo"
+version = "0.1.0"
+dependencies = [
+ "puniyu_core",
+ "puniyu_plugin",
+ "serde",
 ]
 
 [[package]]
