@@ -1,12 +1,16 @@
 use proc_macro::TokenStream;
 use quote::quote;
-#[cfg(any(feature = "plugin", feature = "command", feature = "adapter"))]
+
+#[cfg(any(feature = "plugin", feature = "command"))]
 use syn::ItemFn;
 #[cfg(any(feature = "command", feature = "task"))]
-use syn::{Token, parse::Parse, parse::ParseStream, parse_macro_input, punctuated::Punctuated};
+use syn::{parse_macro_input, Ident};
 
-#[cfg(any(feature = "command", feature = "task"))]
-use syn::Ident;
+#[cfg(any(feature = "plugin", feature = "command", feature = "task"))]
+mod plugin;
+
+#[cfg(any(feature = "plugin", feature = "command", feature = "task"))]
+use plugin::{CommandArgs, PluginArg, TaskArgs};
 
 #[cfg(feature = "adapter")]
 #[proc_macro_attribute]
@@ -17,7 +21,7 @@ pub fn adapter_config(args: TokenStream, item: TokenStream) -> TokenStream {
 	} else {
 		return syn::Error::new_spanned(
 			proc_macro2::TokenStream::from(item),
-			"这个宏只能用在结构体上！",
+			"呜哇~这个宏只能用在结构体上！杂鱼~",
 		)
 		.to_compile_error()
 		.into();
@@ -28,7 +32,7 @@ pub fn adapter_config(args: TokenStream, item: TokenStream) -> TokenStream {
 	let config_name = if args.is_empty() {
 		struct_name.to_string().to_case(Case::Lower)
 	} else {
-		let name_lit: syn::LitStr = syn::parse(args).expect("配置名称必须是字符串字面量");
+		let name_lit: syn::LitStr = syn::parse(args).expect("呜哇~配置名称必须是字符串字面量！杂鱼~");
 		name_lit.value()
 	};
 	let adapter_name = env!("CARGO_PKG_NAME");
@@ -81,14 +85,14 @@ pub fn adapter(_: TokenStream, item: TokenStream) -> TokenStream {
 	} else {
 		return syn::Error::new_spanned(
 			proc_macro2::TokenStream::from(item),
-			"这个宏只能用在结构体上！",
+			"呜哇~这个宏只能用在结构体上！杂鱼~",
 		)
 		.to_compile_error()
 		.into();
 	};
 
 	let struct_name = &input_struct.ident;
-	let adapter_struct_name = Ident::new("Adapter", proc_macro2::Span::call_site());
+	let adapter_struct_name = syn::Ident::new("Adapter", proc_macro2::Span::call_site());
 
 	let expanded = quote! {
 		#input_struct
@@ -143,7 +147,7 @@ pub fn plugin_config(args: TokenStream, item: TokenStream) -> TokenStream {
 	} else {
 		return syn::Error::new_spanned(
 			proc_macro2::TokenStream::from(item),
-			"这个宏只能用在结构体上！",
+			"呜哇~这个宏只能用在结构体上！杂鱼~",
 		)
 		.to_compile_error()
 		.into();
@@ -154,7 +158,7 @@ pub fn plugin_config(args: TokenStream, item: TokenStream) -> TokenStream {
 	let config_name = if args.is_empty() {
 		struct_name.to_string().to_case(Case::Lower)
 	} else {
-		let name_lit: syn::LitStr = syn::parse(args).expect("配置名称必须是字符串字面量");
+		let name_lit: syn::LitStr = syn::parse(args).expect("呜哇~配置名称必须是字符串字面量！杂鱼~");
 		name_lit.value()
 	};
 	let plugin_name = quote! { env!("CARGO_PKG_NAME") };
@@ -199,55 +203,6 @@ pub fn plugin_config(args: TokenStream, item: TokenStream) -> TokenStream {
 	TokenStream::from(expanded)
 }
 
-#[cfg(feature = "plugin")]
-#[derive(Default)]
-struct PluginArg {
-	desc: Option<syn::LitStr>,
-}
-
-#[cfg(feature = "plugin")]
-impl Parse for PluginArg {
-	fn parse(input: ParseStream) -> syn::Result<Self> {
-		if input.is_empty() {
-			return Ok(PluginArg::default());
-		}
-
-		let fields = Punctuated::<syn::MetaNameValue, Token![,]>::parse_terminated(input)?;
-		let mut args = PluginArg::default();
-
-		for field in fields {
-			let key = field
-				.path
-				.get_ident()
-				.ok_or_else(|| syn::Error::new_spanned(&field.path, "呜哇~不支持的字段名！杂鱼~"))?
-				.to_string();
-
-			match key.as_str() {
-				"desc" => {
-					if let syn::Expr::Lit(syn::ExprLit { lit: syn::Lit::Str(lit_str), .. }) =
-						&field.value
-					{
-						args.desc = Some(lit_str.clone());
-					} else {
-						return Err(syn::Error::new_spanned(
-							&field.value,
-							"呜哇~desc 必须是字符串！杂鱼~",
-						));
-					}
-				}
-				_ => {
-					return Err(syn::Error::new_spanned(
-						&field.path,
-						format!("呜哇~不支持的字段 '{}'！杂鱼~", key),
-					));
-				}
-			}
-		}
-
-		Ok(args)
-	}
-}
-
 /// 注册插件
 /// 此宏包含以下检测：
 /// 1. 函数是否为异步函数
@@ -281,7 +236,7 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
 	} else {
 		return syn::Error::new_spanned(
 			proc_macro2::TokenStream::from(item),
-			"杂鱼！这个宏只能用在函数上，不能用在结构体！笨蛋！",
+			"呜哇~这个宏只能用在函数上，不能用在结构体！杂鱼~",
 		)
 		.to_compile_error()
 		.into();
@@ -301,7 +256,7 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
 
 	let is_async = fn_sig.asyncness.is_some();
 	if !is_async {
-		return syn::Error::new_spanned(fn_sig, "诶嘿~杂鱼函数连async都不会用吗？")
+		return syn::Error::new_spanned(fn_sig, "呜哇~杂鱼函数连async都不会用吗？杂鱼~")
 			.to_compile_error()
 			.into();
 	}
@@ -493,133 +448,107 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
 	TokenStream::from(expanded)
 }
 
-#[cfg(feature = "command")]
-struct CommandArgs {
-	name: syn::LitStr,
-	args: syn::ExprArray,
-	rank: syn::LitInt,
-	desc: syn::LitStr,
-}
-
-#[cfg(feature = "command")]
-impl CommandArgs {
-	pub fn set_name(args: &mut Self, value: syn::LitStr) -> syn::Result<()> {
-		args.name = value;
-		Ok(())
-	}
-
-	pub fn set_args(args: &mut Self, value: syn::ExprArray) -> syn::Result<()> {
-		args.args = value;
-		Ok(())
-	}
-
-	pub fn set_rank(args: &mut Self, value: syn::LitInt) -> syn::Result<()> {
-		args.rank = value;
-		Ok(())
-	}
-
-	pub fn set_desc(args: &mut Self, value: syn::LitStr) -> syn::Result<()> {
-		args.desc = value;
-		Ok(())
-	}
-}
-
-#[cfg(feature = "command")]
-impl Default for CommandArgs {
-	fn default() -> Self {
-		Self {
-			name: syn::LitStr::new("", proc_macro2::Span::call_site()),
-			args: syn::ExprArray {
-				attrs: Vec::new(),
-				bracket_token: syn::token::Bracket::default(),
-				elems: Punctuated::new(),
-			},
-			rank: syn::LitInt::new("100", proc_macro2::Span::call_site()),
-			desc: syn::LitStr::new("", proc_macro2::Span::call_site()),
-		}
-	}
-}
-
-#[cfg(feature = "command")]
-impl Parse for CommandArgs {
-	fn parse(input: ParseStream) -> syn::Result<Self> {
-		if input.is_empty() {
-			return Err(syn::Error::new(input.span(), "呜~至少给人家一些参数嘛！杂鱼~"));
-		}
-
-		let fields = Punctuated::<syn::MetaNameValue, Token![,]>::parse_terminated(input)?;
-		let mut args = CommandArgs::default();
-		for field in fields {
-			let key = field
-				.path
-				.get_ident()
-				.ok_or_else(|| syn::Error::new_spanned(&field.path, "呜哇~不支持的字段名！杂鱼~"))?
-				.to_string();
-
-			match key.as_str() {
-				"name" => {
-					if let syn::Expr::Lit(syn::ExprLit { lit: syn::Lit::Str(lit_str), .. }) =
-						&field.value
-					{
-						CommandArgs::set_name(&mut args, lit_str.clone())?;
-					} else {
-						return Err(syn::Error::new_spanned(
-							&field.value,
-							"呜哇~name 必须是字符串！杂鱼~",
-						));
-					}
-				}
-				"desc" => {
-					if let syn::Expr::Lit(syn::ExprLit { lit: syn::Lit::Str(lit_str), .. }) =
-						&field.value
-					{
-						CommandArgs::set_desc(&mut args, lit_str.clone())?;
-					} else {
-						return Err(syn::Error::new_spanned(
-							&field.value,
-							"呜哇~desc 必须是字符串！杂鱼~",
-						));
-					}
-				}
-				"rank" => {
-					if let syn::Expr::Lit(syn::ExprLit { lit: syn::Lit::Int(lit_int), .. }) =
-						&field.value
-					{
-						CommandArgs::set_rank(&mut args, lit_int.clone())?;
-					} else {
-						return Err(syn::Error::new_spanned(
-							&field.value,
-							"呜哇~rank 必须是整数！杂鱼~",
-						));
-					}
-				}
-				"args" => {
-					if let syn::Expr::Array(arr) = &field.value {
-						CommandArgs::set_args(&mut args, arr.clone())?;
-					} else {
-						return Err(syn::Error::new_spanned(
-							&field.value,
-							"呜哇~args 必须是数组！杂鱼~",
-						));
-					}
-				}
-				_ => {
-					return Err(syn::Error::new_spanned(
-						&field.path,
-						format!("呜哇~不支持的字段 '{}'！杂鱼~", key),
-					));
-				}
-			}
-		}
-
-		if args.name.value().is_empty() {
-			return Err(syn::Error::new(input.span(), "诶嘿~name都不给！杂鱼程序员！"));
-		}
-
-		Ok(args)
-	}
-}
-
+/// 命令宏
+/// 
+/// 用于定义命令处理函数。
+/// 
+/// # 参数
+/// - `name`: 命令名称（必需）
+/// - `desc`: 命令描述（可选，默认为空）
+/// - `rank`: 命令优先级（可选，默认为 100，数值越小优先级越高）
+/// - `args`: 命令参数列表（可选）
+/// 
+/// # 命令参数格式
+/// 
+/// 支持两种格式定义参数：
+/// 
+/// ## 1. 简单格式
+/// 只指定参数名称，其他使用默认值：
+/// ```rust,ignore
+/// args = ["message", "count"]
+/// ```
+/// 
+/// ## 2. 元组格式
+/// 完整指定参数属性：
+/// ```rust,ignore
+/// args = [
+///     ("参数名", "类型", 是否必需, 默认值, "描述")
+/// ]
+/// ```
+/// 
+/// ### 参数类型
+/// - `"string"`: 字符串类型（默认）
+/// - `"int"`: 整数类型
+/// - `"float"`: 浮点数类型
+/// - `"bool"`: 布尔类型
+/// 
+/// # 示例
+/// 
+/// ## 基础示例
+/// ```rust,ignore
+/// #[command(name = "hello", desc = "打招呼")]
+/// async fn hello(bot: &BotContext, ev: &MessageContext) -> HandlerResult {
+///     bot.reply("你好！".into()).await?;
+///     Ok(())
+/// }
+/// ```
+/// 
+/// ## 带参数示例（简单格式）
+/// ```rust,ignore
+/// #[command(
+///     name = "echo",
+///     desc = "回显消息",
+///     args = ["message"]
+/// )]
+/// async fn echo(bot: &BotContext, ev: &MessageContext) -> HandlerResult {
+///     let msg = ev.arg("message").and_then(|v| v.as_str()).unwrap_or("空消息");
+///     bot.reply(msg.into()).await?;
+///     Ok(())
+/// }
+/// ```
+/// 
+/// ## 带参数示例（元组格式）
+/// ```rust,ignore
+/// #[command(
+///     name = "repeat",
+///     desc = "重复消息",
+///     rank = 50,
+///     args = [
+///         ("message", "string", true, "", "要重复的消息"),
+///         ("count", "int", false, 1, "重复次数"),
+///         ("delay", "float", false, 0.0, "延迟秒数")
+///     ]
+/// )]
+/// async fn repeat(bot: &BotContext, ev: &MessageContext) -> HandlerResult {
+///     let message = ev.arg("message").and_then(|v| v.as_str()).unwrap_or("默认消息");
+///     let count = ev.arg("count").and_then(|v| v.as_int()).unwrap_or(1);
+///     let delay = ev.arg("delay").and_then(|v| v.as_float()).unwrap_or(0.0);
+///     
+///     for _ in 0..count {
+///         bot.reply(message.into()).await?;
+///         if delay > 0.0 {
+///             tokio::time::sleep(tokio::time::Duration::from_secs_f64(delay)).await;
+///         }
+///     }
+///     Ok(())
+/// }
+/// ```
+/// 
+/// ## 混合格式示例
+/// ```rust,ignore
+/// #[command(
+///     name = "search",
+///     desc = "搜索内容",
+///     args = [
+///         ("keyword", "string", true, "", "搜索关键词"),
+///         "engine",  // 简单格式：可选的字符串参数
+///         ("limit", "int", false, 10, "结果数量限制")
+///     ]
+/// )]
+/// async fn search(bot: &BotContext, ev: &MessageContext) -> HandlerResult {
+///     // ...
+/// }
+/// ```
 #[cfg(feature = "command")]
 #[proc_macro_attribute]
 pub fn command(args: TokenStream, item: TokenStream) -> TokenStream {
@@ -633,7 +562,7 @@ pub fn command(args: TokenStream, item: TokenStream) -> TokenStream {
 
 	let is_async = input_fn.sig.asyncness.is_some();
 	if !is_async {
-		return syn::Error::new_spanned(&input_fn.sig, "诶嘿~杂鱼函数连async都不会用吗？")
+		return syn::Error::new_spanned(&input_fn.sig, "呜哇~杂鱼函数连async都不会用吗？杂鱼~")
 			.to_compile_error()
 			.into();
 	}
@@ -641,7 +570,7 @@ pub fn command(args: TokenStream, item: TokenStream) -> TokenStream {
 	if input_fn.sig.inputs.len() != 2 {
 		return syn::Error::new_spanned(
 			&input_fn.sig.inputs,
-			"呜哇~命令函数必须有两个参数：&BotContext, &MessageContext！笨蛋！",
+			"呜哇~命令函数必须有两个参数：&BotContext, &MessageContext！杂鱼~",
 		)
 		.to_compile_error()
 		.into();
@@ -655,7 +584,7 @@ pub fn command(args: TokenStream, item: TokenStream) -> TokenStream {
 		if !ty_str.contains("BotContext") {
 			return syn::Error::new_spanned(
 				ty,
-				"第一个参数必须是 &BotContext 类型！你这个笨蛋写成什么了？",
+				"呜哇~第一个参数必须是 &BotContext 类型！杂鱼~",
 			)
 			.to_compile_error()
 			.into();
@@ -667,7 +596,7 @@ pub fn command(args: TokenStream, item: TokenStream) -> TokenStream {
 		if !ty_str.contains("MessageContext") {
 			return syn::Error::new_spanned(
 				ty,
-				"第二个参数必须是 &MessageContext 类型！杂鱼连参数类型都写不对吗？",
+				"呜哇~第二个参数必须是 &MessageContext 类型！杂鱼~",
 			)
 			.to_compile_error()
 			.into();
@@ -681,20 +610,13 @@ pub fn command(args: TokenStream, item: TokenStream) -> TokenStream {
 	};
 
 	let command_name = &args.name;
-	let command_args: Vec<syn::LitStr> = args
-		.args
-		.elems
-		.iter()
-		.filter_map(|expr| {
-			if let syn::Expr::Lit(syn::ExprLit { lit: syn::Lit::Str(lit_str), .. }) = expr {
-				Some(lit_str.clone())
-			} else {
-				None
-			}
-		})
-		.collect();
 	let command_rank = &args.rank;
 	let command_desc = &args.desc;
+	let mut arg_defs: Vec<proc_macro2::TokenStream> = Vec::new();
+
+	for arg_def in &args.args {
+		arg_defs.push(arg_def.to_tokens());
+	}
 
 	let plugin_name = quote! { env!("CARGO_PKG_NAME") };
 
@@ -704,7 +626,6 @@ pub fn command(args: TokenStream, item: TokenStream) -> TokenStream {
 		pub struct #struct_name;
 
 		#fn_vis #fn_sig #fn_block
-
 
 		#[::puniyu_plugin::async_trait]
 		impl ::puniyu_plugin::CommandBuilder for #struct_name {
@@ -720,8 +641,8 @@ pub fn command(args: TokenStream, item: TokenStream) -> TokenStream {
 				}
 			}
 
-			fn args(&self) -> Vec<&'static str> {
-				vec![#(#command_args),*]
+			fn args(&self) -> Vec<::puniyu_plugin::Arg> {
+				vec![#(#arg_defs),*]
 			}
 
 			fn rank(&self) -> u64 {
@@ -744,90 +665,87 @@ pub fn command(args: TokenStream, item: TokenStream) -> TokenStream {
 	TokenStream::from(expanded)
 }
 
-#[cfg(feature = "task")]
-struct TaskArgs {
-	name: syn::LitStr,
-	cron: syn::LitStr,
-}
-
-#[cfg(feature = "task")]
-impl Default for TaskArgs {
-	fn default() -> Self {
-		Self {
-			cron: syn::LitStr::new("", proc_macro2::Span::call_site()),
-			name: syn::LitStr::new("", proc_macro2::Span::call_site()),
-		}
-	}
-}
-
-#[cfg(feature = "task")]
-impl TaskArgs {
-	fn set_cron(args: &mut Self, value: syn::LitStr) -> syn::Result<()> {
-		args.cron = value;
-		Ok(())
-	}
-
-	fn set_name(args: &mut Self, value: syn::LitStr) -> syn::Result<()> {
-		args.name = value;
-		Ok(())
-	}
-}
-
-#[cfg(feature = "task")]
-impl Parse for TaskArgs {
-	fn parse(input: ParseStream) -> syn::Result<Self> {
-		if input.is_empty() {
-			return Err(syn::Error::new(input.span(), "呜~至少给人家一个cron表达式嘛！杂鱼~"));
-		}
-
-		let fields = Punctuated::<syn::MetaNameValue, Token![,]>::parse_terminated(input)?;
-		let mut args = TaskArgs::default();
-
-		for field in fields {
-			let key = field
-				.path
-				.get_ident()
-				.ok_or_else(|| syn::Error::new_spanned(&field.path, "呜哇~不支持的字段名！杂鱼~"))?
-				.to_string();
-
-			match key.as_str() {
-				"cron" => {
-					if let syn::Expr::Lit(syn::ExprLit { lit: syn::Lit::Str(lit_str), .. }) =
-						&field.value
-					{
-						TaskArgs::set_cron(&mut args, lit_str.clone())?;
-					} else {
-						return Err(syn::Error::new_spanned(
-							&field.value,
-							"呜哇~cron 必须是字符串！杂鱼~",
-						));
-					}
-				}
-				"name" => {
-					if let syn::Expr::Lit(syn::ExprLit { lit: syn::Lit::Str(lit_str), .. }) =
-						&field.value
-					{
-						TaskArgs::set_name(&mut args, lit_str.clone())?;
-					} else {
-						return Err(syn::Error::new_spanned(
-							&field.value,
-							"呜哇~name 必须是字符串！杂鱼~",
-						));
-					}
-				}
-				_ => {
-					return Err(syn::Error::new_spanned(
-						&field.path,
-						format!("呜哇~不支持的字段 '{}'！杂鱼~", key),
-					));
-				}
-			}
-		}
-
-		Ok(args)
-	}
-}
-
+/// 定时任务宏
+/// 
+/// 用于定义基于 Cron 表达式的定时任务。
+/// 
+/// # 参数
+/// - `cron`: Cron 表达式（必需），定义任务执行的时间规则
+/// - `name`: 任务名称（可选），默认使用函数名
+/// 
+/// # Cron 表达式格式
+/// 
+/// 支持标准的 Cron 表达式，格式为：
+/// ```text
+/// ┌───────────── 秒 (0 - 59)
+/// │ ┌───────────── 分钟 (0 - 59)
+/// │ │ ┌───────────── 小时 (0 - 23)
+/// │ │ │ ┌───────────── 日期 (1 - 31)
+/// │ │ │ │ ┌───────────── 月份 (1 - 12)
+/// │ │ │ │ │ ┌───────────── 星期 (0 - 6) (周日到周六)
+/// │ │ │ │ │ │
+/// * * * * * *
+/// ```
+/// 
+/// ## 特殊字符
+/// - `*`: 匹配所有值
+/// - `,`: 分隔多个值，如 `1,3,5`
+/// - `-`: 指定范围，如 `1-5`
+/// - `/`: 指定步长，如 `*/5` 表示每 5 个单位
+/// 
+/// ## 常用示例
+/// - `0 0 * * * *`: 每小时整点执行
+/// - `0 */30 * * * *`: 每 30 分钟执行
+/// - `0 0 9 * * *`: 每天上午 9 点执行
+/// - `0 0 0 * * 1`: 每周一凌晨执行
+/// - `0 0 0 1 * *`: 每月 1 号凌晨执行
+/// 
+/// # 函数要求
+/// - 必须是 `async` 函数
+/// - 不能有任何参数
+/// - 返回类型必须是 `Result<(), Box<dyn std::error::Error + Send + Sync>>`
+/// 
+/// # 示例
+/// 
+/// ## 基础示例
+/// ```rust,ignore
+/// #[task(cron = "0 0 * * * *")]
+/// async fn hourly_cleanup() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+///     println!("每小时执行一次清理任务");
+///     Ok(())
+/// }
+/// ```
+/// 
+/// ## 指定任务名称
+/// ```rust,ignore
+/// #[task(name = "数据备份", cron = "0 0 2 * * *")]
+/// async fn backup_data() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+///     println!("每天凌晨 2 点执行数据备份");
+///     Ok(())
+/// }
+/// ```
+/// 
+/// ## 高频任务
+/// ```rust,ignore
+/// #[task(cron = "*/10 * * * * *")]
+/// async fn check_status() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+///     println!("每 10 秒检查一次状态");
+///     Ok(())
+/// }
+/// ```
+/// 
+/// ## 复杂定时任务
+/// ```rust,ignore
+/// #[task(
+///     name = "工作日报告",
+///     cron = "0 0 18 * * 1-5"  // 工作日下午 6 点
+/// )]
+/// async fn daily_report() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+///     println!("生成每日工作报告");
+///     // 执行报告生成逻辑
+///     Ok(())
+/// }
+/// ```
 #[cfg(feature = "task")]
 #[proc_macro_attribute]
 pub fn task(args: TokenStream, item: TokenStream) -> TokenStream {
@@ -843,7 +761,7 @@ pub fn task(args: TokenStream, item: TokenStream) -> TokenStream {
 
 	let is_async = input_fn.sig.asyncness.is_some();
 	if !is_async {
-		return syn::Error::new_spanned(&input_fn.sig, "诶嘿~杂鱼函数连async都不会用吗？")
+		return syn::Error::new_spanned(&input_fn.sig, "呜哇~杂鱼函数连async都不会用吗？杂鱼~")
 			.to_compile_error()
 			.into();
 	}
@@ -851,7 +769,7 @@ pub fn task(args: TokenStream, item: TokenStream) -> TokenStream {
 	if !input_fn.sig.inputs.is_empty() {
 		return syn::Error::new_spanned(
 			&input_fn.sig.inputs,
-			"呜哇~杂鱼函数居然还想带参数？不行不行！",
+			"呜哇~杂鱼函数居然还想带参数？不行不行！杂鱼~",
 		)
 		.to_compile_error()
 		.into();
@@ -859,7 +777,7 @@ pub fn task(args: TokenStream, item: TokenStream) -> TokenStream {
 
 	let cron_value = args.cron.value();
 	if Cron::from_str(&cron_value).is_err() {
-		return syn::Error::new_spanned(&args.cron, "呜哇~, cron表达式都不会写吗？真是杂鱼呢~")
+		return syn::Error::new_spanned(&args.cron, "呜哇~cron表达式都不会写吗？杂鱼~")
 			.to_compile_error()
 			.into();
 	}
@@ -878,9 +796,9 @@ pub fn task(args: TokenStream, item: TokenStream) -> TokenStream {
 	let struct_name = Ident::new(&struct_name_str, fn_name.span());
 
 	let expanded = quote! {
-	pub struct #struct_name;
+		pub struct #struct_name;
 
-	#fn_vis #fn_sig #fn_block
+		#fn_vis #fn_sig #fn_block
 
 		#[::puniyu_plugin::async_trait]
 		impl ::puniyu_plugin::TaskBuilder for #struct_name {
@@ -892,25 +810,23 @@ pub fn task(args: TokenStream, item: TokenStream) -> TokenStream {
 				#cron_expr
 			}
 
-			async fn run(&self) {
-				#fn_name().await;
+			async fn run(&self) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+				#fn_name().await
 			}
-	}
-
-	::puniyu_plugin::inventory::submit! {
-		crate::TaskRegistry  {
-			plugin_name: #plugin_name,
-			builder: || -> Box<dyn ::puniyu_plugin::TaskBuilder> { Box::new(#struct_name {}) },
 		}
-	}
 
+		::puniyu_plugin::inventory::submit! {
+			crate::TaskRegistry  {
+				plugin_name: #plugin_name,
+				builder: || -> Box<dyn ::puniyu_plugin::TaskBuilder> { Box::new(#struct_name {}) },
+			}
+		}
 	};
 
 	TokenStream::from(expanded)
 }
 
 /// 注册服务路由
-/// 用于实现 Plugin trait 中的 server 方法
 ///
 /// # 示例
 /// ```rust, ignore
@@ -933,7 +849,7 @@ pub fn server(_args: TokenStream, item: TokenStream) -> TokenStream {
 	} else {
 		return syn::Error::new_spanned(
 			proc_macro2::TokenStream::from(item),
-			"杂鱼！这个宏只能用在函数上！",
+			"呜哇~这个宏只能用在函数上！杂鱼~",
 		)
 		.to_compile_error()
 		.into();
@@ -947,7 +863,7 @@ pub fn server(_args: TokenStream, item: TokenStream) -> TokenStream {
 	if input_fn.sig.inputs.len() != 1 {
 		return syn::Error::new_spanned(
 			&input_fn.sig,
-			"呜哇~函数必须接收一个参数 &mut ServiceConfig！",
+			"呜哇~函数必须接收一个参数 &mut ServiceConfig！杂鱼~",
 		)
 		.to_compile_error()
 		.into();

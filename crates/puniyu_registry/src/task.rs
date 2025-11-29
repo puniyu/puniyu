@@ -1,5 +1,5 @@
 use chrono_tz::Asia::Shanghai;
-use puniyu_logger::{info, owo_colors::OwoColorize};
+use puniyu_logger::{info, error, owo_colors::OwoColorize};
 use puniyu_types::task::{TaskBuilder, TaskId};
 use std::time::Instant;
 use std::{
@@ -25,18 +25,25 @@ impl From<Task> for tokio_cron_scheduler::Job {
 			.unwrap()
 			.with_run_async(Box::new(move |_uuid, _lock| {
 				let builder = task.builder.clone();
+				let plugin_name = task.plugin_name.clone();
 				Box::pin(async move {
-					let name = builder.name().to_string();
+					let task_name = builder.name().to_string();
 					let task_run = builder.run();
 					let start_time = Instant::now();
-					let prefix = "task".fg_rgb::<176, 196, 222>();
-					let message = name.fg_rgb::<255, 192, 203>();
-					info!("[{}:{}] 开始执行", prefix, message);
+					let tag_str = format!("[task:{}:{}]", plugin_name, task_name);
+					let tag = tag_str.fg_rgb::<255, 192, 203>();
+					info!("{} 开始执行", tag);
 
-					task_run.await;
-
+					let result = task_run.await;
 					let duration = start_time.elapsed().as_millis();
-					info!("[{}:{}] 执行完成,耗时: {}ms", prefix, message, duration);
+					match result {
+						Ok(_) => {
+							info!("{} 执行完成,耗时: {}ms", tag, duration);
+						}
+						Err(e) => {
+							error!("{} 执行失败,耗时: {}ms, 错误: {}", tag, duration, e);
+						}
+					}
 				})
 			}))
 			.build()

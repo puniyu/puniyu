@@ -1,4 +1,4 @@
-pub use puniyu_macros::{command, plugin, task};
+pub use puniyu_macros::{command, plugin, plugin_config as config, server, task};
 pub use puniyu_types::account::AccountInfo;
 pub use puniyu_types::adapter::types::*;
 pub use puniyu_types::adapter::{

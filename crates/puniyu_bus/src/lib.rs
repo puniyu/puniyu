@@ -1,5 +1,4 @@
-use puniyu_logger::owo_colors::OwoColorize;
-use puniyu_logger::warn;
+use puniyu_logger::{owo_colors::OwoColorize, warn};
 use puniyu_registry::handler::CommandHandler;
 use puniyu_registry::matcher::CommandMatcher;
 use puniyu_types::bot::Bot;
@@ -7,31 +6,41 @@ use puniyu_types::event::Event;
 use puniyu_types::handler::Handler;
 use puniyu_types::matcher::Matcher;
 use std::sync::{Arc, Mutex, OnceLock};
+use tokio::runtime::Handle;
 use tokio::sync::mpsc;
 
 pub static EVENT_BUS: OnceLock<Arc<EventBus>> = OnceLock::new();
 
-type EventSender = mpsc::UnboundedSender<(Bot, Event)>;
-type EventReceiver = mpsc::UnboundedReceiver<(Bot, Event)>;
+type EventSender = mpsc::Sender<(Bot, Event)>;
+type EventReceiver = mpsc::Receiver<(Bot, Event)>;
 type ReceiverPair = (EventReceiver, mpsc::UnboundedReceiver<()>);
 
 pub struct EventBus {
 	sender: EventSender,
 	shutdown_tx: mpsc::UnboundedSender<()>,
 	receiver: Arc<Mutex<Option<ReceiverPair>>>,
+	handle: Handle,
 }
 
 impl EventBus {
 	fn new() -> Self {
-		let (sender, receiver) = mpsc::unbounded_channel();
+		let (sender, receiver) = mpsc::channel(5000);
 		let (shutdown_tx, shutdown_rx) = mpsc::unbounded_channel();
-		Self { sender, shutdown_tx, receiver: Arc::new(Mutex::new(Some((receiver, shutdown_rx)))) }
+		Self {
+			sender,
+			shutdown_tx,
+			receiver: Arc::new(Mutex::new(Some((receiver, shutdown_rx)))),
+			handle: Handle::current(),
+		}
 	}
 
 	fn send_event(&self, bot: Bot, event: Event) {
-		if let Err(e) = self.sender.send((bot, event)) {
-			warn!("[{}]: 事件发送失败 {:?}", "Event".blue(), e);
-		}
+		let sender = self.sender.clone();
+		self.handle.spawn(async move {
+			if let Err(e) = sender.send((bot, event)).await {
+				warn!("[{}]: 事件发送失败 {:?}", "Event".blue(), e);
+			}
+		});
 	}
 
 	pub fn run(&self) {
@@ -75,7 +84,6 @@ pub fn stop_event_bus() {
 		bus.stop();
 	}
 }
-
 
 pub fn setup_event_bus(bus: Arc<EventBus>) {
 	EVENT_BUS.get_or_init(|| bus);
