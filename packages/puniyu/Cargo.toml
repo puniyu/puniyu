@@ -18,3 +18,7 @@ puniyu_adapter_console = { path = "../../adapters/console" }
 [[bin]]
 name = "puniyu"
 path = "src/main.rs"
+
+[features]
+default = []
+stable = ["puniyu_core/stable"]

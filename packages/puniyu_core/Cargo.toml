@@ -34,4 +34,5 @@ puniyu_registry = { version = "0.5.12", path = "../../crates/puniyu_registry" }
 default = ["server", "logger"]
 server = ["dep:puniyu_server"]
 logger = ["dep:puniyu_logger"]
+stable = []
 
