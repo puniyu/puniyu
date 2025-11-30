@@ -20,7 +20,7 @@ pub struct AdapterRegistry;
 
 impl AdapterRegistry {
 	pub async fn load_adapter(adapter: &'static dyn AdapterBuilder) -> Result<(), Error> {
-		let adapters = ADAPTER_STORE.get_all_adapters();
+		let adapters = ADAPTER_STORE.get_all();
 		let adapter_info = adapter.info();
 		let adapter_name = adapter_info.name.clone();
 		let adapter_version = adapter_info.version.to_string();
@@ -83,7 +83,7 @@ impl AdapterRegistry {
 		}
 
 		run_adapter_init(adapter_name.as_str(), adapter.init()).await?;
-		ADAPTER_STORE.insert_adapter(Adapter { info: adapter_info, api: adapter.api() });
+		ADAPTER_STORE.insert(Adapter { info: adapter_info, api: adapter.api() });
 		Ok(())
 	}
 
@@ -95,15 +95,15 @@ impl AdapterRegistry {
 
 	/// 卸载一个适配器，包括适配器中的Bot实例
 	pub fn unload_adapter(name: &str) -> Result<(), Error> {
-		ADAPTER_STORE.remove_adapter(name);
+		ADAPTER_STORE.remove(name);
 		Ok(())
 	}
 
 	pub fn get_adapter(name: &str) -> Option<Adapter> {
-		ADAPTER_STORE.get_adapter(name)
+		ADAPTER_STORE.get(name)
 	}
 	pub fn get_all_adapters() -> Vec<Adapter> {
-		ADAPTER_STORE.get_all_adapters().values().cloned().collect()
+		ADAPTER_STORE.get_all().values().cloned().collect()
 	}
 }
 

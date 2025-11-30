@@ -14,7 +14,7 @@ impl AdapterStore {
 		Self::default()
 	}
 
-	pub fn insert_adapter(&self, adapter: Adapter) {
+	pub fn insert(&self, adapter: Adapter) {
 		let mut adapters = self.0.lock().unwrap();
 		let exists = adapters.values().any(|a| a.info.name == adapter.info.name);
 		if !exists {
@@ -23,17 +23,17 @@ impl AdapterStore {
 		}
 	}
 
-	pub fn get_adapter(&self, name: &str) -> Option<Adapter> {
+	pub fn get(&self, name: &str) -> Option<Adapter> {
 		let adapters = self.0.lock().unwrap();
 		adapters.values().find(|a| a.info.name == name).cloned()
 	}
 
-	pub fn get_all_adapters(&self) -> HashMap<u64, Adapter> {
+	pub fn get_all(&self) -> HashMap<u64, Adapter> {
 		let adapters = self.0.lock().unwrap();
 		adapters.clone()
 	}
 
-	pub fn remove_adapter(&self, name: &str) {
+	pub fn remove(&self, name: &str) {
 		let mut adapters = self.0.lock().unwrap();
 
 		let ids = adapters
