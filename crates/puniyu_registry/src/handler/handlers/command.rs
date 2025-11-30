@@ -48,12 +48,6 @@ pub struct ParsedArgs {
 pub struct Command;
 
 impl Command {
-	/// 解析命令和参数
-	/// 
-	/// 支持两种格式：
-	/// - 位置参数：`echo hello world` -> positional: ["hello", "world"]
-	/// - 命名参数：`echo --msg hello` -> named: {"msg": "hello"}
-	/// - 混合：`echo hello --count 3` -> positional: ["hello"], named: {"count": "3"}
 	pub fn parse(input: &str) -> (String, ParsedArgs) {
 		let mut tokens = input.split_whitespace();
 		let command_name = tokens.next().map(|s| s.to_string()).unwrap_or_default();
@@ -64,21 +58,17 @@ impl Command {
 
 		for token in tokens {
 			if let Some(flag) = token.strip_prefix("--") {
-				// 处理前一个未赋值的 flag（布尔标志）
 				if let Some(prev_flag) = current_flag.take() {
 					named.insert(prev_flag, String::new());
 				}
 				current_flag = Some(flag.to_string());
 			} else if let Some(flag) = current_flag.take() {
-				// 为命名参数赋值
 				named.insert(flag, token.to_string());
 			} else {
-				// 位置参数
 				positional.push(token.to_string());
 			}
 		}
 
-		// 处理末尾的布尔标志
 		if let Some(flag) = current_flag {
 			named.insert(flag, String::new());
 		}
@@ -160,13 +150,6 @@ impl Command {
 			}
 		}
 	}
-
-	/// 验证并解析参数
-	/// 
-	/// 根据命令定义的参数模式匹配输入：
-	/// - Positional: 按顺序从位置参数中取值
-	/// - Named: 从命名参数中按名称取值
-	/// - Rest: 收集所有剩余的位置参数
 	fn validate_args(
 		command_name: &str,
 		parsed: &ParsedArgs,
@@ -190,7 +173,6 @@ impl Command {
 					val
 				}
 				ArgMode::Named => {
-					// 命名参数：从 --flag 中取值
 					parsed.named.get(arg_def.name).cloned()
 				}
 			};
@@ -216,7 +198,6 @@ impl Command {
 		ValidateResult::Ok(args)
 	}
 
-	/// 解析单个参数值
 	fn parse_arg_value(arg_def: &Arg, value: Option<&String>) -> Result<Option<ArgValue>, String> {
 		match value {
 			Some(v) => {
@@ -246,7 +227,6 @@ impl Command {
 		}
 	}
 
-	/// 执行插件
 	async fn execute_plugins(bot: &BotContext, event: &MessageContext, command_name: &str) {
 		let plugins = CommandRegistry::get_plugins(command_name);
 		for name in plugins {

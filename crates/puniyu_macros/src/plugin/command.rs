@@ -1,5 +1,5 @@
-use syn::{Token, parse::Parse, parse::ParseStream, punctuated::Punctuated};
 use super::arg::Arg;
+use syn::{Token, braced, bracketed, parse::Parse, parse::ParseStream, punctuated::Punctuated};
 
 pub struct CommandArgs {
 	pub name: syn::LitStr,
@@ -25,71 +25,37 @@ impl Parse for CommandArgs {
 			return Err(syn::Error::new(input.span(), "呜~至少给人家一些参数嘛！杂鱼~"));
 		}
 
-		let fields = Punctuated::<syn::MetaNameValue, Token![,]>::parse_terminated(input)?;
 		let mut cmd_args = CommandArgs::default();
-		for field in fields {
-			let key = field
-				.path
-				.get_ident()
-				.ok_or_else(|| syn::Error::new_spanned(&field.path, "呜哇~不支持的字段名！杂鱼~"))?
-				.to_string();
 
-			match key.as_str() {
+		while !input.is_empty() {
+			let key: syn::Ident = input.parse()?;
+			input.parse::<Token![=]>()?;
+
+			match key.to_string().as_str() {
 				"name" => {
-					if let syn::Expr::Lit(syn::ExprLit { lit: syn::Lit::Str(lit_str), .. }) =
-						&field.value
-					{
-						cmd_args.name = lit_str.clone();
-					} else {
-						return Err(syn::Error::new_spanned(
-							&field.value,
-							"呜哇~name 必须是字符串！杂鱼~",
-						));
-					}
+					cmd_args.name = input.parse()?;
 				}
 				"desc" => {
-					if let syn::Expr::Lit(syn::ExprLit { lit: syn::Lit::Str(lit_str), .. }) =
-						&field.value
-					{
-						cmd_args.desc = lit_str.clone();
-					} else {
-						return Err(syn::Error::new_spanned(
-							&field.value,
-							"呜哇~desc 必须是字符串！杂鱼~",
-						));
-					}
+					cmd_args.desc = input.parse()?;
 				}
 				"rank" => {
-					if let syn::Expr::Lit(syn::ExprLit { lit: syn::Lit::Int(lit_int), .. }) =
-						&field.value
-					{
-						cmd_args.rank = lit_int.clone();
-					} else {
-						return Err(syn::Error::new_spanned(
-							&field.value,
-							"呜哇~rank 必须是整数！杂鱼~",
-						));
-					}
+					cmd_args.rank = input.parse()?;
 				}
 				"args" => {
-					if let syn::Expr::Array(arr) = &field.value {
-						for elem in &arr.elems {
-							let arg = Arg::from_expr(elem)?;
-							cmd_args.args.push(arg);
-						}
-					} else {
-						return Err(syn::Error::new_spanned(
-							&field.value,
-							"呜哇~args 必须是数组格式！杂鱼~",
-						));
-					}
+					let content;
+					bracketed!(content in input);
+					cmd_args.args = parse_args_array(&content)?;
 				}
 				_ => {
 					return Err(syn::Error::new_spanned(
-						&field.path,
+						&key,
 						format!("呜哇~不支持的字段 '{}'！杂鱼~", key),
 					));
 				}
+			}
+
+			if input.peek(Token![,]) {
+				input.parse::<Token![,]>()?;
 			}
 		}
 
@@ -99,4 +65,110 @@ impl Parse for CommandArgs {
 
 		Ok(cmd_args)
 	}
+}
+
+fn parse_args_array(input: ParseStream) -> syn::Result<Vec<Arg>> {
+	let mut args = Vec::new();
+
+	while !input.is_empty() {
+		let arg = parse_single_arg(input)?;
+		args.push(arg);
+
+		if input.peek(Token![,]) {
+			input.parse::<Token![,]>()?;
+		}
+	}
+
+	Ok(args)
+}
+
+fn parse_single_arg(input: ParseStream) -> syn::Result<Arg> {
+	let mut arg = Arg::default();
+
+	if input.peek(syn::LitStr) {
+		arg.name = input.parse()?;
+	} else if input.peek(syn::token::Paren) {
+		let content;
+		syn::parenthesized!(content in input);
+		let elems = Punctuated::<syn::Expr, Token![,]>::parse_terminated(&content)?;
+		arg.parse_tuple(&elems)?;
+	} else if input.peek(syn::token::Brace) {
+		let content;
+		braced!(content in input);
+		parse_arg_object(&content, &mut arg)?;
+	} else {
+		return Err(syn::Error::new(
+			input.span(),
+			"呜哇~参数格式错误！支持: \"name\", (元组), 或 { 对象 } 格式！杂鱼~",
+		));
+	}
+
+	if arg.name.value().is_empty() {
+		return Err(syn::Error::new(input.span(), "呜哇~参数必须指定 name！杂鱼~"));
+	}
+
+	Ok(arg)
+}
+
+fn parse_arg_object(input: ParseStream, arg: &mut Arg) -> syn::Result<()> {
+	while !input.is_empty() {
+		let key_str = if input.peek(Token![type]) {
+			input.parse::<Token![type]>()?;
+			"type".to_string()
+		} else {
+			let key: syn::Ident = input.parse()?;
+			key.to_string()
+		};
+		input.parse::<Token![=]>()?;
+
+		match key_str.as_str() {
+			"name" => {
+				arg.name = input.parse()?;
+			}
+			"r#type" | "type" => {
+				let lit_str: syn::LitStr = input.parse()?;
+				let valid_types = ["string", "int", "float", "bool"];
+				if !valid_types.contains(&lit_str.value().as_str()) {
+					return Err(syn::Error::new_spanned(
+						&lit_str,
+						format!("呜哇~type 必须是 {:?} 之一！杂鱼~", valid_types),
+					));
+				}
+				arg.arg_type = lit_str;
+			}
+			"mode" => {
+				let lit_str: syn::LitStr = input.parse()?;
+				let valid_modes = ["positional", "named"];
+				if !valid_modes.contains(&lit_str.value().as_str()) {
+					return Err(syn::Error::new_spanned(
+						&lit_str,
+						format!("呜哇~mode 必须是 {:?} 之一！杂鱼~", valid_modes),
+					));
+				}
+				arg.mode = lit_str;
+			}
+			"required" => {
+				let lit_bool: syn::LitBool = input.parse()?;
+				arg.required = lit_bool.value;
+			}
+			"default" => {
+				arg.default = Some(input.parse()?);
+			}
+			"desc" => {
+				arg.desc = input.parse()?;
+			}
+			_ => {
+				return Err(syn::Error::new(
+					input.span(),
+					format!("呜哇~不支持的字段 '{}'！杂鱼~", key_str),
+				));
+			}
+		}
+
+		if input.peek(Token![,]) {
+			input.parse::<Token![,]>()?;
+		}
+	}
+
+	Ok(())
 }
