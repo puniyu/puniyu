@@ -3,10 +3,10 @@ name: Build Package
 on:
   workflow_call:
     inputs:
-      release:
-        description: '是否为 release 构建'
+      stable:
+        description: '是否为稳定版构建'
         type: boolean
-        default: true
+        default: false
 
 env:
   APP_NAME: puniyu
@@ -42,14 +42,14 @@ jobs:
       - name: 构建
         shell: bash
         run: |
-          cargo build ${{ inputs.release && '--release' || '' }} --target ${{ matrix.platform.target }}
+          cargo build --release ${{ inputs.stable && '--features stable' || '' }} --target ${{ matrix.platform.target }}
 
       - name: 上传构建产物
         uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
         with:
           name: "${{ env.APP_NAME }}-${{ matrix.platform.label }}"
           path: |
-            target/${{ matrix.platform.target }}/${{ inputs.release && 'release' || 'debug' }}/${{ env.APP_NAME }}.exe
+            target/${{ matrix.platform.target }}/release/${{ env.APP_NAME }}.exe
 
   build_macos:
     runs-on: ${{ matrix.platform.runner }}
@@ -79,14 +79,14 @@ jobs:
 
       - name: 构建
         run: |
-          cargo build ${{ inputs.release && '--release' || '' }} --target ${{ matrix.platform.target }}
+          cargo build --release ${{ inputs.stable && '--features stable' || '' }} --target ${{ matrix.platform.target }}
 
       - name: 上传构建产物
         uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
         with:
           name: "${{ env.APP_NAME }}-${{ matrix.platform.label }}"
           path: |
-            target/${{ matrix.platform.target }}/${{ inputs.release && 'release' || 'debug' }}/${{ env.APP_NAME }}
+            target/${{ matrix.platform.target }}/release/${{ env.APP_NAME }}
 
   build_linux:
     runs-on: ${{ matrix.platform.runner }}
@@ -117,11 +117,11 @@ jobs:
 
       - name: 构建
         run: |
-          cargo build ${{ inputs.release && '--release' || '' }} --target ${{ matrix.platform.target }}
+          cargo build --release ${{ inputs.stable && '--features stable' || '' }} --target ${{ matrix.platform.target }}
 
       - name: 上传构建产物
         uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
         with:
           name: "${{ env.APP_NAME }}-${{ matrix.platform.label }}"
           path: |
-            target/${{ matrix.platform.target }}/${{ inputs.release && 'release' || 'debug' }}/${{ env.APP_NAME }}
+            target/${{ matrix.platform.target }}/release/${{ env.APP_NAME }}

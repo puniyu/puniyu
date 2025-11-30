@@ -25,13 +25,13 @@ pub const VERSION: Version = Version {
 	minor: env!("CARGO_PKG_VERSION_MINOR"),
 	patch: env!("CARGO_PKG_VERSION_PATCH"),
 	channel: {
-		#[cfg(debug_assertions)]
-		{
-			"Preview"
-		}
-		#[cfg(not(debug_assertions))]
+		#[cfg(feature = "stable")]
 		{
 			"Stable"
+		}
+		#[cfg(not(feature = "stable"))]
+		{
+			"Preview"
 		}
 	},
 };
