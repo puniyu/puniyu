@@ -84,6 +84,7 @@ matcher = [
   "puniyu_types/element",
 ]
 handler = [
+  "dep:thiserror",
   "dep:async-trait",
   "dep:puniyu_logger",
   "puniyu_types/handler",

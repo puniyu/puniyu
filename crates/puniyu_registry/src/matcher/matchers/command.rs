@@ -4,7 +4,7 @@ use puniyu_types::matcher::Matcher;
 use puniyu_types::{
 	element::RawMessage,
 	event::{
-		Event, EventType,
+		Event,
 		message::{MessageBase, MessageEvent},
 	},
 };
@@ -52,7 +52,7 @@ impl CommandMatcher {
 
 impl Matcher for CommandMatcher {
 	fn name(&self) -> &str {
-		EventType::Message.into()
+		"command"
 	}
 
 	fn matches(&self, event: &Event) -> bool {
