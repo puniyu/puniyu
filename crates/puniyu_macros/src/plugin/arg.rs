@@ -1,5 +1,9 @@
 use quote::quote;
-use syn::{Token, parse::Parse, parse::ParseStream, punctuated::Punctuated};
+use syn::{Token, ext::IdentExt, parse::ParseStream, punctuated::Punctuated};
+
+pub const VALID_ARG_TYPES: [&str; 4] = ["string", "int", "float", "bool"];
+pub const VALID_ARG_MODES: [&str; 2] = ["positional", "named"];
+pub const SUPPORTED_FIELDS: &str = "name, arg_type, mode, required, default, desc";
 
 #[derive(Clone)]
 pub struct Arg {
@@ -25,43 +29,89 @@ impl Default for Arg {
 }
 
 impl Arg {
-	pub fn parse_tuple(&mut self, elems: &Punctuated<syn::Expr, Token![,]>) -> syn::Result<()> {
+	pub fn parse_from_tuple(&mut self, elems: &Punctuated<syn::Expr, Token![,]>) -> syn::Result<()> {
 		let mut iter = elems.iter();
-		
+
 		if let Some(syn::Expr::Lit(syn::ExprLit { lit: syn::Lit::Str(lit_str), .. })) = iter.next() {
 			self.name = lit_str.clone();
 		} else {
 			return Err(syn::Error::new_spanned(elems, "呜哇~第一个元素必须是参数名(字符串)！杂鱼~"));
 		}
-		
+
 		if let Some(syn::Expr::Lit(syn::ExprLit { lit: syn::Lit::Str(lit_str), .. })) = iter.next() {
-			let valid_types = ["string", "int", "float", "bool"];
-			if !valid_types.contains(&lit_str.value().as_str()) {
-				return Err(syn::Error::new_spanned(lit_str, format!("呜哇~类型必须是 {:?} 之一！杂鱼~", valid_types)));
+			if !VALID_ARG_TYPES.contains(&lit_str.value().as_str()) {
+				return Err(syn::Error::new_spanned(lit_str, format!("呜哇~类型必须是 {:?} 之一！杂鱼~", VALID_ARG_TYPES)));
 			}
 			self.arg_type = lit_str.clone();
 		}
-		
+
 		if let Some(syn::Expr::Lit(syn::ExprLit { lit: syn::Lit::Bool(lit_bool), .. })) = iter.next() {
 			self.required = lit_bool.value;
 		}
-		
+
 		if let Some(expr) = iter.next() {
 			self.default = Some(expr.clone());
 		}
-		
+
 		if let Some(syn::Expr::Lit(syn::ExprLit { lit: syn::Lit::Str(lit_str), .. })) = iter.next() {
 			self.desc = lit_str.clone();
 		}
-		
+
 		if let Some(syn::Expr::Lit(syn::ExprLit { lit: syn::Lit::Str(lit_str), .. })) = iter.next() {
-			let valid_modes = ["positional", "named"];
-			if !valid_modes.contains(&lit_str.value().as_str()) {
-				return Err(syn::Error::new_spanned(lit_str, format!("呜哇~mode 必须是 {:?} 之一！杂鱼~", valid_modes)));
+			if !VALID_ARG_MODES.contains(&lit_str.value().as_str()) {
+				return Err(syn::Error::new_spanned(lit_str, format!("呜哇~mode 必须是 {:?} 之一！杂鱼~", VALID_ARG_MODES)));
 			}
 			self.mode = lit_str.clone();
 		}
-		
+
+		Ok(())
+	}
+
+	pub fn parse_from_object(&mut self, input: ParseStream) -> syn::Result<()> {
+		while !input.is_empty() {
+			let key = input.call(syn::Ident::parse_any)?;
+			input.parse::<Token![=]>()?;
+
+			match key.to_string().as_str() {
+				"name" => self.name = input.parse()?,
+				"arg_type" => {
+					let lit_str: syn::LitStr = input.parse()?;
+					if !VALID_ARG_TYPES.contains(&lit_str.value().as_str()) {
+						return Err(syn::Error::new_spanned(
+							&lit_str,
+							format!("呜哇~arg_type 必须是 {:?} 之一！杂鱼~", VALID_ARG_TYPES),
+						));
+					}
+					self.arg_type = lit_str;
+				}
+				"mode" => {
+					let lit_str: syn::LitStr = input.parse()?;
+					if !VALID_ARG_MODES.contains(&lit_str.value().as_str()) {
+						return Err(syn::Error::new_spanned(
+							&lit_str,
+							format!("呜哇~mode 必须是 {:?} 之一！杂鱼~", VALID_ARG_MODES),
+						));
+					}
+					self.mode = lit_str;
+				}
+				"required" => {
+					let lit_bool: syn::LitBool = input.parse()?;
+					self.required = lit_bool.value;
+				}
+				"default" => self.default = Some(input.parse()?),
+				"desc" => self.desc = input.parse()?,
+				_ => {
+					return Err(syn::Error::new_spanned(
+						&key,
+						format!("呜哇~不支持的字段 '{}'！支持: {} 杂鱼~", key, SUPPORTED_FIELDS),
+					));
+				}
+			}
+
+			if input.peek(Token![,]) {
+				input.parse::<Token![,]>()?;
+			}
+		}
 		Ok(())
 	}
 
@@ -105,97 +155,3 @@ impl Arg {
 	}
 }
 
-impl Parse for Arg {
-	fn parse(input: ParseStream) -> syn::Result<Self> {
-		if input.is_empty() {
-			return Err(syn::Error::new(input.span(), "参数必须指定 name"));
-		}
-		let fields = Punctuated::<syn::MetaNameValue, Token![,]>::parse_terminated(input)?;
-		let mut arg = Arg::default();
-
-		for field in fields {
-			let key = field
-				.path
-				.get_ident()
-				.ok_or_else(|| syn::Error::new_spanned(&field.path, "呜哇~不支持的字段名！杂鱼~"))?
-				.to_string();
-
-			match key.as_str() {
-				"name" => {
-					if let syn::Expr::Lit(syn::ExprLit { lit: syn::Lit::Str(lit_str), .. }) =
-						&field.value
-					{
-						arg.name = lit_str.clone();
-					} else {
-						return Err(syn::Error::new_spanned(&field.value, "呜哇~name 必须是字符串！杂鱼~"));
-					}
-				}
-				"arg_type" | "type" => {
-					if let syn::Expr::Lit(syn::ExprLit { lit: syn::Lit::Str(lit_str), .. }) =
-						&field.value
-					{
-						let valid_types = ["string", "int", "float", "bool"];
-						if !valid_types.contains(&lit_str.value().as_str()) {
-							return Err(syn::Error::new_spanned(
-								&field.value,
-								format!("呜哇~arg_type 必须是 {:?} 之一！杂鱼~", valid_types),
-							));
-						}
-						arg.arg_type = lit_str.clone();
-					} else {
-						return Err(syn::Error::new_spanned(&field.value, "呜哇~arg_type 必须是字符串！杂鱼~"));
-					}
-				}
-				"required" => {
-					if let syn::Expr::Lit(syn::ExprLit { lit: syn::Lit::Bool(lit_bool), .. }) =
-						&field.value
-					{
-						arg.required = lit_bool.value;
-					} else {
-						return Err(syn::Error::new_spanned(&field.value, "呜哇~required 必须是布尔值！杂鱼~"));
-					}
-				}
-				"default" => {
-					arg.default = Some(field.value.clone());
-				}
-				"desc" => {
-					if let syn::Expr::Lit(syn::ExprLit { lit: syn::Lit::Str(lit_str), .. }) =
-						&field.value
-					{
-						arg.desc = lit_str.clone();
-					} else {
-						return Err(syn::Error::new_spanned(&field.value, "呜哇~desc 必须是字符串！杂鱼~"));
-					}
-				}
-				"mode" => {
-					if let syn::Expr::Lit(syn::ExprLit { lit: syn::Lit::Str(lit_str), .. }) =
-						&field.value
-					{
-						let valid_modes = ["positional", "named"];
-						if !valid_modes.contains(&lit_str.value().as_str()) {
-							return Err(syn::Error::new_spanned(
-								&field.value,
-								format!("呜哇~mode 必须是 {:?} 之一！杂鱼~", valid_modes),
-							));
-						}
-						arg.mode = lit_str.clone();
-					} else {
-						return Err(syn::Error::new_spanned(&field.value, "呜哇~mode 必须是字符串！杂鱼~"));
-					}
-				}
-				_ => {
-					return Err(syn::Error::new_spanned(
-						&field.path,
-						format!("呜哇~不支持的字段 '{}'！杂鱼~", key),
-					));
-				}
-			}
-		}
-
-		if arg.name.value().is_empty() {
-			return Err(syn::Error::new(input.span(), "参数必须指定 name"));
-		}
-
-		Ok(arg)
-	}
-}

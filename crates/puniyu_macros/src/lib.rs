@@ -477,7 +477,7 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
 /// 
 /// ## 3. 对象格式
 /// ```rust,ignore
-/// args = [{ name = "count", r#type = "int", mode = "named", default = 1 }]
+/// args = [{ name = "count", arg_type = "int", mode = "named", default = 1 }]
 /// ```
 /// 
 /// ### 参数类型
