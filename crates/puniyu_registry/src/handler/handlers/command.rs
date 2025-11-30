@@ -1,7 +1,7 @@
 use crate::command::CommandRegistry;
 use async_trait::async_trait;
 use puniyu_types::bot::Bot;
-use puniyu_types::command::{Arg, ArgType, ArgValue, HandlerAction};
+use puniyu_types::command::{Arg, ArgMode, ArgType, ArgValue, HandlerAction};
 use puniyu_types::context::{BotContext, MessageContext};
 use puniyu_types::event::{
     Event, EventBase,
@@ -37,32 +37,53 @@ fn arg_type_name(arg_type: ArgType) -> &'static str {
 	}
 }
 
+/// 解析后的原始参数
+pub struct ParsedArgs {
+	/// 位置参数（按顺序）
+	pub positional: Vec<String>,
+	/// 命名参数（--flag value）
+	pub named: HashMap<String, String>,
+}
+
 pub struct Command;
 
 impl Command {
-	pub fn parse(input: &str) -> (String, HashMap<String, String>) {
-		let mut args = input.split_whitespace();
-		let command_name = args.next().map(|s| s.to_string()).unwrap_or_default();
+	/// 解析命令和参数
+	/// 
+	/// 支持两种格式：
+	/// - 位置参数：`echo hello world` -> positional: ["hello", "world"]
+	/// - 命名参数：`echo --msg hello` -> named: {"msg": "hello"}
+	/// - 混合：`echo hello --count 3` -> positional: ["hello"], named: {"count": "3"}
+	pub fn parse(input: &str) -> (String, ParsedArgs) {
+		let mut tokens = input.split_whitespace();
+		let command_name = tokens.next().map(|s| s.to_string()).unwrap_or_default();
 
-		let mut params = HashMap::new();
+		let mut positional = Vec::new();
+		let mut named = HashMap::new();
 		let mut current_flag: Option<String> = None;
 
-		for arg in args {
-			if let Some(flag) = arg.strip_prefix("--") {
+		for token in tokens {
+			if let Some(flag) = token.strip_prefix("--") {
+				// 处理前一个未赋值的 flag（布尔标志）
 				if let Some(prev_flag) = current_flag.take() {
-					params.insert(prev_flag, String::new());
+					named.insert(prev_flag, String::new());
 				}
 				current_flag = Some(flag.to_string());
 			} else if let Some(flag) = current_flag.take() {
-				params.insert(flag, arg.to_string());
+				// 为命名参数赋值
+				named.insert(flag, token.to_string());
+			} else {
+				// 位置参数
+				positional.push(token.to_string());
 			}
 		}
 
+		// 处理末尾的布尔标志
 		if let Some(flag) = current_flag {
-			params.insert(flag, String::new());
+			named.insert(flag, String::new());
 		}
 
-		(command_name, params)
+		(command_name, ParsedArgs { positional, named })
 	}
 
 	pub async fn handle(bot: Bot, message_type: MessageType) {
@@ -140,22 +161,41 @@ impl Command {
 		}
 	}
 
+	/// 验证并解析参数
+	/// 
+	/// 根据命令定义的参数模式匹配输入：
+	/// - Positional: 按顺序从位置参数中取值
+	/// - Named: 从命名参数中按名称取值
+	/// - Rest: 收集所有剩余的位置参数
 	fn validate_args(
 		command_name: &str,
-		command_args: &HashMap<String, String>,
+		parsed: &ParsedArgs,
 	) -> ValidateResult {
 		let Some(command) = CommandRegistry::get_with_name(command_name) else {
 			return ValidateResult::Ok(HashMap::new());
 		};
 
 		let arg_definitions = command.builder.args();
-		println!("[DEBUG] command: {}, args: {:?}, defs: {:?}", command_name, command_args, arg_definitions.iter().map(|a| (a.name, a.required)).collect::<Vec<_>>());
 		let mut args = HashMap::new();
+		let mut pos_index = 0;
 
-		for arg_def in arg_definitions {
-			let value = command_args.get(arg_def.name);
+		for arg_def in &arg_definitions {
+			let value: Option<String> = match arg_def.mode {
+				ArgMode::Positional => {
+					// 位置参数：按顺序取值
+					let val = parsed.positional.get(pos_index).cloned();
+					if val.is_some() {
+						pos_index += 1;
+					}
+					val
+				}
+				ArgMode::Named => {
+					// 命名参数：从 --flag 中取值
+					parsed.named.get(arg_def.name).cloned()
+				}
+			};
 
-			match Self::parse_arg_value(&arg_def, value) {
+			match Self::parse_arg_value(arg_def, value.as_ref()) {
 				Ok(Some(val)) => {
 					args.insert(arg_def.name.to_string(), val);
 				}

@@ -28,6 +28,7 @@ impl From<()> for HandlerAction {
 /// 命令处理结果
 pub type HandlerResult = Result<HandlerAction, Box<dyn std::error::Error + Send + Sync>>;
 
+/// 参数值类型
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ArgType {
     String,
@@ -36,12 +37,24 @@ pub enum ArgType {
     Bool,
 }
 
+/// 参数模式
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum ArgMode {
+    /// 位置参数（按顺序匹配）
+    #[default]
+    Positional,
+    /// 命名参数（需要 --flag）
+    Named,
+}
+
 #[derive(Debug, Clone)]
 pub struct Arg {
     /// 参数名
     pub name: &'static str,
     /// 参数类型
     pub arg_type: ArgType,
+    /// 参数模式
+    pub mode: ArgMode,
     /// 是否必须
     pub required: bool,
     /// 默认值
@@ -55,6 +68,7 @@ impl Default for Arg {
         Self {
             name: "",
             arg_type: ArgType::String,
+            mode: ArgMode::Positional,
             required: false,
             default: None,
             description: None,
@@ -105,6 +119,18 @@ impl Arg {
 
     pub fn description(mut self, desc: &'static str) -> Self {
         self.description = Some(desc);
+        self
+    }
+
+    /// 设置为位置参数（默认）
+    pub fn positional(mut self) -> Self {
+        self.mode = ArgMode::Positional;
+        self
+    }
+
+    /// 设置为命名参数（需要 --flag）
+    pub fn named(mut self) -> Self {
+        self.mode = ArgMode::Named;
         self
     }
 }
