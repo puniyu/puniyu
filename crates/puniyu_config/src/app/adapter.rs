@@ -7,6 +7,7 @@ pub struct AdapterConfig {
 }
 
 impl AdapterConfig {
+	/// 是否启用控制台适配器
 	pub fn console(&self) -> bool {
 		self.console
 	}

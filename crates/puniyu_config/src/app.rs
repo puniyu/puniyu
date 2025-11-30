@@ -1,6 +1,8 @@
 mod logger;
 mod server;
 mod adapter;
+mod group;
+mod friend;
 
 use puniyu_common::path::CONFIG_DIR;
 use puniyu_common::toml;
@@ -9,6 +11,8 @@ use std::sync::{Arc, LazyLock, RwLock};
 use logger::LoggerConfig;
 use server::ServerConfig;
 use adapter::AdapterConfig;
+use group::GroupConfig;
+use friend::FriendConfig;
 
 pub(crate) static APP_CONFIG: LazyLock<Arc<RwLock<AppConfig>>> = LazyLock::new(|| {
 	Arc::new(RwLock::new(
@@ -17,30 +21,8 @@ pub(crate) static APP_CONFIG: LazyLock<Arc<RwLock<AppConfig>>> = LazyLock::new(|
 });
 
 
-/// TODO: 此部分交给插件处理
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct LoadConfig {
-	/// 强制加载abi版本不同的插件,
-	#[serde(default = "default_force_plugin")]
-	force_plugin: bool,
-}
-
-fn default_force_plugin() -> bool {
-	false
-}
-
-impl Default for LoadConfig {
-	#[inline]
-	fn default() -> Self {
-		Self { force_plugin: default_force_plugin() }
-	}
-}
-
-impl LoadConfig {
-	/// 是否强制加载abi版本不同的插件
-	pub fn force_plugin(&self) -> bool {
-		self.force_plugin
-	}
+fn default_master() -> Vec<String> {
+	vec!["console".to_string()]
 }
 
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
@@ -54,6 +36,15 @@ pub struct AppConfig {
 	/// 适配器配置
 	#[serde(default)]
 	adapter: AdapterConfig,
+	/// 群组配置
+	#[serde(default)]
+	group: GroupConfig,
+	/// 好友配置
+	#[serde(default)]
+	friend: FriendConfig,
+	/// Bot主人列表
+	#[serde(default = "default_master")]
+	masters: Vec<String>,
 }
 
 impl AppConfig {
@@ -74,5 +65,27 @@ impl AppConfig {
 	pub fn adapter(&self) -> AdapterConfig {
 		let config = APP_CONFIG.read().unwrap();
 		config.adapter.clone()
+	}
+	
+	/// 获取bot主人列表
+	pub fn masters() -> Vec<String> {
+		let config = APP_CONFIG.read().unwrap();
+		config.masters.clone()
+	}
+	
+	/// 获取应用群组配置
+	///
+	/// 包含群聊黑白名单
+	pub fn group(&self) -> GroupConfig {
+		let config = APP_CONFIG.read().unwrap();
+		config.group.clone()
+	}
+	
+	/// 获取应用好友配置
+	///
+	/// 包含好友黑白名单
+	pub fn friend(&self) -> FriendConfig {
+		let config = APP_CONFIG.read().unwrap();
+		config.friend.clone()
 	}
 }

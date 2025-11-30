@@ -14,7 +14,6 @@ pub struct LoggerConfig {
 }
 
 impl Default for LoggerConfig {
-	#[inline]
 	fn default() -> Self {
 		Self {
 			enable_file: default_file_enable(),

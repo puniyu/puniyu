@@ -94,6 +94,7 @@ handler = [
   "puniyu_types/contact",
   "command",
 ]
+cooldown = []
 full = [
   "adapter",
   "bot",
