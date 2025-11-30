@@ -19,6 +19,7 @@ rust-version = "1.88.0"
 chrono = { version = "0.4" }
 tokio = { version = "1.47.1" }
 serde = { version = "1.0", features = ["derive"] }
+serde_repr = { version = "0.1" }
 serde_json = { version = "1.0"}
 toml = { version = "0.9.5" }
 itertools = { version = "0.14.0" }

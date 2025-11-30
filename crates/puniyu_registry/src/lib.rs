@@ -21,3 +21,6 @@ pub mod matcher;
 
 #[cfg(feature = "handler")]
 pub mod handler;
+
+#[cfg(feature = "cooldown")]
+pub mod cooldown;
