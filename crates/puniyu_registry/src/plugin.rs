@@ -11,7 +11,6 @@ use futures::future::join_all;
 use puniyu_common::APP_NAME;
 use puniyu_common::path::{PLUGIN_CONFIG_DIR, PLUGIN_DATA_DIR, PLUGIN_RESOURCE_DIR};
 use puniyu_common::{merge_config, read_config, write_config};
-use puniyu_config::Config;
 use puniyu_config::ConfigRegistry;
 use puniyu_library::{LibraryRegistry, libloading};
 use puniyu_logger::{SharedLogger, debug, error, owo_colors::OwoColorize, warn};
@@ -76,7 +75,6 @@ impl PluginRegistry {
 					}
 
 					let plugin_abi_version = plugin_builder.abi_version();
-					let force_plugin = Config::app().load().force_plugin();
 
 					if plugin_abi_version != VERSION {
 						warn!(
@@ -86,10 +84,7 @@ impl PluginRegistry {
 							plugin_abi_version,
 							VERSION.to_string()
 						);
-
-						if !force_plugin {
-							return Ok(());
-						}
+						
 
 						debug!(
 							"[{}:{}] 检测到配置，开始强制加载",
@@ -186,7 +181,6 @@ impl PluginRegistry {
 				);
 
 				let plugin_abi_version = plugin_builder.abi_version();
-				let force_plugin = Config::app().load().force_plugin();
 
 				if plugin_abi_version != VERSION {
 					let plugin_tag = "plugin".fg_rgb::<175, 238, 238>();
@@ -199,10 +193,7 @@ impl PluginRegistry {
 						plugin_abi_version,
 						VERSION.to_string()
 					);
-
-					if !force_plugin {
-						return Ok(());
-					}
+					
 
 					debug!("[{}:{}] 检测到配置，开始强制加载", plugin_tag, plugin_name);
 				}

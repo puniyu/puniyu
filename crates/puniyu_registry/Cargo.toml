@@ -65,7 +65,6 @@ plugin = [
   "dep:thiserror",
   "dep:futures",
   "dep:puniyu_library",
-  "dep:puniyu_config",
   "dep:puniyu_logger",
   "dep:toml",
   "tokio/fs",

@@ -11,7 +11,7 @@ use crate::version::Version;
 /// - Discord: Discord 平台
 /// - Kook: 开黑吧 平台
 /// - Other: 其他平台
-#[derive(Debug, Default, Clone, Display, EnumString, IntoStaticStr)]
+#[derive(Debug, Default, Clone, PartialEq, Eq, Display, EnumString, IntoStaticStr)]
 pub enum AdapterPlatform {
 	#[strum(serialize = "qq")]
 	QQ,
@@ -35,7 +35,7 @@ pub enum AdapterPlatform {
 /// - OICQ: OICQ 标准
 /// - ICQQ: OICQ fork 标准
 /// - Other: 其他标准
-#[derive(Debug, Default, Clone, Display, EnumString, IntoStaticStr)]
+#[derive(Debug, Default, Clone, PartialEq, Eq, Display, EnumString, IntoStaticStr)]
 pub enum AdapterStandard {
 	#[strum(serialize = "Onebot v11")]
 	OneBotV11,
@@ -62,7 +62,7 @@ pub enum AdapterStandard {
 /// - Lagrange: [Lagrange 协议实现](ttps://lagrangedev.github.io/Lagrange.Doc/Lagrange.OneBot/)
 /// - Console: 控制台协议实现
 /// - Other: 其他协议实现
-#[derive(Debug, Default, Clone, Display, EnumString, IntoStaticStr)]
+#[derive(Debug, Default, Clone, PartialEq, Eq, Display, EnumString, IntoStaticStr)]
 pub enum AdapterProtocol {
 	#[strum(serialize = "QQBot")]
 	QQBot,
@@ -94,7 +94,7 @@ pub enum AdapterProtocol {
 /// - WebSocketClient: WebSocket 客户端通信方式
 /// - Grpc: Grpc 通信方式
 /// - Other: 其他通信方式
-#[derive(Debug, Default, Clone, Display, EnumString, IntoStaticStr)]
+#[derive(Debug, Default, Clone, PartialEq, Eq, Display, EnumString, IntoStaticStr)]
 pub enum AdapterCommunication {
 	#[strum(serialize = "Http")]
 	Http,
