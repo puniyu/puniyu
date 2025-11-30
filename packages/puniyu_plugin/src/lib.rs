@@ -10,7 +10,7 @@ pub use puniyu_logger as logger;
 pub use puniyu_macros::{command, plugin, plugin_config as config, server, task};
 pub use puniyu_registry::command::CommandRegistry;
 pub use puniyu_registry::plugin::VERSION as ABI_VERSION;
-pub use puniyu_types::command::{Arg, ArgType, ArgValue, CommandBuilder, HandlerAction, HandlerResult};
+pub use puniyu_types::command::{Arg, ArgMode, ArgType, ArgValue, CommandBuilder, HandlerAction, HandlerResult};
 pub use puniyu_types::config::Config;
 pub use puniyu_types::context::{BotContext, MessageContext};
 pub use puniyu_types::plugin::PluginBuilder;

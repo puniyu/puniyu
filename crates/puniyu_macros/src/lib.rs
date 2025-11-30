@@ -463,16 +463,18 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
 /// 支持两种格式定义参数：
 /// 
 /// ## 1. 简单格式
-/// 只指定参数名称，其他使用默认值：
+/// 只指定参数名称，默认为位置参数：
 /// ```rust,ignore
 /// args = ["message", "count"]
+/// // 调用：echo hello 3
+/// // message = "hello", count = "3"
 /// ```
 /// 
 /// ## 2. 元组格式
 /// 完整指定参数属性：
 /// ```rust,ignore
 /// args = [
-///     ("参数名", "类型", 是否必需, 默认值, "描述")
+///     ("name", "type", required, default, "desc", "mode")
 /// ]
 /// ```
 /// 
@@ -482,71 +484,45 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
 /// - `"float"`: 浮点数类型
 /// - `"bool"`: 布尔类型
 /// 
+/// ### 参数模式
+/// - `"positional"`: 位置参数（默认），按顺序匹配
+/// - `"named"`: 命名参数，需要 `--flag value` 格式
+/// 
 /// # 示例
 /// 
-/// ## 基础示例
+/// ## 基础示例（位置参数）
 /// ```rust,ignore
-/// #[command(name = "hello", desc = "打招呼")]
-/// async fn hello(bot: &BotContext, ev: &MessageContext) -> HandlerResult {
-///     bot.reply("你好！".into()).await?;
-///     Ok(())
-/// }
-/// ```
-/// 
-/// ## 带参数示例（简单格式）
-/// ```rust,ignore
-/// #[command(
-///     name = "echo",
-///     desc = "回显消息",
-///     args = ["message"]
-/// )]
+/// #[command(name = "echo", args = ["message"])]
 /// async fn echo(bot: &BotContext, ev: &MessageContext) -> HandlerResult {
-///     let msg = ev.arg("message").and_then(|v| v.as_str()).unwrap_or("空消息");
+///     // 调用：echo hello
+///     let msg = ev.arg("message").and_then(|v| v.as_str()).unwrap_or("");
 ///     bot.reply(msg.into()).await?;
-///     Ok(())
+///     HandlerAction::done()
 /// }
 /// ```
 /// 
-/// ## 带参数示例（元组格式）
+/// ## 多个位置参数
 /// ```rust,ignore
-/// #[command(
-///     name = "repeat",
-///     desc = "重复消息",
-///     rank = 50,
-///     args = [
-///         ("message", "string", true, "", "要重复的消息"),
-///         ("count", "int", false, 1, "重复次数"),
-///         ("delay", "float", false, 0.0, "延迟秒数")
-///     ]
-/// )]
+/// #[command(name = "add", args = ["a", "b"])]
+/// async fn add(bot: &BotContext, ev: &MessageContext) -> HandlerResult {
+///     // 调用：add 1 2
+///     // a = "1", b = "2"
+///     HandlerAction::done()
+/// }
+/// ```
+/// 
+/// ## 混合位置参数和命名参数
+/// ```rust,ignore
+/// #[command(name = "repeat", args = [
+///     "message",  // 位置参数
+///     ("count", "int", false, 1, "重复次数", "named")  // 命名参数
+/// ])]
 /// async fn repeat(bot: &BotContext, ev: &MessageContext) -> HandlerResult {
-///     let message = ev.arg("message").and_then(|v| v.as_str()).unwrap_or("默认消息");
+///     // 调用：repeat hello --count 3
+///     // 或：repeat hello（count 默认为 1）
+///     let message = ev.arg("message").and_then(|v| v.as_str()).unwrap_or("");
 ///     let count = ev.arg("count").and_then(|v| v.as_int()).unwrap_or(1);
-///     let delay = ev.arg("delay").and_then(|v| v.as_float()).unwrap_or(0.0);
-///     
-///     for _ in 0..count {
-///         bot.reply(message.into()).await?;
-///         if delay > 0.0 {
-///             tokio::time::sleep(tokio::time::Duration::from_secs_f64(delay)).await;
-///         }
-///     }
-///     Ok(())
-/// }
-/// ```
-/// 
-/// ## 混合格式示例
-/// ```rust,ignore
-/// #[command(
-///     name = "search",
-///     desc = "搜索内容",
-///     args = [
-///         ("keyword", "string", true, "", "搜索关键词"),
-///         "engine",  // 简单格式：可选的字符串参数
-///         ("limit", "int", false, 10, "结果数量限制")
-///     ]
-/// )]
-/// async fn search(bot: &BotContext, ev: &MessageContext) -> HandlerResult {
-///     // ...
+///     HandlerAction::done()
 /// }
 /// ```
 #[cfg(feature = "command")]
