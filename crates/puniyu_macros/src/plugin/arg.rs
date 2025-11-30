@@ -25,35 +25,7 @@ impl Default for Arg {
 }
 
 impl Arg {
-	pub fn from_expr(expr: &syn::Expr) -> syn::Result<Self> {
-		let mut arg = Self::default();
-		
-		match expr {
-			syn::Expr::Lit(syn::ExprLit { lit: syn::Lit::Str(lit_str), .. }) => {
-				arg.name = lit_str.clone();
-			}
-			syn::Expr::Tuple(tuple) => {
-				arg.parse_tuple(&tuple.elems)?;
-			}
-			syn::Expr::Paren(paren) => {
-				if let syn::Expr::Lit(syn::ExprLit { lit: syn::Lit::Str(lit_str), .. }) = &*paren.expr {
-					arg.name = lit_str.clone();
-				} else {
-					return Err(syn::Error::new_spanned(expr, "呜哇~参数格式错误！杂鱼~"));
-				}
-			}
-			_ => {
-				return Err(syn::Error::new_spanned(expr, "呜哇~参数格式错误！支持: \"name\" 或 (\"name\", \"type\", required, default)！杂鱼~"));
-			}
-		}
-		
-		if arg.name.value().is_empty() {
-			return Err(syn::Error::new_spanned(expr, "呜哇~参数必须指定 name！杂鱼~"));
-		}
-		Ok(arg)
-	}
-
-	fn parse_tuple(&mut self, elems: &Punctuated<syn::Expr, Token![,]>) -> syn::Result<()> {
+	pub fn parse_tuple(&mut self, elems: &Punctuated<syn::Expr, Token![,]>) -> syn::Result<()> {
 		let mut iter = elems.iter();
 		
 		if let Some(syn::Expr::Lit(syn::ExprLit { lit: syn::Lit::Str(lit_str), .. })) = iter.next() {

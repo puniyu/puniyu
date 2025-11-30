@@ -471,11 +471,13 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
 /// ```
 /// 
 /// ## 2. 元组格式
-/// 完整指定参数属性：
 /// ```rust,ignore
-/// args = [
-///     ("name", "type", required, default, "desc", "mode")
-/// ]
+/// args = [("name", "type", required, default, "desc", "mode")]
+/// ```
+/// 
+/// ## 3. 对象格式
+/// ```rust,ignore
+/// args = [{ name = "count", r#type = "int", mode = "named", default = 1 }]
 /// ```
 /// 
 /// ### 参数类型
@@ -514,12 +516,12 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
 /// ## 混合位置参数和命名参数
 /// ```rust,ignore
 /// #[command(name = "repeat", args = [
-///     "message",  // 位置参数
-///     ("count", "int", false, 1, "重复次数", "named")  // 命名参数
+///     "message",  // 位置参数（简单格式）
+///     ("count", "int", false, 1, "重复次数", "named"),  // 命名参数（元组格式）
+///     { name = "verbose", mode = "named" },  // 命名参数（对象格式）
 /// ])]
 /// async fn repeat(bot: &BotContext, ev: &MessageContext) -> HandlerResult {
-///     // 调用：repeat hello --count 3
-///     // 或：repeat hello（count 默认为 1）
+///     // 调用：repeat hello --count 3 --verbose
 ///     let message = ev.arg("message").and_then(|v| v.as_str()).unwrap_or("");
 ///     let count = ev.arg("count").and_then(|v| v.as_int()).unwrap_or(1);
 ///     HandlerAction::done()
