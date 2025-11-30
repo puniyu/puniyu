@@ -22,7 +22,7 @@ impl AdapterBuilder for Console {
 		use std::time::UNIX_EPOCH;
 		let start_time = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
 		adapter_info!(
-			name: AdapterProtocol::Console.to_string(),
+			name: env!("CARGO_PKG_NAME"),
 			platform: AdapterPlatform::Other,
 			standard: AdapterStandard::Other,
 			protocol: AdapterProtocol::Console,

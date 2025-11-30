@@ -6,7 +6,8 @@ use convert_case::{Case, Casing};
 pub use error::Error;
 use puniyu_common::path::{ADAPTER_CONFIG_DIR, ADAPTER_DATA_DIR, ADAPTER_RESOURCE_DIR};
 use puniyu_common::{merge_config, read_config, write_config};
-use puniyu_config::ConfigRegistry;
+use puniyu_config::{Config, ConfigRegistry};
+use puniyu_logger::warn;
 use puniyu_logger::{debug, error, owo_colors::OwoColorize};
 use puniyu_types::adapter::{Adapter, AdapterBuilder};
 use std::sync::LazyLock;
@@ -33,18 +34,29 @@ impl AdapterRegistry {
 			adapter_name.fg_rgb::<240, 128, 128>(),
 			format!("v {}", adapter_version).fg_rgb::<144, 238, 144>()
 		);
+
+		let adapter_enabled = match adapter_name.as_str() {
+			"puniyu_adapter_console" => Config::app().adapter().console(),
+			_ => false,
+		};
+		if !adapter_enabled {
+			warn!("[{}:{}] 跳过加载","adapter".fg_rgb::<175, 238, 238>(), adapter_name.fg_rgb::<240, 128, 128>());
+			return Ok(());
+		}
 		let config_dir =
 			ADAPTER_CONFIG_DIR.as_path().join(adapter_name.as_str().to_case(Case::Snake));
+		let data_dir = ADAPTER_DATA_DIR.as_path().join(adapter_name.to_case(Case::Snake));
+		let resource_dir = ADAPTER_RESOURCE_DIR.as_path().join(adapter_name.to_case(Case::Snake));
 
-		if !config_dir.exists() {
-			let _ = fs::create_dir_all(&config_dir).await;
-		}
+		let _ = tokio::join!(
+			fs::create_dir_all(&config_dir),
+			fs::create_dir_all(&data_dir),
+			fs::create_dir_all(&resource_dir)
+		);
 
 		if let Some(configs) = adapter.config() {
-			configs.iter().for_each(|config| {
-				let cfg = read_config::<toml::Value>(&config_dir, config.name());
-
-				match cfg {
+			for config in configs {
+				match read_config::<toml::Value>(&config_dir, config.name()) {
 					Ok(cfg) => {
 						merge_config(&config_dir, config.name(), &config.config(), &cfg)
 							.expect("合并插件配置文件失败");
@@ -63,22 +75,15 @@ impl AdapterRegistry {
 							.expect("创建默认配置文件失败");
 					}
 				}
-			});
+			}
 		}
-		let data_dir = ADAPTER_DATA_DIR.as_path().join(adapter_name.to_case(Case::Snake));
-		if !data_dir.exists() {
-			let _ = fs::create_dir_all(&data_dir).await;
-		}
-		let resource_dir = ADAPTER_RESOURCE_DIR.as_path().join(adapter_name.to_case(Case::Snake));
-		if !resource_dir.exists() {
-			let _ = fs::create_dir_all(&resource_dir).await;
-		}
+
 		if let Some(server) = adapter.server() {
 			ServerRegistry::insert(adapter_name.clone(), server);
 		}
+
 		run_adapter_init(adapter_name.as_str(), adapter.init()).await?;
-		let adapter = Adapter { info: adapter_info, api: adapter.api() };
-		ADAPTER_STORE.insert_adapter(adapter);
+		ADAPTER_STORE.insert_adapter(Adapter { info: adapter_info, api: adapter.api() });
 		Ok(())
 	}
 
