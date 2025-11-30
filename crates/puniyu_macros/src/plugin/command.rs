@@ -32,19 +32,13 @@ impl Parse for CommandArgs {
 			input.parse::<Token![=]>()?;
 
 			match key.to_string().as_str() {
-				"name" => {
-					cmd_args.name = input.parse()?;
-				}
-				"desc" => {
-					cmd_args.desc = input.parse()?;
-				}
-				"rank" => {
-					cmd_args.rank = input.parse()?;
-				}
+				"name" => cmd_args.name = input.parse()?,
+				"desc" => cmd_args.desc = input.parse()?,
+				"rank" => cmd_args.rank = input.parse()?,
 				"args" => {
 					let content;
 					bracketed!(content in input);
-					cmd_args.args = parse_args_array(&content)?;
+					cmd_args.args = parse_arg_list(&content)?;
 				}
 				_ => {
 					return Err(syn::Error::new_spanned(
@@ -67,12 +61,11 @@ impl Parse for CommandArgs {
 	}
 }
 
-fn parse_args_array(input: ParseStream) -> syn::Result<Vec<Arg>> {
+fn parse_arg_list(input: ParseStream) -> syn::Result<Vec<Arg>> {
 	let mut args = Vec::new();
 
 	while !input.is_empty() {
-		let arg = parse_single_arg(input)?;
-		args.push(arg);
+		args.push(parse_arg_item(input)?);
 
 		if input.peek(Token![,]) {
 			input.parse::<Token![,]>()?;
@@ -82,7 +75,7 @@ fn parse_args_array(input: ParseStream) -> syn::Result<Vec<Arg>> {
 	Ok(args)
 }
 
-fn parse_single_arg(input: ParseStream) -> syn::Result<Arg> {
+fn parse_arg_item(input: ParseStream) -> syn::Result<Arg> {
 	let mut arg = Arg::default();
 
 	if input.peek(syn::LitStr) {
@@ -91,11 +84,11 @@ fn parse_single_arg(input: ParseStream) -> syn::Result<Arg> {
 		let content;
 		syn::parenthesized!(content in input);
 		let elems = Punctuated::<syn::Expr, Token![,]>::parse_terminated(&content)?;
-		arg.parse_tuple(&elems)?;
+		arg.parse_from_tuple(&elems)?;
 	} else if input.peek(syn::token::Brace) {
 		let content;
 		braced!(content in input);
-		parse_arg_object(&content, &mut arg)?;
+		arg.parse_from_object(&content)?;
 	} else {
 		return Err(syn::Error::new(
 			input.span(),
@@ -108,67 +101,4 @@ fn parse_single_arg(input: ParseStream) -> syn::Result<Arg> {
 	}
 
 	Ok(arg)
-}
-
-fn parse_arg_object(input: ParseStream, arg: &mut Arg) -> syn::Result<()> {
-	while !input.is_empty() {
-		let key_str = if input.peek(Token![type]) {
-			input.parse::<Token![type]>()?;
-			"type".to_string()
-		} else {
-			let key: syn::Ident = input.parse()?;
-			key.to_string()
-		};
-		input.parse::<Token![=]>()?;
-
-		match key_str.as_str() {
-			"name" => {
-				arg.name = input.parse()?;
-			}
-			"r#type" | "type" => {
-				let lit_str: syn::LitStr = input.parse()?;
-				let valid_types = ["string", "int", "float", "bool"];
-				if !valid_types.contains(&lit_str.value().as_str()) {
-					return Err(syn::Error::new_spanned(
-						&lit_str,
-						format!("呜哇~type 必须是 {:?} 之一！杂鱼~", valid_types),
-					));
-				}
-				arg.arg_type = lit_str;
-			}
-			"mode" => {
-				let lit_str: syn::LitStr = input.parse()?;
-				let valid_modes = ["positional", "named"];
-				if !valid_modes.contains(&lit_str.value().as_str()) {
-					return Err(syn::Error::new_spanned(
-						&lit_str,
-						format!("呜哇~mode 必须是 {:?} 之一！杂鱼~", valid_modes),
-					));
-				}
-				arg.mode = lit_str;
-			}
-			"required" => {
-				let lit_bool: syn::LitBool = input.parse()?;
-				arg.required = lit_bool.value;
-			}
-			"default" => {
-				arg.default = Some(input.parse()?);
-			}
-			"desc" => {
-				arg.desc = input.parse()?;
-			}
-			_ => {
-				return Err(syn::Error::new(
-					input.span(),
-					format!("呜哇~不支持的字段 '{}'！杂鱼~", key_str),
-				));
-			}
-		}
-
-		if input.peek(Token![,]) {
-			input.parse::<Token![,]>()?;
-		}
-	}
-
-	Ok(())
 }
