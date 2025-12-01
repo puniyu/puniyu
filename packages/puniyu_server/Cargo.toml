@@ -21,6 +21,7 @@ puniyu_logger.workspace = true
 tokio = { workspace = true, features = ["full"] }
 actix-web.workspace = true
 futures-util = "0.3.31"
+clap = { workspace = true, optional = true, features = ["derive", "help"] }
 
 puniyu_common = { version = "0.5.12", path = "../../crates/puniyu_common" }
 puniyu_types = { version = "0.5.12", path = "../../crates/puniyu_types", default-features = false, features = [
@@ -29,3 +30,7 @@ puniyu_types = { version = "0.5.12", path = "../../crates/puniyu_types", default
 puniyu_registry = { version = "0.5.12", path = "../../crates/puniyu_registry", default-features = false, features = [
   "server",
 ] }
+
+[features]
+default = ["cli"]
+cli = ["dep:clap"]
