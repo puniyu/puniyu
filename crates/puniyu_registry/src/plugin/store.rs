@@ -1,6 +1,8 @@
 use super::{Plugin, PluginId};
 use crate::command::CommandRegistry;
+use crate::server::ServerRegistry;
 use crate::task::TaskRegistry;
+use puniyu_types::server::restart_server;
 use std::{
 	collections::HashMap,
 	sync::{
@@ -52,6 +54,8 @@ impl PluginStore {
 				if let Some(name) = plugin_name {
 					TaskRegistry::remove_task(name.as_str()).await;
 					CommandRegistry::remove_with_plugin_name(name.as_str());
+					ServerRegistry::remove(name.as_str());
+					let _ = restart_server().await;
 					true
 				} else {
 					false
@@ -78,6 +82,8 @@ impl PluginStore {
 
 				TaskRegistry::remove_task(name.clone()).await;
 				CommandRegistry::remove_with_plugin_name(name.as_str());
+				ServerRegistry::remove(name.as_str());
+				let _ = restart_server().await;
 
 				if let Some(idx) = index {
 					let mut plugins = self.0.lock().unwrap();

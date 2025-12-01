@@ -270,10 +270,10 @@ impl PluginRegistry {
 	}
 
 	#[inline]
-	pub async fn unload_plugin(plugin: impl Into<PluginId>) -> Result<(), Error> {
+	pub async fn unload_plugin(plugin: impl Into<PluginId>) -> Result<bool, Error> {
 		let plugin_id = plugin.into();
-		PLUGIN_STORE.remove_plugin(plugin_id).await;
-		Ok(())
+		let result = PLUGIN_STORE.remove_plugin(plugin_id).await;
+		Ok(result)
 	}
 
 	#[inline]

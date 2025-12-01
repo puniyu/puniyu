@@ -8,7 +8,7 @@ use serde_json::{Value, to_string_pretty};
 use actix_web::{HttpResponse, http::StatusCode};
 use std::sync::OnceLock;
 
-pub use server::{run_server, run_server_spawn, stop_server};
+pub use server::{run_server_spawn, run_server_with_control};
 
 pub static LOGO: OnceLock<Vec<u8>> = OnceLock::new();
 
