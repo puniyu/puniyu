@@ -115,7 +115,7 @@ impl App {
 			let config = Config::app().server();
 			let host = IpAddr::V4(config.host().parse().unwrap());
 			let port = config.port();
-			puniyu_server::run_server_spawn(Some(host), Some(port)).await;
+			puniyu_server::run_server_spawn(Some(host), Some(port));
 		}
 		signal::ctrl_c().await.unwrap();
 		info!(

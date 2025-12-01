@@ -43,6 +43,7 @@ adapter = [
   "dep:toml",
   "dep:thiserror",
   "tokio/fs",
+  "tokio/macros",
   "puniyu_types/adapter",
   "puniyu_types/bot",
   "bot",
@@ -62,6 +63,7 @@ command = ["dep:itertools", "puniyu_types/command", "puniyu_types/server"]
 plugin = [
   "dep:convert_case",
   "dep:puniyu_common",
+  "dep:puniyu_config",
   "dep:thiserror",
   "dep:futures",
   "dep:puniyu_library",
