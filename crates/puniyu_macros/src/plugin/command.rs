@@ -63,9 +63,20 @@ impl Parse for CommandArgs {
 
 fn parse_arg_list(input: ParseStream) -> syn::Result<Vec<Arg>> {
 	let mut args = Vec::new();
+	let mut seen_names = std::collections::HashSet::new();
 
 	while !input.is_empty() {
-		args.push(parse_arg_item(input)?);
+		let arg = parse_arg_item(input)?;
+		let name = arg.name.value();
+
+		if !seen_names.insert(name.clone()) {
+			return Err(syn::Error::new_spanned(
+				&arg.name,
+				format!("呜哇~参数 '{}' 重复了！杂鱼~", name),
+			));
+		}
+
+		args.push(arg);
 
 		if input.peek(Token![,]) {
 			input.parse::<Token![,]>()?;

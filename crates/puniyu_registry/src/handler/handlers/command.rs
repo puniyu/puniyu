@@ -62,39 +62,43 @@ impl Command {
 
 	fn format_error(e: clap::Error, args: &[Arg]) -> String {
 		use clap::error::{ContextKind, ErrorKind};
+
+		let get_arg_name = |e: &clap::Error| {
+			e.get(ContextKind::InvalidArg)
+				.map(|v| v.to_string())
+				.unwrap_or_default()
+				.trim_matches(|c| c == '<' || c == '>' || c == '-')
+				.to_string()
+		};
+
+		let get_type_name = |arg_name: &str| {
+			args.iter()
+				.find(|a| a.name == arg_name)
+				.map(|a| match a.arg_type {
+					ArgType::String => "字符串",
+					ArgType::Int => "整数",
+					ArgType::Float => "浮点数",
+					ArgType::Bool => "布尔值",
+				})
+				.unwrap_or("有效值")
+		};
+
 		match e.kind() {
-			ErrorKind::ValueValidation | ErrorKind::InvalidValue  => {
-				let arg_name = e.get(ContextKind::InvalidArg)
-					.map(|v| v.to_string())
-					.unwrap_or_default()
-					.trim_matches(|c| c == '<' || c == '>' || c == '-')
-					.to_string();
-				let expected = args.iter()
-					.find(|a| a.name == arg_name)
-					.map(|a| match a.arg_type {
-						ArgType::String => "字符串",
-						ArgType::Int => "整数",
-						ArgType::Float => "浮点数",
-						ArgType::Bool => "布尔值",
-					})
-					.unwrap_or("有效值");
-				format!("参数 {} 输入无效，请提供一个{}", arg_name, expected)
-			}
-			ErrorKind::MissingRequiredArgument => {
-				let arg_name = e.get(ContextKind::InvalidArg)
-					.map(|v| v.to_string())
-					.unwrap_or_default()
-					.trim_matches(|c| c == '<' || c == '>' || c == '-')
-					.to_string();
-				format!("参数 {} 未提供", arg_name)
+			ErrorKind::InvalidValue | ErrorKind::ValueValidation => {
+				let arg_name = get_arg_name(&e);
+				format!("参数 {} 输入无效，请提供一个{}", arg_name, get_type_name(&arg_name))
 			}
 			ErrorKind::UnknownArgument => {
-				let arg_name = e.get(ContextKind::InvalidArg)
-					.map(|v| v.to_string())
-					.unwrap_or_default()
-					.trim_matches(|c| c == '<' || c == '>' || c == '-')
-					.to_string();
-				format!("未知参数: {}", arg_name)
+				format!("未知参数: {}", get_arg_name(&e))
+			}
+			ErrorKind::TooManyValues => {
+				format!("参数 {} 提供了过多的值", get_arg_name(&e))
+			}
+			ErrorKind::TooFewValues => {
+				format!("参数 {} 提供的值不足", get_arg_name(&e))
+			}
+			ErrorKind::MissingRequiredArgument => {
+				format!("缺少必需参数: {}", get_arg_name(&e))
 			}
 			_ => e.to_string(),
 		}
