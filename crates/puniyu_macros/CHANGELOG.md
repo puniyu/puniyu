@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.6.0](https://github.com/puniyu/puniyu/compare/macros-v0.5.12...macros-v0.6.0) (2025-12-02)
+
+
+### ✨ 新功能
+
+* **config:** 添加全局命令前缀配置并优化模块结构 ([c6aeaf9](https://github.com/puniyu/puniyu/commit/c6aeaf9afe214bf80ec3cd4e0919a39c7739dd40))
+* **macro:** 支持对象格式的命令参数定义 ([5ef6cb9](https://github.com/puniyu/puniyu/commit/5ef6cb90ab14c35200d13594685c2d8a69a5eb5d))
+* **macro:** 重构宏系统并增强命令参数支持 ([21e4d72](https://github.com/puniyu/puniyu/commit/21e4d728110fb92986c0b59b67a383caf9975f5f))
+* **plugin:** 支持命令参数的位置和命名模式 ([788b664](https://github.com/puniyu/puniyu/commit/788b664ccf506e62952e5e03d007f16a423dad0a))
+* **puniyu_macros:** 支持对象格式参数定义 ([6cc52a7](https://github.com/puniyu/puniyu/commit/6cc52a7e629565929ed0b7e9efd73b160c71fe9e))
+
+
+### 🐛 错误修复
+
+* **command:** 优化命令行参数错误提示信息 ([d777ce0](https://github.com/puniyu/puniyu/commit/d777ce0d852cb9ff210eea37785c84ee5ad9f5bb))
+* **puniyu_plugin:** 修正plugin宏获取crate name错误 ([b8fdbd7](https://github.com/puniyu/puniyu/commit/b8fdbd7b16371cdcbdee23d90c3075aff4cc4ee4))
+* **puniyu_plugin:** 添加缺少的导入 ([23f7f8a](https://github.com/puniyu/puniyu/commit/23f7f8a459f941971a203063d6215c9779b74411))
+
+
+### ♻️ 代码重构
+
+* **command:** 修正日志格式 ([b8fdbd7](https://github.com/puniyu/puniyu/commit/b8fdbd7b16371cdcbdee23d90c3075aff4cc4ee4))
+
 ## [0.5.12](https://github.com/puniyu/puniyu/compare/macros-v0.5.11...macros-v0.5.12) (2025-11-24)
 
 

@@ -1,5 +1,46 @@
 # Changelog
 
+## [0.6.0](https://github.com/puniyu/puniyu/compare/types-v0.5.12...types-v0.6.0) (2025-12-02)
+
+
+### ✨ 新功能
+
+* **config:** 添加全局命令前缀配置并优化模块结构 ([c6aeaf9](https://github.com/puniyu/puniyu/commit/c6aeaf9afe214bf80ec3cd4e0919a39c7739dd40))
+* **macro:** 重构宏系统并增强命令参数支持 ([21e4d72](https://github.com/puniyu/puniyu/commit/21e4d728110fb92986c0b59b67a383caf9975f5f))
+* **plugin:** 支持命令参数的位置和命名模式 ([788b664](https://github.com/puniyu/puniyu/commit/788b664ccf506e62952e5e03d007f16a423dad0a))
+* **server:** 实现服务器控制功能并完善插件卸载功能 ([284e16a](https://github.com/puniyu/puniyu/commit/284e16a18c7568e941a3a3ae2355a54ed525a92e))
+* **types:** 更新图片元素结构与消息处理逻辑 ([d4335e8](https://github.com/puniyu/puniyu/commit/d4335e8c15f7ee0c54ba69df82d387f5e33a7a36))
+
+
+### 🐛 错误修复
+
+* **puniyu_plugin:** 修正plugin宏获取crate name错误 ([b8fdbd7](https://github.com/puniyu/puniyu/commit/b8fdbd7b16371cdcbdee23d90c3075aff4cc4ee4))
+
+
+### 🎨 代码样式
+
+* **mes:** 优化消息发送日志记录格式 ([0a8336a](https://github.com/puniyu/puniyu/commit/0a8336a777a568c13d27c7e84a5952c40c0d3055))
+
+
+### 🔧 其他更新
+
+* **puniyu_types:** 增强消息上下文与事件处理功能 ([f44068f](https://github.com/puniyu/puniyu/commit/f44068fe4612659f23ad020e0605a562244fee50))
+
+
+### ♻️ 代码重构
+
+* **command:** 修正日志格式 ([b8fdbd7](https://github.com/puniyu/puniyu/commit/b8fdbd7b16371cdcbdee23d90c3075aff4cc4ee4))
+* **config:** 重构配置模块并新增适配器配置支持 ([db01930](https://github.com/puniyu/puniyu/commit/db019302067d2193ca17cace3990153bcd274d1c))
+* **context:** 重构消息上下文中的艾特和元素处理逻辑 ([70ba0a5](https://github.com/puniyu/puniyu/commit/70ba0a544552c82d6551eed5409485cb02ec26d7))
+* **element:** 重构消息元素模块结构 ([2aca906](https://github.com/puniyu/puniyu/commit/2aca906d9f9d44e77753e3784539be24a16f878d))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puniyu_config bumped from 0.5.12 to 0.6.0
+
 ## [0.5.12](https://github.com/puniyu/puniyu/compare/types-v0.5.11...types-v0.5.12) (2025-11-24)
 
 

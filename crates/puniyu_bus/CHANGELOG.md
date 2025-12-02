@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.6.0](https://github.com/puniyu/puniyu/compare/event-bus-v0.5.12...event-bus-v0.6.0) (2025-12-02)
+
+
+### ✨ 新功能
+
+* **config:** 添加全局命令前缀配置并优化模块结构 ([c6aeaf9](https://github.com/puniyu/puniyu/commit/c6aeaf9afe214bf80ec3cd4e0919a39c7739dd40))
+* **macro:** 重构宏系统并增强命令参数支持 ([21e4d72](https://github.com/puniyu/puniyu/commit/21e4d728110fb92986c0b59b67a383caf9975f5f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puniyu_types bumped from 0.5.12 to 0.6.0
+    * puniyu_matcher_command bumped from 0.1.0 to 0.1.1
+    * puniyu_handler_command bumped from 0.1.0 to 0.1.1
+
 ## [0.5.12](https://github.com/puniyu/puniyu/compare/event-bus-v0.5.11...event-bus-v0.5.12) (2025-11-24)
 
 

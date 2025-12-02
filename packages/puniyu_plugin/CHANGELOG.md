@@ -1,5 +1,34 @@
 # Changelog
 
+## [0.6.0](https://github.com/puniyu/puniyu/compare/plugin-v0.5.12...plugin-v0.6.0) (2025-12-02)
+
+
+### ✨ 新功能
+
+* **macro:** 重构宏系统并增强命令参数支持 ([21e4d72](https://github.com/puniyu/puniyu/commit/21e4d728110fb92986c0b59b67a383caf9975f5f))
+* **plugin:** 支持命令参数的位置和命名模式 ([788b664](https://github.com/puniyu/puniyu/commit/788b664ccf506e62952e5e03d007f16a423dad0a))
+
+
+### 🐛 错误修复
+
+* **puniyu_plugin:** 添加缺少的导入 ([23f7f8a](https://github.com/puniyu/puniyu/commit/23f7f8a459f941971a203063d6215c9779b74411))
+
+
+### ♻️ 代码重构
+
+* **element:** 重构消息元素模块结构 ([2aca906](https://github.com/puniyu/puniyu/commit/2aca906d9f9d44e77753e3784539be24a16f878d))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puniyu_config bumped from 0.5.12 to 0.6.0
+    * puniyu_common bumped from 0.5.12 to 0.6.0
+    * puniyu_macros bumped from 0.5.12 to 0.6.0
+    * puniyu_types bumped from 0.5.12 to 0.6.0
+    * puniyu_registry bumped from 0.5.12 to 0.6.0
+
 ## [0.5.12](https://github.com/puniyu/puniyu/compare/plugin-v0.5.11...plugin-v0.5.12) (2025-11-24)
 
 

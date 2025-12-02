@@ -1,5 +1,32 @@
 # Changelog
 
+## [0.6.0](https://github.com/puniyu/puniyu/compare/server-v0.5.12...server-v0.6.0) (2025-12-02)
+
+
+### ✨ 新功能
+
+* **cli:** 引入命令行参数解析功能 ([286f351](https://github.com/puniyu/puniyu/commit/286f351466fc6daa9ea894c811bbf286c5051178))
+* **server:** 实现服务器控制功能并完善插件卸载功能 ([284e16a](https://github.com/puniyu/puniyu/commit/284e16a18c7568e941a3a3ae2355a54ed525a92e))
+
+
+### 📝 文档更新
+
+* **puniyu_library:** 更新 README 文档并优化库重载逻辑 ([f561597](https://github.com/puniyu/puniyu/commit/f561597ee8a829f648cc52a91f0bfe717b218449))
+
+
+### 🔧 其他更新
+
+* **puniyu_logger:** 更新 puniyu_logger 依赖版本 ([f949ad4](https://github.com/puniyu/puniyu/commit/f949ad40d00b11b9caa3f78fecb35fc37055742f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puniyu_common bumped from 0.5.12 to 0.6.0
+    * puniyu_types bumped from 0.5.12 to 0.6.0
+    * puniyu_registry bumped from 0.5.12 to 0.6.0
+
 ## [0.5.12](https://github.com/puniyu/puniyu/compare/server-v0.5.11...server-v0.5.12) (2025-11-24)
 
 

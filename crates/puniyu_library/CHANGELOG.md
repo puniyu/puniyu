@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.1](https://github.com/puniyu/puniyu/compare/library-v0.5.0...library-v0.5.1) (2025-12-02)
+
+
+### 📝 文档更新
+
+* **puniyu_library:** 更新 README 文档并优化库重载逻辑 ([f561597](https://github.com/puniyu/puniyu/commit/f561597ee8a829f648cc52a91f0bfe717b218449))
+
 ## [0.5.0](https://github.com/puniyu/puniyu/compare/library-v0.4.1...library-v0.5.0) (2025-11-23)
 
 

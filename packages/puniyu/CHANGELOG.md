@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.6.0](https://github.com/puniyu/puniyu/compare/puniyu-v0.5.12...puniyu-v0.6.0) (2025-12-02)
+
+
+### ✨ 新功能
+
+* **config:** 添加全局命令前缀配置并优化模块结构 ([c6aeaf9](https://github.com/puniyu/puniyu/commit/c6aeaf9afe214bf80ec3cd4e0919a39c7739dd40))
+* **macro:** 重构宏系统并增强命令参数支持 ([21e4d72](https://github.com/puniyu/puniyu/commit/21e4d728110fb92986c0b59b67a383caf9975f5f))
+* **types:** 更新图片元素结构与消息处理逻辑 ([d4335e8](https://github.com/puniyu/puniyu/commit/d4335e8c15f7ee0c54ba69df82d387f5e33a7a36))
+
+
+### 🎡 持续集成
+
+* **workflow:** 引入稳定版构建配置 ([7d18c6e](https://github.com/puniyu/puniyu/commit/7d18c6e5175cfa379ebf27be19c4070983741e7f))
+
 ## [0.5.12](https://github.com/puniyu/puniyu/compare/puniyu-v0.5.11...puniyu-v0.5.12) (2025-11-24)
 
 

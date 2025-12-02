@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.6.0](https://github.com/puniyu/puniyu/compare/adapter-v0.5.12...adapter-v0.6.0) (2025-12-02)
+
+
+### ♻️ 代码重构
+
+* **element:** 重构消息元素模块结构 ([2aca906](https://github.com/puniyu/puniyu/commit/2aca906d9f9d44e77753e3784539be24a16f878d))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puniyu_config bumped from 0.5.12 to 0.6.0
+    * puniyu_macros bumped from 0.5.12 to 0.6.0
+    * puniyu_common bumped from 0.5.12 to 0.6.0
+    * puniyu_types bumped from 0.5.12 to 0.6.0
+    * puniyu_registry bumped from 0.5.12 to 0.6.0
+    * puniyu_bus bumped from 0.5.12 to 0.6.0
+
 ## [0.5.12](https://github.com/puniyu/puniyu/compare/adapter-v0.5.11...adapter-v0.5.12) (2025-11-24)
 
 
