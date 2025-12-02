@@ -17,24 +17,26 @@ concurrency:
 
 jobs:
   release:
-    if: "!startsWith(github.head_ref, 'release-please')"
+    if: "!startsWith(github.head_ref, 'release')"
     runs-on: ubuntu-latest
     outputs:
       releases_created: ${{ steps.release-plz.outputs.releases_created }}
       puniyu: ${{ steps.parse-releases.outputs.puniyu }}
       tag_name: ${{ steps.parse-releases.outputs.tag_name }}
     steps:
-      - name: 检出仓库
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-
       - name: 获取token
         uses: actions/create-github-app-token@v2
         id: app-token
         with:
           app-id: ${{ secrets.APP_ID }}
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - name: 检出仓库
+        uses: actions/checkout@v6
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          fetch-depth: 0
+          persist-credentials: true
 
       - name: 运行 release-plz
         id: release-plz
@@ -58,7 +60,7 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
-    if: "!startsWith(github.head_ref, 'release-please')"
+    if: "!startsWith(github.head_ref, 'release')"
     steps:
       - name: 检出代码
         uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0

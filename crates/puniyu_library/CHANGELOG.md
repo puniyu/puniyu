@@ -1,4 +1,4 @@
-# Changelog
+# 变更日志
 
 ## [0.5.0](https://github.com/puniyu/puniyu/compare/library-v0.4.1...library-v0.5.0) (2025-11-23)
 

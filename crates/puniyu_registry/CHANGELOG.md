@@ -1,4 +1,4 @@
-# Changelog
+# 变更日志
 
 ## [0.5.12](https://github.com/puniyu/puniyu/compare/registry-v0.5.11...registry-v0.5.12) (2025-11-24)
 

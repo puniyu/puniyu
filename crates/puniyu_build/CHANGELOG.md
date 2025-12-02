@@ -1,4 +1,4 @@
-# Changelog
+# 变更日志
 
 ## [0.2.1](https://github.com/puniyu/puniyu/compare/build-v0.2.0...build-v0.2.1) (2025-11-23)
 
