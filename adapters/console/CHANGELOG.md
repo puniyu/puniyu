@@ -1,5 +1,39 @@
 # Changelog
 
+## [0.3.0](https://github.com/puniyu/puniyu/compare/adapter-console-v0.2.13...adapter-console-v0.3.0) (2025-12-02)
+
+
+### ✨ 新功能
+
+* **macro:** 重构宏系统并增强命令参数支持 ([e8f3c23](https://github.com/puniyu/puniyu/commit/e8f3c23e42cd94fb567dce569cbe4477014300b1))
+* **types:** 更新图片元素结构与消息处理逻辑 ([9b69689](https://github.com/puniyu/puniyu/commit/9b69689c679b3baa2a2d8acff99661b3e22f1766))
+
+
+### 🐛 错误修复
+
+* **puniyu_plugin:** 修正plugin宏获取crate name错误 ([b8fdbd7](https://github.com/puniyu/puniyu/commit/b8fdbd7b16371cdcbdee23d90c3075aff4cc4ee4))
+
+
+### 🎨 代码样式
+
+* **mes:** 优化消息发送日志记录格式 ([0a8336a](https://github.com/puniyu/puniyu/commit/0a8336a777a568c13d27c7e84a5952c40c0d3055))
+
+
+### ♻️ 代码重构
+
+* **command:** 修正日志格式 ([b8fdbd7](https://github.com/puniyu/puniyu/commit/b8fdbd7b16371cdcbdee23d90c3075aff4cc4ee4))
+* **config:** 重构配置模块并新增适配器配置支持 ([26874a2](https://github.com/puniyu/puniyu/commit/26874a22ac9114d487ac56767927b7f1b8bbe205))
+* **element:** 重构消息元素模块结构 ([2aca906](https://github.com/puniyu/puniyu/commit/2aca906d9f9d44e77753e3784539be24a16f878d))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puniyu_adapter bumped from 0.5.12 to 0.6.0
+    * puniyu_core bumped from 0.5.12 to 0.6.0
+    * puniyu_common bumped from 0.5.12 to 0.6.0
+
 ## [0.2.13](https://github.com/puniyu/puniyu/compare/adapter-console-v0.2.12...adapter-console-v0.2.13) (2025-11-24)
 
 
