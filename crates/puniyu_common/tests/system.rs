@@ -28,7 +28,7 @@ fn test_cpu_info() {
 fn test_bot_info() {
 	let bot_info = SystemInfo::bot();
 
-	assert!(bot_info.pid.as_u32() > 0);
+	assert!(bot_info.pid > 0);
 
 	std::thread::sleep(std::time::Duration::from_secs(1));
 
@@ -68,13 +68,20 @@ fn test_disk_info() {
 #[test]
 fn test_gpu_info() {
 	let gpu_info = SystemInfo::gpu();
-
 	if let Some(gpu) = gpu_info {
 		assert!(!gpu.model.is_empty());
-		assert!(gpu.memory_total > 0.0);
-		assert!(gpu.memory_used >= 0.0);
-		assert!(gpu.memory_free >= 0.0);
-		assert!(gpu.usage <= 100);
+		if let Some(total) = gpu.memory_total {
+			assert!(total > 0.0);
+		}
+		if let Some(used) = gpu.memory_used {
+			assert!(used >= 0.0);
+		}
+		if let Some(free) = gpu.memory_free {
+			assert!(free >= 0.0);
+		}
+		if let Some(usage) = gpu.usage {
+			assert!(usage <= 100);
+		}
 	} else {
 		dbg!("未检测到GPU");
 	}

@@ -9,7 +9,9 @@ use store::CommandStore;
 pub struct Command {
 	/// 插件名称
 	pub plugin_name: String,
-	/// 命令名称
+	/// 命令前缀（来自插件或使用全局）
+	pub prefix: Option<String>,
+	/// 命令构建器
 	pub builder: Arc<dyn CommandBuilder>,
 }
 
@@ -20,6 +22,8 @@ impl From<Command> for puniyu_types::command::Command {
 			description: cmd.builder.description(),
 			args: cmd.builder.args(),
 			rank: cmd.builder.rank(),
+			prefix: cmd.prefix,
+			alias: cmd.builder.alias(),
 		}
 	}
 }
@@ -29,8 +33,12 @@ static COMMAND_STORE: LazyLock<Arc<Mutex<CommandStore>>> =
 pub struct CommandRegistry;
 
 impl CommandRegistry {
-	pub fn insert(plugin_name: &str, builder: Arc<dyn CommandBuilder>) {
-		let command = Command { plugin_name: plugin_name.to_string(), builder };
+	pub fn insert(plugin_name: &str, prefix: Option<&str>, builder: Arc<dyn CommandBuilder>) {
+		let command = Command {
+			plugin_name: plugin_name.to_string(),
+			prefix: prefix.map(|s| s.to_string()),
+			builder,
+		};
 		COMMAND_STORE.lock().unwrap().insert(command);
 	}
 

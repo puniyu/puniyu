@@ -22,6 +22,11 @@ pub trait PluginBuilder: Send + Sync + 'static {
 	/// 插件作者
 	fn author(&self) -> &'static str;
 
+	/// 插件命令前缀
+	fn prefix(&self) -> Option<&'static str> {
+		None
+	}
+
 	/// 任务列表
 	fn tasks(&self) -> Vec<Box<dyn TaskBuilder>>;
 

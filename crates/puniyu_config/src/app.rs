@@ -1,18 +1,18 @@
+mod adapter;
+mod friend;
+mod group;
 mod logger;
 mod server;
-mod adapter;
-mod group;
-mod friend;
 
+use adapter::AdapterConfig;
+use friend::FriendConfig;
+use group::GroupConfig;
+use logger::LoggerConfig;
 use puniyu_common::path::CONFIG_DIR;
 use puniyu_common::toml;
 use serde::{Deserialize, Serialize};
-use std::sync::{Arc, LazyLock, RwLock};
-use logger::LoggerConfig;
 use server::ServerConfig;
-use adapter::AdapterConfig;
-use group::GroupConfig;
-use friend::FriendConfig;
+use std::sync::{Arc, LazyLock, RwLock};
 
 pub(crate) static APP_CONFIG: LazyLock<Arc<RwLock<AppConfig>>> = LazyLock::new(|| {
 	Arc::new(RwLock::new(
@@ -20,12 +20,15 @@ pub(crate) static APP_CONFIG: LazyLock<Arc<RwLock<AppConfig>>> = LazyLock::new(|
 	))
 });
 
-
 fn default_master() -> Vec<String> {
 	vec!["console".to_string()]
 }
 
-#[derive(Debug, Default, Clone, Serialize, Deserialize)]
+fn default_prefix() -> String {
+	String::from("!")
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AppConfig {
 	/// 日志配置
 	#[serde(default)]
@@ -45,6 +48,23 @@ pub struct AppConfig {
 	/// Bot主人列表
 	#[serde(default = "default_master")]
 	masters: Vec<String>,
+	/// 全局前缀
+	#[serde(default = "default_prefix")]
+	prefix: String,
+}
+
+impl Default for AppConfig {
+	fn default() -> Self {
+		AppConfig {
+			logger: LoggerConfig::default(),
+			server: ServerConfig::default(),
+			adapter: AdapterConfig::default(),
+			group: GroupConfig::default(),
+			friend: FriendConfig::default(),
+			masters: default_master(),
+			prefix: default_prefix(),
+		}
+	}
 }
 
 impl AppConfig {
@@ -66,13 +86,13 @@ impl AppConfig {
 		let config = APP_CONFIG.read().unwrap();
 		config.adapter.clone()
 	}
-	
+
 	/// 获取bot主人列表
 	pub fn masters() -> Vec<String> {
 		let config = APP_CONFIG.read().unwrap();
 		config.masters.clone()
 	}
-	
+
 	/// 获取应用群组配置
 	///
 	/// 包含群聊黑白名单
@@ -80,12 +100,17 @@ impl AppConfig {
 		let config = APP_CONFIG.read().unwrap();
 		config.group.clone()
 	}
-	
+
 	/// 获取应用好友配置
 	///
 	/// 包含好友黑白名单
 	pub fn friend(&self) -> FriendConfig {
 		let config = APP_CONFIG.read().unwrap();
 		config.friend.clone()
+	}
+	/// 获取前缀
+	pub fn prefix(&self) -> String {
+		let config = APP_CONFIG.read().unwrap();
+		config.prefix.clone()
 	}
 }

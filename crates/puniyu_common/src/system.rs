@@ -1,8 +1,8 @@
 pub use puniyu_system_info::{
-	CpuInfo, DiskInfo, GpuInfo, HostInfo, MemoryInfo, Pid, ProcessInfo, SystemInfo as System,
+	CpuInfo, DiskInfo, GpuInfo, HostInfo, MemoryInfo, ProcessInfo, SystemInfo as System,
 };
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 /// 系统信息
 pub struct SystemInfo {
 	/// CPU信息
@@ -19,24 +19,6 @@ pub struct SystemInfo {
 	pub bot: BotStatusInfo,
 }
 
-/// 获取系统信息
-///
-/// 此函数可以获取系统信息，包括CPU、内存、磁盘、Bot信息等
-/// # 返回值
-///
-/// * [SystemInfo] - 系统信息
-///
-impl Default for SystemInfo {
-	fn default() -> Self {
-		let cpu = System::cpu();
-		let host = System::host();
-		let memory = System::memory();
-		let disk = System::disk();
-		let bot = BotStatusInfo::default();
-		let gpu = System::gpu();
-		SystemInfo { cpu, memory, disk, host, gpu, bot }
-	}
-}
 
 impl SystemInfo {
 	pub fn new() -> Self {
@@ -44,19 +26,19 @@ impl SystemInfo {
 	}
 
 	pub fn cpu() -> CpuInfo {
-		System::cpu()
+		CpuInfo::new()
 	}
 
 	pub fn memory() -> MemoryInfo {
-		System::memory()
+		MemoryInfo::new()
 	}
 
 	pub fn disk() -> DiskInfo {
-		System::disk()
+		DiskInfo::new()
 	}
 
 	pub fn host() -> HostInfo {
-		System::host()
+		HostInfo::new()
 	}
 
 	pub fn bot() -> BotStatusInfo {
@@ -68,14 +50,14 @@ impl SystemInfo {
 	}
 
 	pub fn gpu() -> Option<GpuInfo> {
-		System::gpu()
+		GpuInfo::new()
 	}
 }
 
 #[derive(Debug, Clone)]
 pub struct BotStatusInfo {
 	/// 进程PID
-	pub pid: Pid,
+	pub pid: u32,
 	/// CPU使用率
 	pub cpu_usage: Option<f32>,
 	/// 内存使用率
@@ -88,9 +70,9 @@ pub struct BotStatusInfo {
 
 impl Default for BotStatusInfo {
 	fn default() -> Self {
-		let process_info = System::process();
+		let process_info = ProcessInfo::default();
 		Self {
-			pid: process_info.pid,
+			pid: process_info.pid.as_u32(),
 			cpu_usage: process_info.cpu_usage,
 			memory_usage: process_info.memory_usage,
 			used_memory: process_info.used_memory,

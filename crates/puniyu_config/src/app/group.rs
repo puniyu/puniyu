@@ -3,10 +3,10 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct GroupConfig {
 	/// 群白名单
-	#[serde(default, skip_serializing_if = "Vec::is_empty")]
+	#[serde(default)]
 	enable_list: Vec<String>,
 	/// 群黑名单
-	#[serde(default, skip_serializing_if = "Vec::is_empty")]
+	#[serde(default)]
 	disable_list: Vec<String>
 }
 

@@ -1,6 +1,9 @@
 use crate::event::Event;
 
 pub trait Matcher: Send + Sync + 'static {
+	/// 匹配结果类型
+	type MatchResult;
+
 	/// 获取匹配器名称
 	fn name(&self) -> &str;
 
@@ -9,6 +12,6 @@ pub trait Matcher: Send + Sync + 'static {
 		5
 	}
 
-	/// 匹配事件
-	fn matches(&self, event: &Event) -> bool;
+	/// 匹配事件，返回匹配结果
+	fn matches(&self, event: &Event) -> Option<Self::MatchResult>;
 }

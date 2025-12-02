@@ -16,11 +16,5 @@ pub mod server;
 #[cfg(feature = "plugin")]
 pub mod plugin;
 
-#[cfg(feature = "matcher")]
-pub mod matcher;
-
-#[cfg(feature = "handler")]
-pub mod handler;
-
 #[cfg(feature = "cooldown")]
 pub mod cooldown;
