@@ -1,4 +1,4 @@
-# Changelog
+# 变更日志
 
 ## [0.3.0](https://github.com/puniyu/puniyu/compare/adapter-console-v0.2.13...adapter-console-v0.3.0) (2025-12-02)
 

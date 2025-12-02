@@ -21,7 +21,7 @@ pub(crate) static APP_CONFIG: LazyLock<Arc<RwLock<AppConfig>>> = LazyLock::new(|
 });
 
 fn default_master() -> Vec<String> {
-	vec!["console".to_string()]
+	vec!["puniyu_adapter_console".to_string()]
 }
 
 fn default_prefix() -> String {

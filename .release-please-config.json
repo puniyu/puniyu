@@ -147,7 +147,7 @@
       "release-type": "rust",
       "component": "core"
     },
-    "adapters/console": {
+    "adapters/puniyu_adapter_console": {
       "release-type": "rust",
       "component": "adapter-console"
     },

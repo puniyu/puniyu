@@ -35,7 +35,7 @@ jobs:
       plugin: ${{ steps.release-please.outputs['packages/puniyu_plugin--release_created'] }}
       adapter: ${{ steps.release-please.outputs['packages/puniyu_adapter--release_created'] }}
       core: ${{ steps.release-please.outputs['packages/puniyu_core--release_created'] }}
-      adapter_console: ${{ steps.release-please.outputs['adapters/console--release_created'] }}
+      adapter_console: ${{ steps.release-please.outputs['adapters/puniyu_adapter_console--release_created'] }}
       plugin_basic: ${{ steps.release-please.outputs['plugins/puniyu_plugin_basic--release_created'] }}
       puniyu: ${{ steps.release-please.outputs['packages/puniyu--release_created'] }}
       tag_name: ${{ steps.release-please.outputs['packages/puniyu--tag_name'] }}
