@@ -38,6 +38,17 @@ jobs:
           fetch-depth: 0
           persist-credentials: true
 
+      - name: 设置 rust
+        uses: puniyu/setup-rust@main
+        with:
+          tools: just
+          save-cache: true
+          prefix-key: ${{ env.APP_NAME }}
+
+      - name: 单元测试
+        run: |
+          just test
+
       - name: 运行 release-plz
         id: release-plz
         uses: release-plz/action@1efcf74dfcd6e500990dad806e286899ae384064 # v0.5
@@ -57,31 +68,8 @@ jobs:
           echo "puniyu=$puniyu" >> $GITHUB_OUTPUT
           echo "tag_name=$tag_name" >> $GITHUB_OUTPUT
 
-
-  test:
-    runs-on: ubuntu-latest
-    if: "!startsWith(github.head_ref, 'release')"
-    steps:
-      - name: 检出代码
-        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
-        with:
-          ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
-          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
-
-      - name: 设置 rust
-        uses: puniyu/setup-rust@main
-        with:
-          tools: just
-          save-cache: true
-          prefix-key: ${{ env.APP_NAME }}
-
-      - name: 单元测试
-        run: |
-          just test
-
-
   build:
-    needs: [ release, test ]
+    needs: release
     uses: ./.github/workflows/build.yaml
     with:
       stable: ${{ needs.release.outputs.releases_created == 'true' }}
