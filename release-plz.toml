@@ -1,0 +1,196 @@
+[workspace]
+allow_dirty = true
+changelog_update = true
+dependencies_update = false
+git_release_enable = false
+git_release_body = """
+{{ changelog }}
+{% if remote.contributors %}
+### 贡献者
+{% for contributor in remote.contributors %}
+* @{{ contributor.username }}
+{% endfor %}
+{% endif %}
+"""
+git_tag_enable = false
+pr_branch_prefix = "release-"
+pr_labels = ["release"]
+publish_allow_dirty = false
+semver_check = false
+publish_timeout = "10m"
+release_commits = "^feat:"
+pr_body = """
+{% macro get_changes(releases, type="text") %}
+{%- for release in releases %}
+{%- if release.title and release.changelog %}{% if releases | length > 1 %}
+## `{{ release.package }}`
+{% endif %}
+<blockquote>
+
+## {{ release.title }}
+
+{{ release.changelog }}
+</blockquote>{% endif %}
+{% endfor %}
+{% endmacro -%}
+
+{% set changes = self::get_changes(releases=releases) %}
+
+## 🤖 新版本发布
+{% for release in releases %}
+* `{{ release.package }}`: {% if release.previous_version and release.previous_version != release.next_version %}{{ release.previous_version }} -> {% endif %}{{ release.next_version }}{% if release.semver_check == "incompatible" %} (⚠ API 破坏性变更){% elif release.semver_check == "compatible" %} (✓ API 兼容性变更){% endif %}
+{%- endfor %}
+{%- for release in releases %}{% if release.breaking_changes %}
+
+### ⚠ `{{ release.package }}` 破坏性变更
+
+```text
+{{ release.breaking_changes }}
+```{% endif %}{% endfor %}
+{% if changes %}
+<details><summary><i><b>变更日志</b></i></summary><p>
+{{ changes }}
+</p></details>
+{% endif %}
+---
+"""
+publish = true
+
+
+[changelog]
+header = """# 变更日志
+"""
+
+body = """
+{%- macro print_commit(commit) -%}
+    - {% if commit.scope %}*({{ commit.scope }})* {% endif %}\
+      {% if commit.breaking %}[**breaking**] {% endif %}\
+      {{ commit.message | upper_first }}{{ self::username(commit=commit) }}{{ self::pr(commit=commit) }} - \
+      ([{{ commit.id | truncate(length=7, end="") }}]({{ remote.link }}/commit/{{ commit.id }}))
+{%- endmacro -%}
+
+{%- macro username(commit) -%}
+    {% if commit.remote.username %} (由 @{{ commit.remote.username }} 提供){% endif -%}
+{%- endmacro -%}
+
+{%- macro pr(commit) -%}
+    {% if commit.remote.pr_number %} (#{{ commit.remote.pr_number }}){% endif -%}
+{%- endmacro -%}
+
+## [{{ version }}]\
+{% if release_link %}({{ release_link }}){% endif %} - {{ timestamp | date(format="%Y-%m-%d") }}
+
+{% for group, commits in commits
+| filter(attribute="merge_commit", value=false)
+| group_by(attribute="group") %}
+### {{ group | striptags | trim | upper_first }}
+
+{% for commit in commits | unique(attribute="message") | filter(attribute="scope") | sort(attribute="scope") %}
+{{ self::print_commit(commit=commit) }}
+{%- endfor %}
+{% for commit in commits | unique(attribute="message") %}
+{%- if not commit.scope %}
+{{ self::print_commit(commit=commit) }}
+{%- endif %}
+{%- endfor %}
+
+{% endfor %}
+{%- if remote.contributors %}
+
+### 贡献者
+{% for contributor in remote.contributors %}
+* @{{ contributor.username }}
+{%- endfor %}
+{% endif %}
+"""
+
+commit_parsers = [
+    { message = "^feat", group = "<!-- 0 -->⛰️ 新功能" },
+    { message = "^fix", group = "<!-- 1 -->🐛 Bug 修复" },
+    { message = "^doc", group = "<!-- 3 -->📚 文档" },
+    { message = "^perf", group = "<!-- 4 -->⚡ 性能优化" },
+    { message = "^refactor\\(clippy\\)", skip = true },
+    { message = "^refactor", group = "<!-- 2 -->🚜 重构" },
+    { message = "^style", group = "<!-- 5 -->🎨 样式" },
+    { message = "^test", group = "<!-- 6 -->🧪 测试" },
+    { message = "^chore\\(release\\):", skip = true },
+    { message = "^chore: release", skip = true },
+    { message = "^chore\\(deps.*\\)", skip = true },
+    { message = "^chore\\(pr\\)", skip = true },
+    { message = "^chore\\(pull\\)", skip = true },
+    { message = "^chore\\(npm\\).*yarn\\.lock", skip = true },
+    { message = "^chore|^ci", group = "<!-- 7 -->⚙️ 杂项" },
+    { body = ".*security", group = "<!-- 8 -->🛡️ 安全" },
+    { message = "^revert", group = "<!-- 9 -->◀️ 回退" },
+]
+
+link_parsers = [
+    { pattern = "#(\\d+)", href = "{{ remote.link }}/issues/$1" },
+    { pattern = "RFC(\\d+)", text = "ietf-rfc$1", href = "https://datatracker.ietf.org/doc/html/rfc$1" },
+]
+
+[[package]]
+name = "puniyu"
+git_release_enable = true
+git_tag_enable = true
+publish = false
+
+[[package]]
+name = "puniyu_core"
+git_tag_enable = true
+
+[[package]]
+name = "puniyu_plugin"
+git_tag_enable = true
+
+[[package]]
+name = "puniyu_adapter"
+git_tag_enable = true
+
+[[package]]
+name = "puniyu_adapter_console"
+git_tag_enable = true
+
+[[package]]
+name = "puniyu_server"
+git_tag_enable = true
+
+[[package]]
+name = "puniyu_build"
+git_tag_enable = true
+
+[[package]]
+name = "puniyu_common"
+git_tag_enable = true
+
+[[package]]
+name = "puniyu_config"
+git_tag_enable = true
+
+[[package]]
+name = "puniyu_library"
+git_tag_enable = true
+
+[[package]]
+name = "puniyu_types"
+git_tag_enable = true
+
+[[package]]
+name = "puniyu_macros"
+git_tag_enable = true
+
+[[package]]
+name = "puniyu_registry"
+git_tag_enable = true
+
+[[package]]
+name = "puniyu_matcher_command"
+git_tag_enable = true
+
+[[package]]
+name = "puniyu_handler_command"
+git_tag_enable = true
+
+[[package]]
+name = "puniyu_bus"
+git_tag_enable = true
