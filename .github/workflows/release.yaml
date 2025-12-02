@@ -36,6 +36,7 @@ jobs:
       adapter: ${{ steps.release-please.outputs['packages/puniyu_adapter--release_created'] }}
       core: ${{ steps.release-please.outputs['packages/puniyu_core--release_created'] }}
       adapter_console: ${{ steps.release-please.outputs['adapters/console--release_created'] }}
+      plugin_basic: ${{ steps.release-please.outputs['plugins/puniyu_plugin_basic--release_created'] }}
       puniyu: ${{ steps.release-please.outputs['packages/puniyu--release_created'] }}
       tag_name: ${{ steps.release-please.outputs['packages/puniyu--tag_name'] }}
     steps:
@@ -84,7 +85,7 @@ jobs:
 
   build-plugins:
     needs: [ release, test ]
-    uses: ./.github/workflows/build-lib.yaml
+    uses: ./.github/workflows/build-plugins.yaml
 
   publish-crates-io:
     needs: [ release, test ]
@@ -207,6 +208,13 @@ jobs:
         if: needs.release.outputs.adapter_console
         run: |
           cargo publish --package puniyu_adapter_console
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_API_TOKEN }}
+
+      - name: 发布 plugin_basic
+        if: needs.release.outputs.plugin_basic
+        run: |
+          cargo publish --package puniyu_plugin_basic
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_API_TOKEN }}
 

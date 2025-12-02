@@ -24,7 +24,8 @@
         "config",
         "event-bus",
         "matcher-command",
-        "handler-command"
+        "handler-command",
+        "plugin-basic"
       ]
     }
   ],
@@ -149,6 +150,10 @@
     "adapters/console": {
       "release-type": "rust",
       "component": "adapter-console"
+    },
+    "plugins/puniyu_plugin_basic": {
+      "release-type": "rust",
+      "component": "plugin-basic"
     },
     "packages/puniyu": {
       "release-type": "rust",

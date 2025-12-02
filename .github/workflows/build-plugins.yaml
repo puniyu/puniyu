@@ -12,6 +12,9 @@ jobs:
           - runner: windows-latest
             target: x86_64-pc-windows-msvc
             label: windows-x86_64
+          - runner: windows-latest
+            target: aarch64-pc-windows-msvc
+            label: windows-aarch64
 
     steps:
       - name: 检出仓库
@@ -25,23 +28,22 @@ jobs:
         with:
           target: ${{ matrix.platform.target }}
           save-cache: true
-          prefix-key: ${{ env.APP_NAME }}
+          prefix-key: puniyu-plugins
 
       - name: 构建basic
         shell: bash
         run: |
-          cargo build --release --target ${{ matrix.platform.target }} --features cdylib
-          mv target/${{ matrix.platform.target }}/release/${{ env.APP_NAME }} target/${{ matrix.platform.target }}/release/${{ env.APP_NAME }}-${{ matrix.platform.label }}.dll
-        working-directory: plugins/${{ env.APP_NAME }}
+          cargo build --release --target ${{ matrix.platform.target }} --features cdylib --manifest-path plugins/${{ env.APP_NAME }}/Cargo.toml
+          mv target/${{ matrix.platform.target }}/release/${{ env.APP_NAME }}.dll target/${{ matrix.platform.target }}/release/${{ env.APP_NAME }}-${{ matrix.platform.label }}.dll
         env:
           APP_NAME: puniyu_plugin_basic
 
       - name: 上传构建产物 basic
         uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
         with:
-          name: "puniyu-plugin-basic"
+          name: "${{ env.APP_NAME }}-${{ matrix.platform.label }}"
           path: |
-            target/${{ matrix.platform.target }}/release/${{ env.APP_NAME }}.dll
+            target/${{ matrix.platform.target }}/release/${{ env.APP_NAME }}-${{ matrix.platform.label }}.dll
         env:
           APP_NAME: puniyu_plugin_basic
 
@@ -69,23 +71,22 @@ jobs:
         with:
           target: ${{ matrix.platform.target }}
           save-cache: true
-          prefix-key: ${{ env.APP_NAME }}
+          prefix-key: puniyu-plugins
 
       - name: 构建basic
         shell: bash
         run: |
-          cargo build --release --target ${{ matrix.platform.target }} --features cdylib
+          cargo build --release --target ${{ matrix.platform.target }} --features cdylib --manifest-path plugins/${{ env.APP_NAME }}/Cargo.toml
           mv target/${{ matrix.platform.target }}/release/lib${{ env.APP_NAME }}.dylib target/${{ matrix.platform.target }}/release/${{ env.APP_NAME }}-${{ matrix.platform.label }}.dylib
-        working-directory: plugins/${{ env.APP_NAME }}
         env:
           APP_NAME: puniyu_plugin_basic
 
       - name: 上传构建产物 basic
         uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
         with:
-          name: "puniyu-plugin-basic"
+          name: "${{ env.APP_NAME }}-${{ matrix.platform.label }}"
           path: |
-            target/${{ matrix.platform.target }}/release/${{ env.APP_NAME }}.dylib
+            target/${{ matrix.platform.target }}/release/${{ env.APP_NAME }}-${{ matrix.platform.label }}.dylib
         env:
           APP_NAME: puniyu_plugin_basic
 
@@ -114,22 +115,21 @@ jobs:
         with:
           target: ${{ matrix.platform.target }}
           save-cache: true
-          prefix-key: ${{ env.APP_NAME }}
+          prefix-key: puniyu-plugins
 
       - name: 构建basic
         shell: bash
         run: |
-          cargo build --release --target ${{ matrix.platform.target }} --features cdylib
+          cargo build --release --target ${{ matrix.platform.target }} --features cdylib --manifest-path plugins/${{ env.APP_NAME }}/Cargo.toml
           mv target/${{ matrix.platform.target }}/release/lib${{ env.APP_NAME }}.so target/${{ matrix.platform.target }}/release/${{ env.APP_NAME }}-${{ matrix.platform.label }}.so
-        working-directory: plugins/${{ env.APP_NAME }}
         env:
           APP_NAME: puniyu_plugin_basic
 
       - name: 上传构建产物 basic
         uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
         with:
-          name: "puniyu-plugin-basic"
+          name: "${{ env.APP_NAME }}-${{ matrix.platform.label }}"
           path: |
-            target/${{ matrix.platform.target }}/release/${{ env.APP_NAME }}.so
+            target/${{ matrix.platform.target }}/release/${{ env.APP_NAME }}-${{ matrix.platform.label }}.so
         env:
           APP_NAME: puniyu_plugin_basic
