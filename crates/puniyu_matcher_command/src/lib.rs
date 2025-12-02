@@ -62,7 +62,7 @@ impl CommandMatcher {
 	fn log(event: &MessageEvent) {
 		match event {
 			MessageEvent::Friend(m) => {
-				debug!("收到好友消息: {:?}", m.elements());
+				debug!("收到好友消息: {:#?}", m.elements());
 				info!(
 					"[Bot:{}] [好友消息:{}] {}",
 					m.self_id(),
@@ -71,7 +71,7 @@ impl CommandMatcher {
 				);
 			}
 			MessageEvent::Group(m) => {
-				debug!("收到群消息: {:?}", m.elements());
+				debug!("收到群消息: {:#?}", m.elements());
 				info!(
 					"[Bot:{}] [群消息:{}-{}] {}",
 					m.self_id(),

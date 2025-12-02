@@ -82,6 +82,9 @@ jobs:
     with:
       stable: ${{ needs.release.outputs.releases_created == 'true' }}
 
+  build-plugins:
+    needs: [ release, test ]
+    uses: ./.github/workflows/build-lib.yaml
 
   publish-crates-io:
     needs: [ release, test ]

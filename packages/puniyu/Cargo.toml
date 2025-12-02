@@ -14,6 +14,7 @@ publish = false
 tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
 puniyu_core = { path = "../puniyu_core" }
 puniyu_adapter_console = { path = "../../adapters/console" }
+puniyu_plugin_basic = { path = "../../plugins/puniyu_plugin_basic" }
 
 [[bin]]
 name = "puniyu"

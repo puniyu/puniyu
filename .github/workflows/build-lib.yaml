@@ -1,0 +1,135 @@
+name: Build Lib
+
+on:
+  workflow_call:
+
+jobs:
+  build_windows:
+    runs-on: ${{ matrix.platform.runner }}
+    strategy:
+      matrix:
+        platform:
+          - runner: windows-latest
+            target: x86_64-pc-windows-msvc
+            label: windows-x86_64
+
+    steps:
+      - name: 检出仓库
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+        with:
+          ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+
+      - name: 设置 rust
+        uses: puniyu/setup-rust@main
+        with:
+          target: ${{ matrix.platform.target }}
+          save-cache: true
+          prefix-key: ${{ env.APP_NAME }}
+
+      - name: 构建basic
+        shell: bash
+        run: |
+          cargo build --release --target ${{ matrix.platform.target }} --features cdylib
+          mv target/${{ matrix.platform.target }}/release/${{ env.APP_NAME }} target/${{ matrix.platform.target }}/release/${{ env.APP_NAME }}-${{ matrix.platform.label }}.dll
+        working-directory: plugins/${{ env.APP_NAME }}
+        env:
+          APP_NAME: puniyu_plugin_basic
+
+      - name: 上传构建产物 basic
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        with:
+          name: "puniyu-plugin-basic"
+          path: |
+            target/${{ matrix.platform.target }}/release/${{ env.APP_NAME }}.dll
+        env:
+          APP_NAME: puniyu_plugin_basic
+
+  build_macos:
+    runs-on: ${{ matrix.platform.runner }}
+    strategy:
+      matrix:
+        platform:
+          - runner: macos-latest
+            target: x86_64-apple-darwin
+            label: macos-x86_64
+          - runner: macos-latest
+            target: aarch64-apple-darwin
+            label: macos-aarch64
+
+    steps:
+      - name: 检出仓库
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+        with:
+          ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+
+      - name: 设置 rust
+        uses: puniyu/setup-rust@main
+        with:
+          target: ${{ matrix.platform.target }}
+          save-cache: true
+          prefix-key: ${{ env.APP_NAME }}
+
+      - name: 构建basic
+        shell: bash
+        run: |
+          cargo build --release --target ${{ matrix.platform.target }} --features cdylib
+          mv target/${{ matrix.platform.target }}/release/lib${{ env.APP_NAME }}.dylib target/${{ matrix.platform.target }}/release/${{ env.APP_NAME }}-${{ matrix.platform.label }}.dylib
+        working-directory: plugins/${{ env.APP_NAME }}
+        env:
+          APP_NAME: puniyu_plugin_basic
+
+      - name: 上传构建产物 basic
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        with:
+          name: "puniyu-plugin-basic"
+          path: |
+            target/${{ matrix.platform.target }}/release/${{ env.APP_NAME }}.dylib
+        env:
+          APP_NAME: puniyu_plugin_basic
+
+  build_linux:
+    runs-on: ${{ matrix.platform.runner }}
+    container: ${{ matrix.platform.container }}
+    strategy:
+      matrix:
+        platform:
+          - runner: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            label: linux-x86_64
+          - runner: ubuntu-24.04-arm
+            target: aarch64-unknown-linux-gnu
+            label: linux-aarch64
+
+    steps:
+      - name: 检出仓库
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+        with:
+          ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+
+      - name: 设置 rust
+        uses: puniyu/setup-rust@main
+        with:
+          target: ${{ matrix.platform.target }}
+          save-cache: true
+          prefix-key: ${{ env.APP_NAME }}
+
+      - name: 构建basic
+        shell: bash
+        run: |
+          cargo build --release --target ${{ matrix.platform.target }} --features cdylib
+          mv target/${{ matrix.platform.target }}/release/lib${{ env.APP_NAME }}.so target/${{ matrix.platform.target }}/release/${{ env.APP_NAME }}-${{ matrix.platform.label }}.so
+        working-directory: plugins/${{ env.APP_NAME }}
+        env:
+          APP_NAME: puniyu_plugin_basic
+
+      - name: 上传构建产物 basic
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        with:
+          name: "puniyu-plugin-basic"
+          path: |
+            target/${{ matrix.platform.target }}/release/${{ env.APP_NAME }}.so
+        env:
+          APP_NAME: puniyu_plugin_basic

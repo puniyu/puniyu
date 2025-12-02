@@ -198,15 +198,15 @@ impl CommandHandler {
 
 			let start_time = std::time::Instant::now();
 			info!(
-				"{} 开始执行",
-				format!("[command:{}:{}]", &name, command_name).yellow()
+				"[{}] 开始执行",
+				format!("command:{}:{}", &name, command_name).yellow()
 			);
 
 			let result = command.builder.run(bot, event).await;
 
 			info!(
-				"{} 执行完毕, 耗时{}ms",
-				format!("[command:{}:{}]", &name, command_name).yellow(),
+				"[{}] 执行完毕, 耗时{}ms",
+				format!("command:{}:{}", &name, command_name).yellow(),
 				start_time.elapsed().as_millis()
 			);
 

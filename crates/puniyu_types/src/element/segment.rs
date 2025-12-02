@@ -1,4 +1,4 @@
-#[cfg(feature = "event")]
+#[cfg(feature = "element")]
 #[macro_export]
 macro_rules! segment {
 	// at元素
@@ -49,5 +49,27 @@ macro_rules! segment {
 	// xml元素
 	(xml, $xml:expr) => {
 		Elements::Xml(XmlElement { file: $xml.to_string() })
+	};
+}
+
+
+#[cfg(feature = "event")]
+#[macro_export]
+macro_rules! message {
+	// 空消息
+	() => {
+		$crate::element::Message::from(Vec::<$crate::element::send::Elements>::new())
+	};
+	// 单个字符串字面量
+	($text:literal) => {
+		$crate::element::Message::from($text)
+	};
+	// 单个 Elements
+	($elem:expr) => {
+		$crate::element::Message::from($elem)
+	};
+	// 多个 Elements
+	($($elem:expr),+ $(,)?) => {
+		$crate::element::Message::from(vec![$($elem),+])
 	};
 }

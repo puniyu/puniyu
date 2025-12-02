@@ -2,7 +2,8 @@
 members = [
     "crates/*",
     "packages/*",
-    "adapters/*"
+    "adapters/*",
+    "plugins/*"
 ]
 resolver = "2"
 
