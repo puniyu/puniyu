@@ -117,14 +117,24 @@ impl CommandMatcher {
 		let global_prefix = Config::app().prefix();
 		
 		for command in CommandRegistry::get_all() {
-			let prefix = command.prefix.as_deref().unwrap_or(&global_prefix);
-			
-			let content = if prefix.is_empty() {
+			let after_global = if global_prefix.is_empty() {
 				text.clone()
-			} else if let Some(stripped) = text.strip_prefix(prefix) {
+			} else if let Some(stripped) = text.strip_prefix(&global_prefix) {
 				stripped.to_string()
 			} else {
 				continue;
+			};
+
+			let content = if let Some(plugin_prefix) = command.prefix.as_deref() {
+				if plugin_prefix.is_empty() {
+					after_global.clone()
+				} else if let Some(stripped) = after_global.strip_prefix(plugin_prefix) {
+					stripped.to_string()
+				} else {
+					continue;
+				}
+			} else {
+				after_global.clone()
 			};
 
 			let mut parts = content.splitn(2, char::is_whitespace);
