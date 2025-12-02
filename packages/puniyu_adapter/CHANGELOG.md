@@ -1,4 +1,19 @@
 # 变更日志
+## [0.5.13](https://github.com/puniyu/puniyu/compare/puniyu_adapter-v0.5.12...puniyu_adapter-v0.5.13) (2025-12-02)
+
+
+### 🚜 重构
+
+
+- *(core)* 重新组织模块导入顺序并清理无用导出 (由 @shiwuliya 提供) - ([8da3556](https://github.com/puniyu/puniyu/commit/8da35564bb6e99777d30d5c48497e11358c51915))
+- *(element)* 重构消息元素模块结构 (由 @shiwuliya 提供) - ([2aca906](https://github.com/puniyu/puniyu/commit/2aca906d9f9d44e77753e3784539be24a16f878d))
+
+
+
+
+### 贡献者
+
+* @shiwuliya
 
 ## [0.5.12](https://github.com/puniyu/puniyu/compare/adapter-v0.5.11...adapter-v0.5.12) (2025-11-24)
 

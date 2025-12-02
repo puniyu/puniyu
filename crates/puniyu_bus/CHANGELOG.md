@@ -1,4 +1,26 @@
 # 变更日志
+## [0.5.13](https://github.com/puniyu/puniyu/compare/puniyu_bus-v0.5.12...puniyu_bus-v0.5.13) (2025-12-02)
+
+
+### ⛰️ 新功能
+
+
+- *(config)* 添加全局命令前缀配置并优化模块结构 (由 @shiwuliya 提供) - ([e0e5bb5](https://github.com/puniyu/puniyu/commit/e0e5bb5ac9eb24a37189a3d50b42d3db8db58dde))
+- *(macro)* 重构宏系统并增强命令参数支持 (由 @shiwuliya 提供) - ([e8f3c23](https://github.com/puniyu/puniyu/commit/e8f3c23e42cd94fb567dce569cbe4477014300b1))
+
+
+
+### 🚜 重构
+
+
+- *(core)* 重新组织模块导入顺序并清理无用导出 (由 @shiwuliya 提供) - ([8da3556](https://github.com/puniyu/puniyu/commit/8da35564bb6e99777d30d5c48497e11358c51915))
+
+
+
+
+### 贡献者
+
+* @shiwuliya
 
 ## [0.5.12](https://github.com/puniyu/puniyu/compare/event-bus-v0.5.11...event-bus-v0.5.12) (2025-11-24)
 

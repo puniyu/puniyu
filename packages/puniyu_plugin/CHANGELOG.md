@@ -1,4 +1,34 @@
 # 变更日志
+## [0.5.13](https://github.com/puniyu/puniyu/compare/puniyu_plugin-v0.5.12...puniyu_plugin-v0.5.13) (2025-12-02)
+
+
+### ⛰️ 新功能
+
+
+- *(macro)* 重构宏系统并增强命令参数支持 (由 @shiwuliya 提供) - ([e8f3c23](https://github.com/puniyu/puniyu/commit/e8f3c23e42cd94fb567dce569cbe4477014300b1))
+- *(plugin)* 支持命令参数的位置和命名模式 (由 @shiwuliya 提供) - ([85e92d4](https://github.com/puniyu/puniyu/commit/85e92d4ec50367ad3d1e1194ee1542ce74dd82dd))
+
+
+
+### 🐛 Bug 修复
+
+
+- *(puniyu_plugin)* 添加缺少的导入 (由 @shiwuliya 提供) - ([23f7f8a](https://github.com/puniyu/puniyu/commit/23f7f8a459f941971a203063d6215c9779b74411))
+
+
+
+### 🚜 重构
+
+
+- *(core)* 重新组织模块导入顺序并清理无用导出 (由 @shiwuliya 提供) - ([8da3556](https://github.com/puniyu/puniyu/commit/8da35564bb6e99777d30d5c48497e11358c51915))
+- *(element)* 重构消息元素模块结构 (由 @shiwuliya 提供) - ([2aca906](https://github.com/puniyu/puniyu/commit/2aca906d9f9d44e77753e3784539be24a16f878d))
+
+
+
+
+### 贡献者
+
+* @shiwuliya
 
 ## [0.5.12](https://github.com/puniyu/puniyu/compare/plugin-v0.5.11...plugin-v0.5.12) (2025-11-24)
 

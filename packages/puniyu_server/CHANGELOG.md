@@ -1,4 +1,40 @@
 # 变更日志
+## [0.5.13](https://github.com/puniyu/puniyu/compare/puniyu_server-v0.5.12...puniyu_server-v0.5.13) (2025-12-02)
+
+
+### ⛰️ 新功能
+
+
+- *(cli)* 引入命令行参数解析功能 (由 @shiwuliya 提供) - ([11e3137](https://github.com/puniyu/puniyu/commit/11e31372aca53c35f15e8cab8b3067af353d25a7))
+- *(server)* 实现服务器控制功能并完善插件卸载功能 (由 @shiwuliya 提供) - ([3cab133](https://github.com/puniyu/puniyu/commit/3cab133589d93d2d7592ed867db245999c774723))
+
+
+
+### 🚜 重构
+
+
+- *(core)* 重新组织模块导入顺序并清理无用导出 (由 @shiwuliya 提供) - ([8da3556](https://github.com/puniyu/puniyu/commit/8da35564bb6e99777d30d5c48497e11358c51915))
+
+
+
+### 📚 文档
+
+
+- *(puniyu_library)* 更新 README 文档并优化库重载逻辑 (由 @shiwuliya 提供) - ([f561597](https://github.com/puniyu/puniyu/commit/f561597ee8a829f648cc52a91f0bfe717b218449))
+
+
+
+### ⚙️ 杂项
+
+
+- *(puniyu_logger)* 更新 puniyu_logger 依赖版本 (由 @shiwuliya 提供) - ([f949ad4](https://github.com/puniyu/puniyu/commit/f949ad40d00b11b9caa3f78fecb35fc37055742f))
+
+
+
+
+### 贡献者
+
+* @shiwuliya
 
 ## [0.5.12](https://github.com/puniyu/puniyu/compare/server-v0.5.11...server-v0.5.12) (2025-11-24)
 

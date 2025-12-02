@@ -1,4 +1,44 @@
 # Changelog
+# 变更日志
+## [0.2.14](https://github.com/puniyu/puniyu/compare/puniyu_adapter_console-v0.2.13...puniyu_adapter_console-v0.2.14) (2025-12-02)
+
+
+### ⛰️ 新功能
+
+
+- *(macro)* 重构宏系统并增强命令参数支持 (由 @shiwuliya 提供) - ([e8f3c23](https://github.com/puniyu/puniyu/commit/e8f3c23e42cd94fb567dce569cbe4477014300b1))
+- *(types)* 更新图片元素结构与消息处理逻辑 (由 @shiwuliya 提供) - ([9b69689](https://github.com/puniyu/puniyu/commit/9b69689c679b3baa2a2d8acff99661b3e22f1766))
+
+
+
+### 🚜 重构
+
+
+- *(command)* 修正日志格式 (由 @shiwuliya 提供) - ([b8fdbd7](https://github.com/puniyu/puniyu/commit/b8fdbd7b16371cdcbdee23d90c3075aff4cc4ee4))
+- *(config)* 重构配置模块并新增适配器配置支持 (由 @shiwuliya 提供) - ([26874a2](https://github.com/puniyu/puniyu/commit/26874a22ac9114d487ac56767927b7f1b8bbe205))
+- *(core)* 重新组织模块导入顺序并清理无用导出 (由 @shiwuliya 提供) - ([8da3556](https://github.com/puniyu/puniyu/commit/8da35564bb6e99777d30d5c48497e11358c51915))
+- *(element)* 重构消息元素模块结构 (由 @shiwuliya 提供) - ([2aca906](https://github.com/puniyu/puniyu/commit/2aca906d9f9d44e77753e3784539be24a16f878d))
+
+
+
+### 🎨 样式
+
+
+- *(mes)* 优化消息发送日志记录格式 (由 @shiwuliya 提供) - ([0a8336a](https://github.com/puniyu/puniyu/commit/0a8336a777a568c13d27c7e84a5952c40c0d3055))
+
+
+
+### Refcator
+
+
+
+- 优化bot实例的使用 (由 @shiwuliya 提供) (#72) - ([73f284e](https://github.com/puniyu/puniyu/commit/73f284e8c594139d2a190fc09cb7ba460ceb4ef8))
+
+
+
+### 贡献者
+
+* @shiwuliya
 
 ## [0.2.13](https://github.com/puniyu/puniyu/compare/adapter-console-v0.2.12...adapter-console-v0.2.13) (2025-11-24)
 

@@ -1,4 +1,25 @@
 # 变更日志
+## [0.5.1](https://github.com/puniyu/puniyu/compare/puniyu_library-v0.5.0...puniyu_library-v0.5.1) (2025-12-02)
+
+
+### 🚜 重构
+
+
+- *(core)* 重新组织模块导入顺序并清理无用导出 (由 @shiwuliya 提供) - ([8da3556](https://github.com/puniyu/puniyu/commit/8da35564bb6e99777d30d5c48497e11358c51915))
+
+
+
+### 📚 文档
+
+
+- *(puniyu_library)* 更新 README 文档并优化库重载逻辑 (由 @shiwuliya 提供) - ([f561597](https://github.com/puniyu/puniyu/commit/f561597ee8a829f648cc52a91f0bfe717b218449))
+
+
+
+
+### 贡献者
+
+* @shiwuliya
 
 ## [0.5.0](https://github.com/puniyu/puniyu/compare/library-v0.4.1...library-v0.5.0) (2025-11-23)
 
