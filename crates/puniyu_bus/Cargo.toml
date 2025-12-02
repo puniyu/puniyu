@@ -19,8 +19,8 @@ puniyu_types = { version = "0.5.12", path = "../puniyu_types", default-features 
   "event",
   "context",
   "bot",
-] }
-puniyu_registry = { version = "0.5.12", path = "../puniyu_registry", default-features = false, features = [
   "matcher",
   "handler",
 ] }
+puniyu_matcher_command = { version = "0.1.0", path = "../puniyu_matcher_command" }
+puniyu_handler_command = { version = "0.1.0", path = "../puniyu_handler_command" }

@@ -1,15 +1,13 @@
-use crate::command::CommandRegistry;
 use async_trait::async_trait;
 use clap::builder::ValueParser;
 use puniyu_logger::{info, owo_colors::OwoColorize};
+use puniyu_registry::command::CommandRegistry;
 use puniyu_types::bot::Bot;
 use puniyu_types::command::{Arg, ArgMode, ArgType, ArgValue, HandlerAction};
 use puniyu_types::context::{BotContext, MessageContext};
-use puniyu_types::event::{
-	Event, EventBase,
-	message::{MessageBase, MessageEvent},
-};
+use puniyu_types::event::{Event, EventBase, message::MessageEvent};
 use puniyu_types::handler::Handler;
+use puniyu_matcher_command::MatchResult;
 use puniyu_types::{create_context_bot, create_message_event_context};
 use std::collections::HashMap;
 
@@ -23,9 +21,11 @@ impl From<ClapArg<'_>> for clap::Arg {
 			ArgType::String => clap_arg.value_parser(ValueParser::string()),
 			ArgType::Int => clap_arg.value_parser(clap::value_parser!(i64)),
 			ArgType::Float => clap_arg.value_parser(clap::value_parser!(f64)),
-			ArgType::Bool => clap_arg.value_parser(clap::value_parser!(bool)).num_args(0..=1).default_missing_value("true"),
+			ArgType::Bool => clap_arg
+				.value_parser(clap::value_parser!(bool))
+				.num_args(0..=1)
+				.default_missing_value("true"),
 		};
-
 
 		clap_arg = match arg.mode {
 			ArgMode::Positional => clap_arg.required(arg.required),
@@ -45,9 +45,9 @@ impl From<ClapArg<'_>> for clap::Arg {
 	}
 }
 
-pub struct Command;
+struct ArgParser;
 
-impl Command {
+impl ArgParser {
 	fn to_clap_command(name: &str, args: &[Arg]) -> clap::Command {
 		let mut cmd = clap::Command::new(name.to_string())
 			.no_binary_name(true)
@@ -86,7 +86,11 @@ impl Command {
 		match e.kind() {
 			ErrorKind::InvalidValue | ErrorKind::ValueValidation => {
 				let arg_name = get_arg_name(&e);
-				format!("参数 {} 输入无效，请提供一个{}", arg_name, get_type_name(&arg_name))
+				format!(
+					"参数 {} 输入无效，请提供一个{}",
+					arg_name,
+					get_type_name(&arg_name)
+				)
 			}
 			ErrorKind::UnknownArgument => {
 				format!("未知参数: {}", get_arg_name(&e))
@@ -105,23 +109,19 @@ impl Command {
 	}
 
 	fn parse(
-		input: &str,
-		args: &[Arg],
+		command_name: &str,
+		args_text: &str,
+		arg_defs: &[Arg],
 	) -> Result<HashMap<String, ArgValue>, String> {
-		let tokens: Vec<&str> = input.split_whitespace().collect();
-		if tokens.is_empty() {
-			return Ok(HashMap::new());
-		}
-
-		let command_name = tokens[0];
-		let cmd = Self::to_clap_command(command_name, args);
+		let tokens: Vec<&str> = args_text.split_whitespace().collect();
+		let cmd = Self::to_clap_command(command_name, arg_defs);
 
 		let matches = cmd
-			.try_get_matches_from(&tokens[1..])
-			.map_err(|e| Self::format_error(e, args))?;
+			.try_get_matches_from(&tokens)
+			.map_err(|e| Self::format_error(e, arg_defs))?;
 
 		let mut result = HashMap::new();
-		for arg_def in args {
+		for arg_def in arg_defs {
 			if let Some(value) = Self::get_value(&matches, arg_def) {
 				result.insert(arg_def.name.to_string(), value);
 			}
@@ -132,34 +132,44 @@ impl Command {
 
 	fn get_value(matches: &clap::ArgMatches, arg_def: &Arg) -> Option<ArgValue> {
 		match arg_def.arg_type {
-			ArgType::String => matches.get_one::<String>(arg_def.name).map(|s| ArgValue::String(s.clone())),
-			ArgType::Int => matches.get_one::<i64>(arg_def.name).map(|i| ArgValue::Int(*i)),
-			ArgType::Float => matches.get_one::<f64>(arg_def.name).map(|f| ArgValue::Float(*f)),
-			ArgType::Bool => matches.get_one::<bool>(arg_def.name).map(|b| ArgValue::Bool(*b)),
+			ArgType::String => matches
+				.get_one::<String>(arg_def.name)
+				.map(|s| ArgValue::String(s.clone())),
+			ArgType::Int => matches
+				.get_one::<i64>(arg_def.name)
+				.map(|i| ArgValue::Int(*i)),
+			ArgType::Float => matches
+				.get_one::<f64>(arg_def.name)
+				.map(|f| ArgValue::Float(*f)),
+			ArgType::Bool => matches
+				.get_one::<bool>(arg_def.name)
+				.map(|b| ArgValue::Bool(*b)),
 		}
 	}
+}
 
-	pub async fn handle(bot: Bot, message_type: MessageEvent) {
-		let (bot_ctx, text_content, message_event) = match &message_type {
-			MessageEvent::Friend(msg) => (
-				create_context_bot!(bot.clone(), msg.contact().into()),
-				Self::extract_text(msg.elements()),
-				MessageEvent::Friend(msg.clone()),
-			),
-			MessageEvent::Group(msg) => (
-				create_context_bot!(bot.clone(), msg.contact().into()),
-				Self::extract_text(msg.elements()),
-				MessageEvent::Group(msg.clone()),
-			),
+pub struct CommandHandler;
+
+impl CommandHandler {
+	pub async fn handle_matched(
+		bot: Bot,
+		message_event: &MessageEvent,
+		match_result: &MatchResult,
+	) {
+		let command_name = &match_result.command_name;
+		let args_text = &match_result.args_text;
+
+		let bot_ctx = match message_event {
+			MessageEvent::Friend(msg) => create_context_bot!(bot.clone(), msg.contact().into()),
+			MessageEvent::Group(msg) => create_context_bot!(bot.clone(), msg.contact().into()),
 		};
 
-		let command_name = text_content.split_whitespace().next().unwrap_or_default();
+		let Some(command) = CommandRegistry::get_with_name(command_name) else {
+			return;
+		};
+		let arg_defs = command.builder.args();
 
-		let args = CommandRegistry::get_with_name(command_name)
-			.map(|c| c.builder.args())
-			.unwrap_or_default();
-
-		let plugin_args = match Self::parse(&text_content, &args) {
+		let parsed_args = match ArgParser::parse(command_name, args_text, &arg_defs) {
 			Ok(args) => args,
 			Err(e) => {
 				let _ = bot_ctx.reply(e.into()).await;
@@ -167,54 +177,62 @@ impl Command {
 			}
 		};
 
-		let event = create_message_event_context!(message_event, plugin_args);
-		Self::execute_plugins(&bot_ctx, &event, command_name).await;
-	}
+		let message_ctx = match message_event {
+			MessageEvent::Friend(msg) => {
+				create_message_event_context!(MessageEvent::Friend(msg.clone()), parsed_args)
+			}
+			MessageEvent::Group(msg) => {
+				create_message_event_context!(MessageEvent::Group(msg.clone()), parsed_args)
+			}
+		};
 
-	fn extract_text(elements: Vec<puniyu_types::element::receive::Elements>) -> String {
-		elements.iter().filter_map(|e| e.as_text()).collect::<Vec<_>>().join(" ")
+		Self::execute_plugins(&bot_ctx, &message_ctx, command_name).await;
 	}
 
 	async fn execute_plugins(bot: &BotContext, event: &MessageContext, command_name: &str) {
 		let plugins = CommandRegistry::get_plugins(command_name);
 		for name in plugins {
-			let func = CommandRegistry::get_with_plugin(&name, command_name);
-			if let Some(command) = func {
-				let start_time = std::time::Instant::now();
-				info!("{} 开始执行", format!("[command:{}:{}]", &name, command_name).yellow());
-				let result = command.builder.run(bot, event).await;
-				info!(
-					"{} 执行完毕, 耗时{}ms",
-					format!("[command:{}:{}]", &name, command_name).yellow(),
-					start_time.elapsed().as_millis()
-				);
-				match result {
-					Ok(action) => match action {
-						HandlerAction::Done => break,
-						HandlerAction::Continue => continue,
-					},
-					Err(_) => continue,
-				}
+			let Some(command) = CommandRegistry::get_with_plugin(&name, command_name) else {
+				continue;
+			};
+
+			let start_time = std::time::Instant::now();
+			info!(
+				"{} 开始执行",
+				format!("[command:{}:{}]", &name, command_name).yellow()
+			);
+
+			let result = command.builder.run(bot, event).await;
+
+			info!(
+				"{} 执行完毕, 耗时{}ms",
+				format!("[command:{}:{}]", &name, command_name).yellow(),
+				start_time.elapsed().as_millis()
+			);
+
+			match result {
+				Ok(HandlerAction::Done) => break,
+				Ok(HandlerAction::Continue) | Err(_) => continue,
 			}
 		}
 	}
 }
 
-pub struct CommandHandler;
-
 #[async_trait]
 impl Handler for CommandHandler {
+	type MatchResult = MatchResult;
+
 	fn name(&self) -> &str {
 		"command"
 	}
 
-	async fn handle(&self, bot: Bot, event: Event) {
-		if let Event::Message(message_event) = event {
-			let message_type = match message_event.as_ref() {
-				MessageEvent::Friend(message) => MessageEvent::Friend(message.clone()),
-				MessageEvent::Group(message) => MessageEvent::Group(message.clone()),
-			};
-			Command::handle(bot, message_type).await;
+	async fn handle(&self, bot: Bot, event: Event, match_result: Option<Self::MatchResult>) {
+		let Some(match_result) = match_result else {
+			return;
+		};
+
+		if let Event::Message(message_event) = &event {
+			Self::handle_matched(bot, message_event.as_ref(), &match_result).await;
 		}
 	}
 }

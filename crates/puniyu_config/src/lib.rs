@@ -86,6 +86,7 @@ impl Config {
 	pub fn bot() -> BotConfig {
 		BotConfig::get()
 	}
+
 }
 
 pub fn init_config() {

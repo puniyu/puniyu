@@ -3,10 +3,10 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct FriendConfig {
 	/// 好友白名单
-	#[serde(default, skip_serializing_if = "Vec::is_empty")]
+	#[serde(default)]
 	enable_list: Vec<String>,
 	/// 好友黑名单
-	#[serde(default, skip_serializing_if = "Vec::is_empty")]
+	#[serde(default)]
 	disable_list: Vec<String>
 }
 

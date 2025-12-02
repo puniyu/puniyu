@@ -10,6 +10,7 @@ use syn::{Token, parse::Parse, parse::ParseStream, punctuated::Punctuated};
 #[derive(Default)]
 pub struct PluginArg {
 	pub desc: Option<syn::LitStr>,
+	pub prefix: Option<syn::LitStr>,
 }
 
 impl Parse for PluginArg {
@@ -38,6 +39,18 @@ impl Parse for PluginArg {
 						return Err(syn::Error::new_spanned(
 							&field.value,
 							"呜哇~desc 必须是字符串！杂鱼~",
+						));
+					}
+				}
+				"prefix" => {
+					if let syn::Expr::Lit(syn::ExprLit { lit: syn::Lit::Str(lit_str), .. }) =
+						&field.value
+					{
+						args.prefix = Some(lit_str.clone());
+					} else {
+						return Err(syn::Error::new_spanned(
+							&field.value,
+							"呜哇~prefix 必须是字符串！杂鱼~",
 						));
 					}
 				}

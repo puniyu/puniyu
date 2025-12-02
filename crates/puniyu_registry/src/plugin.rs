@@ -101,9 +101,10 @@ impl PluginRegistry {
 						})
 						.collect();
 
+					let prefix = plugin_builder.prefix();
 					let commands = plugin_builder.commands();
 					commands.into_iter().for_each(|command| {
-						CommandRegistry::insert(plugin_name, Arc::from(command));
+						CommandRegistry::insert(plugin_name, prefix, Arc::from(command));
 					});
 
 					join_all(tasks).await;
@@ -206,9 +207,10 @@ impl PluginRegistry {
 
 				join_all(tasks).await;
 
+				let prefix = plugin_builder.prefix();
 				let commands = plugin_builder.commands();
 				commands.into_iter().for_each(|command| {
-					CommandRegistry::insert(plugin_name, Arc::from(command));
+					CommandRegistry::insert(plugin_name, prefix, Arc::from(command));
 				});
 
 				let plugin_info = create_plugin_info!(

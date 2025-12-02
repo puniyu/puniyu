@@ -6,15 +6,17 @@ pub struct CommandArgs {
 	pub rank: syn::LitInt,
 	pub desc: syn::LitStr,
 	pub args: Vec<Arg>,
+	pub alias: Vec<syn::LitStr>,
 }
 
 impl Default for CommandArgs {
 	fn default() -> Self {
 		Self {
 			name: syn::LitStr::new("", proc_macro2::Span::call_site()),
-			rank: syn::LitInt::new("100", proc_macro2::Span::call_site()),
+			rank: syn::LitInt::new("500", proc_macro2::Span::call_site()),
 			desc: syn::LitStr::new("", proc_macro2::Span::call_site()),
 			args: Vec::new(),
+			alias: Vec::new(),
 		}
 	}
 }
@@ -39,6 +41,11 @@ impl Parse for CommandArgs {
 					let content;
 					bracketed!(content in input);
 					cmd_args.args = parse_arg_list(&content)?;
+				}
+				"alias" => {
+					let content;
+					bracketed!(content in input);
+					cmd_args.alias = parse_alias(&content)?;
 				}
 				_ => {
 					return Err(syn::Error::new_spanned(
@@ -112,4 +119,19 @@ fn parse_arg_item(input: ParseStream) -> syn::Result<Arg> {
 	}
 
 	Ok(arg)
+}
+
+fn parse_alias(input: ParseStream) -> syn::Result<Vec<syn::LitStr>> {
+	let mut alias = Vec::new();
+
+	while !input.is_empty() {
+		let item: syn::LitStr = input.parse()?;
+		alias.push(item);
+
+		if input.peek(Token![,]) {
+			input.parse::<Token![,]>()?;
+		}
+	}
+
+	Ok(alias)
 }

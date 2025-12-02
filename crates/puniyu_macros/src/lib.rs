@@ -253,6 +253,10 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
 		Some(desc) => quote! { #desc },
 		None => quote! { "这个人很懒，没有设置呢" },
 	};
+	let plugin_prefix = match &plugin_args.prefix {
+		Some(prefix) => quote! { Some(#prefix) },
+		None => quote! { None },
+	};
 
 	let is_async = fn_sig.asyncness.is_some();
 	if !is_async {
@@ -323,6 +327,10 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
 
 			fn description(&self) -> &'static str {
 				#plugin_desc
+			}
+
+			fn prefix(&self) -> Option<&'static str> {
+				#plugin_prefix
 			}
 
 			fn tasks(&self) -> Vec<Box<dyn ::puniyu_plugin::TaskBuilder>> {
@@ -449,81 +457,118 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
 }
 
 /// 命令宏
-/// 
+///
 /// 用于定义命令处理函数。
-/// 
+///
 /// # 参数
-/// - `name`: 命令名称（必需）
-/// - `desc`: 命令描述（可选，默认为空）
-/// - `rank`: 命令优先级（可选，默认为 100，数值越小优先级越高）
-/// - `args`: 命令参数列表（可选）
-/// 
-/// # 命令参数格式
-/// 
-/// 支持两种格式定义参数：
-/// 
+///
+/// | 参数 | 类型 | 必需 | 默认值 | 说明 |
+/// |------|------|:----:|--------|------|
+/// | `name` | `&str` | ✓ | - | 命令名称 |
+/// | `desc` | `&str` | | `""` | 命令描述 |
+/// | `rank` | `u64` | | `500` | 优先级，数值越小优先级越高 |
+/// | `alias` | `[&str]` | | `[]` | 命令别名列表 |
+/// | `args` | `[Arg]` | | `[]` | 命令参数列表 |
+///
+/// # 命令别名
+///
+/// 使用 `alias` 为命令定义别名，用户可以通过别名触发命令：
+///
+/// ```rust,ignore
+/// #[command(name = "help", alias = ["h", "?"])]
+/// async fn help(bot: &BotContext, ev: &MessageContext) -> HandlerResult {
+///     // !help、!h、!? 都可以触发此命令
+///     HandlerAction::done()
+/// }
+/// ```
+///
+/// # 命令参数
+///
+/// 支持三种格式定义参数：
+///
 /// ## 1. 简单格式
-/// 只指定参数名称，默认为位置参数：
+///
+/// 只指定参数名称，默认为可选的字符串类型位置参数：
+///
 /// ```rust,ignore
 /// args = ["message", "count"]
-/// // 调用：echo hello 3
+/// // 调用：!echo hello 3
 /// // message = "hello", count = "3"
 /// ```
-/// 
+///
 /// ## 2. 元组格式
+///
 /// ```rust,ignore
-/// args = [("name", "type", required, default, "desc", "mode")]
+/// // (name, type, required, default, desc, mode)
+/// args = [("count", "int", false, 1, "重复次数", "named")]
 /// ```
-/// 
+///
 /// ## 3. 对象格式
+///
 /// ```rust,ignore
 /// args = [{ name = "count", arg_type = "int", mode = "named", default = 1 }]
 /// ```
-/// 
+///
 /// ### 参数类型
-/// - `"string"`: 字符串类型（默认）
-/// - `"int"`: 整数类型
-/// - `"float"`: 浮点数类型
-/// - `"bool"`: 布尔类型
-/// 
+///
+/// | 类型 | 说明 |
+/// |------|------|
+/// | `"string"` | 字符串类型（默认） |
+/// | `"int"` | 整数类型 |
+/// | `"float"` | 浮点数类型 |
+/// | `"bool"` | 布尔类型 |
+///
 /// ### 参数模式
-/// - `"positional"`: 位置参数（默认），按顺序匹配
-/// - `"named"`: 命名参数，需要 `--flag value` 格式
-/// 
+///
+/// | 模式 | 说明 |
+/// |------|------|
+/// | `"positional"` | 位置参数（默认），按顺序匹配 |
+/// | `"named"` | 命名参数，需要 `--flag value` 格式 |
+///
 /// # 示例
-/// 
-/// ## 基础示例（位置参数）
+///
+/// ## 基础示例
+///
 /// ```rust,ignore
-/// #[command(name = "echo", args = ["message"])]
+/// #[command(name = "echo", desc = "回显消息", args = ["message"])]
 /// async fn echo(bot: &BotContext, ev: &MessageContext) -> HandlerResult {
-///     // 调用：echo hello
+///     // 调用：!echo hello
 ///     let msg = ev.arg("message").and_then(|v| v.as_str()).unwrap_or("");
 ///     bot.reply(msg.into()).await?;
 ///     HandlerAction::done()
 /// }
 /// ```
-/// 
-/// ## 多个位置参数
+///
+/// ## 带别名的命令
+///
 /// ```rust,ignore
-/// #[command(name = "add", args = ["a", "b"])]
-/// async fn add(bot: &BotContext, ev: &MessageContext) -> HandlerResult {
-///     // 调用：add 1 2
-///     // a = "1", b = "2"
+/// #[command(name = "ping", alias = ["p"], desc = "测试延迟")]
+/// async fn ping(bot: &BotContext, ev: &MessageContext) -> HandlerResult {
+///     // !ping 或 !p 都可以触发
+///     bot.reply("pong!".into()).await?;
 ///     HandlerAction::done()
 /// }
 /// ```
-/// 
-/// ## 混合位置参数和命名参数
+///
+/// ## 混合参数类型
+///
 /// ```rust,ignore
-/// #[command(name = "repeat", args = [
-///     "message",  // 位置参数（简单格式）
-///     ("count", "int", false, 1, "重复次数", "named"),  // 命名参数（元组格式）
-///     { name = "verbose", mode = "named" },  // 命名参数（对象格式）
-/// ])]
+/// #[command(
+///     name = "repeat",
+///     alias = ["r"],
+///     desc = "重复消息",
+///     args = [
+///         "message",  // 位置参数
+///         { name = "count", arg_type = "int", mode = "named", default = 1 },
+///     ]
+/// )]
 /// async fn repeat(bot: &BotContext, ev: &MessageContext) -> HandlerResult {
-///     // 调用：repeat hello --count 3 --verbose
+///     // 调用：!repeat hello --count 3
 ///     let message = ev.arg("message").and_then(|v| v.as_str()).unwrap_or("");
 ///     let count = ev.arg("count").and_then(|v| v.as_int()).unwrap_or(1);
+///     for _ in 0..count {
+///         bot.reply(message.into()).await?;
+///     }
 ///     HandlerAction::done()
 /// }
 /// ```
@@ -590,6 +635,12 @@ pub fn command(args: TokenStream, item: TokenStream) -> TokenStream {
 	let command_name = &args.name;
 	let command_rank = &args.rank;
 	let command_desc = &args.desc;
+	let command_alias = if args.alias.is_empty() {
+		quote! { None }
+	} else {
+		let aliases = &args.alias;
+		quote! { Some(vec![#(#aliases),*]) }
+	};
 	let mut arg_defs: Vec<proc_macro2::TokenStream> = Vec::new();
 
 	for arg_def in &args.args {
@@ -625,6 +676,10 @@ pub fn command(args: TokenStream, item: TokenStream) -> TokenStream {
 
 			fn rank(&self) -> u64 {
 				#command_rank.to_string().parse().unwrap_or(100)
+			}
+
+			fn alias(&self) -> Option<Vec<&'static str>> {
+				#command_alias
 			}
 
 			async fn run(&self, bot: &::puniyu_plugin::BotContext, ev: &::puniyu_plugin::MessageContext) -> ::puniyu_plugin::HandlerResult {
