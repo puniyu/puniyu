@@ -55,8 +55,10 @@ impl AdapterBuilder for Console {
 				static FILE_ID: AtomicU64 = AtomicU64::new(0);
 				let message = {
 					let mut input = String::new();
-					std::io::stdin().read_line(&mut input).unwrap();
-					input.trim_end().to_string()
+					match std::io::stdin().read_line(&mut input) {
+						Ok(0) | Err(_) => break,
+						Ok(_) => input.trim_end().to_string(),
+					}
 				};
 
 				if matches!(message.as_str(), "quit" | "exit" | "q") {
