@@ -1,0 +1,21 @@
+[package]
+name = "puniyu_plugin_basic"
+version = "0.1.0"
+authors.workspace = true
+license.workspace = true
+readme.workspace = true
+homepage.workspace = true
+repository.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+puniyu_core = { version = "0.6.0", path = "../../packages/puniyu_core" }
+puniyu_plugin = { version = "0.6.0", path = "../../packages/puniyu_plugin" }
+
+[features]
+default = []
+cdylib = []
