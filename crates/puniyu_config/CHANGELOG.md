@@ -1,5 +1,26 @@
 # 变更日志
 
+## [0.6.0](https://github.com/puniyu/puniyu/compare/config-v0.5.12...config-v0.6.0) (2025-12-02)
+
+
+### ✨ 新功能
+
+* **config:** 添加全局命令前缀配置并优化模块结构 ([e0e5bb5](https://github.com/puniyu/puniyu/commit/e0e5bb5ac9eb24a37189a3d50b42d3db8db58dde))
+
+
+### ♻️ 代码重构
+
+* **config:** 添加群组和好友配置模块, 实现全局cd注册表 ([285cf4a](https://github.com/puniyu/puniyu/commit/285cf4ade69848654fe13cbd14208bc597b040e0))
+* **config:** 重构配置模块并新增适配器配置支持 ([26874a2](https://github.com/puniyu/puniyu/commit/26874a22ac9114d487ac56767927b7f1b8bbe205))
+* **core:** 重新组织模块导入顺序并清理无用导出 ([8da3556](https://github.com/puniyu/puniyu/commit/8da35564bb6e99777d30d5c48497e11358c51915))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puniyu_common bumped from 0.5.12 to 0.6.0
+
 ## [0.5.12](https://github.com/puniyu/puniyu/compare/config-v0.5.11...config-v0.5.12) (2025-11-24)
 
 

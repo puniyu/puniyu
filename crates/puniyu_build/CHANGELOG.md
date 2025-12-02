@@ -1,5 +1,12 @@
 # 变更日志
 
+## [0.2.2](https://github.com/puniyu/puniyu/compare/build-v0.2.1...build-v0.2.2) (2025-12-02)
+
+
+### ♻️ 代码重构
+
+* **core:** 重新组织模块导入顺序并清理无用导出 ([8da3556](https://github.com/puniyu/puniyu/commit/8da35564bb6e99777d30d5c48497e11358c51915))
+
 ## [0.2.1](https://github.com/puniyu/puniyu/compare/build-v0.2.0...build-v0.2.1) (2025-11-23)
 
 

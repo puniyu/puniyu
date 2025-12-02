@@ -1,5 +1,22 @@
 # 变更日志
 
+## [0.6.0](https://github.com/puniyu/puniyu/compare/common-v0.5.12...common-v0.6.0) (2025-12-02)
+
+
+### ✨ 新功能
+
+* **config:** 添加全局命令前缀配置并优化模块结构 ([e0e5bb5](https://github.com/puniyu/puniyu/commit/e0e5bb5ac9eb24a37189a3d50b42d3db8db58dde))
+
+
+### 🐛 错误修复
+
+* **puniyu_plugin:** 添加缺少的导入 ([23f7f8a](https://github.com/puniyu/puniyu/commit/23f7f8a459f941971a203063d6215c9779b74411))
+
+
+### ♻️ 代码重构
+
+* **core:** 重新组织模块导入顺序并清理无用导出 ([8da3556](https://github.com/puniyu/puniyu/commit/8da35564bb6e99777d30d5c48497e11358c51915))
+
 ## [0.5.12](https://github.com/puniyu/puniyu/compare/common-v0.5.11...common-v0.5.12) (2025-11-24)
 
 

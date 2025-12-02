@@ -1,5 +1,28 @@
 # 变更日志
 
+## [0.6.0](https://github.com/puniyu/puniyu/compare/puniyu-v0.5.12...puniyu-v0.6.0) (2025-12-02)
+
+
+### ✨ 新功能
+
+* **config:** 添加全局命令前缀配置并优化模块结构 ([e0e5bb5](https://github.com/puniyu/puniyu/commit/e0e5bb5ac9eb24a37189a3d50b42d3db8db58dde))
+* **types:** 更新图片元素结构与消息处理逻辑 ([9b69689](https://github.com/puniyu/puniyu/commit/9b69689c679b3baa2a2d8acff99661b3e22f1766))
+
+
+### 🔧 其他更新
+
+* **release:** 切换到 release-plz 发布流程 ([2e2e061](https://github.com/puniyu/puniyu/commit/2e2e06162cc9d953d4bf193669a8ff8babc5e9f5))
+
+
+### ♻️ 代码重构
+
+* **core:** 重新组织模块导入顺序并清理无用导出 ([8da3556](https://github.com/puniyu/puniyu/commit/8da35564bb6e99777d30d5c48497e11358c51915))
+
+
+### 🎡 持续集成
+
+* **workflow:** 引入稳定版构建配置 ([fd81025](https://github.com/puniyu/puniyu/commit/fd81025eee0ef359320d1a8c482004772491ce0f))
+
 ## [0.5.12](https://github.com/puniyu/puniyu/compare/puniyu-v0.5.11...puniyu-v0.5.12) (2025-11-24)
 
 
