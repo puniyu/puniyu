@@ -15,7 +15,7 @@ doctest = false
 
 [dependencies]
 toml = { workspace = true }
-puniyu_system_info = { version = "0.8.0", features = ["gpu"] }
+puniyu_system_info = { version = "1.0.0", features = ["gpu"] }
 
 serde.workspace = true
 thiserror.workspace = true
