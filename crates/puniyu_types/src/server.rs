@@ -3,7 +3,6 @@ use std::{
 	net::IpAddr,
 	sync::{Arc, OnceLock, RwLock},
 };
-use tokio::sync::mpsc;
 
 pub type ServerType = Arc<dyn Fn(&mut ServiceConfig) + Send + Sync>;
 
@@ -25,7 +24,7 @@ pub struct ServerConfig {
 }
 
 pub static SERVER_CONFIG: OnceLock<RwLock<Option<ServerConfig>>> = OnceLock::new();
-pub static SERVER_COMMAND_TX: OnceLock<mpsc::Sender<ServerCommand>> = OnceLock::new();
+pub static SERVER_COMMAND_TX: OnceLock<flume::Sender<ServerCommand>> = OnceLock::new();
 
 pub fn save_server_config(host: IpAddr, port: u16) {
 	let config = ServerConfig { host, port };
@@ -37,26 +36,26 @@ pub fn get_server_config() -> Option<ServerConfig> {
 	SERVER_CONFIG.get().and_then(|store| store.read().unwrap().clone())
 }
 
-pub async fn send_server_command(cmd: ServerCommand) -> Result<(), mpsc::error::SendError<ServerCommand>> {
+pub fn send_server_command(cmd: ServerCommand) -> Result<(), flume::SendError<ServerCommand>> {
 	if let Some(tx) = SERVER_COMMAND_TX.get() {
-		tx.send(cmd).await
+		tx.send(cmd)
 	} else {
-		Err(mpsc::error::SendError(cmd))
+		Err(flume::SendError(cmd))
 	}
 }
 
 /// 启动服务器
-pub async fn start_server() -> Result<(), mpsc::error::SendError<ServerCommand>> {
-	send_server_command(ServerCommand::Start).await
+pub fn start_server() -> Result<(), flume::SendError<ServerCommand>> {
+	send_server_command(ServerCommand::Start)
 }
 
 /// 停止服务器
-pub async fn stop_server() -> Result<(), mpsc::error::SendError<ServerCommand>> {
-	send_server_command(ServerCommand::Stop).await
+pub fn stop_server() -> Result<(), flume::SendError<ServerCommand>> {
+	send_server_command(ServerCommand::Stop)
 }
 
 /// 重启服务器
-pub async fn restart_server() -> Result<(), mpsc::error::SendError<ServerCommand>> {
-	send_server_command(ServerCommand::Restart).await
+pub fn restart_server() -> Result<(), flume::SendError<ServerCommand>> {
+	send_server_command(ServerCommand::Restart)
 }
 

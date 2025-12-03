@@ -11,7 +11,6 @@ edition.workspace = true
 rust-version.workspace = true
 
 [dependencies]
-tokio = { workspace = true, optional = true }
 puniyu_logger = { workspace = true, optional = true }
 serde = { workspace = true, optional = true }
 serde_json = { workspace = true, optional = true }
@@ -21,6 +20,7 @@ thiserror = { workspace = true, optional = true }
 reqwest = { workspace = true, optional = true }
 async-trait = { workspace = true, optional = true }
 actix-web = { workspace = true, optional = true }
+flume = { workspace = true, optional = true }
 puniyu_config = { version = "0.6.0", path = "../puniyu_config", optional = true }
 
 [dev-dependencies]
@@ -47,7 +47,7 @@ contact = ["dep:serde", "dep:strum"]
 bot = ["adapter", "account"]
 sender = ["dep:serde", "dep:strum"]
 element = ["dep:serde", "dep:strum", "dep:serde_json"]
-server = ["dep:actix-web", "dep:tokio"]
+server = ["dep:actix-web", "dep:flume"]
 task = ["dep:async-trait"]
 command = ["dep:async-trait", "context"]
 plugin = ["dep:async-trait", "version", "task", "command", "server", "config"]

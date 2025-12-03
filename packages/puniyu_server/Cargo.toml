@@ -21,6 +21,7 @@ puniyu_logger.workspace = true
 tokio = { workspace = true, features = ["full"] }
 actix-web.workspace = true
 futures-util = "0.3.31"
+flume.workspace = true
 clap = { workspace = true, optional = true, features = ["derive", "help"] }
 
 puniyu_common = { version = "0.6.0", path = "../../crates/puniyu_common" }

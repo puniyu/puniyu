@@ -18,8 +18,7 @@ fn get_port_from_env() -> u16 {
 }
 
 pub async fn run_server_with_control(host: Option<IpAddr>, port: Option<u16>) -> std::io::Result<()> {
-	use tokio::sync::mpsc;
-	let (tx, mut rx) = mpsc::channel::<ServerCommand>(16);
+	let (tx, rx) = flume::bounded::<ServerCommand>(16);
 	let _ = SERVER_COMMAND_TX.set(tx);
 	let init_host = host.unwrap_or_else(get_host_from_env);
 	let init_port = port.unwrap_or_else(get_port_from_env);
@@ -55,23 +54,23 @@ pub async fn run_server_with_control(host: Option<IpAddr>, port: Option<u16>) ->
 			result = running_server => {
 				return result;
 			}
-			cmd = rx.recv() => {
+			cmd = rx.recv_async() => {
 				match cmd {
-					Some(ServerCommand::Start) => {
+					Ok(ServerCommand::Start) => {
 						continue;
 					}
-					Some(ServerCommand::Stop) => {
+					Ok(ServerCommand::Stop) => {
 						info!("收到停止命令，正在关闭服务器...");
 						handle.stop(true).await;
 						return Ok(());
 					}
-					Some(ServerCommand::Restart) => {
+					Ok(ServerCommand::Restart) => {
 						info!("收到重启命令，正在重启服务器...");
 						handle.stop(true).await;
 						save_server_config(get_host_from_env(), get_port_from_env());
 						continue;
 					}
-					None => {
+					Err(_) => {
 						handle.stop(true).await;
 						return Ok(());
 					}

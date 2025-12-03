@@ -1868,6 +1868,7 @@ version = "0.6.0"
 dependencies = [
  "actix-web",
  "clap",
+ "flume",
  "futures-util",
  "puniyu_common",
  "puniyu_logger",
@@ -1902,6 +1903,7 @@ version = "0.6.0"
 dependencies = [
  "actix-web",
  "async-trait",
+ "flume",
  "puniyu_config",
  "puniyu_logger",
  "reqwest",

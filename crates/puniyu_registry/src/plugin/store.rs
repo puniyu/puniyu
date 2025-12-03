@@ -55,7 +55,7 @@ impl PluginStore {
 					TaskRegistry::remove_task(name.as_str()).await;
 					CommandRegistry::remove_with_plugin_name(name.as_str());
 					ServerRegistry::remove(name.as_str());
-					let _ = restart_server().await;
+					let _ = restart_server();
 					true
 				} else {
 					false
@@ -83,7 +83,7 @@ impl PluginStore {
 				TaskRegistry::remove_task(name.clone()).await;
 				CommandRegistry::remove_with_plugin_name(name.as_str());
 				ServerRegistry::remove(name.as_str());
-				let _ = restart_server().await;
+				let _ = restart_server();
 
 				if let Some(idx) = index {
 					let mut plugins = self.0.lock().unwrap();
