@@ -16,16 +16,13 @@
         "core",
         "plugin",
         "adapter",
-        "common",
         "types",
-        "macros",
         "server",
         "registry",
         "config",
         "event-bus",
         "matcher-command",
-        "handler-command",
-        "plugin-basic"
+        "handler-command"
       ]
     }
   ],

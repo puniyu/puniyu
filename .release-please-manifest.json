@@ -14,7 +14,7 @@
   "packages/puniyu_adapter": "0.6.0",
   "packages/puniyu_core": "0.6.0",
   "adapters/puniyu_adapter_console": "0.3.0",
-  "plugins/puniyu_plugin_basic": "0.6.0",
+  "plugins/puniyu_plugin_basic": "0.1.0",
   "packages/puniyu": "0.6.0",
   "packages/puniyu_server": "0.6.0"
 }
