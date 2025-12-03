@@ -12,9 +12,9 @@ publish = false
 
 [dependencies]
 tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
-puniyu_core = { path = "../puniyu_core" }
-puniyu_adapter_console = { path = "../../adapters/puniyu_adapter_console" }
-puniyu_plugin_basic = { path = "../../plugins/puniyu_plugin_basic" }
+puniyu_core = { version = "0.6.0", path = "../puniyu_core" }
+puniyu_adapter_console = { version = "0.3.0", path = "../../adapters/puniyu_adapter_console" }
+puniyu_plugin_basic = { version = "0.1.0", path = "../../plugins/puniyu_plugin_basic" }
 
 [[bin]]
 name = "puniyu"

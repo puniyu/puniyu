@@ -1,6 +1,7 @@
 [package]
 name = "puniyu_plugin_basic"
 version = "0.1.0"
+description = "puniyu basic plugin"
 authors.workspace = true
 license.workspace = true
 readme.workspace = true
