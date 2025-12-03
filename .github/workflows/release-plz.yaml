@@ -19,14 +19,14 @@ jobs:
           permission-contents: write
 
       - name: 检出仓库
-        uses: actions/checkout@v6
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           token: ${{ steps.app-token.outputs.token }}
           fetch-depth: 0
           persist-credentials: false
 
       - name: 运行 release-plz
-        uses: release-plz/action@v0.5
+        uses: release-plz/action@1efcf74dfcd6e500990dad806e286899ae384064 # v0.5
         with:
           command: release
         env:
@@ -48,14 +48,14 @@ jobs:
           permission-contents: write
 
       - name: 检出仓库
-        uses: actions/checkout@v6
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           token: ${{ steps.app-token.outputs.token }}
           fetch-depth: 0
           persist-credentials: false
           
       - name: 运行 release-plz
-        uses: release-plz/action@v0.5
+        uses: release-plz/action@1efcf74dfcd6e500990dad806e286899ae384064 # v0.5
         with:
           command: release-pr
         env:
