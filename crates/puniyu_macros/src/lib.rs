@@ -56,7 +56,7 @@ pub fn adapter_config(args: TokenStream, item: TokenStream) -> TokenStream {
 		impl #struct_name {
 			pub fn get() -> Self {
 				use ::puniyu_adapter::AdapterBuilder;
-				let adapter_name = crate::Adapter.info().name.to_lowercase();
+				let adapter_name = crate::Adapter.name().to_lowercase();
 				let path = ::puniyu_adapter::ADAPTER_CONFIG_DIR.join(adapter_name).join(format!("{}.toml", #config_name));
 				::puniyu_adapter::ConfigRegistry::get(&path)
 					.and_then(|cfg| cfg.try_into::<#struct_name>().ok())
@@ -92,7 +92,10 @@ pub fn adapter(_: TokenStream, item: TokenStream) -> TokenStream {
 	};
 
 	let struct_name = &input_struct.ident;
-	let adapter_struct_name = syn::Ident::new("Adapter", proc_macro2::Span::call_site());
+	let adapter_struct_name = Ident::new("Adapter", proc_macro2::Span::call_site());
+	let version_major = quote! { env!("CARGO_PKG_VERSION_MAJOR") };
+	let version_minor = quote! { env!("CARGO_PKG_VERSION_MINOR") };
+	let version_patch = quote! { env!("CARGO_PKG_VERSION_PATCH") };
 
 	let expanded = quote! {
 		#input_struct
@@ -101,8 +104,16 @@ pub fn adapter(_: TokenStream, item: TokenStream) -> TokenStream {
 
 		#[::puniyu_adapter::async_trait]
 		impl ::puniyu_adapter::AdapterBuilder for #adapter_struct_name {
-			fn info(&self) -> ::puniyu_adapter::AdapterInfo {
-				::puniyu_adapter::AdapterBuilder::info(&#struct_name)
+			fn name(&self) -> &'static str {
+				::puniyu_adapter::AdapterBuilder::name(&#struct_name)
+			}
+			
+			fn version(&self) -> ::puniyu_adapter::Version {
+				::puniyu_adapter::Version {
+					major: #version_major,
+					minor: #version_minor,
+					patch: #version_patch,
+				}
 			}
 
 			fn api(&self) -> &'static dyn ::puniyu_adapter::AdapterApi {

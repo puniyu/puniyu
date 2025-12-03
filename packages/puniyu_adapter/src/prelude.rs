@@ -5,8 +5,8 @@ pub use puniyu_registry::{register_bot, unregister_bot};
 pub use puniyu_types::account::AccountInfo;
 pub use puniyu_types::adapter::types::*;
 pub use puniyu_types::adapter::{
-	AdapterApi, AdapterBuilder, AdapterCommunication, AdapterInfo, AdapterPlatform,
-	AdapterProtocol, AdapterStandard,
+	AdapterApi, AdapterBuilder, AdapterCommunication, AdapterInfo, AdapterInfoBuilder,
+	AdapterPlatform, AdapterProtocol, AdapterStandard,
 };
 pub use puniyu_types::bot::Bot;
 pub use puniyu_types::config::Config;

@@ -17,10 +17,9 @@ pub struct AdapterRegistry;
 impl AdapterRegistry {
 	pub async fn load_adapter(adapter: &'static dyn AdapterBuilder) -> Result<(), Error> {
 		let adapters = STORE.adapter().get_all();
-		let adapter_info = adapter.info();
-		let adapter_name = adapter_info.name.clone();
-		let adapter_version = adapter_info.version.to_string();
-		if adapters.values().any(|adapter| adapter.info.name == adapter_name) {
+		let adapter_name = adapter.name().to_string();
+		let adapter_version = adapter.version().to_string();
+		if adapters.values().any(|a| a.name == adapter_name) {
 			return Err(Error::Exists(adapter_name));
 		}
 
@@ -79,7 +78,11 @@ impl AdapterRegistry {
 		}
 
 		run_adapter_init(adapter_name.as_str(), adapter.init()).await?;
-		STORE.adapter().insert(Adapter { info: adapter_info, api: adapter.api() });
+		STORE.adapter().insert(Adapter {
+			name: adapter_name,
+			version: adapter_version,
+			api: adapter.api(),
+		});
 		Ok(())
 	}
 

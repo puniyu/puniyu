@@ -17,25 +17,27 @@ struct Console;
 
 #[async_trait]
 impl AdapterBuilder for Console {
-	fn info(&self) -> AdapterInfo {
-		use std::time::SystemTime;
-		use std::time::UNIX_EPOCH;
-		let start_time = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
-		adapter_info!(
-			name: env!("CARGO_PKG_NAME"),
-			platform: AdapterPlatform::Other,
-			standard: AdapterStandard::Other,
-			protocol: AdapterProtocol::Console,
-			communication: AdapterCommunication::Other,
-			connect_time: start_time
-		)
+	fn name(&self) -> &'static str {
+		env!("CARGO_PKG_NAME")
 	}
 
 	fn api(&self) -> &'static dyn AdapterApi {
 		&api::ConsoleAdapterApi
 	}
+
 	async fn init(&self) -> Result<()> {
 		use std::time::{SystemTime, UNIX_EPOCH};
+
+		let start_time = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
+		let adapter_info = adapter_info!(
+			name: self.name(),
+			version: self.version(),
+			platform: AdapterPlatform::Other,
+			standard: AdapterStandard::Other,
+			protocol: AdapterProtocol::Console,
+			communication: AdapterCommunication::Other,
+			connect_time: start_time
+		);
 
 		let bot_id = "console";
 		let name = APP_NAME.get().unwrap();
@@ -44,12 +46,12 @@ impl AdapterBuilder for Console {
 			name: format!("{}/{}", name, bot_id),
 			avatar: api::AVATAR_URL
 		);
-		register_bot!(self.info(), account_info.clone(), self.api());
+		register_bot!(adapter_info.clone(), account_info.clone(), self.api());
 
-		info!("{} v{} 初始化完成", env!("CARGO_PKG_NAME"), self.info().version);
+		info!("{} v{} 初始化完成", self.name(), self.version());
 
 		let account_info = account_info.clone();
-		let adapter_info = self.info().clone();
+		let adapter_info = adapter_info.clone();
 		std::thread::spawn(move || {
 			loop {
 				static FILE_ID: AtomicU64 = AtomicU64::new(0);

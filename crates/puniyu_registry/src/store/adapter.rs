@@ -16,7 +16,7 @@ pub(crate) struct AdapterStore(pub(crate) Arc<RwLock<HashMap<u64, Adapter>>>);
 impl AdapterStore {
 	pub fn insert(&self, adapter: Adapter) {
 		let mut adapters = self.0.write().unwrap();
-		let exists = adapters.values().any(|a| a.info.name == adapter.info.name);
+		let exists = adapters.values().any(|a| a.name == adapter.name);
 		if !exists {
 			let id = ADAPTER_INDEX.fetch_add(1, Ordering::Relaxed);
 			adapters.insert(id, adapter);
@@ -25,7 +25,7 @@ impl AdapterStore {
 
 	pub fn get(&self, name: &str) -> Option<Adapter> {
 		let adapters = self.0.read().unwrap();
-		adapters.values().find(|a| a.info.name == name).cloned()
+		adapters.values().find(|a| a.name == name).cloned()
 	}
 
 	pub fn get_all(&self) -> HashMap<u64, Adapter> {
@@ -37,7 +37,7 @@ impl AdapterStore {
 
 		let ids = adapters
 			.iter()
-			.filter(|(_, adapter)| adapter.info.name == name)
+			.filter(|(_, adapter)| adapter.name == name)
 			.map(|(id, _)| *id)
 			.collect::<Vec<u64>>();
 

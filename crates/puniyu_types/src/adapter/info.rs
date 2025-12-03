@@ -135,55 +135,172 @@ pub struct AdapterInfo {
 	pub connect_time: std::time::Duration,
 }
 
+
+#[derive(Debug, Default, Clone)]
+pub struct AdapterInfoBuilder {
+	name: Option<String>,
+	version: Option<Version>,
+	platform: Option<AdapterPlatform>,
+	standard: Option<AdapterStandard>,
+	protocol: Option<AdapterProtocol>,
+	communication: Option<AdapterCommunication>,
+	address: Option<String>,
+	connect_time: Option<std::time::Duration>,
+}
+
+impl AdapterInfoBuilder {
+	pub fn new() -> Self {
+		Self::default()
+	}
+
+	pub fn name(mut self, name: impl Into<String>) -> Self {
+		self.name = Some(name.into());
+		self
+	}
+
+	pub fn version(mut self, version: impl Into<Version>) -> Self {
+		self.version = Some(version.into());
+		self
+	}
+
+	pub fn platform(mut self, platform: AdapterPlatform) -> Self {
+		self.platform = Some(platform);
+		self
+	}
+
+	pub fn standard(mut self, standard: AdapterStandard) -> Self {
+		self.standard = Some(standard);
+		self
+	}
+
+	pub fn protocol(mut self, protocol: AdapterProtocol) -> Self {
+		self.protocol = Some(protocol);
+		self
+	}
+
+	pub fn communication(mut self, communication: AdapterCommunication) -> Self {
+		self.communication = Some(communication);
+		self
+	}
+
+	pub fn address(mut self, address: impl Into<String>) -> Self {
+		self.address = Some(address.into());
+		self
+	}
+
+	pub fn connect_time(mut self, connect_time: std::time::Duration) -> Self {
+		self.connect_time = Some(connect_time);
+		self
+	}
+
+	pub fn build(self) -> AdapterInfo {
+		AdapterInfo {
+			name: self.name.unwrap_or_default(),
+			version: self.version.unwrap_or_default(),
+			platform: self.platform.unwrap_or_default(),
+			standard: self.standard.unwrap_or_default(),
+			protocol: self.protocol.unwrap_or_default(),
+			communication: self.communication.unwrap_or_default(),
+			address: self.address,
+			connect_time: self.connect_time.unwrap_or_default(),
+		}
+	}
+}
+
+
+/// 创建 AdapterInfo 的便捷宏
+///
+/// # 示例
+/// ```rust,ignore
+/// let info = adapter_info!(
+///     name: "my_adapter",
+///     version: "1.0.0",
+///     platform: AdapterPlatform::QQ,
+///     standard: AdapterStandard::OneBotV11,
+///     protocol: AdapterProtocol::NapCat,
+///     communication: AdapterCommunication::WebSocketClient,
+///     connect_time: start_time
+/// );
+/// ```
 #[cfg(feature = "adapter")]
 #[macro_export]
 macro_rules! adapter_info {
-	(name: $name:expr, version: $version:expr, platform: $platform:expr, standard: $standard:expr, protocol: $protocol:expr, communication: $communication:expr, address: $address:expr, connect_time: $connect_time:expr) => {
-		AdapterInfo {
-			name: $name.to_string(),
-			version: $version.into(),
-			platform: $platform,
-			standard: $standard,
-			protocol: $protocol,
-			communication: $communication,
-			address: Some($address.to_string()),
-			connect_time: $connect_time,
-		}
+	(
+		name: $name:expr,
+		version: $version:expr,
+		platform: $platform:expr,
+		standard: $standard:expr,
+		protocol: $protocol:expr,
+		communication: $communication:expr,
+		address: $address:expr,
+		connect_time: $connect_time:expr
+	) => {
+		AdapterInfoBuilder::new()
+			.name($name)
+			.version($version)
+			.platform($platform)
+			.standard($standard)
+			.protocol($protocol)
+			.communication($communication)
+			.address($address)
+			.connect_time($connect_time)
+			.build()
 	};
-	(name: $name:expr, platform: $platform:expr, standard: $standard:expr, protocol: $protocol:expr, communication: $communication:expr, address: $address:expr, connect_time: $connect_time:expr) => {
-		AdapterInfo {
-			name: $name.to_string(),
-			version: env!("CARGO_PKG_VERSION").into(),
-			platform: $platform,
-			standard: $standard,
-			protocol: $protocol,
-			communication: $communication,
-			address: Some($address.to_string()),
-			connect_time: $connect_time,
-		}
+	(
+		name: $name:expr,
+		version: $version:expr,
+		platform: $platform:expr,
+		standard: $standard:expr,
+		protocol: $protocol:expr,
+		communication: $communication:expr,
+		connect_time: $connect_time:expr
+	) => {
+		AdapterInfoBuilder::new()
+			.name($name)
+			.version($version)
+			.platform($platform)
+			.standard($standard)
+			.protocol($protocol)
+			.communication($communication)
+			.connect_time($connect_time)
+			.build()
 	};
-	(name: $name:expr, version: $version:expr, platform: $platform:expr, standard: $standard:expr, protocol: $protocol:expr, communication: $communication:expr, connect_time: $connect_time:expr) => {
-		AdapterInfo {
-			name: $name.to_string(),
-			version: $version.into(),
-			platform: $platform,
-			standard: $standard,
-			protocol: $protocol,
-			communication: $communication,
-			address: None,
-			connect_time: $connect_time,
-		}
+	(
+		name: $name:expr,
+		platform: $platform:expr,
+		standard: $standard:expr,
+		protocol: $protocol:expr,
+		communication: $communication:expr,
+		address: $address:expr,
+		connect_time: $connect_time:expr
+	) => {
+		AdapterInfoBuilder::new()
+			.name($name)
+			.version(env!("CARGO_PKG_VERSION"))
+			.platform($platform)
+			.standard($standard)
+			.protocol($protocol)
+			.communication($communication)
+			.address($address)
+			.connect_time($connect_time)
+			.build()
 	};
-	(name: $name:expr, platform: $platform:expr, standard: $standard:expr, protocol: $protocol:expr, communication: $communication:expr, connect_time: $connect_time:expr) => {
-		AdapterInfo {
-			name: $name.to_string(),
-			version: env!("CARGO_PKG_VERSION").into(),
-			platform: $platform,
-			standard: $standard,
-			protocol: $protocol,
-			communication: $communication,
-			address: None,
-			connect_time: $connect_time,
-		}
+	(
+		name: $name:expr,
+		platform: $platform:expr,
+		standard: $standard:expr,
+		protocol: $protocol:expr,
+		communication: $communication:expr,
+		connect_time: $connect_time:expr
+	) => {
+		AdapterInfoBuilder::new()
+			.name($name)
+			.version(env!("CARGO_PKG_VERSION"))
+			.platform($platform)
+			.standard($standard)
+			.protocol($protocol)
+			.communication($communication)
+			.connect_time($connect_time)
+			.build()
 	};
 }
