@@ -86,7 +86,6 @@ impl Config {
 	pub fn bot() -> BotConfig {
 		BotConfig::get()
 	}
-
 }
 
 pub fn init_config() {
@@ -173,10 +172,7 @@ pub fn start_config_watcher() {
 			})
 			.unwrap();
 
-		debouncer
-			.watcher()
-			.watch(CONFIG_DIR.as_path(), notify::RecursiveMode::Recursive)
-			.unwrap();
+		debouncer.watcher().watch(CONFIG_DIR.as_path(), notify::RecursiveMode::Recursive).unwrap();
 
 		thread::park();
 	});
@@ -188,5 +184,29 @@ fn init_env() {
 			env::set_var("APP_NAME", app_name);
 		}
 		app_name.to_owned()
+	});
+	env::var("LOGGER_LEVEL").unwrap_or_else(|_| {
+		let config = Config::app().logger();
+		let level = config.level();
+		unsafe {
+			env::set_var("LOGGER_LEVEL", level);
+		}
+		level.to_owned()
+	});
+	env::var("LOGGER_RETENTION_DAYS").unwrap_or_else(|_| {
+		let config = Config::app().logger();
+		let retention_day = config.retention_days();
+		unsafe {
+			env::set_var("LOGGER_RETENTION_DAYS", retention_day.to_string());
+		}
+		retention_day.to_string()
+	});
+	env::var("LOGGER_FILE_ENABLE").unwrap_or_else(|_| {
+		let config = Config::app().logger();
+		let file_logging = config.enable_file();
+		unsafe {
+			env::set_var("LOGGER_FILE_ENABLE", file_logging.to_string());
+		}
+		file_logging.to_string()
 	});
 }
