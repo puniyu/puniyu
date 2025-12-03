@@ -1,39 +1,27 @@
+use crate::store::STORE;
 use puniyu_logger::{info, owo_colors::OwoColorize, warn};
 use puniyu_types::bot::Bot;
 use puniyu_types::bot::BotId;
-use std::collections::HashMap;
-use std::sync::{
-	Arc, LazyLock, RwLock,
-	atomic::{AtomicU64, Ordering},
-};
 
-static BOT_REGISTRY: LazyLock<BotRegistry> = LazyLock::new(BotRegistry::default);
-static BOT_INDEX: AtomicU64 = AtomicU64::new(0);
-
-#[derive(Clone, Default)]
-pub struct BotRegistry(Arc<RwLock<HashMap<u64, Bot>>>);
+pub struct BotRegistry;
 
 impl BotRegistry {
-	pub(crate) fn get_all() -> Vec<Bot> {
-		let bots = BOT_REGISTRY.0.read().unwrap();
-		bots.values().cloned().collect()
+	pub fn get_all() -> Vec<Bot> {
+		STORE.bot().get_all()
 	}
 
-	pub(crate) fn get_with_index(index: u64) -> Option<Bot> {
-		let bots = BOT_REGISTRY.0.read().unwrap();
-		bots.get(&index).cloned()
+	pub fn get_with_index(index: u64) -> Option<Bot> {
+		STORE.bot().get_with_index(index)
 	}
 
-	pub(crate) fn get_with_self_id(self_id: &str) -> Option<Bot> {
-		let bots = BOT_REGISTRY.0.read().unwrap();
-		bots.values().find(|bot| bot.account.self_id == self_id).cloned()
+	pub fn get_with_self_id(self_id: &str) -> Option<Bot> {
+		STORE.bot().get_with_self_id(self_id)
 	}
 
 	pub fn register(bot: Bot) -> u64 {
-		let index = BOT_INDEX.fetch_add(1, Ordering::Relaxed);
 		let self_id = bot.account.self_id.clone();
 		let adapter = bot.adapter.clone();
-		BOT_REGISTRY.0.write().unwrap().insert(index, bot);
+		let index = STORE.bot().insert(bot);
 		info!(
 			"{} [{}] 注册成功",
 			format!("[Bot: {}]", self_id).fg_rgb::<221, 160, 221>(),
@@ -43,9 +31,7 @@ impl BotRegistry {
 	}
 
 	pub fn unregister_with_index(index: u64) -> bool {
-		let mut bots = BOT_REGISTRY.0.write().unwrap();
-		let removed_bot = bots.remove(&index);
-		if let Some(bot) = removed_bot {
+		if let Some(bot) = STORE.bot().remove_with_index(index) {
 			info!(
 				"[Bot: index-{}][adapter:{} v{}] 卸载成功",
 				bot.account.self_id, bot.adapter.name, bot.adapter.version
@@ -57,19 +43,12 @@ impl BotRegistry {
 	}
 
 	pub fn unregister_with_id(id: &str) -> bool {
-		let mut bots = BOT_REGISTRY.0.write().unwrap();
-		let index_to_remove =
-			bots.iter().find(|(_, bot)| bot.account.self_id == id).map(|(index, _)| *index);
-
-		if let Some(index) = index_to_remove {
-			let removed_bot = bots.remove(&index);
-			if let Some(bot) = removed_bot {
-				info!(
-					"[Bot: {}][adapter:{} v{}] 卸载成功",
-					bot.account.self_id, bot.adapter.name, bot.adapter.version
-				);
-				return true;
-			}
+		if let Some(bot) = STORE.bot().remove_with_self_id(id) {
+			info!(
+				"[Bot: {}][adapter:{} v{}] 卸载成功",
+				bot.account.self_id, bot.adapter.name, bot.adapter.version
+			);
+			return true;
 		}
 		warn!("[Bot: id-{}] 卸载失败未找到指定的Bot", id);
 		false

@@ -23,28 +23,29 @@ impl From<Task> for tokio_cron_scheduler::Job {
 			.with_cron_job_type()
 			.with_schedule(task.builder.cron())
 			.unwrap()
-			.with_run_async(Box::new(move |_uuid, _lock| {
-				let builder = task.builder.clone();
+			.with_run_async(Box::new({
+				let task_name = task.builder.name().to_string();
 				let plugin_name = task.plugin_name.clone();
-				Box::pin(async move {
-					let task_name = builder.name().to_string();
-					let task_run = builder.run();
-					let start_time = Instant::now();
-					let tag_str = format!("[task:{}:{}]", plugin_name, task_name);
-					let tag = tag_str.fg_rgb::<255, 192, 203>();
-					info!("{} 开始执行", tag);
+				let builder = task.builder.clone();
+				move |_uuid, _lock| {
+					let task_name = task_name.clone();
+					let plugin_name = plugin_name.clone();
+					let builder = builder.clone();
+					Box::pin(async move {
+						let tag_str = format!("[task:{}:{}]", plugin_name, task_name);
+						let tag = tag_str.fg_rgb::<255, 192, 203>();
+						info!("{} 开始执行", tag);
 
-					let result = task_run.await;
-					let duration = start_time.elapsed().as_millis();
-					match result {
-						Ok(_) => {
-							info!("{} 执行完成,耗时: {}ms", tag, duration);
+						let start_time = Instant::now();
+						let result = builder.run().await;
+						let duration = start_time.elapsed().as_millis();
+
+						match result {
+							Ok(_) => info!("{} 执行完成,耗时: {}ms", tag, duration),
+							Err(e) => error!("{} 执行失败,耗时: {}ms, 错误: {}", tag, duration, e),
 						}
-						Err(e) => {
-							error!("{} 执行失败,耗时: {}ms, 错误: {}", tag, duration, e);
-						}
-					}
-				})
+					})
+				}
 			}))
 			.build()
 			.unwrap()

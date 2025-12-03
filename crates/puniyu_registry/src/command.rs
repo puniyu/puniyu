@@ -1,9 +1,7 @@
-mod store;
-
+use crate::store::STORE;
 use itertools::Itertools;
 use puniyu_types::command::CommandBuilder;
-use std::sync::{Arc, LazyLock, Mutex};
-use store::CommandStore;
+use std::sync::Arc;
 
 #[derive(Clone)]
 pub struct Command {
@@ -27,8 +25,6 @@ impl From<Command> for puniyu_types::command::Command {
 		}
 	}
 }
-static COMMAND_STORE: LazyLock<Arc<Mutex<CommandStore>>> =
-	LazyLock::new(|| Arc::new(Mutex::new(CommandStore::default())));
 
 pub struct CommandRegistry;
 
@@ -39,37 +35,37 @@ impl CommandRegistry {
 			prefix: prefix.map(|s| s.to_string()),
 			builder,
 		};
-		COMMAND_STORE.lock().unwrap().insert(command);
+		STORE.command().insert(command);
 	}
 
 	pub fn remove_with_id(id: u64) {
-		COMMAND_STORE.lock().unwrap().remove_with_id(id);
+		STORE.command().remove_with_id(id);
 	}
 
 	pub fn remove_with_name(name: &str) {
-		COMMAND_STORE.lock().unwrap().remove_with_name(name)
+		STORE.command().remove_with_name(name)
 	}
 
 	pub fn remove_with_plugin_name(plugin_name: &str) {
-		COMMAND_STORE.lock().unwrap().remove_with_plugin_name(plugin_name)
+		STORE.command().remove_with_plugin_name(plugin_name)
 	}
 	pub fn get_with_id(id: u64) -> Option<Arc<Command>> {
-		COMMAND_STORE.lock().unwrap().get_with_id(id)
+		STORE.command().get_with_id(id)
 	}
 
 	pub fn get_with_name(name: &str) -> Option<Arc<Command>> {
-		COMMAND_STORE.lock().unwrap().get_with_name(name)
+		STORE.command().get_with_name(name)
 	}
 
 	pub fn get_with_plugin(plugin_name: &str, name: &str) -> Option<Arc<Command>> {
-		COMMAND_STORE.lock().unwrap().get_with_plugin(plugin_name, name)
+		STORE.command().get_with_plugin(plugin_name, name)
 	}
 
 	pub fn get_all() -> Vec<Arc<Command>> {
-		COMMAND_STORE.lock().unwrap().get_all()
+		STORE.command().get_all()
 	}
 	pub fn get_plugins(command_name: &str) -> Vec<String> {
-		let command_list = COMMAND_STORE.lock().unwrap().get_all();
+		let command_list = STORE.command().get_all();
 		command_list
 			.iter()
 			.filter(|command| command.builder.name() == command_name)

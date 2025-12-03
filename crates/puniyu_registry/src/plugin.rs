@@ -1,10 +1,10 @@
 mod error;
-mod store;
 
 pub use error::Error;
 
 use crate::command::CommandRegistry;
 use crate::server::ServerRegistry;
+use crate::store::STORE;
 use crate::task::TaskRegistry;
 use convert_case::{Case, Casing};
 use futures::future::join_all;
@@ -16,8 +16,7 @@ use puniyu_library::{LibraryRegistry, libloading};
 use puniyu_logger::{SharedLogger, debug, error, owo_colors::OwoColorize, warn};
 use puniyu_types::plugin::{Plugin, PluginBuilder, PluginId, PluginType};
 use puniyu_types::version::Version;
-use std::sync::{Arc, LazyLock};
-use store::PluginStore;
+use std::sync::Arc;
 use tokio::fs;
 
 pub const VERSION: Version = Version {
@@ -25,8 +24,6 @@ pub const VERSION: Version = Version {
 	minor: env!("CARGO_PKG_VERSION_MINOR"),
 	patch: env!("CARGO_PKG_VERSION_PATCH"),
 };
-
-static PLUGIN_STORE: LazyLock<PluginStore> = LazyLock::new(PluginStore::default);
 
 macro_rules! create_plugin_info {
 	($name:expr, $version:expr, $author:expr) => {
@@ -61,7 +58,7 @@ impl PluginRegistry {
 					set_logger(&SharedLogger::new());
 					let setup_app_name: fn(name: String) = *lib.get(b"setup_app_name").unwrap();
 					setup_app_name(APP_NAME.get().unwrap().to_string());
-					let plugins = PLUGIN_STORE.get_all_plugins();
+					let plugins = STORE.plugin().get_all_plugins();
 					let plugin_name = plugin_builder.name();
 					let plugin_version = plugin_builder.version().to_string();
 					debug!(
@@ -84,7 +81,7 @@ impl PluginRegistry {
 							plugin_abi_version,
 							VERSION.to_string()
 						);
-						
+					
 
 						debug!(
 							"[{}:{}] 检测到配置，开始强制加载",
@@ -162,12 +159,12 @@ impl PluginRegistry {
 					create_data_dir(plugin_name).await;
 					create_resource_dir(plugin_name).await;
 					run_plugin_init(plugin_name, plugin_builder.init()).await?;
-					PLUGIN_STORE.insert(plugin_info);
+					STORE.plugin().insert(plugin_info);
 				}
 			}
 			// 静态插件
 			PluginType::Builder(plugin_builder) => {
-				let plugins = PLUGIN_STORE.get_all_plugins();
+				let plugins = STORE.plugin().get_all_plugins();
 				let plugin_name = plugin_builder.name();
 				let plugin_version = plugin_builder.version().to_string();
 				if plugins.iter().any(|(_, plugin)| plugin.name == plugin_name) {
@@ -259,7 +256,7 @@ impl PluginRegistry {
 				create_data_dir(plugin_name).await;
 				create_resource_dir(plugin_name).await;
 				run_plugin_init(plugin_name, plugin_builder.init()).await?;
-				PLUGIN_STORE.insert(plugin_info);
+				STORE.plugin().insert(plugin_info);
 			}
 		}
 		Ok(())
@@ -274,7 +271,32 @@ impl PluginRegistry {
 	#[inline]
 	pub async fn unload_plugin(plugin: impl Into<PluginId>) -> Result<bool, Error> {
 		let plugin_id = plugin.into();
-		let result = PLUGIN_STORE.remove_plugin(plugin_id).await;
+		let result = match plugin_id {
+			PluginId::Index(index) => {
+				let plugin_name = STORE.plugin().remove(index).map(|p| p.name);
+				if let Some(name) = plugin_name {
+					TaskRegistry::remove_task(name.as_str()).await;
+					CommandRegistry::remove_with_plugin_name(name.as_str());
+					ServerRegistry::remove(name.as_str());
+					let _ = puniyu_types::server::restart_server();
+					true
+				} else {
+					false
+				}
+			}
+			PluginId::Name(name) => {
+				let index = STORE.plugin().find_index_by_name(name.as_str());
+				if let Some(idx) = index {
+					TaskRegistry::remove_task(name.as_str()).await;
+					CommandRegistry::remove_with_plugin_name(name.as_str());
+					ServerRegistry::remove(name.as_str());
+					let _ = puniyu_types::server::restart_server();
+					STORE.plugin().remove(idx).is_some()
+				} else {
+					false
+				}
+			}
+		};
 		Ok(result)
 	}
 
@@ -282,14 +304,14 @@ impl PluginRegistry {
 	pub fn get_plugin(plugin: impl Into<PluginId>) -> Option<Plugin> {
 		let plugin_id = plugin.into();
 		match plugin_id {
-			PluginId::Index(index) => PLUGIN_STORE.get_plugin_with_index(index),
-			PluginId::Name(name) => PLUGIN_STORE.get_plugin_with_name(name.as_str()),
+			PluginId::Index(index) => STORE.plugin().get_plugin_with_index(index),
+			PluginId::Name(name) => STORE.plugin().get_plugin_with_name(name.as_str()),
 		}
 	}
 
 	#[inline]
 	pub fn get_all_plugins() -> Vec<Plugin> {
-		PLUGIN_STORE.get_all_plugins().into_values().collect()
+		STORE.plugin().get_all_plugins().into_values().collect()
 	}
 }
 
