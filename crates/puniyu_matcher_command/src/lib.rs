@@ -1,3 +1,4 @@
+mod cooldown;
 mod message;
 mod permission;
 mod reactive;
@@ -31,6 +32,10 @@ impl CommandMatcher {
 	/// 尝试匹配命令
 	fn try_match_command(event: &MessageEvent) -> Option<MatchResult> {
 		if !permission::check(event) {
+			return None;
+		}
+
+		if cooldown::is_cooling_down(event) {
 			return None;
 		}
 

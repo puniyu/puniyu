@@ -3,7 +3,7 @@ use crate::adapter::{AdapterApi, AdapterInfo, Result, SendMsgType};
 use crate::contact::ContactType;
 use crate::element::Message;
 
-#[derive(Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum BotId {
 	Index(u64),
 	SelfId(String),
@@ -36,6 +36,23 @@ pub struct Bot {
 	/// 账户信息
 	pub account: AccountInfo,
 }
+
+impl std::fmt::Debug for Bot {
+	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+		f.debug_struct("Bot")
+			.field("adapter", &self.adapter)
+			.field("account", &self.account)
+			.finish_non_exhaustive()
+	}
+}
+
+impl PartialEq for Bot {
+	fn eq(&self, other: &Self) -> bool {
+		self.adapter == other.adapter && self.account == other.account
+	}
+}
+
+impl Eq for Bot {}
 
 impl Bot {
 	pub async fn send_msg(&self, contact: ContactType, message: Message) -> Result<SendMsgType> {

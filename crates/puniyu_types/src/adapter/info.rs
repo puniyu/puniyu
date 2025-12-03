@@ -109,7 +109,7 @@ pub enum AdapterCommunication {
 	Other,
 }
 
-#[derive(Debug, Default, Clone)]
+#[derive(Debug, Default, Clone, PartialEq, Eq)]
 /// 适配器信息
 pub struct AdapterInfo {
 	/// 适配器名称 如lagrange-onebot
