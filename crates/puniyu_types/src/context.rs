@@ -4,7 +4,7 @@ use crate::command::ArgValue;
 use crate::contact::ContactType;
 use crate::element::{Message, receive::Elements};
 use crate::event::EventBase;
-use crate::event::message::{FriendMessage, GroupMessage, MessageBase, MessageEvent};
+use crate::event::message::{FriendMessage, GroupMessage, MessageEvent};
 use crate::sender::SenderType;
 use std::collections::HashMap;
 use std::sync::Arc;
@@ -38,17 +38,12 @@ impl MessageContext {
 		Self { event: Arc::from(event), args }
 	}
 
-	pub fn as_friend(&self) -> Option<FriendMessage> {
-		match &*self.event {
-			MessageEvent::Friend(ev) => Some(ev.clone()),
-			_ => None,
-		}
+	pub fn as_friend(&self) -> Option<&FriendMessage> {
+		self.event.as_friend()
 	}
-	pub fn as_group(&self) -> Option<GroupMessage> {
-		match &*self.event {
-			MessageEvent::Group(ev) => Some(ev.clone()),
-			_ => None,
-		}
+
+	pub fn as_group(&self) -> Option<&GroupMessage> {
+		self.event.as_group()
 	}
 
 	/// 获取参数值
@@ -68,52 +63,28 @@ impl MessageContext {
 		self.args.get(name)
 	}
 
-	/// 事件Id
-	pub fn event_id(&self) -> String {
-		match &*self.event {
-			MessageEvent::Friend(ev) => ev.event_id().to_string(),
-			MessageEvent::Group(ev) => ev.event_id().to_string(),
-		}
+	pub fn event_id(&self) -> &str {
+		self.event.event_id()
 	}
 
-	/// 事件时间
 	pub fn time(&self) -> u64 {
-		match &*self.event {
-			MessageEvent::Friend(ev) => ev.time(),
-			MessageEvent::Group(ev) => ev.time(),
-		}
+		self.event.time()
 	}
 
-	/// 事件类型
-	pub fn event(&self) -> String {
-		match &*self.event {
-			MessageEvent::Friend(ev) => ev.event().to_string(),
-			MessageEvent::Group(ev) => ev.event().to_string(),
-		}
+	pub fn event(&self) -> &str {
+		self.event.event()
 	}
 
-	/// 事件子类型
-	pub fn sub_event(&self) -> String {
-		match &*self.event {
-			MessageEvent::Friend(ev) => ev.sub_event().to_string(),
-			MessageEvent::Group(ev) => ev.sub_event().to_string(),
-		}
+	pub fn sub_event(&self) -> &str {
+		self.event.sub_event()
 	}
 
-	/// Bot自身Id
-	pub fn self_id(&self) -> String {
-		match &*self.event {
-			MessageEvent::Friend(ev) => ev.self_id().to_string(),
-			MessageEvent::Group(ev) => ev.self_id().to_string(),
-		}
+	pub fn self_id(&self) -> &str {
+		self.event.self_id()
 	}
 
-	/// 用户Id
-	pub fn user_id(&self) -> String {
-		match &*self.event {
-			MessageEvent::Friend(ev) => ev.user_id().to_string(),
-			MessageEvent::Group(ev) => ev.user_id().to_string(),
-		}
+	pub fn user_id(&self) -> &str {
+		self.event.user_id()
 	}
 
 	/// 联系人信息
@@ -132,25 +103,12 @@ impl MessageContext {
 		}
 	}
 
-	/// 消息元素
 	pub fn elements(&self) -> Vec<Elements> {
-		match &*self.event {
-			MessageEvent::Friend(ev) => ev.elements(),
-			MessageEvent::Group(ev) => ev.elements(),
-		}
-	}
-	/// 获取艾特用户
-	///
-	pub fn get_at(&self) -> Option<String> {
-		if let Some(at_list) = self.get_at_list() { at_list.first().cloned() } else { None }
+		self.event.elements()
 	}
 
-	/// 获取艾特列表
-	pub fn get_at_list(&self) -> Option<Vec<String>> {
-		match &*self.event {
-			MessageEvent::Friend(ev) => ev.get_at(),
-			MessageEvent::Group(ev) => ev.get_at(),
-		}
+	pub fn get_at(&self) -> Option<Vec<String>> {
+		self.event.get_at()
 	}
 
 	/// 是否为艾特全体成员
@@ -162,54 +120,22 @@ impl MessageContext {
 	pub fn mentions_me(&self) -> bool {
 		self.elements()
 			.iter()
-			.any(|e| matches!(e, Elements::At(at) if at.target_id.contains(&self.self_id())))
+			.any(|e| matches!(e, Elements::At(at) if at.target_id.contains(self.self_id())))
 	}
 
-	/// 获取图片
 	pub fn get_image(&self) -> Option<String> {
-		match &*self.event {
-			MessageEvent::Friend(ev) => ev.get_image(),
-			MessageEvent::Group(ev) => ev.get_image(),
-		}
+		self.event.get_image()
 	}
 
-	/// 获取语音元素
 	pub fn get_record(&self) -> Option<Vec<u8>> {
-		match &*self.event {
-			MessageEvent::Friend(ev) => ev.get_record(),
-			MessageEvent::Group(ev) => ev.get_record(),
-		}
+		self.event.get_record()
 	}
 
-	/// 获取回复id
 	pub fn get_reply_id(&self) -> Option<String> {
-		match &*self.event {
-			MessageEvent::Friend(ev) => ev.get_reply_id(),
-			MessageEvent::Group(ev) => ev.get_reply_id(),
-		}
+		self.event.get_reply_id()
 	}
-}
 
-#[cfg(feature = "context")]
-#[macro_export]
-macro_rules! create_context_bot {
-	($bot:expr, $contact:expr) => {
-		BotContext::new($bot, $contact)
-	};
-	($adapter:expr, $adapter_api:expr, $account:expr, $contact:expr) => {
-		let bot = Bot {
-			adapter: $adapter,
-			adapter_api: $adapter_api,
-			account: $account,
-		}
-		BotContext::new(bot, $contact)
-	};
-}
-
-#[cfg(feature = "context")]
-#[macro_export]
-macro_rules! create_message_event_context {
-	($event:expr, $args:expr) => {
-		MessageContext::new($event, $args)
-	};
+	pub fn is_master(&self) -> bool {
+		self.event.is_master()
+	}
 }

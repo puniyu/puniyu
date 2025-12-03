@@ -21,7 +21,7 @@ pub(crate) static APP_CONFIG: LazyLock<Arc<RwLock<AppConfig>>> = LazyLock::new(|
 });
 
 fn default_master() -> Vec<String> {
-	vec!["puniyu_adapter_console".to_string()]
+	vec!["console".to_string()]
 }
 
 fn default_prefix() -> String {
@@ -88,7 +88,7 @@ impl AppConfig {
 	}
 
 	/// 获取bot主人列表
-	pub fn masters() -> Vec<String> {
+	pub fn masters(&self) -> Vec<String> {
 		let config = APP_CONFIG.read().unwrap();
 		config.masters.clone()
 	}

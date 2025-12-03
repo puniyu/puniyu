@@ -1,12 +1,11 @@
+mod message;
+mod permission;
+mod reactive;
+
 use puniyu_config::Config;
-use puniyu_logger::{debug, info};
 use puniyu_registry::command::CommandRegistry;
 use puniyu_types::{
-	element::RawMessage,
-	event::{
-		Event, EventBase,
-		message::{MessageBase, MessageEvent},
-	},
+	event::{Event, message::MessageEvent},
 	matcher::Matcher,
 };
 
@@ -15,16 +14,13 @@ use puniyu_types::{
 pub struct MatchResult {
 	/// 匹配到的命令名称
 	pub command_name: String,
-	/// 命令参数部分（不包含命令名）
-	pub args_text: String,
+	/// 命令参数列表
+	pub args: Vec<String>,
 }
 
 impl MatchResult {
-	pub fn new(command_name: impl Into<String>, args_text: impl Into<String>) -> Self {
-		Self {
-			command_name: command_name.into(),
-			args_text: args_text.into(),
-		}
+	pub fn new(command_name: impl Into<String>, args: Vec<String>) -> Self {
+		Self { command_name: command_name.into(), args }
 	}
 }
 
@@ -32,109 +28,54 @@ impl MatchResult {
 pub struct CommandMatcher;
 
 impl CommandMatcher {
-	/// 检查是否通过黑白名单
-	/// - 白名单优先：如果白名单不为空，只允许白名单内的 ID
-	/// - 黑名单：如果在黑名单内，则拒绝
-	fn check_list(id: &str, enable_list: &[String], disable_list: &[String]) -> bool {
-		if !enable_list.is_empty() {
-			return enable_list.iter().any(|s| s == id);
-		}
-		!disable_list.iter().any(|s| s == id)
-	}
-
-	/// 检查消息权限（黑白名单）
-	fn check_permission(event: &MessageEvent) -> bool {
-		match event {
-			MessageEvent::Friend(m) => {
-				let user_id = m.user_id().to_string();
-				let config = Config::app().friend();
-				Self::check_list(&user_id, &config.enable_list(), &config.disable_list())
-			}
-			MessageEvent::Group(m) => {
-				let group_id = m.group_id().to_string();
-				let config = Config::app().group();
-				Self::check_list(&group_id, &config.enable_list(), &config.disable_list())
-			}
-		}
-	}
-
-	/// 记录消息日志
-	fn log(event: &MessageEvent) {
-		match event {
-			MessageEvent::Friend(m) => {
-				debug!("收到好友消息: {:#?}", m.elements());
-				info!(
-					"[Bot:{}] [好友消息:{}] {}",
-					m.self_id(),
-					m.user_id(),
-					m.elements().raw()
-				);
-			}
-			MessageEvent::Group(m) => {
-				debug!("收到群消息: {:#?}", m.elements());
-				info!(
-					"[Bot:{}] [群消息:{}-{}] {}",
-					m.self_id(),
-					m.group_id(),
-					m.user_id(),
-					m.elements().raw()
-				);
-			}
-		}
-	}
-
-	/// 从消息中提取纯文本内容
-	fn extract_text(event: &MessageEvent) -> String {
-		match event {
-			MessageEvent::Friend(m) => m
-				.elements()
-				.iter()
-				.filter_map(|e| e.as_text())
-				.collect::<Vec<_>>()
-				.join(" "),
-			MessageEvent::Group(m) => m
-				.elements()
-				.iter()
-				.filter_map(|e| e.as_text())
-				.collect::<Vec<_>>()
-				.join(" "),
-		}
-	}
-
 	/// 尝试匹配命令
-	fn try_match_command(message_event: &MessageEvent) -> Option<MatchResult> {
-		if !Self::check_permission(message_event) {
+	fn try_match_command(event: &MessageEvent) -> Option<MatchResult> {
+		if !permission::check(event) {
 			return None;
 		}
 
-		Self::log(message_event);
+		message::log(event);
 
-		let text = Self::extract_text(message_event).trim().to_string();
+		let text = message::extract_text(event).trim().to_string();
 		if text.is_empty() {
 			return None;
 		}
 
+		let (aliases, mode) = reactive::get_bot_config(event);
+		let (text, has_alias) = reactive::strip_bot_alias(&text, &aliases);
+
+		if !reactive::check_mode(event, &mode, has_alias) {
+			return None;
+		}
+
+		if text.is_empty() {
+			return None;
+		}
+
+		Self::match_commands(&text)
+	}
+
+	/// 匹配注册的命令
+	fn match_commands(text: &str) -> Option<MatchResult> {
 		let global_prefix = Config::app().prefix();
-		
+
 		for command in CommandRegistry::get_all() {
 			let after_global = if global_prefix.is_empty() {
-				text.clone()
+				text.to_string()
 			} else if let Some(stripped) = text.strip_prefix(&global_prefix) {
 				stripped.to_string()
 			} else {
 				continue;
 			};
 
-			let content = if let Some(plugin_prefix) = command.prefix.as_deref() {
-				if plugin_prefix.is_empty() {
-					after_global.clone()
-				} else if let Some(stripped) = after_global.strip_prefix(plugin_prefix) {
-					stripped.to_string()
-				} else {
-					continue;
+			let content = match command.prefix.as_deref() {
+				Some(prefix) if !prefix.is_empty() => {
+					match after_global.strip_prefix(prefix) {
+						Some(stripped) => stripped.to_string(),
+						None => continue,
+					}
 				}
-			} else {
-				after_global.clone()
+				_ => after_global,
 			};
 
 			let mut parts = content.splitn(2, char::is_whitespace);
@@ -145,11 +86,16 @@ impl CommandMatcher {
 
 			let command_name = command.builder.name();
 			let alias = command.builder.alias();
-			
+
 			let is_alias_match = alias.is_some_and(|a| a.contains(&input_name));
 			if input_name == command_name || is_alias_match {
-				let args_text = parts.next().unwrap_or("").trim().to_string();
-				return Some(MatchResult::new(command_name, args_text));
+				let args: Vec<String> = parts
+					.next()
+					.unwrap_or("")
+					.split_whitespace()
+					.map(String::from)
+					.collect();
+				return Some(MatchResult::new(command_name, args));
 			}
 		}
 

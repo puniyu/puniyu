@@ -176,6 +176,13 @@ impl Elements {
 			_ => None,
 		}
 	}
+
+	pub fn as_at(&self) -> Option<&AtElement> {
+		match self {
+			Elements::At(at_element) => Some(at_element),
+			_ => None,
+		}
+	}
 }
 
 impl RawMessage for Elements {

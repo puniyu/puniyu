@@ -1,4 +1,4 @@
-pub(crate) mod option;
+pub mod option;
 
 use puniyu_common::path::CONFIG_DIR;
 use puniyu_common::toml;
@@ -36,6 +36,12 @@ impl BotConfig {
 	pub fn get() -> Self {
 		BOT_CONFIG.read().unwrap().clone()
 	}
+
+	/// 获取全局配置
+	pub fn global(&self) -> BotOption { 
+		let config = BOT_CONFIG.read().unwrap();
+		config.global.clone()
+	} 
 
 	/// 获取bot配置
 	///

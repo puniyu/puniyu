@@ -4,6 +4,7 @@ use crate::element::receive::Elements;
 use crate::event::{EventBase, EventType};
 use crate::sender::FriendSender;
 use std::fmt;
+use puniyu_config::Config;
 
 #[derive(Debug, Clone)]
 pub struct FriendMessage {
@@ -35,7 +36,7 @@ impl FriendMessage {
 			message_id: message_builder.message_id,
 			elements: message_builder.elements,
 			contact: message_builder.contact,
-			sender: message_builder.sender,
+			sender: message_builder.sender
 		}
 	}
 }
@@ -85,6 +86,11 @@ impl MessageBase for FriendMessage {
 	fn elements(&self) -> Vec<Elements> {
 		self.elements.clone()
 	}
+
+	fn is_master(&self) -> bool {
+		let masters = Config::app().masters();
+		masters.contains(&self.user_id)
+	}
 }
 impl fmt::Display for FriendMessage {
 	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -102,6 +108,19 @@ impl fmt::Display for FriendMessage {
 #[macro_export]
 macro_rules! create_friend_message {
 	(
+		bot: $bot:expr,
+		event_id: $event_id:expr,
+		contact: $contact:expr,
+		self_id: $self_id:expr,
+		user_id: $user_id:expr,
+		message_id: $message_id:expr,
+		elements: $elements:expr,
+		sender: $sender:expr,
+		time: $time:expr $(,)?
+	) => {
+		create_friend_message!($bot, $event_id, $contact, $self_id, $user_id, $message_id, $elements, $sender, $time)
+	};
+	(
 		$bot:expr,
 		$event_id:expr,
 		$contact:expr,
@@ -110,7 +129,7 @@ macro_rules! create_friend_message {
 		$message_id:expr,
 		$elements:expr,
 		$sender:expr,
-		$time:expr
+		$time:expr $(,)?
 	) => {
 		let builder = MessageBuilder {
 			event_id: $event_id.to_string(),
@@ -120,7 +139,7 @@ macro_rules! create_friend_message {
 			sender: $sender,
 			time: $time,
 			message_id: $message_id.to_string(),
-			elements: $elements,
+			elements: $elements
 		};
 		let message = FriendMessage::new(builder);
 		let event = Event::Message(Box::new(MessageEvent::Friend(message)));

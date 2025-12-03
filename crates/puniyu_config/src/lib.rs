@@ -3,6 +3,7 @@ pub mod store;
 pub use registry::ConfigRegistry;
 mod app;
 mod bot;
+pub use bot::option::{BotOption, ReactiveMode};
 mod group;
 
 use crate::{

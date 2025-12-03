@@ -37,7 +37,7 @@ impl AdapterBuilder for Console {
 	async fn init(&self) -> Result<()> {
 		use std::time::{SystemTime, UNIX_EPOCH};
 
-		let bot_id = "puniyu_adapter_console";
+		let bot_id = "console";
 		let name = APP_NAME.get().unwrap();
 		let account_info = account_info!(
 			uin: bot_id,

@@ -4,6 +4,7 @@ use crate::element::receive::Elements;
 use crate::event::{EventBase, EventType};
 use crate::sender::GroupSender;
 use std::fmt;
+use puniyu_config::Config;
 
 #[derive(Debug, Clone)]
 pub struct GroupMessage {
@@ -90,6 +91,10 @@ impl MessageBase for GroupMessage {
 	fn elements(&self) -> Vec<Elements> {
 		self.elements.clone()
 	}
+	fn is_master(&self) -> bool {
+		let masters = Config::app().masters();
+		masters.contains(&self.user_id)
+	}
 }
 
 impl fmt::Display for GroupMessage {
@@ -108,6 +113,19 @@ impl fmt::Display for GroupMessage {
 #[macro_export]
 macro_rules! create_group_message {
 	(
+		bot: $bot:expr,
+		event_id: $event_id:expr,
+		contact: $contact:expr,
+		self_id: $self_id:expr,
+		user_id: $user_id:expr,
+		message_id: $message_id:expr,
+		elements: $elements:expr,
+		sender: $sender:expr,
+		time: $time:expr $(,)?
+	) => {
+		create_group_message!($bot, $event_id, $contact, $self_id, $user_id, $message_id, $elements, $sender, $time)
+	};
+	(
 		$bot:expr,
 		$event_id:expr,
 		$contact:expr,
@@ -116,7 +134,7 @@ macro_rules! create_group_message {
 		$message_id:expr,
 		$elements:expr,
 		$sender:expr,
-		$time:expr
+		$time:expr $(,)?
 	) => {
 		let builder = MessageBuilder {
 			event_id: $event_id.to_string(),
@@ -126,7 +144,7 @@ macro_rules! create_group_message {
 			sender: $sender,
 			time: $time,
 			message_id: $message_id.to_string(),
-			elements: $elements,
+			elements: $elements
 		};
 		let message = GroupMessage::new(builder);
 		let event = Event::Message(Box::new(MessageEvent::Group(message)));
