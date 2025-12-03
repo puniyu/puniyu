@@ -1,5 +1,21 @@
 # 变更日志
 
+## [0.7.0](https://github.com/puniyu/puniyu/compare/server-v0.6.0...server-v0.7.0) (2025-12-03)
+
+
+### 🔧 其他更新
+
+* **server:** Synchronize puniyu versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puniyu_common bumped from 0.6.0 to 0.7.0
+    * puniyu_types bumped from 0.6.0 to 0.7.0
+    * puniyu_registry bumped from 0.6.0 to 0.7.0
+
 ## [0.6.0](https://github.com/puniyu/puniyu/compare/server-v0.5.12...server-v0.6.0) (2025-12-02)
 
 

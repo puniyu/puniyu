@@ -1,5 +1,12 @@
 # 变更日志
 
+## [0.7.0](https://github.com/puniyu/puniyu/compare/macros-v0.6.0...macros-v0.7.0) (2025-12-03)
+
+
+### 🔧 其他更新
+
+* **macros:** Synchronize puniyu versions
+
 ## [0.6.0](https://github.com/puniyu/puniyu/compare/macros-v0.5.12...macros-v0.6.0) (2025-12-02)
 
 

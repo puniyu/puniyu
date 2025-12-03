@@ -1,5 +1,26 @@
 # 变更日志
 
+## [0.3.1](https://github.com/puniyu/puniyu/compare/adapter-console-v0.3.0...adapter-console-v0.3.1) (2025-12-03)
+
+
+### 🐛 错误修复
+
+* **console:** 处理控制台输入错误并优雅退出 ([667ce30](https://github.com/puniyu/puniyu/commit/667ce308ab764e374b05fe27ad132c8d5ff262c2))
+
+
+### ♻️ 代码重构
+
+* **adapter:** 重命名控制台适配器模块路径 ([5f9dcf3](https://github.com/puniyu/puniyu/commit/5f9dcf3c448225e54f1b3349b4746fb86fdf9897))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puniyu_adapter bumped from 0.6.0 to 0.7.0
+    * puniyu_core bumped from 0.6.0 to 0.7.0
+    * puniyu_common bumped from 0.6.0 to 0.7.0
+
 ## [0.3.0](https://github.com/puniyu/puniyu/compare/adapter-console-v0.2.13...adapter-console-v0.3.0) (2025-12-02)
 
 

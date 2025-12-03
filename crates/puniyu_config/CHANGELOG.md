@@ -1,5 +1,24 @@
 # 变更日志
 
+## [0.7.0](https://github.com/puniyu/puniyu/compare/config-v0.6.0...config-v0.7.0) (2025-12-03)
+
+
+### 🐛 错误修复
+
+* **config:** 修正应用初始化日志未正确应用 ([8c5380b](https://github.com/puniyu/puniyu/commit/8c5380b7a2e5c6f57f79b585eb8ece3bbfcee225))
+
+
+### ♻️ 代码重构
+
+* **adapter:** 重命名控制台适配器模块路径 ([5f9dcf3](https://github.com/puniyu/puniyu/commit/5f9dcf3c448225e54f1b3349b4746fb86fdf9897))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puniyu_common bumped from 0.6.0 to 0.7.0
+
 ## [0.6.0](https://github.com/puniyu/puniyu/compare/config-v0.5.12...config-v0.6.0) (2025-12-02)
 
 
