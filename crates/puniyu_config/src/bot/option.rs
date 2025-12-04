@@ -31,6 +31,7 @@ pub struct BotOption {
 }
 
 impl Default for BotOption {
+	#[inline]
 	fn default() -> Self {
 		Self {
 			cd: default_bot_cd(),

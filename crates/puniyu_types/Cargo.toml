@@ -22,6 +22,7 @@ async-trait = { workspace = true, optional = true }
 actix-web = { workspace = true, optional = true }
 flume = { workspace = true, optional = true }
 puniyu_config = { version = "0.6.0", path = "../puniyu_config", optional = true }
+derive_builder = { workspace = true, optional = true }
 
 [dev-dependencies]
 tokio = { workspace = true, features = ["full"] }
@@ -34,6 +35,7 @@ adapter = [
     "dep:reqwest",
     "dep:async-trait",
     "dep:puniyu_logger",
+    "dep:derive_builder",
     "version",
     "contact",
     "sender",

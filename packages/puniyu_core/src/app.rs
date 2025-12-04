@@ -80,6 +80,7 @@ impl AppBuilder {
 		}
 	}
 }
+
 pub struct App {
 	app_name: String,
 	app_logo: Vec<u8>,

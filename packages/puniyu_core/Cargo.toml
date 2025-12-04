@@ -15,7 +15,6 @@ include = ["src", "Cargo.toml", "README.md", "build.rs", "assets"]
 figlet-rs = "0.1.5"
 glob = "0.3.3"
 
-serde.workspace = true
 thiserror.workspace = true
 tokio.workspace = true
 async-trait.workspace = true

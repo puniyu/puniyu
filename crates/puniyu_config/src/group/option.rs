@@ -19,6 +19,7 @@ pub struct GroupOption {
 }
 
 impl Default for GroupOption {
+	#[inline]
 	fn default() -> Self {
 		Self {
 			cd: default_group_cd(),

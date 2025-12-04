@@ -1693,10 +1693,8 @@ version = "0.3.0"
 dependencies = [
  "async-trait",
  "puniyu_adapter",
- "puniyu_common",
  "puniyu_core",
  "rand",
- "serde",
 ]
 
 [[package]]
@@ -1753,7 +1751,6 @@ dependencies = [
  "puniyu_registry",
  "puniyu_server",
  "puniyu_types",
- "serde",
  "thiserror 2.0.17",
  "tokio",
 ]
@@ -1903,6 +1900,7 @@ version = "0.6.0"
 dependencies = [
  "actix-web",
  "async-trait",
+ "derive_builder",
  "flume",
  "puniyu_config",
  "puniyu_logger",

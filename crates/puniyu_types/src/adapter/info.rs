@@ -1,4 +1,5 @@
 use strum::{Display, EnumString, IntoStaticStr};
+use derive_builder::Builder;
 
 use crate::version::Version;
 
@@ -109,7 +110,8 @@ pub enum AdapterCommunication {
 	Other,
 }
 
-#[derive(Debug, Default, Clone, PartialEq, Eq)]
+#[derive(Debug, Default, Clone, PartialEq, Eq, Builder)]
+#[builder(setter(into))]
 /// 适配器信息
 pub struct AdapterInfo {
 	/// 适配器名称 如lagrange-onebot
@@ -136,76 +138,6 @@ pub struct AdapterInfo {
 }
 
 
-#[derive(Debug, Default, Clone)]
-pub struct AdapterInfoBuilder {
-	name: Option<String>,
-	version: Option<Version>,
-	platform: Option<AdapterPlatform>,
-	standard: Option<AdapterStandard>,
-	protocol: Option<AdapterProtocol>,
-	communication: Option<AdapterCommunication>,
-	address: Option<String>,
-	connect_time: Option<std::time::Duration>,
-}
-
-impl AdapterInfoBuilder {
-	pub fn new() -> Self {
-		Self::default()
-	}
-
-	pub fn name(mut self, name: impl Into<String>) -> Self {
-		self.name = Some(name.into());
-		self
-	}
-
-	pub fn version(mut self, version: impl Into<Version>) -> Self {
-		self.version = Some(version.into());
-		self
-	}
-
-	pub fn platform(mut self, platform: AdapterPlatform) -> Self {
-		self.platform = Some(platform);
-		self
-	}
-
-	pub fn standard(mut self, standard: AdapterStandard) -> Self {
-		self.standard = Some(standard);
-		self
-	}
-
-	pub fn protocol(mut self, protocol: AdapterProtocol) -> Self {
-		self.protocol = Some(protocol);
-		self
-	}
-
-	pub fn communication(mut self, communication: AdapterCommunication) -> Self {
-		self.communication = Some(communication);
-		self
-	}
-
-	pub fn address(mut self, address: impl Into<String>) -> Self {
-		self.address = Some(address.into());
-		self
-	}
-
-	pub fn connect_time(mut self, connect_time: std::time::Duration) -> Self {
-		self.connect_time = Some(connect_time);
-		self
-	}
-
-	pub fn build(self) -> AdapterInfo {
-		AdapterInfo {
-			name: self.name.unwrap_or_default(),
-			version: self.version.unwrap_or_default(),
-			platform: self.platform.unwrap_or_default(),
-			standard: self.standard.unwrap_or_default(),
-			protocol: self.protocol.unwrap_or_default(),
-			communication: self.communication.unwrap_or_default(),
-			address: self.address,
-			connect_time: self.connect_time.unwrap_or_default(),
-		}
-	}
-}
 
 
 /// 创建 AdapterInfo 的便捷宏
@@ -235,7 +167,7 @@ macro_rules! adapter_info {
 		address: $address:expr,
 		connect_time: $connect_time:expr
 	) => {
-		AdapterInfoBuilder::new()
+		AdapterInfoBuilder::default()
 			.name($name)
 			.version($version)
 			.platform($platform)
@@ -245,6 +177,7 @@ macro_rules! adapter_info {
 			.address($address)
 			.connect_time($connect_time)
 			.build()
+			.unwrap()
 	};
 	(
 		name: $name:expr,
@@ -255,7 +188,7 @@ macro_rules! adapter_info {
 		communication: $communication:expr,
 		connect_time: $connect_time:expr
 	) => {
-		AdapterInfoBuilder::new()
+		AdapterInfoBuilder::default()
 			.name($name)
 			.version($version)
 			.platform($platform)
@@ -264,6 +197,7 @@ macro_rules! adapter_info {
 			.communication($communication)
 			.connect_time($connect_time)
 			.build()
+			.unwrap()
 	};
 	(
 		name: $name:expr,
@@ -274,7 +208,7 @@ macro_rules! adapter_info {
 		address: $address:expr,
 		connect_time: $connect_time:expr
 	) => {
-		AdapterInfoBuilder::new()
+		AdapterInfoBuilder::default()
 			.name($name)
 			.version(env!("CARGO_PKG_VERSION"))
 			.platform($platform)
@@ -284,6 +218,7 @@ macro_rules! adapter_info {
 			.address($address)
 			.connect_time($connect_time)
 			.build()
+			.unwrap()
 	};
 	(
 		name: $name:expr,
@@ -293,7 +228,7 @@ macro_rules! adapter_info {
 		communication: $communication:expr,
 		connect_time: $connect_time:expr
 	) => {
-		AdapterInfoBuilder::new()
+		AdapterInfoBuilder::default()
 			.name($name)
 			.version(env!("CARGO_PKG_VERSION"))
 			.platform($platform)
@@ -302,5 +237,6 @@ macro_rules! adapter_info {
 			.communication($communication)
 			.connect_time($connect_time)
 			.build()
+			.unwrap()
 	};
 }
