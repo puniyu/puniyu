@@ -1,5 +1,24 @@
 # 变更日志
 
+## [0.7.0](https://github.com/puniyu/puniyu/compare/adapter-v0.6.0...adapter-v0.7.0) (2025-12-05)
+
+
+### ♻️ 代码重构
+
+* **adapter:** 重构适配器信息结构与初始化逻辑 ([2e45256](https://github.com/puniyu/puniyu/commit/2e4525633031ec401f058507218cb2731ac24479))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puniyu_config bumped from 0.6.0 to 0.7.0
+    * puniyu_macros bumped from 0.6.0 to 0.7.0
+    * puniyu_common bumped from 0.6.0 to 0.6.1
+    * puniyu_types bumped from 0.6.0 to 0.7.0
+    * puniyu_registry bumped from 0.6.0 to 0.7.0
+    * puniyu_bus bumped from 0.6.0 to 0.7.0
+
 ## [0.6.0](https://github.com/puniyu/puniyu/compare/adapter-v0.5.12...adapter-v0.6.0) (2025-12-02)
 
 

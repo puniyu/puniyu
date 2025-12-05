@@ -1,5 +1,17 @@
 # 变更日志
 
+## [0.7.0](https://github.com/puniyu/puniyu/compare/macros-v0.6.0...macros-v0.7.0) (2025-12-05)
+
+
+### ✨ 新功能
+
+* **command:** 添加命令权限控制功能 ([cc0013a](https://github.com/puniyu/puniyu/commit/cc0013aff04d8efea0b9cdda3f11eae4d1eac97b))
+
+
+### ♻️ 代码重构
+
+* **adapter:** 重构适配器信息结构与初始化逻辑 ([2e45256](https://github.com/puniyu/puniyu/commit/2e4525633031ec401f058507218cb2731ac24479))
+
 ## [0.6.0](https://github.com/puniyu/puniyu/compare/macros-v0.5.12...macros-v0.6.0) (2025-12-02)
 
 
