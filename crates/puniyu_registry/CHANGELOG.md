@@ -1,5 +1,28 @@
 # 变更日志
 
+## [0.7.0](https://github.com/puniyu/puniyu/compare/registry-v0.6.0...registry-v0.7.0) (2025-12-05)
+
+
+### ✨ 新功能
+
+* **command:** 添加命令权限控制功能 ([cc0013a](https://github.com/puniyu/puniyu/commit/cc0013aff04d8efea0b9cdda3f11eae4d1eac97b))
+
+
+### ♻️ 代码重构
+
+* **adapter:** 重构适配器信息结构与初始化逻辑 ([2e45256](https://github.com/puniyu/puniyu/commit/2e4525633031ec401f058507218cb2731ac24479))
+* **registry:** 重构注册表存储结构 ([2627428](https://github.com/puniyu/puniyu/commit/2627428175d8eb79830ec3c98cd8cc7120bc0909))
+* **server:** 将服务器命令通道从 tokio mpsc 迁移至 flume ([1345cae](https://github.com/puniyu/puniyu/commit/1345caefb4b07f094d00521fd9286eb6b33b9ab5))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puniyu_common bumped from 0.6.0 to 0.6.1
+    * puniyu_types bumped from 0.6.0 to 0.7.0
+    * puniyu_config bumped from 0.6.0 to 0.7.0
+
 ## [0.6.0](https://github.com/puniyu/puniyu/compare/registry-v0.5.12...registry-v0.6.0) (2025-12-02)
 
 
