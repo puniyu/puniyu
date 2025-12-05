@@ -2,7 +2,7 @@ use super::{MessageBase, MessageBuilder, MessageSubType};
 use crate::contact::GroupContact;
 use crate::element::receive::Elements;
 use crate::event::{EventBase, EventType};
-use crate::sender::GroupSender;
+use crate::sender::{GroupSender, Role};
 use std::fmt;
 use puniyu_config::Config;
 
@@ -42,6 +42,14 @@ impl GroupMessage {
 
 	pub fn group_id(&self) -> &str {
 		&self.contact.peer
+	}
+
+	pub fn is_admin(&self) -> bool {
+		matches!(self.sender.role, Role::Admin)
+	}
+
+	pub fn is_owner(&self) -> bool {
+		matches!(self.sender.role, Role::Member)
 	}
 }
 

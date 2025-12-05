@@ -1709,7 +1709,6 @@ dependencies = [
  "puniyu_logger",
  "puniyu_matcher_command",
  "puniyu_types",
- "strum",
  "tokio",
 ]
 

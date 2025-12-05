@@ -4,7 +4,7 @@ use puniyu_logger::{info, owo_colors::OwoColorize};
 use puniyu_matcher_command::MatchResult;
 use puniyu_registry::command::CommandRegistry;
 use puniyu_types::bot::Bot;
-use puniyu_types::command::{Arg, ArgMode, ArgType, ArgValue, HandlerAction};
+use puniyu_types::command::{Arg, ArgMode, ArgType, ArgValue, HandlerAction, Permission};
 use puniyu_types::context::{BotContext, MessageContext};
 use puniyu_types::event::{Event, EventBase, message::MessageEvent};
 use puniyu_types::handler::Handler;
@@ -154,6 +154,13 @@ impl CommandHandler {
 		let Some(command) = CommandRegistry::get_with_name(command_name) else {
 			return;
 		};
+
+		let permission = command.builder.permission();
+		if permission == Permission::Master && !message_event.is_master() {
+			let _ = bot_ctx.reply("呜喵～这是只有主人才能用的命令哦!".into()).await;
+			return;
+		}
+
 		let arg_defs = command.builder.args();
 
 		let parsed_args = match ArgParser::parse(command_name, args, &arg_defs) {

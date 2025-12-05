@@ -22,6 +22,7 @@ impl From<Command> for puniyu_types::command::Command {
 			rank: cmd.builder.rank(),
 			prefix: cmd.prefix,
 			alias: cmd.builder.alias(),
+			permission: cmd.builder.permission(),
 		}
 	}
 }

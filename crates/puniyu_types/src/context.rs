@@ -46,6 +46,13 @@ impl MessageContext {
 		self.event.as_group()
 	}
 
+	pub fn is_group(&self) -> bool {
+		self.event.is_group()
+	}
+	pub fn is_friend(&self) -> bool {
+		self.event.is_friend()
+	}
+
 	/// 获取参数值
 	///
 	/// ## 示例

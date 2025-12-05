@@ -7,6 +7,7 @@ pub struct CommandArgs {
 	pub desc: syn::LitStr,
 	pub args: Vec<Arg>,
 	pub alias: Vec<syn::LitStr>,
+	pub permission: syn::LitStr,
 }
 
 impl Default for CommandArgs {
@@ -17,6 +18,7 @@ impl Default for CommandArgs {
 			desc: syn::LitStr::new("", proc_macro2::Span::call_site()),
 			args: Vec::new(),
 			alias: Vec::new(),
+			permission: syn::LitStr::new("all", proc_macro2::Span::call_site()),
 		}
 	}
 }
@@ -47,6 +49,7 @@ impl Parse for CommandArgs {
 					bracketed!(content in input);
 					cmd_args.alias = parse_alias(&content)?;
 				}
+				"permission" => cmd_args.permission = input.parse()?,
 				_ => {
 					return Err(syn::Error::new_spanned(
 						&key,

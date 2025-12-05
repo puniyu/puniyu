@@ -480,6 +480,7 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
 /// | `rank` | `u64` | | `500` | 优先级，数值越小优先级越高 |
 /// | `alias` | `[&str]` | | `[]` | 命令别名列表 |
 /// | `args` | `[Arg]` | | `[]` | 命令参数列表 |
+/// | `permission` | `&str` | | `"all"` | 权限等级：`"all"` 所有人，`"master"` 仅主人 |
 ///
 /// # 命令别名
 ///
@@ -557,6 +558,19 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
 /// async fn ping(bot: &BotContext, ev: &MessageContext) -> HandlerResult {
 ///     // !ping 或 !p 都可以触发
 ///     bot.reply("pong!".into()).await?;
+///     HandlerAction::done()
+/// }
+/// ```
+///
+/// ## 权限控制
+///
+/// 使用 `permission` 限制命令的使用权限，权限不足时会自动提示：
+///
+/// ```rust,ignore
+/// #[command(name = "reload", desc = "重载配置", permission = "master")]
+/// async fn reload(bot: &BotContext, ev: &MessageContext) -> HandlerResult {
+///     // 仅主人可执行此命令，其他用户会收到"权限不足"提示
+///     bot.reply("配置已重载".into()).await?;
 ///     HandlerAction::done()
 /// }
 /// ```
@@ -646,6 +660,7 @@ pub fn command(args: TokenStream, item: TokenStream) -> TokenStream {
 	let command_name = &args.name;
 	let command_rank = &args.rank;
 	let command_desc = &args.desc;
+	let command_permission = &args.permission;
 	let command_alias = if args.alias.is_empty() {
 		quote! { None }
 	} else {
@@ -691,6 +706,10 @@ pub fn command(args: TokenStream, item: TokenStream) -> TokenStream {
 
 			fn alias(&self) -> Option<Vec<&'static str>> {
 				#command_alias
+			}
+
+			fn permission(&self) -> ::puniyu_plugin::Permission {
+				#command_permission.parse().unwrap_or_default()
 			}
 
 			async fn run(&self, bot: &::puniyu_plugin::BotContext, ev: &::puniyu_plugin::MessageContext) -> ::puniyu_plugin::HandlerResult {
