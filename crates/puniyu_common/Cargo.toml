@@ -20,6 +20,9 @@ puniyu_system_info = { version = "1.5.2", features = ["gpu"] }
 serde.workspace = true
 thiserror.workspace = true
 
+[features]
+stable = []
+
 
 
 

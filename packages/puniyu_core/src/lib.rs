@@ -10,7 +10,6 @@ mod app;
 pub use app::AppBuilder;
 pub use puniyu_common::APP_NAME;
 pub mod plugin;
-mod version;
-pub use version::VERSION;
+pub use puniyu_common::VERSION;
 pub use async_trait::async_trait;
 pub use inventory;

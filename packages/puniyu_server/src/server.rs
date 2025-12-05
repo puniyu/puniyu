@@ -1,10 +1,15 @@
+use crate::BaseResponse;
 use crate::{api, info, middleware};
 use actix_web::middleware::{NormalizePath, TrailingSlash};
-use actix_web::{App, HttpServer, web};
+use actix_web::{App, HttpResponse, HttpServer, http::StatusCode, web};
 use puniyu_common::APP_NAME;
+use puniyu_common::path::RESOURCE_DIR;
 use puniyu_registry::server::ServerRegistry;
+use puniyu_types::server::{
+	SERVER_COMMAND_TX, ServerCommand, get_server_config, save_server_config,
+};
 use std::net::{IpAddr, Ipv4Addr};
-use puniyu_types::server::{ServerCommand, SERVER_COMMAND_TX, get_server_config, save_server_config};
+use std::sync::LazyLock;
 
 fn get_host_from_env() -> IpAddr {
 	std::env::var("HTTP_HOST")
@@ -17,7 +22,30 @@ fn get_port_from_env() -> u16 {
 	std::env::var("HTTP_PORT").ok().and_then(|s| s.parse().ok()).unwrap_or(33720)
 }
 
-pub async fn run_server_with_control(host: Option<IpAddr>, port: Option<u16>) -> std::io::Result<()> {
+async fn logo() -> HttpResponse {
+	static LOGO: LazyLock<Option<Vec<u8>>> =
+		LazyLock::new(|| std::fs::read(RESOURCE_DIR.join("logo.png")).ok());
+
+	let logo_data = crate::LOGO
+		.get()
+		.and_then(|v| if v.is_empty() { None } else { Some(v.clone()) })
+		.or_else(|| LOGO.as_ref().cloned());
+
+	match logo_data {
+		Some(data) => HttpResponse::Ok().content_type("image/png").body(data),
+		None => BaseResponse::<()> {
+			code: StatusCode::NOT_FOUND.as_u16(),
+			data: None,
+			message: "Logo not found".to_string(),
+		}
+		.send_json(),
+	}
+}
+
+pub async fn run_server_with_control(
+	host: Option<IpAddr>,
+	port: Option<u16>,
+) -> std::io::Result<()> {
 	let (tx, rx) = flume::bounded::<ServerCommand>(16);
 	let _ = SERVER_COMMAND_TX.set(tx);
 	let init_host = host.unwrap_or_else(get_host_from_env);
@@ -37,9 +65,14 @@ pub async fn run_server_with_control(host: Option<IpAddr>, port: Option<u16>) ->
 				.wrap(middleware::AccessLog)
 				.wrap(NormalizePath::new(TrailingSlash::Trim))
 				.service(
-					web::resource("/").to(|| async { format!("welcome {}", APP_NAME.get().unwrap()) }),
+					web::resource("/")
+						.to(|| async { format!("welcome {}", APP_NAME.get().unwrap()) }),
 				)
-				.configure(api::logo_route);
+				.service(web::resource("/logo").route(web::get().to(logo)))
+				.service(web::resource("/logo.png").route(web::get().to(logo)))
+				.configure(|cfg| {
+					cfg.service(web::scope("/api/v1").configure(api::register_routes));
+				});
 
 			ServerRegistry::get_all()
 				.into_iter()

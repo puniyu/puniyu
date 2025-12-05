@@ -132,6 +132,7 @@ pub struct AdapterInfo {
 	/// `127.0.0.1:7000`
 	/// `127.0.0.1:7000/ws`
 	/// `127.0.0.1:7001`
+	#[builder(default)]
 	pub address: Option<String>,
 	/// 连接时间
 	pub connect_time: std::time::Duration,

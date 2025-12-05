@@ -5,9 +5,11 @@ pub use path::*;
 pub mod toml;
 pub use toml::{delete_config, merge_config, read_config, update_config, write_config};
 pub mod system;
+mod version;
+pub use version::VERSION;
 
 use std::sync::OnceLock;
-/// 当前程序名称, 也就是此实例的名称
+/// 当前应用名称, 也就是此实例的名称
 ///
 /// ## 示例
 /// ```rust
