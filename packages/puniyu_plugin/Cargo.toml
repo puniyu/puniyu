@@ -30,3 +30,4 @@ puniyu_types = { version = "0.6.0", path = "../../crates/puniyu_types", default-
 puniyu_registry = { version = "0.6.0", path = "../../crates/puniyu_registry", default-features = false, features = [
   "plugin",
 ] }
+puniyu_bus = { version = "0.6.0", path = "../../crates/puniyu_bus" }

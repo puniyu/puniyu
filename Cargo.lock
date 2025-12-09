@@ -1664,6 +1664,7 @@ dependencies = [
  "puniyu_adapter_console",
  "puniyu_core",
  "puniyu_plugin_basic",
+ "puniyu_plugin_server",
  "tokio",
 ]
 
@@ -1820,6 +1821,7 @@ dependencies = [
  "actix-web",
  "async-trait",
  "inventory",
+ "puniyu_bus",
  "puniyu_common",
  "puniyu_config",
  "puniyu_logger",
@@ -1836,6 +1838,15 @@ version = "0.1.0"
 dependencies = [
  "puniyu_core",
  "puniyu_plugin",
+]
+
+[[package]]
+name = "puniyu_plugin_server"
+version = "0.1.0"
+dependencies = [
+ "actix-web",
+ "puniyu_plugin",
+ "serde_json",
 ]
 
 [[package]]

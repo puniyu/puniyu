@@ -1,4 +1,4 @@
-pub use puniyu_bus::{EVENT_BUS, EventBus, send_event, setup_event_bus};
+pub use puniyu_bus::{EVENT_BUS, EventBus, send_event};
 pub use puniyu_macros::{adapter, adapter_config as config};
 pub use puniyu_registry::bot::BotRegistry;
 pub use puniyu_registry::{register_bot, unregister_bot};

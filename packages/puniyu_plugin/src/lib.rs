@@ -17,6 +17,7 @@ pub use puniyu_types::plugin::PluginBuilder;
 pub use puniyu_types::server::ServerType;
 pub use puniyu_types::task::TaskBuilder;
 pub use puniyu_types::version::Version;
+pub use puniyu_bus::{EventBus, EVENT_BUS};
 pub use serde_json;
 pub use toml;
 

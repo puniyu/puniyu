@@ -5,6 +5,7 @@ async fn main() {
 		let app = AppBuilder::new()
 			.with_adapter(&puniyu_adapter_console::Adapter)
 			.with_plugin(&puniyu_plugin_basic::Plugin)
+			.with_plugin(&puniyu_plugin_server::Plugin)
 			.build();
 		app.run().await;
 }

@@ -89,7 +89,3 @@ pub fn stop_event_bus() {
 		bus.stop();
 	}
 }
-
-pub fn setup_event_bus(bus: Arc<EventBus>) {
-	EVENT_BUS.get_or_init(|| bus);
-}

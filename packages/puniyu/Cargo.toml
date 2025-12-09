@@ -15,6 +15,7 @@ tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
 puniyu_core = { path = "../puniyu_core" }
 puniyu_adapter_console = { path = "../../adapters/puniyu_adapter_console" }
 puniyu_plugin_basic = { path = "../../plugins/puniyu_plugin_basic" }
+puniyu_plugin_server = { path = "../../plugins/puniyu_plugin_server" }
 
 [[bin]]
 name = "puniyu"

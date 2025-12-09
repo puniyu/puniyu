@@ -12,28 +12,38 @@ mod plugin;
 #[cfg(any(feature = "plugin", feature = "command", feature = "task"))]
 use plugin::{CommandArgs, PluginArg, TaskArgs};
 
+#[cfg(any(feature = "adapter", feature = "plugin"))]
+fn parse_struct_input(item: TokenStream) -> syn::Result<syn::ItemStruct> {
+	syn::parse(item).map_err(|e| {
+		syn::Error::new(e.span(), "呜哇~这个宏只能用在结构体上！杂鱼~")
+	})
+}
+
+#[cfg(any(feature = "adapter", feature = "plugin"))]
+fn parse_config_name(args: TokenStream, struct_name: &syn::Ident) -> syn::Result<String> {
+	use convert_case::{Case, Casing};
+	if args.is_empty() {
+		Ok(struct_name.to_string().to_case(Case::Lower))
+	} else {
+		syn::parse::<syn::LitStr>(args)
+			.map(|lit| lit.value())
+			.map_err(|e| syn::Error::new(e.span(), "呜哇~配置名称必须是字符串字面量！杂鱼~"))
+	}
+}
+
 #[cfg(feature = "adapter")]
 #[proc_macro_attribute]
 pub fn adapter_config(args: TokenStream, item: TokenStream) -> TokenStream {
-	use convert_case::{Case, Casing};
-	let input_struct = if let Ok(struct_item) = syn::parse::<syn::ItemStruct>(item.clone()) {
-		struct_item
-	} else {
-		return syn::Error::new_spanned(
-			proc_macro2::TokenStream::from(item),
-			"呜哇~这个宏只能用在结构体上！杂鱼~",
-		)
-		.to_compile_error()
-		.into();
+	let input_struct = match parse_struct_input(item) {
+		Ok(s) => s,
+		Err(e) => return e.to_compile_error().into(),
 	};
 
 	let struct_name = &input_struct.ident;
 
-	let config_name = if args.is_empty() {
-		struct_name.to_string().to_case(Case::Lower)
-	} else {
-		let name_lit: syn::LitStr = syn::parse(args).expect("呜哇~配置名称必须是字符串字面量！杂鱼~");
-		name_lit.value()
+	let config_name = match parse_config_name(args, struct_name) {
+		Ok(name) => name,
+		Err(e) => return e.to_compile_error().into(),
 	};
 	let adapter_name = env!("CARGO_PKG_NAME");
 
@@ -80,15 +90,9 @@ pub fn adapter_config(args: TokenStream, item: TokenStream) -> TokenStream {
 #[cfg(feature = "adapter")]
 #[proc_macro_attribute]
 pub fn adapter(_: TokenStream, item: TokenStream) -> TokenStream {
-	let input_struct = if let Ok(struct_item) = syn::parse::<syn::ItemStruct>(item.clone()) {
-		struct_item
-	} else {
-		return syn::Error::new_spanned(
-			proc_macro2::TokenStream::from(item),
-			"呜哇~这个宏只能用在结构体上！杂鱼~",
-		)
-		.to_compile_error()
-		.into();
+	let input_struct = match parse_struct_input(item) {
+		Ok(s) => s,
+		Err(e) => return e.to_compile_error().into(),
 	};
 
 	let struct_name = &input_struct.ident;
@@ -152,25 +156,16 @@ pub fn adapter(_: TokenStream, item: TokenStream) -> TokenStream {
 #[cfg(feature = "plugin")]
 #[proc_macro_attribute]
 pub fn plugin_config(args: TokenStream, item: TokenStream) -> TokenStream {
-	use convert_case::{Case, Casing};
-	let input_struct = if let Ok(struct_item) = syn::parse::<syn::ItemStruct>(item.clone()) {
-		struct_item
-	} else {
-		return syn::Error::new_spanned(
-			proc_macro2::TokenStream::from(item),
-			"呜哇~这个宏只能用在结构体上！杂鱼~",
-		)
-		.to_compile_error()
-		.into();
+	let input_struct = match parse_struct_input(item) {
+		Ok(s) => s,
+		Err(e) => return e.to_compile_error().into(),
 	};
 
 	let struct_name = &input_struct.ident;
 
-	let config_name = if args.is_empty() {
-		struct_name.to_string().to_case(Case::Lower)
-	} else {
-		let name_lit: syn::LitStr = syn::parse(args).expect("呜哇~配置名称必须是字符串字面量！杂鱼~");
-		name_lit.value()
+	let config_name = match parse_config_name(args, struct_name) {
+		Ok(name) => name,
+		Err(e) => return e.to_compile_error().into(),
 	};
 	let plugin_name = quote! { env!("CARGO_PKG_NAME") };
 
@@ -458,8 +453,14 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
 
 		#[cfg(feature = "cdylib")]
 		#[unsafe(no_mangle)]
-		pub extern "C" fn setup_app_name(name: String) {
-			 ::puniyu_plugin::APP_NAME.get_or_init(|| name);
+		pub unsafe extern "C" fn setup_app_name(name: String) {
+			::puniyu_plugin::APP_NAME.get_or_init(|| name);
+		}
+
+		#[cfg(feature = "cdylib")]
+		#[unsafe(no_mangle)]
+		pub unsafe extern "C" fn setup_event_bus(bus: ::std::sync::Arc<::puniyu_plugin::EventBus>) {
+			::puniyu_plugin::EVENT_BUS.get_or_init(|| bus);
 		}
 
 	};
