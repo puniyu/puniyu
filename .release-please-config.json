@@ -112,10 +112,6 @@
       "release-type": "rust",
       "component": "types"
     },
-    "crates/puniyu_bus": {
-      "release-type": "rust",
-      "component": "event-bus"
-    },
     "crates/puniyu_registry": {
       "release-type": "rust",
       "component": "registry"
@@ -127,6 +123,10 @@
     "crates/puniyu_handler_command": {
       "release-type": "rust",
       "component": "handler-command"
+    },
+    "crates/puniyu_bus": {
+      "release-type": "rust",
+      "component": "event-bus"
     },
     "packages/puniyu_server": {
       "release-type": "rust",

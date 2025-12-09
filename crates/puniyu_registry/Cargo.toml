@@ -26,7 +26,6 @@ puniyu_common = { version = "0.6.0", path = "../puniyu_common", optional = true 
 puniyu_types = { version = "0.6.0", path = "../puniyu_types", default-features = false, optional = true }
 puniyu_library = { version = "0.5.1", path = "../puniyu_library", optional = true }
 puniyu_config = { version = "0.6.0", path = "../puniyu_config", optional = true }
-puniyu_bus = { version = "0.6.0", path = "../puniyu_bus", optional = true }
 
 [dev-dependencies]
 tokio = { workspace = true, features = ["full"] }
@@ -63,7 +62,6 @@ plugin = [
   "dep:convert_case",
   "dep:puniyu_common",
   "dep:puniyu_config",
-  "dep:puniyu_bus",
   "dep:thiserror",
   "dep:futures",
   "dep:puniyu_library",
@@ -73,6 +71,7 @@ plugin = [
   "puniyu_types/plugin",
   "puniyu_types/server",
   "puniyu_types/version",
+  "puniyu_types/bus",
   "task",
   "command",
   "server",

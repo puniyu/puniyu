@@ -13,8 +13,8 @@ use puniyu_common::path::{PLUGIN_CONFIG_DIR, PLUGIN_DATA_DIR, PLUGIN_RESOURCE_DI
 use puniyu_common::{merge_config, read_config, write_config};
 use puniyu_config::ConfigRegistry;
 use puniyu_library::{LibraryRegistry, libloading};
-use puniyu_bus::EVENT_BUS;
 use puniyu_logger::{SharedLogger, debug, error, owo_colors::OwoColorize, warn};
+use puniyu_types::bus::EVENT_BUS;
 use puniyu_types::plugin::{Plugin, PluginBuilder, PluginId, PluginType};
 use puniyu_types::version::Version;
 use std::sync::Arc;
@@ -59,9 +59,9 @@ impl PluginRegistry {
 					set_logger(&SharedLogger::new());
 					let setup_app_name: fn(name: String) = *lib.get(b"setup_app_name").unwrap();
 					setup_app_name(APP_NAME.get().unwrap().to_string());
-					let setup_event_bus: fn(Arc<puniyu_bus::EventBus>) =
-						*lib.get(b"setup_event_bus").unwrap();
 					if let Some(bus) = EVENT_BUS.get() {
+						let setup_event_bus: fn(Arc<puniyu_types::bus::EventBus>) =
+							*lib.get(b"setup_event_bus").unwrap();
 						setup_event_bus(bus.clone());
 					}
 					let plugins = STORE.plugin().get_all_plugins();

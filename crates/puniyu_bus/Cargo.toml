@@ -15,9 +15,7 @@ tokio = { workspace = true, features = ["macros"] }
 puniyu_logger.workspace = true
 
 puniyu_types = { version = "0.6.0", path = "../puniyu_types", default-features = false, features = [
-  "event",
-  "context",
-  "bot",
+  "bus",
   "matcher",
   "handler",
 ] }

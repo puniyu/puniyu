@@ -23,6 +23,7 @@ actix-web = { workspace = true, optional = true }
 flume = { workspace = true, optional = true }
 puniyu_config = { version = "0.6.0", path = "../puniyu_config", optional = true }
 derive_builder = { workspace = true, optional = true }
+tokio = { workspace = true, optional = true }
 
 [dev-dependencies]
 tokio = { workspace = true, features = ["full"] }
@@ -57,6 +58,7 @@ handler = ["dep:async-trait", "event", "bot"]
 matcher = ["event"]
 version = ["dep:serde"]
 config = ["dep:toml"]
+bus = ["dep:tokio", "dep:puniyu_logger", "bot", "event"]
 full = [
     "adapter",
     "event",
@@ -74,4 +76,5 @@ full = [
     "matcher",
     "version",
     "config",
+    "bus",
 ]
