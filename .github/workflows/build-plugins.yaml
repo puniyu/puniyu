@@ -1,4 +1,4 @@
-name: Build Lib
+name: Build Plugins
 
 on:
   workflow_call:
@@ -15,7 +15,6 @@ jobs:
           - runner: windows-latest
             target: aarch64-pc-windows-msvc
             label: windows-aarch64
-
     steps:
       - name: 检出仓库
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
@@ -30,22 +29,21 @@ jobs:
           save-cache: true
           prefix-key: puniyu-plugins
 
-      - name: 构建basic
-        shell: bash
-        run: |
-          cargo build --release --target ${{ matrix.platform.target }} --features cdylib --manifest-path plugins/${{ env.APP_NAME }}/Cargo.toml
-          mv target/${{ matrix.platform.target }}/release/${{ env.APP_NAME }}.dll target/${{ matrix.platform.target }}/release/${{ env.APP_NAME }}-${{ matrix.platform.label }}.dll
-        env:
-          APP_NAME: puniyu_plugin_basic
-
-      - name: 上传构建产物 basic
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+      - name: 构建 puniyu_plugin_basic
+        uses: ./.github/actions/build-plugin
         with:
-          name: "${{ env.APP_NAME }}-${{ matrix.platform.label }}"
-          path: |
-            target/${{ matrix.platform.target }}/release/${{ env.APP_NAME }}-${{ matrix.platform.label }}.dll
-        env:
-          APP_NAME: puniyu_plugin_basic
+          target: ${{ matrix.platform.target }}
+          label: ${{ matrix.platform.label }}
+          plugin: puniyu_plugin_basic
+          extension: dll
+
+      - name: 构建 puniyu_plugin_server
+        uses: ./.github/actions/build-plugin
+        with:
+          target: ${{ matrix.platform.target }}
+          label: ${{ matrix.platform.label }}
+          plugin: puniyu_plugin_server
+          extension: dll
 
   build_macos:
     runs-on: ${{ matrix.platform.runner }}
@@ -58,7 +56,6 @@ jobs:
           - runner: macos-latest
             target: aarch64-apple-darwin
             label: macos-aarch64
-
     steps:
       - name: 检出仓库
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
@@ -73,26 +70,24 @@ jobs:
           save-cache: true
           prefix-key: puniyu-plugins
 
-      - name: 构建basic
-        shell: bash
-        run: |
-          cargo build --release --target ${{ matrix.platform.target }} --features cdylib --manifest-path plugins/${{ env.APP_NAME }}/Cargo.toml
-          mv target/${{ matrix.platform.target }}/release/lib${{ env.APP_NAME }}.dylib target/${{ matrix.platform.target }}/release/${{ env.APP_NAME }}-${{ matrix.platform.label }}.dylib
-        env:
-          APP_NAME: puniyu_plugin_basic
-
-      - name: 上传构建产物 basic
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+      - name: 构建 puniyu_plugin_basic
+        uses: ./.github/actions/build-plugin
         with:
-          name: "${{ env.APP_NAME }}-${{ matrix.platform.label }}"
-          path: |
-            target/${{ matrix.platform.target }}/release/${{ env.APP_NAME }}-${{ matrix.platform.label }}.dylib
-        env:
-          APP_NAME: puniyu_plugin_basic
+          target: ${{ matrix.platform.target }}
+          label: ${{ matrix.platform.label }}
+          plugin: puniyu_plugin_basic
+          extension: dylib
+
+      - name: 构建 puniyu_plugin_server
+        uses: ./.github/actions/build-plugin
+        with:
+          target: ${{ matrix.platform.target }}
+          label: ${{ matrix.platform.label }}
+          plugin: puniyu_plugin_server
+          extension: dylib
 
   build_linux:
     runs-on: ${{ matrix.platform.runner }}
-    container: ${{ matrix.platform.container }}
     strategy:
       matrix:
         platform:
@@ -102,7 +97,6 @@ jobs:
           - runner: ubuntu-24.04-arm
             target: aarch64-unknown-linux-gnu
             label: linux-aarch64
-
     steps:
       - name: 检出仓库
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
@@ -117,19 +111,18 @@ jobs:
           save-cache: true
           prefix-key: puniyu-plugins
 
-      - name: 构建basic
-        shell: bash
-        run: |
-          cargo build --release --target ${{ matrix.platform.target }} --features cdylib --manifest-path plugins/${{ env.APP_NAME }}/Cargo.toml
-          mv target/${{ matrix.platform.target }}/release/lib${{ env.APP_NAME }}.so target/${{ matrix.platform.target }}/release/${{ env.APP_NAME }}-${{ matrix.platform.label }}.so
-        env:
-          APP_NAME: puniyu_plugin_basic
-
-      - name: 上传构建产物 basic
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+      - name: 构建 puniyu_plugin_basic
+        uses: ./.github/actions/build-plugin
         with:
-          name: "${{ env.APP_NAME }}-${{ matrix.platform.label }}"
-          path: |
-            target/${{ matrix.platform.target }}/release/${{ env.APP_NAME }}-${{ matrix.platform.label }}.so
-        env:
-          APP_NAME: puniyu_plugin_basic
+          target: ${{ matrix.platform.target }}
+          label: ${{ matrix.platform.label }}
+          plugin: puniyu_plugin_basic
+          extension: so
+
+      - name: 构建 puniyu_plugin_server
+        uses: ./.github/actions/build-plugin
+        with:
+          target: ${{ matrix.platform.target }}
+          label: ${{ matrix.platform.label }}
+          plugin: puniyu_plugin_server
+          extension: so

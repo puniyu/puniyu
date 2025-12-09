@@ -1,0 +1,33 @@
+name: Build Plugin
+description: 构建单个插件
+
+inputs:
+  target:
+    description: 'Rust 编译目标'
+    required: true
+  label:
+    description: '平台标签'
+    required: true
+  plugin:
+    description: '插件名称'
+    required: true
+  extension:
+    description: '库文件扩展名 (dll/dylib/so)'
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: 构建 ${{ inputs.plugin }}
+      shell: bash
+      run: |
+        cargo build --release --target ${{ inputs.target }} --features cdylib --manifest-path plugins/${{ inputs.plugin }}/Cargo.toml
+        PREFIX=$([[ "${{ inputs.extension }}" == "dll" ]] && echo "" || echo "lib")
+        mv target/${{ inputs.target }}/release/${PREFIX}${{ inputs.plugin }}.${{ inputs.extension }} \
+           target/${{ inputs.target }}/release/${{ inputs.plugin }}-${{ inputs.label }}.${{ inputs.extension }}
+
+    - name: 上传构建产物 ${{ inputs.plugin }}
+      uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+      with:
+        name: "${{ inputs.plugin }}-${{ inputs.label }}"
+        path: target/${{ inputs.target }}/release/${{ inputs.plugin }}-${{ inputs.label }}.${{ inputs.extension }}
