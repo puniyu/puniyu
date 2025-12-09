@@ -152,6 +152,10 @@
       "release-type": "rust",
       "component": "plugin-basic"
     },
+    "plugins/puniyu_plugin_server": {
+      "release-type": "rust",
+      "component": "plugin-server"
+    },
     "packages/puniyu": {
       "release-type": "rust",
       "component": "puniyu"

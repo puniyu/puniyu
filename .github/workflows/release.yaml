@@ -37,8 +37,11 @@ jobs:
       core: ${{ steps.release-please.outputs['packages/puniyu_core--release_created'] }}
       adapter_console: ${{ steps.release-please.outputs['adapters/puniyu_adapter_console--release_created'] }}
       plugin_basic: ${{ steps.release-please.outputs['plugins/puniyu_plugin_basic--release_created'] }}
+      plugin_server: ${{ steps.release-please.outputs['plugins/puniyu_plugin_server--release_created'] }}
       puniyu: ${{ steps.release-please.outputs['packages/puniyu--release_created'] }}
       tag_name: ${{ steps.release-please.outputs['packages/puniyu--tag_name'] }}
+      plugin_basic_tag_name: ${{ steps.release-please.outputs['plugins/puniyu_plugin_basic--tag_name'] }}
+      plugin_server_tag_name: ${{ steps.release-please.outputs['plugins/puniyu_plugin_server--tag_name'] }}
     steps:
       - name: 获取token
         uses: actions/create-github-app-token@7e473efe3cb98aa54f8d4bac15400b15fad77d94 # v2.2.0
@@ -167,9 +170,13 @@ jobs:
         if: needs.release.outputs.plugin_basic
         run: cargo publish --package puniyu_plugin_basic --registry crates-io
 
+      - name: 发布 plugin_server
+        if: needs.release.outputs.plugin_server
+        run: cargo publish --package puniyu_plugin_server --registry crates-io
+
 
   publish-github-release:
-    needs: [ release, build ]
+    needs: [ release, build, build-plugins ]
     if: ${{ needs.release.outputs.puniyu }}
     runs-on: ubuntu-latest
     steps:
@@ -183,42 +190,30 @@ jobs:
       - name: 下载构建产物
         uses: dawidd6/action-download-artifact@ac66b43f0e6a346234dd65d4d0c8fbb31cb316e5 # v11
         with:
-          name: "^${{ env.APP_NAME }}.*"
+          name: "^(${{ env.APP_NAME }}|puniyu_plugin).*"
           name_is_regexp: true
           skip_unpack: true
 
-      - name: 上传Release
+      - name: 上传主程序 Release
+        if: ${{ needs.release.outputs.puniyu }}
         uses: softprops/action-gh-release@a06a81a03ee405af7f2048a818ed3f03bbf83c7b # v2.5.0
         with:
           token: ${{ steps.app-token.outputs.token }}
-          files: |
-            ${{ env.APP_NAME }}-*
+          files: ${{ env.APP_NAME }}-*
           tag_name: ${{ needs.release.outputs.tag_name }}
 
-  publish-github-release-plugins:
-    needs: [ release, build-plugins ]
-    if: ${{ needs.release.outputs.puniyu }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: 获取token
-        uses: actions/create-github-app-token@7e473efe3cb98aa54f8d4bac15400b15fad77d94 # v2.2.0
-        id: app-token
-        with:
-          app-id: ${{ secrets.APP_ID }}
-          private-key: ${{ secrets.APP_PRIVATE_KEY }}
-
-      - name: 下载构建产物
-        uses: dawidd6/action-download-artifact@ac66b43f0e6a346234dd65d4d0c8fbb31cb316e5 # v11
-        with:
-          name: "^${{ env.APP_NAME }}-plugin-.*"
-          name_is_regexp: true
-          skip_unpack: true
-
-      - name: 上传plugin-basic
-        uses: softprops/action-gh-release@a06a81a03ee405af7f2048a818ed3f03bbf83c7b # v2.5.0
+      - name: 上传 plugin_basic Release
         if: ${{ needs.release.outputs.plugin_basic }}
+        uses: softprops/action-gh-release@a06a81a03ee405af7f2048a818ed3f03bbf83c7b # v2.5.0
         with:
           token: ${{ steps.app-token.outputs.token }}
-          files: |
-            ${{ env.APP_NAME }}-plugin-basic*
-          tag_name: ${{ needs.release.outputs.tag_name }}
+          files: puniyu_plugin_basic-*
+          tag_name: ${{ needs.release.outputs.plugin_basic_tag_name }}
+
+      - name: 上传 plugin_server Release
+        if: ${{ needs.release.outputs.plugin_server }}
+        uses: softprops/action-gh-release@a06a81a03ee405af7f2048a818ed3f03bbf83c7b # v2.5.0
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          files: puniyu_plugin_server-*
+          tag_name: ${{ needs.release.outputs.plugin_server_tag_name }}
