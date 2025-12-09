@@ -49,26 +49,20 @@ impl LibraryRegistry {
 		store.get(name).cloned()
 	}
 
-	pub fn remove_library(name: &str) {
+	pub fn remove_library(name: &str) -> Result<PathBuf, Error> {
 		let mut store = LIBRARY_STORE.lock().unwrap();
-		let _ = store.remove(name);
-	}
-
-	pub fn reload_library(name: &str) -> Result<(), Error> {
-		let mut store = LIBRARY_STORE.lock().unwrap();
-
 		let lib_info = store.remove(name).ok_or_else(|| Error::NotFound(name.to_string()))?;
-
-		let lib_path = lib_info.path.clone();
 
 		if Arc::strong_count(&lib_info) > 1 {
 			store.insert(name.to_string(), lib_info);
 			return Err(Error::InUse(name.to_string()));
 		}
 
-		let library_info: LibraryInfo = lib_path.into();
-		store.insert(name.to_string(), Arc::new(library_info));
+		Ok(lib_info.path.clone())
+	}
 
-		Ok(())
+	pub fn reload_library(name: &str) -> Result<(), Error> {
+		let path = Self::remove_library(name)?;
+		Self::load_library(&path)
 	}
 }
