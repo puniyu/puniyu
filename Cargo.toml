@@ -37,6 +37,7 @@ reqwest = { version = "0.12.24", default-features = false, features = ["json", "
 derive_builder = { version = "0.20.2" }
 
 puniyu_logger = { version = "0.6.4" }
+puniyu_system_info = { version = "1.5.2" }
 
 [profile.release]
 lto = "thin"

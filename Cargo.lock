@@ -1750,6 +1750,7 @@ dependencies = [
  "puniyu_logger",
  "puniyu_registry",
  "puniyu_server",
+ "puniyu_system_info",
  "puniyu_types",
  "thiserror 2.0.17",
  "tokio",
@@ -1836,6 +1837,7 @@ dependencies = [
 name = "puniyu_plugin_basic"
 version = "0.1.0"
 dependencies = [
+ "puniyu_common",
  "puniyu_core",
  "puniyu_plugin",
 ]

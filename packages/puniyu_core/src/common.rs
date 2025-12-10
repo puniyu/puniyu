@@ -1,23 +1,14 @@
-use crate::system::BotStatusInfo;
-use std::{thread, time::Duration};
+use puniyu_system_info::ProcessInfo;
+use std::time::Duration;
 
-/// 等待一段时间
-///
-/// # 参数
-///
-/// * `ms` - 等待的时长，单位为毫秒
-pub fn sleep(ms: u64) {
-	thread::sleep(Duration::from_millis(ms));
-}
 
-/// 获取系统运行时间
+/// 获取应用运行时间
 ///
 /// # 返回
 ///
-/// * `String` - 系统运行时间
-pub fn uptime() -> String {
-	let time = BotStatusInfo::default().run_time;
-	format_duration(Duration::from_secs(time))
+/// * `u64` - 应用运行时间，时间戳，单位秒
+pub fn uptime() -> u64 {
+	ProcessInfo::default().run_time
 }
 
 pub(crate) fn format_duration(duration: Duration) -> String {
