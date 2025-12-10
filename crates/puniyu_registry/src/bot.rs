@@ -23,9 +23,9 @@ impl BotRegistry {
 		let adapter = bot.adapter.clone();
 		let index = STORE.bot().insert(bot);
 		info!(
-			"{} [{}] 注册成功",
-			format!("[Bot: {}]", self_id).fg_rgb::<221, 160, 221>(),
-			format!("adapter:{} v{}", adapter.name, adapter.version).fg_rgb::<255, 182, 193>()
+			"[{}] [{}] 注册成功",
+			format!("Bot: {}", self_id).fg_rgb::<221, 160, 221>(),
+			format!("adapter:{}", adapter.name).fg_rgb::<255, 182, 193>()
 		);
 		index
 	}

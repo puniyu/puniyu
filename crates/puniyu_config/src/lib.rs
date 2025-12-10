@@ -11,7 +11,7 @@ use crate::{
 	bot::{BOT_CONFIG, BotConfig},
 	group::{GROUP_CONFIG, GroupConfig},
 };
-use notify_debouncer_mini::{DebounceEventResult, new_debouncer, notify};
+use notify_debouncer_full::{DebounceEventResult, new_debouncer, notify};
 use puniyu_common::Error;
 use puniyu_common::path::LOG_DIR;
 use puniyu_common::{
@@ -118,62 +118,60 @@ pub fn start_config_watcher() {
 		debug!("[Config] 配置文件监听器已启动");
 
 		let mut debouncer =
-			new_debouncer(Duration::from_secs(2), |res: DebounceEventResult| match res {
+			new_debouncer(Duration::from_secs(2), None, |res: DebounceEventResult| match res {
 				Ok(events) => {
-					let paths = events
-						.iter()
-						.map(|e| e.path.display().to_string())
-						.collect::<Vec<String>>();
-
-					info!("[Config] 文件变更: {}", paths.join(", "));
-
 					for event in events.iter() {
-						if let Some(file_name) = event.path.file_name().and_then(|n| n.to_str()) {
-							match file_name {
-								"app.toml" => {
-									reload_config("app", &mut *APP_CONFIG.write().unwrap())
-										.map_err(|e| error!("[Config] 重载App配置失败: {}", e))
-										.unwrap();
-								}
-								"bot.toml" => {
-									reload_config("bot", &mut *BOT_CONFIG.write().unwrap())
-										.map_err(|e| error!("[Config] 重载Bot配置失败: {}", e))
-										.unwrap();
-								}
-								"group.toml" => {
-									reload_config("group", &mut *GROUP_CONFIG.write().unwrap())
-										.map_err(|e| error!("[Config] 重载Group配置失败: {}", e))
-										.unwrap();
-								}
-								_ => {
-									reload_config("app", &mut *APP_CONFIG.write().unwrap())
-										.map_err(|e| error!("[Config] 重载App配置失败: {}", e))
-										.unwrap();
-									reload_config("bot", &mut *BOT_CONFIG.write().unwrap())
-										.map_err(|e| error!("[Config] 重载Bot配置失败: {}", e))
-										.unwrap();
-									reload_config("group", &mut *GROUP_CONFIG.write().unwrap())
-										.map_err(|e| error!("[Config] 重载Group配置失败: {}", e))
-										.unwrap();
-								}
-							}
+						if !matches!(
+							event.event.kind,
+							notify::EventKind::Modify(_)
+								| notify::EventKind::Create(_)
+								| notify::EventKind::Remove(_)
+						) {
+							continue;
+						}
 
-							if ConfigRegistry::all().iter().any(|c| c.path == event.path)
-								&& let Some(name) = event.path.file_stem().and_then(|s| s.to_str())
-								&& let Some(dir) = event.path.parent()
-								&& let Ok(value) = read_config::<toml::Value>(dir, name)
-							{
-								ConfigRegistry::update(&event.path, value.clone());
-								debug!("[Config] 更新配置: {:#?}", value.clone());
+						for path in event.event.paths.iter() {
+							info!("[Config] 文件变更: {}", path.display());
+
+							if let Some(file_name) = path.file_name().and_then(|n| n.to_str()) {
+								match file_name {
+									"app.toml" => {
+										reload_config("app", &mut *APP_CONFIG.write().unwrap())
+											.map_err(|e| error!("[Config] 重载App配置失败: {}", e))
+											.unwrap();
+									}
+									"bot.toml" => {
+										reload_config("bot", &mut *BOT_CONFIG.write().unwrap())
+											.map_err(|e| error!("[Config] 重载Bot配置失败: {}", e))
+											.unwrap();
+									}
+									"group.toml" => {
+										reload_config("group", &mut *GROUP_CONFIG.write().unwrap())
+											.map_err(|e| {
+												error!("[Config] 重载Group配置失败: {}", e)
+											})
+											.unwrap();
+									}
+									_ => {}
+								}
+
+								if ConfigRegistry::all().iter().any(|c| c.path == *path)
+									&& let Some(name) = path.file_stem().and_then(|s| s.to_str())
+									&& let Some(dir) = path.parent()
+									&& let Ok(value) = read_config::<toml::Value>(dir, name)
+								{
+									ConfigRegistry::update(path, value.clone());
+									debug!("[Config] 更新配置: {:#?}", value.clone());
+								}
 							}
 						}
 					}
 				}
-				Err(e) => error!("[Config] 监听错误: {}", e),
+				Err(e) => error!("[Config] 监听错误: {:?}", e),
 			})
 			.unwrap();
 
-		debouncer.watcher().watch(CONFIG_DIR.as_path(), notify::RecursiveMode::Recursive).unwrap();
+		debouncer.watch(CONFIG_DIR.as_path(), notify::RecursiveMode::Recursive).unwrap();
 
 		thread::park();
 	});

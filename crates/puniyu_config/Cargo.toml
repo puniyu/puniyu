@@ -17,5 +17,5 @@ serde.workspace = true
 serde_repr.workspace = true
 
 puniyu_common = { version = "0.6.0", path = "../puniyu_common" }
-notify-debouncer-mini = { version = "0.7.0", features = ["flume"] }
+notify-debouncer-full = { version = "0.6.0", features = ["flume"] }
 
