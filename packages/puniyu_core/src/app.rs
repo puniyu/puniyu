@@ -1,6 +1,5 @@
 use crate::{
 	VERSION, common,
-	common::format_duration,
 	logger::log_init,
 	logger::{OwoColorize, debug, error, info},
 };
@@ -17,6 +16,7 @@ use std::env::current_dir;
 use std::path::{Path, PathBuf};
 use std::{env, env::consts::DLL_EXTENSION};
 use tokio::{fs, signal};
+
 
 pub struct AppBuilder {
 	app_name: String,
@@ -90,6 +90,8 @@ pub struct App {
 
 impl App {
 	pub async fn run(&self) {
+		use crate::common::format_duration;
+		use std::time::Duration;
 		print_start_log();
 		init_config();
 		log_init();
@@ -122,7 +124,7 @@ impl App {
 		info!(
 			"{} 本次运行时间: {}",
 			app_name.to_case(Case::Lower).fg_rgb::<64, 224, 208>(),
-			common::uptime().fg_rgb::<255, 127, 80>()
+			format_duration(Duration::from_secs(common::uptime())).fg_rgb::<255, 127, 80>()
 		);
 	}
 }

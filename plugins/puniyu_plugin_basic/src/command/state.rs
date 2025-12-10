@@ -1,6 +1,6 @@
 use puniyu_core::APP_NAME;
 use puniyu_core::VERSION;
-use puniyu_core::system::BotStatusInfo;
+use puniyu_common::system::BotStatusInfo;
 use puniyu_plugin::prelude::*;
 
 #[command(name = "state")]

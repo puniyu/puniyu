@@ -4,6 +4,7 @@ pub mod path;
 pub use path::*;
 pub mod toml;
 pub use toml::{delete_config, merge_config, read_config, update_config, write_config};
+#[cfg(feature = "system-info")]
 pub mod system;
 mod version;
 pub use version::VERSION;

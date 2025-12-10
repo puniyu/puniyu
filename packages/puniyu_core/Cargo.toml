@@ -21,6 +21,8 @@ async-trait.workspace = true
 inventory.workspace = true
 convert_case.workspace = true
 
+puniyu_system_info.workspace = true
+
 puniyu_logger = { workspace = true, optional = true }
 puniyu_server = { version = "0.6.0", path = "../puniyu_server", optional = true, default-features = false }
 puniyu_config = { version = "0.6.0", path = "../../crates/puniyu_config" }
