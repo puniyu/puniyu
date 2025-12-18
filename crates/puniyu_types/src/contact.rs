@@ -35,6 +35,7 @@ pub trait Contact: Send + Sync + Debug + Clone {
 
 /// 联系人枚举
 #[derive(Debug, Clone, PartialEq, Display, IntoStaticStr, Deserialize, Serialize)]
+#[serde(rename_all = "lowercase", tag = "type", content = "field0")]
 pub enum ContactType {
 	/// 好友联系人
 	#[strum(serialize = "friend")]

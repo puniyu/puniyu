@@ -1652,7 +1652,6 @@ dependencies = [
  "puniyu_adapter_console",
  "puniyu_core",
  "puniyu_plugin_basic",
- "puniyu_plugin_server",
  "tokio",
 ]
 

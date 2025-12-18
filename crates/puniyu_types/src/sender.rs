@@ -87,6 +87,7 @@ pub trait Sender: Send + Sync {
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
+#[serde(rename_all = "lowercase", tag = "type", content = "field0")]
 pub enum SenderType {
 	Friend(FriendSender),
 	Group(GroupSender),

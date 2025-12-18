@@ -42,7 +42,7 @@ impl AdapterStore {
 			.collect::<Vec<u64>>();
 
 		BotRegistry::get_all().into_iter().filter(|bot| bot.adapter.name == name).for_each(|bot| {
-			BotRegistry::unregister_with_id(bot.account.self_id.as_str());
+			BotRegistry::unregister_with_id(bot.account.uin);
 		});
 		for id in ids {
 			adapters.remove(&id);

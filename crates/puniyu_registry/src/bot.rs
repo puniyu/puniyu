@@ -19,7 +19,7 @@ impl BotRegistry {
 	}
 
 	pub fn register(bot: Bot) -> u64 {
-		let self_id = bot.account.self_id.clone();
+		let self_id = bot.account.uin.clone();
 		let adapter = bot.adapter.clone();
 		let index = STORE.bot().insert(bot);
 		info!(
@@ -34,7 +34,7 @@ impl BotRegistry {
 		if let Some(bot) = STORE.bot().remove_with_index(index) {
 			info!(
 				"[Bot: index-{}][adapter:{} v{}] 卸载成功",
-				bot.account.self_id, bot.adapter.name, bot.adapter.version
+				bot.account.uin, bot.adapter.name, bot.adapter.version
 			);
 			return true;
 		}
@@ -42,15 +42,16 @@ impl BotRegistry {
 		false
 	}
 
-	pub fn unregister_with_id(id: &str) -> bool {
-		if let Some(bot) = STORE.bot().remove_with_self_id(id) {
+	pub fn unregister_with_id(id: impl Into<String>) -> bool {
+		let bot_id = id.into();
+		if let Some(bot) = STORE.bot().remove_with_self_id(bot_id.as_str()) {
 			info!(
 				"[Bot: {}][adapter:{} v{}] 卸载成功",
-				bot.account.self_id, bot.adapter.name, bot.adapter.version
+				bot.account.uin, bot.adapter.name, bot.adapter.version
 			);
 			return true;
 		}
-		warn!("[Bot: id-{}] 卸载失败未找到指定的Bot", id);
+		warn!("[Bot: id-{}] 卸载失败未找到指定的Bot", bot_id);
 		false
 	}
 }

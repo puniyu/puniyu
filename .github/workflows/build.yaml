@@ -47,7 +47,7 @@ jobs:
       - name: 上传构建产物
         uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
         with:
-          name: "${{ env.APP_NAME }}-${{ matrix.platform.label }}"
+          name: "${{ env.APP_NAME }}-${{ matrix.platform.target }}"
           path: |
             target/${{ matrix.platform.target }}/release/${{ env.APP_NAME }}.exe
 
@@ -84,7 +84,7 @@ jobs:
       - name: 上传构建产物
         uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
         with:
-          name: "${{ env.APP_NAME }}-${{ matrix.platform.label }}"
+          name: "${{ env.APP_NAME }}-${{ matrix.platform.target }}"
           path: |
             target/${{ matrix.platform.target }}/release/${{ env.APP_NAME }}
 
@@ -122,6 +122,6 @@ jobs:
       - name: 上传构建产物
         uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
         with:
-          name: "${{ env.APP_NAME }}-${{ matrix.platform.label }}"
+          name: "${{ env.APP_NAME }}-${{ matrix.platform.target }}"
           path: |
             target/${{ matrix.platform.target }}/release/${{ env.APP_NAME }}

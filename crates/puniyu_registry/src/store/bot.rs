@@ -22,7 +22,7 @@ impl BotStore {
 	}
 
 	pub fn get_with_self_id(&self, self_id: &str) -> Option<Bot> {
-		self.0.read().unwrap().values().find(|bot| bot.account.self_id == self_id).cloned()
+		self.0.read().unwrap().values().find(|bot| bot.account.uin == self_id).cloned()
 	}
 
 	pub fn insert(&self, bot: Bot) -> u64 {
@@ -37,7 +37,7 @@ impl BotStore {
 
 	pub fn remove_with_self_id(&self, self_id: &str) -> Option<Bot> {
 		let mut bots = self.0.write().unwrap();
-		let index = bots.iter().find(|(_, bot)| bot.account.self_id == self_id).map(|(i, _)| *i);
+		let index = bots.iter().find(|(_, bot)| bot.account.uin == self_id).map(|(i, _)| *i);
 		index.and_then(|i| bots.remove(&i))
 	}
 

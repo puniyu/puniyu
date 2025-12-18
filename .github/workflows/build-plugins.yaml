@@ -37,14 +37,6 @@ jobs:
           plugin: puniyu_plugin_basic
           extension: dll
 
-      - name: 构建 puniyu_plugin_server
-        uses: ./.github/actions/build-plugin
-        with:
-          target: ${{ matrix.platform.target }}
-          label: ${{ matrix.platform.label }}
-          plugin: puniyu_plugin_server
-          extension: dll
-
   build_macos:
     runs-on: ${{ matrix.platform.runner }}
     strategy:
@@ -78,14 +70,6 @@ jobs:
           plugin: puniyu_plugin_basic
           extension: dylib
 
-      - name: 构建 puniyu_plugin_server
-        uses: ./.github/actions/build-plugin
-        with:
-          target: ${{ matrix.platform.target }}
-          label: ${{ matrix.platform.label }}
-          plugin: puniyu_plugin_server
-          extension: dylib
-
   build_linux:
     runs-on: ${{ matrix.platform.runner }}
     strategy:
@@ -117,12 +101,4 @@ jobs:
           target: ${{ matrix.platform.target }}
           label: ${{ matrix.platform.label }}
           plugin: puniyu_plugin_basic
-          extension: so
-
-      - name: 构建 puniyu_plugin_server
-        uses: ./.github/actions/build-plugin
-        with:
-          target: ${{ matrix.platform.target }}
-          label: ${{ matrix.platform.label }}
-          plugin: puniyu_plugin_server
           extension: so
