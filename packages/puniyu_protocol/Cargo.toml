@@ -1,0 +1,22 @@
+[package]
+name = "puniyu_protocol"
+version = "0.1.0"
+description = "puniyu 协议库，用于数据交换"
+authors.workspace = true
+license.workspace = true
+readme.workspace = true
+homepage.workspace = true
+repository.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+include = [
+    "proto"
+]
+
+[dependencies]
+prost = "0.14.1"
+prost-types = "0.14.1"
+
+[build-dependencies]
+prost-build = "0.14.1"
+protoc-bin-vendored = "3.2.0"
