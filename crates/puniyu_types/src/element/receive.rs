@@ -53,7 +53,7 @@ impl RawMessage for FileElement {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ImageElement {
 	/// 图片元素
-	pub file: String,
+	pub file: Vec<u8>,
 	/// 是否为闪照
 	pub is_flash: bool,
 	/// 图片外显

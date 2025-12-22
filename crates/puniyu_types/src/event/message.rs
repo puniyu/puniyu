@@ -108,7 +108,7 @@ impl MessageEvent {
 		}
 	}
 
-	pub fn get_image(&self) -> Option<String> {
+	pub fn get_image(&self) -> Option<Vec<u8>> {
 		match self {
 			MessageEvent::Friend(msg) => msg.get_image(),
 			MessageEvent::Group(msg) => msg.get_image(),
@@ -173,7 +173,7 @@ pub trait MessageBase: Send + Sync + EventBase {
 	}
 
 	/// 获取图片元素
-	fn get_image(&self) -> Option<String> {
+	fn get_image(&self) -> Option<Vec<u8>> {
 		self.elements()
 			.into_iter()
 			.filter_map(|e| match e {

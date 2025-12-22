@@ -85,7 +85,7 @@ impl AdapterBuilder for Console {
 					}
 					Some(("image", image_url)) => {
 						vec![Elements::Image(ImageElement {
-							file: image_url.to_string(),
+							file: Vec::from(image_url),
 							is_flash: false,
 							height: 0,
 							width: 0,
