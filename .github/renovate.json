@@ -1,6 +1,12 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "github>puniyu/.github//.github/renovate"
+  "extends": ["github>puniyu/.github//.github/renovate"],
+  "packageRules": [
+    {
+      "groupName": "flume",
+      "matchDatasources": ["crate"],
+      "matchPackageNames": ["flume"],
+      "enabled": false
+    }
   ]
 }
