@@ -8,18 +8,15 @@ use puniyu_registry::server::ServerRegistry;
 use puniyu_types::server::{
 	SERVER_COMMAND_TX, ServerCommand, get_server_config, save_server_config,
 };
-use std::net::{IpAddr, Ipv4Addr};
+use std::net::IpAddr;
 use std::sync::LazyLock;
 
 fn get_host_from_env() -> IpAddr {
-	std::env::var("HTTP_HOST")
-		.ok()
-		.and_then(|s| s.parse().ok())
-		.unwrap_or(IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)))
+	std::env::var("HTTP_HOST").ok().and_then(|s| s.parse().ok()).unwrap()
 }
 
 fn get_port_from_env() -> u16 {
-	std::env::var("HTTP_PORT").ok().and_then(|s| s.parse().ok()).unwrap_or(33720)
+	std::env::var("HTTP_PORT").ok().and_then(|s| s.parse().ok()).unwrap()
 }
 
 async fn logo() -> HttpResponse {

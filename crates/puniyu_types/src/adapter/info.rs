@@ -1,5 +1,5 @@
-use strum::{Display, EnumString, IntoStaticStr};
 use derive_builder::Builder;
+use strum::{Display, EnumString, IntoStaticStr};
 
 use crate::version::Version;
 
@@ -115,16 +115,21 @@ pub enum AdapterCommunication {
 /// 适配器信息
 pub struct AdapterInfo {
 	/// 适配器名称 如lagrange-onebot
+	#[builder(default = "env!(\"CARGO_PKG_NAME\").into()")]
 	pub name: String,
 	/// 适配器版本
 	pub version: Version,
 	/// 适配器平台
+	#[builder(default)]
 	pub platform: AdapterPlatform,
 	/// 适配器使用的协议标准 如onebot11
+	#[builder(default)]
 	pub standard: AdapterStandard,
 	/// 适配器协议实现 如gocq、napcat
+	#[builder(default)]
 	pub protocol: AdapterProtocol,
 	/// 适配器通信方式
+	#[builder(default)]
 	pub communication: AdapterCommunication,
 	/// 适配器通信地址
 	///
@@ -135,11 +140,9 @@ pub struct AdapterInfo {
 	#[builder(default)]
 	pub address: Option<String>,
 	/// 连接时间
+	#[builder(default = "std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap()")]
 	pub connect_time: std::time::Duration,
 }
-
-
-
 
 /// 创建 AdapterInfo 的便捷宏
 ///
@@ -202,41 +205,99 @@ macro_rules! adapter_info {
 	};
 	(
 		name: $name:expr,
+		version: $version:expr,
 		platform: $platform:expr,
 		standard: $standard:expr,
 		protocol: $protocol:expr,
 		communication: $communication:expr,
-		address: $address:expr,
-		connect_time: $connect_time:expr
+		address: $address:expr
 	) => {
 		AdapterInfoBuilder::default()
 			.name($name)
-			.version(env!("CARGO_PKG_VERSION"))
+			.version($version)
 			.platform($platform)
 			.standard($standard)
 			.protocol($protocol)
 			.communication($communication)
-			.address($address)
-			.connect_time($connect_time)
+			.address(Some($address.into()))
 			.build()
 			.unwrap()
 	};
 	(
 		name: $name:expr,
+		version: $version:expr,
 		platform: $platform:expr,
 		standard: $standard:expr,
 		protocol: $protocol:expr,
-		communication: $communication:expr,
-		connect_time: $connect_time:expr
+		communication: $communication:expr
 	) => {
 		AdapterInfoBuilder::default()
 			.name($name)
-			.version(env!("CARGO_PKG_VERSION"))
+			.version($version)
 			.platform($platform)
 			.standard($standard)
 			.protocol($protocol)
 			.communication($communication)
-			.connect_time($connect_time)
+			.build()
+			.unwrap()
+	};
+	(
+		name: $name:expr,
+		version: $version:expr,
+		platform: $platform:expr,
+		standard: $standard:expr,
+		protocol: $protocol:expr
+	) => {
+		AdapterInfoBuilder::default()
+			.name($name)
+			.version($version)
+			.platform($platform)
+			.standard($standard)
+			.protocol($protocol)
+			.build()
+			.unwrap()
+	};
+	(
+		name: $name:expr,
+		version: $version:expr,
+		platform: $platform:expr,
+		standard: $standard:expr
+	) => {
+		AdapterInfoBuilder::default()
+			.name($name)
+			.version($version)
+			.platform($platform)
+			.standard($standard)
+			.build()
+			.unwrap()
+	};
+	(
+		name: $name:expr,
+		version: $version:expr,
+		platform: $platform:expr
+	) => {
+		AdapterInfoBuilder::default()
+			.name($name)
+			.version($version)
+			.platform($platform)
+			.build()
+			.unwrap()
+	};
+	(
+		name: $name:expr,
+		version: $version:expr
+	) => {
+		AdapterInfoBuilder::default()
+			.name($name)
+			.version($version)
+			.build()
+			.unwrap()
+	};
+	(
+		name: $name:expr
+	) => {
+		AdapterInfoBuilder::default()
+			.name($name)
 			.build()
 			.unwrap()
 	};

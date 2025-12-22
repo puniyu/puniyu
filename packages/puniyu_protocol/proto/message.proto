@@ -1,7 +1,0 @@
-syntax = "proto3";
-
-package puniyu.message;
-
-message Message {
-  string text = 1;
-}

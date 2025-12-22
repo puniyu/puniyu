@@ -133,22 +133,6 @@ async fn init_app(
 	plugins: Vec<&'static dyn PluginBuilder>,
 	adapters: Vec<&'static dyn AdapterBuilder>,
 ) {
-	use crate::config::Config;
-	if env::var("APP_NAME").is_err() {
-		unsafe {
-			env::set_var("APP_NAME", APP_NAME.get().unwrap());
-		}
-	}
-	if env::var("HTTP_HOST").is_err() {
-		unsafe {
-			env::set_var("HTTP_HOST", Config::app().server().host());
-		}
-	}
-	if env::var("HTTP_PORT").is_err() {
-		unsafe {
-			env::set_var("HTTP_PORT", Config::app().server().port().to_string());
-		}
-	}
 	if !DATA_DIR.as_path().exists() {
 		fs::create_dir(DATA_DIR.as_path()).await.unwrap();
 	}

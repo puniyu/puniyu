@@ -177,35 +177,41 @@ pub fn start_config_watcher() {
 	});
 }
 fn init_env() {
-	env::var("APP_NAME").unwrap_or_else(|_| {
-		let app_name = APP_NAME.get().unwrap();
+	if env::var("APP_NAME").is_err() {
 		unsafe {
-			env::set_var("APP_NAME", app_name);
+			env::set_var("APP_NAME", APP_NAME.get().unwrap());
 		}
-		app_name.to_owned()
-	});
-	env::var("LOGGER_LEVEL").unwrap_or_else(|_| {
+	}
+	if env::var("LOGGER_LEVEL").is_err() {
 		let config = Config::app().logger();
 		let level = config.level();
 		unsafe {
-			env::set_var("LOGGER_LEVEL", level);
+			env::set_var("LOGGER_LEVEL", level.to_string());
 		}
-		level.to_owned()
-	});
-	env::var("LOGGER_RETENTION_DAYS").unwrap_or_else(|_| {
+	}
+
+	if env::var("LOGGER_RETENTION_DAYS").is_err() {
 		let config = Config::app().logger();
 		let retention_day = config.retention_days();
 		unsafe {
 			env::set_var("LOGGER_RETENTION_DAYS", retention_day.to_string());
 		}
-		retention_day.to_string()
-	});
-	env::var("LOGGER_FILE_ENABLE").unwrap_or_else(|_| {
+	}
+	if env::var("LOGGER_FILE_ENABLE").is_err() {
 		let config = Config::app().logger();
 		let file_logging = config.enable_file();
 		unsafe {
 			env::set_var("LOGGER_FILE_ENABLE", file_logging.to_string());
 		}
-		file_logging.to_string()
-	});
+	}
+	if env::var("HTTP_HOST").is_err() {
+		unsafe {
+			env::set_var("HTTP_HOST", Config::app().server().host());
+		}
+	}
+	if env::var("HTTP_PORT").is_err() {
+		unsafe {
+			env::set_var("HTTP_PORT", Config::app().server().port().to_string());
+		}
+	}
 }

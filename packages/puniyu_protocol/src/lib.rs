@@ -1,5 +1,5 @@
 
-pub mod message {
-    include!(concat!(env!("OUT_DIR"), "/puniyu.message.rs"));
+pub mod element {
+    include!(concat!(env!("OUT_DIR"), "/puniyu.element.rs"));
 }
 

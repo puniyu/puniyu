@@ -39,15 +39,13 @@ impl FileElement {
 pub struct ImageElement {
 	/// 图片元素
 	pub file: String,
-	/// 是否为闪照
-	pub is_flash: bool,
 	/// 图片外显
-	pub summary: String,
+	pub summary: Option<String>,
 }
 
 impl ImageElement {
-	pub fn new(file: String, is_flash: bool, summary: String) -> Self {
-		Self { file, is_flash, summary }
+	pub fn new(file: String, summary: Option<String>) -> Self {
+		Self { file, summary }
 	}
 }
 
