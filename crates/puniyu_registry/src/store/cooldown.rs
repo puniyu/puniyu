@@ -1,33 +1,15 @@
 use std::{
 	collections::HashMap,
 	sync::{Arc, RwLock},
-	time::{SystemTime, UNIX_EPOCH},
+	time::{SystemTime, UNIX_EPOCH, Duration},
 };
+use crate::cooldown::CooldownScope;
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub(crate) enum CooldownScope<'a> {
-	Friend { bot_id: &'a str, user_id: &'a str },
-	Group { bot_id: &'a str, group_id: &'a str },
-	GroupUser { bot_id: &'a str, group_id: &'a str, user_id: &'a str },
-}
-
-impl CooldownScope<'_> {
-	pub fn make_key(&self) -> String {
-		match self {
-			Self::Friend { bot_id, user_id } => format!("bot:{}:friend:{}", bot_id, user_id),
-			Self::Group { bot_id, group_id } => format!("bot:{}:group:{}", bot_id, group_id),
-			Self::GroupUser { bot_id, group_id, user_id } => {
-				format!("bot:{}:group:{}:user:{}", bot_id, group_id, user_id)
-			}
-		}
-	}
-}
-
-pub(crate) struct CooldownStore(pub(crate) Arc<RwLock<HashMap<String, u64>>>);
+pub(crate) struct CooldownStore(pub(crate) Arc<RwLock<HashMap<String, u128>>>);
 
 impl CooldownStore {
-	fn now() -> u64 {
-		SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs()
+	fn now() -> u128 {
+		SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis()
 	}
 
 	pub fn is_cooling_down(&self, scope: &CooldownScope) -> bool {
@@ -39,12 +21,13 @@ impl CooldownStore {
 		}
 	}
 
-	pub fn set_cooldown(&self, scope: &CooldownScope, duration: u64) {
-		if duration == 0 {
+	pub fn set_cooldown(&self, scope: &CooldownScope, duration: Duration) {
+		let time = duration.as_millis();
+		if time == 0 {
 			return;
 		}
 		let key = scope.make_key();
-		let expire_time = Self::now() + duration;
+		let expire_time = Self::now() + time;
 		self.0.write().unwrap().insert(key, expire_time);
 	}
 

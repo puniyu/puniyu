@@ -54,9 +54,6 @@ use plugin::PluginStore;
 #[cfg(feature = "server")]
 use server::ServerStore;
 
-#[cfg(feature = "cooldown")]
-pub(crate) use cooldown::CooldownScope;
-
 /// 全局 Store 实例
 #[allow(dead_code)]
 pub(crate) static STORE: LazyLock<Store> = LazyLock::new(Store::default);
@@ -75,7 +72,7 @@ pub(crate) struct Store {
 	#[cfg(feature = "server")]
 	server: Arc<RwLock<HashMap<String, ServerType>>>,
 	#[cfg(feature = "cooldown")]
-	cooldown: Arc<RwLock<HashMap<String, u64>>>,
+	cooldown: Arc<RwLock<HashMap<String, u128>>>,
 }
 
 impl Store {
