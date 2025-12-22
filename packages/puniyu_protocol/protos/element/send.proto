@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package puniyu.element.send;
+
+import "element.proto";
+
+/// 文本元素
+message TextAlement {
+  ElementType type = 1;
+  string text = 2;
+}
+
+/// 艾特元素
+message AtAlement {
+    ElementType type = 1;
+    string target_id = 2;
+}
+
+/// 图片元素
+message ImageAlement {
+  ElementType type = 1;
+  bytes file = 2;
+  bool is_flash = 3;
+  string summary = 4;
+}
+
+message FileAlement {
+  ElementType type = 1;
+  bytes file = 2;
+}

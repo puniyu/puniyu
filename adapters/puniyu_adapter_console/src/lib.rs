@@ -28,15 +28,14 @@ impl AdapterBuilder for Console {
 	async fn init(&self) -> Result<()> {
 		use std::time::{SystemTime, UNIX_EPOCH};
 
-		let start_time = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
+
 		let adapter_info = adapter_info!(
 			name: self.name(),
 			version: self.version(),
 			platform: AdapterPlatform::Other,
 			standard: AdapterStandard::Other,
 			protocol: AdapterProtocol::Console,
-			communication: AdapterCommunication::Other,
-			connect_time: start_time
+			communication: AdapterCommunication::Other
 		);
 
 		let bot_id = "console";

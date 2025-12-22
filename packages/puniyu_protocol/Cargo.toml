@@ -10,7 +10,7 @@ repository.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 include = [
-    "proto"
+    "protos"
 ]
 
 [dependencies]
