@@ -78,7 +78,7 @@ impl AdapterBuilder for Console {
 					}
 					Some(("image", image_url)) => {
 						vec![Elements::Image(ImageElement {
-							file: Vec::from(image_url),
+							file: image_url.to_string().into(),
 							height: 0,
 							width: 0,
 							summary: "图片".to_string(),
@@ -89,16 +89,16 @@ impl AdapterBuilder for Console {
 					}
 					Some(("video", video_url)) => {
 						vec![Elements::Video(VideoElement {
-							file: Vec::from(video_url),
+							file: video_url.to_string().into(),
 							file_name: AdapterProtocol::Console.to_string(),
 						})]
 					}
 					Some(("record", record_url)) => {
-						vec![Elements::Record(RecordElement { file: Vec::from(record_url) })]
+						vec![Elements::Record(RecordElement { file: record_url.to_string().into() })]
 					}
 					Some(("file", file_url)) => {
 						vec![Elements::File(FileElement {
-							file: Vec::from(file_url),
+							file: file_url.to_string().into(),
 							file_id: make_random_id(),
 							file_name: AdapterProtocol::Console.to_string(),
 							file_size: 100,

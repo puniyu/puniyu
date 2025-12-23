@@ -2,7 +2,6 @@ syntax = "proto3";
 
 package puniyu.element.receive;
 
-
 /// 文本元素
 message TextElement {
   string text = 1;

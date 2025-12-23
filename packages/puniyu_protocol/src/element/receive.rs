@@ -1,8 +1,8 @@
-use crate::element::receive::elements::Element;
+
 use puniyu_types::element::receive as element;
+use elements::Element;
 
 include!(concat!(env!("OUT_DIR"), "/puniyu.element.receive.rs"));
-
 macro_rules! impl_from_element {
     ($proto_type:ty, $internal_type:ty { $($field:ident),+ }) => {
         impl From<$proto_type> for $internal_type {

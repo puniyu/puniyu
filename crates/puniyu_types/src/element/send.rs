@@ -1,3 +1,4 @@
+use bytes::Bytes;
 use serde::{Deserialize, Serialize};
 use strum::Display;
 
@@ -64,54 +65,54 @@ impl FaceElement {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ImageElement {
 	/// 图片元素
-	pub file: Vec<u8>,
+	pub file: Bytes,
 	/// 图片外显
 	pub summary: Option<String>,
 }
 
 impl ImageElement {
-	pub fn new(file: Vec<u8>, summary: Option<String>) -> Self {
-		Self { file, summary }
+	pub fn new(file: impl Into<Bytes>, summary: Option<String>) -> Self {
+		Self { file: file.into(), summary }
 	}
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FileElement {
 	/// 文件元素
-	pub file: Vec<u8>,
+	pub file: Bytes,
 	/// 文件名
 	pub file_name: String,
 }
 
 impl FileElement {
-	pub fn new(file: Vec<u8>, file_name: Option<String>) -> Self {
-		Self { file, file_name: file_name.unwrap_or(String::from("image.png")) }
+	pub fn new(file: impl Into<Bytes>, file_name: Option<String>) -> Self {
+		Self { file: file.into(), file_name: file_name.unwrap_or(String::from("image.png")) }
 	}
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct VideoElement {
 	/// 视频元素
-	pub file: Vec<u8>,
+	pub file: Bytes,
 	/// 视频文件名
 	pub file_name: Option<String>,
 }
 
 impl VideoElement {
-	pub fn new(file: Vec<u8>, file_name: Option<String>) -> Self {
-		Self { file, file_name }
+	pub fn new(file: impl Into<Bytes>, file_name: Option<String>) -> Self {
+		Self { file: file.into(), file_name }
 	}
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RecordElement {
 	/// 语言元素
-	pub file: Vec<u8>,
+	pub file: Bytes,
 }
 
 impl RecordElement {
-	pub fn new(file: Vec<u8>) -> Self {
-		Self { file }
+	pub fn new(file: impl Into<Bytes>) -> Self {
+		Self { file: file.into() }
 	}
 }
 

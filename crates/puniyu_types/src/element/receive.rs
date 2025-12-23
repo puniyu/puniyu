@@ -1,5 +1,6 @@
 use super::RawMessage;
 use serde::{Deserialize, Serialize};
+use bytes::Bytes;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TextElement {
@@ -64,7 +65,7 @@ impl RawMessage for FaceElement {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ImageElement {
 	/// 图片元素
-	pub file: Vec<u8>,
+	pub file: Bytes,
 	/// 图片外显
 	pub summary: String,
 	/// 图片宽度
@@ -82,7 +83,7 @@ impl RawMessage for ImageElement {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FileElement {
 	/// 文件元素
-	pub file: Vec<u8>,
+	pub file: Bytes,
 	/// 文件id
 	pub file_id: String,
 	/// 文件大小, 单位字节
@@ -100,7 +101,7 @@ impl RawMessage for FileElement {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct VideoElement {
 	/// 视频元素
-	pub file: Vec<u8>,
+	pub file: Bytes,
 	/// 视频文件名
 	pub file_name: String,
 }
@@ -114,7 +115,7 @@ impl RawMessage for VideoElement {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RecordElement {
 	/// 语言元素
-	pub file: Vec<u8>,
+	pub file: Bytes,
 }
 
 impl RawMessage for RecordElement {
