@@ -70,8 +70,7 @@ impl AdapterBuilder for Console {
 				let elements: Vec<Elements> = match content.split_once(':') {
 					Some(("at", target_id)) if !target_id.is_empty() => {
 						vec![Elements::At(AtElement {
-							target_id: target_id.to_string(),
-							name: None,
+							target_id: target_id.to_string()
 						})]
 					}
 					Some(("text", text_content)) => {
@@ -79,8 +78,7 @@ impl AdapterBuilder for Console {
 					}
 					Some(("image", image_url)) => {
 						vec![Elements::Image(ImageElement {
-							file: image_url.to_string(),
-							is_flash: false,
+							file: Vec::from(image_url),
 							height: 0,
 							width: 0,
 							summary: "图片".to_string(),

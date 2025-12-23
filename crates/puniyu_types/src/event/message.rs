@@ -101,6 +101,13 @@ impl MessageEvent {
 		}
 	}
 
+	pub fn get_text(&self) -> String {
+		match self {
+			MessageEvent::Friend(msg) => msg.get_text(),
+			MessageEvent::Group(msg) => msg.get_text(),
+		}
+	}
+
 	pub fn get_at(&self) -> Option<Vec<String>> {
 		match self {
 			MessageEvent::Friend(msg) => msg.get_at(),
@@ -108,7 +115,7 @@ impl MessageEvent {
 		}
 	}
 
-	pub fn get_image(&self) -> Option<String> {
+	pub fn get_image(&self) -> Option<Vec<u8>> {
 		match self {
 			MessageEvent::Friend(msg) => msg.get_image(),
 			MessageEvent::Group(msg) => msg.get_image(),
@@ -159,6 +166,18 @@ pub trait MessageBase: Send + Sync + EventBase {
 	/// 消息元素
 	fn elements(&self) -> Vec<Elements>;
 
+	/// 获取文本元素
+	fn get_text(&self) -> String {
+		self.elements()
+			.into_iter()
+			.filter_map(|e| match e {
+				Elements::Text(text) => Some(text.text.clone()),
+				_ => None,
+			})
+			.collect::<Vec<String>>()
+			.join("")
+	}
+
 	/// 获取艾特元素
 	fn get_at(&self) -> Option<Vec<String>> {
 		let at_list = self
@@ -173,7 +192,7 @@ pub trait MessageBase: Send + Sync + EventBase {
 	}
 
 	/// 获取图片元素
-	fn get_image(&self) -> Option<String> {
+	fn get_image(&self) -> Option<Vec<u8>> {
 		self.elements()
 			.into_iter()
 			.filter_map(|e| match e {

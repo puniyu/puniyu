@@ -12,11 +12,6 @@ pub trait RawMessage: Send + Sync {
 	fn raw(&self) -> String;
 }
 
-/// 消息文本
-pub trait TextMessage: Send + Sync {
-	fn text(&self) -> String;
-}
-
 #[derive(Debug, Clone, PartialEq, EnumString, Display, IntoStaticStr, Deserialize, Serialize)]
 #[strum(serialize_all = "snake_case")]
 pub enum ElementType {
