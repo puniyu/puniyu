@@ -2022,6 +2022,7 @@ dependencies = [
  "prost-build",
  "prost-types",
  "protoc-bin-vendored",
+ "puniyu_types",
 ]
 
 [[package]]

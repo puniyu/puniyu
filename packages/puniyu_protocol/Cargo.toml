@@ -9,11 +9,12 @@ homepage.workspace = true
 repository.workspace = true
 edition.workspace = true
 rust-version.workspace = true
-include = [
-    "protos"
-]
+include = ["protos"]
 
 [dependencies]
+puniyu_types = { version = "0.6.0", path = "../../crates/puniyu_types", default-features = false, features = [
+    "element",
+] }
 prost = "0.14.1"
 prost-types = "0.14.1"
 

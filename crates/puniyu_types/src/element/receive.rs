@@ -1,12 +1,27 @@
-use super::{RawMessage, TextMessage};
+use super::RawMessage;
 use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TextElement {
+	/// 文本元素内容
+	pub text: String,
+}
+impl From<TextElement> for String {
+	fn from(elem: TextElement) -> Self {
+		elem.text
+	}
+}
+
+impl RawMessage for TextElement {
+	fn raw(&self) -> String {
+		format!("[text:{}]", self.text)
+	}
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AtElement {
 	/// at元素目标id
 	pub target_id: String,
-	/// at元素目标名称
-	pub name: Option<String>,
 }
 
 impl AtElement {
@@ -23,6 +38,19 @@ impl RawMessage for AtElement {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ReplyElement {
+	/// 回复元素id
+	#[serde(rename = "messageId")]
+	pub message_id: String,
+}
+
+impl RawMessage for ReplyElement {
+	fn raw(&self) -> String {
+		format!("[reply:{}]", self.message_id)
+	}
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FaceElement {
 	/// 表情元素id
 	pub id: u64,
@@ -34,28 +62,9 @@ impl RawMessage for FaceElement {
 	}
 }
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct FileElement {
-	/// 文件元素
-	pub file: Vec<u8>,
-	/// 文件id
-	pub file_id: String,
-	/// 文件大小, 单位字节
-	pub file_size: u64,
-	/// 文件名称
-	pub file_name: String,
-}
-
-impl RawMessage for FileElement {
-	fn raw(&self) -> String {
-		format!("[file:{}]", self.file_id)
-	}
-}
-#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ImageElement {
 	/// 图片元素
-	pub file: String,
-	/// 是否为闪照
-	pub is_flash: bool,
+	pub file: Vec<u8>,
 	/// 图片外显
 	pub summary: String,
 	/// 图片宽度
@@ -71,14 +80,20 @@ impl RawMessage for ImageElement {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct JsonElement {
-	/// Json数据，未序列化
-	pub data: String,
+pub struct FileElement {
+	/// 文件元素
+	pub file: Vec<u8>,
+	/// 文件id
+	pub file_id: String,
+	/// 文件大小, 单位字节
+	pub file_size: u64,
+	/// 文件名称
+	pub file_name: String,
 }
 
-impl RawMessage for JsonElement {
+impl RawMessage for FileElement {
 	fn raw(&self) -> String {
-		format!("[json:{}]", self.data)
+		format!("[file:{}]", self.file_id)
 	}
 }
 
@@ -109,38 +124,14 @@ impl RawMessage for RecordElement {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ReplyElement {
-	/// 回复元素id
-	#[serde(rename = "messageId")]
-	pub message_id: String,
+pub struct JsonElement {
+	/// Json数据，未序列化
+	pub data: String,
 }
 
-impl RawMessage for ReplyElement {
+impl RawMessage for JsonElement {
 	fn raw(&self) -> String {
-		format!("[reply:{}]", self.message_id)
-	}
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct TextElement {
-	/// 文本元素内容
-	pub text: String,
-}
-impl From<TextElement> for String {
-	fn from(elem: TextElement) -> Self {
-		elem.text
-	}
-}
-
-impl RawMessage for TextElement {
-	fn raw(&self) -> String {
-		format!("[text:{}]", self.text)
-	}
-}
-
-impl TextMessage for TextElement {
-	fn text(&self) -> String {
-		self.text.clone()
+		format!("[json:{}]", self.data)
 	}
 }
 

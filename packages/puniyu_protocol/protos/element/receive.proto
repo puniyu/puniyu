@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package puniyu.element.send;
+package puniyu.element.receive;
 
 
 /// 文本元素
@@ -26,19 +26,23 @@ message FaceElement {
 /// 图片元素
 message ImageElement {
   bytes file = 1;
-  bool is_flash = 2;
-  optional string summary = 3;
+  string summary = 2;
+  uint64 width = 3;
+  uint64 height = 4;
 }
 
 /// 文件元素
 message FileElement {
   bytes file = 1;
+  string file_id = 2;
+  uint64 file_size = 3;
+  string file_name = 4;
 }
 
 /// 视频元素
 message VideoElement {
   bytes file = 1;
-  optional string file_name = 2;
+  string file_name = 2;
 }
 
 message RecordElement {
@@ -52,7 +56,7 @@ message JsonElement {
 
 /// XML 元素
 message XmlElement {
-  string data = 1;
+  string xml = 1;
 }
 
 message Elements {
