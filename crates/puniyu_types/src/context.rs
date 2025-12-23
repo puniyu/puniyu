@@ -130,7 +130,7 @@ impl MessageContext {
 			.any(|e| matches!(e, Elements::At(at) if at.target_id.contains(self.self_id())))
 	}
 
-	pub fn get_image(&self) -> Option<Vec<u8>> {
+	pub fn get_image(&self) -> Option<String> {
 		self.event.get_image()
 	}
 
