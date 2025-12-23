@@ -14,6 +14,7 @@ rust-version.workspace = true
 puniyu_logger = { workspace = true, optional = true }
 serde = { workspace = true, optional = true }
 serde_json = { workspace = true, optional = true }
+bytes = { workspace = true, optional = true }
 strum = { workspace = true, optional = true }
 toml = { workspace = true, optional = true }
 thiserror = { workspace = true, optional = true }
@@ -43,13 +44,13 @@ adapter = [
     "element",
     "config",
 ]
-event = ["dep:strum", "dep:puniyu_config", "element", "sender", "contact"]
-context = ["adapter", "bot", "element", "event", "contact", "sender"]
+event = ["dep:strum", "dep:puniyu_config", "dep:bytes", "element", "sender", "contact"]
+context = ["dep:bytes", "adapter", "bot", "element", "event", "contact", "sender"]
 account = ["dep:serde"]
 contact = ["dep:serde", "dep:strum"]
 bot = ["adapter", "account"]
 sender = ["dep:serde", "dep:strum"]
-element = ["dep:serde", "dep:strum", "dep:serde_json"]
+element = ["dep:serde", "dep:strum", "dep:serde_json", "dep:bytes"]
 server = ["dep:actix-web", "dep:flume"]
 task = ["dep:async-trait"]
 command = ["dep:async-trait", "context"]

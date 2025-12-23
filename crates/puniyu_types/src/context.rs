@@ -8,6 +8,7 @@ use crate::event::message::{FriendMessage, GroupMessage, MessageEvent};
 use crate::sender::SenderType;
 use std::collections::HashMap;
 use std::sync::Arc;
+use bytes::Bytes;
 
 #[derive(Clone)]
 pub struct BotContext {
@@ -130,11 +131,11 @@ impl MessageContext {
 			.any(|e| matches!(e, Elements::At(at) if at.target_id.contains(self.self_id())))
 	}
 
-	pub fn get_image(&self) -> Option<Vec<u8>> {
+	pub fn get_image(&self) -> Option<Bytes> {
 		self.event.get_image()
 	}
 
-	pub fn get_record(&self) -> Option<Vec<u8>> {
+	pub fn get_record(&self) -> Option<Bytes> {
 		self.event.get_record()
 	}
 

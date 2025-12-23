@@ -6,6 +6,7 @@ pub use group::GroupMessage;
 use super::EventBase;
 use crate::element::receive::Elements;
 use strum::{Display, EnumString, IntoStaticStr};
+use bytes::Bytes;
 
 #[derive(Debug, Clone, EnumString, Display, IntoStaticStr)]
 pub enum MessageSubType {
@@ -115,14 +116,14 @@ impl MessageEvent {
 		}
 	}
 
-	pub fn get_image(&self) -> Option<Vec<u8>> {
+	pub fn get_image(&self) -> Option<Bytes> {
 		match self {
 			MessageEvent::Friend(msg) => msg.get_image(),
 			MessageEvent::Group(msg) => msg.get_image(),
 		}
 	}
 
-	pub fn get_record(&self) -> Option<Vec<u8>> {
+	pub fn get_record(&self) -> Option<Bytes> {
 		match self {
 			MessageEvent::Friend(msg) => msg.get_record(),
 			MessageEvent::Group(msg) => msg.get_record(),
@@ -192,7 +193,7 @@ pub trait MessageBase: Send + Sync + EventBase {
 	}
 
 	/// 获取图片元素
-	fn get_image(&self) -> Option<Vec<u8>> {
+	fn get_image(&self) -> Option<Bytes> {
 		self.elements()
 			.into_iter()
 			.filter_map(|e| match e {
@@ -203,7 +204,7 @@ pub trait MessageBase: Send + Sync + EventBase {
 	}
 
 	/// 获取语音元素
-	fn get_record(&self) -> Option<Vec<u8>> {
+	fn get_record(&self) -> Option<Bytes> {
 		self.elements()
 			.into_iter()
 			.filter_map(|e| match e {

@@ -3,7 +3,6 @@ use puniyu_matcher_command::CommandMatcher;
 use puniyu_types::handler::Handler;
 use puniyu_types::matcher::Matcher;
 
-// 重新导出 puniyu_types::bus 的内容
 pub use puniyu_types::bus::{EVENT_BUS, EventBus, init_event_bus, send_event, stop_event_bus};
 
 /// EventBus 的运行时扩展

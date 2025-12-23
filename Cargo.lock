@@ -315,9 +315,12 @@ checksum = "46c5e41b57b8bba42a04676d81cb89e9ee8e859a1a66f80a5a72e1cb76b34d43"
 
 [[package]]
 name = "bytes"
-version = "1.10.1"
+version = "1.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d71b6127be86fdcfddb610f7182ac57211d4b18a3e9c82eb2d17662f2227ad6a"
+checksum = "b35204fbdc0b3f4446b89fc1ac2cf84a8a68971995d0bf2e925ec7cd960f9cb3"
+dependencies = [
+ "serde",
+]
 
 [[package]]
 name = "bytestring"
@@ -2018,6 +2021,8 @@ dependencies = [
 name = "puniyu_protocol"
 version = "0.1.0"
 dependencies = [
+ "bytes",
+ "glob",
  "prost",
  "prost-build",
  "prost-types",
@@ -2086,6 +2091,7 @@ version = "0.6.0"
 dependencies = [
  "actix-web",
  "async-trait",
+ "bytes",
  "derive_builder",
  "flume",
  "puniyu_config",

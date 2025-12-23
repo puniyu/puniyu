@@ -12,14 +12,18 @@ rust-version.workspace = true
 include = ["protos"]
 
 [dependencies]
+bytes.workspace = true
 puniyu_types = { version = "0.6.0", path = "../../crates/puniyu_types", default-features = false, features = [
     "element",
     "contact",
-    "sender"
+    "sender",
+    "event"
 ] }
 prost = "0.14.1"
 prost-types = "0.14.1"
 
+
 [build-dependencies]
+glob.workspace = true
 prost-build = "0.14.1"
 protoc-bin-vendored = "3.2.0"
