@@ -16,7 +16,7 @@ pub struct GroupSender {
 	/// 群名片
 	pub card: Option<String>,
 	/// 等级
-	pub level: Option<String>,
+	pub level: Option<u8>,
 	/// 专属头衔
 	pub title: Option<String>,
 }
@@ -31,8 +31,8 @@ impl GroupSender {
 		self.card.as_deref()
 	}
 	/// 等级
-	pub fn level(&self) -> Option<&str> {
-		self.level.as_deref()
+	pub fn level(&self) -> Option<u8> {
+		self.level
 	}
 	/// 专属头衔
 	pub fn title(&self) -> Option<&str> {

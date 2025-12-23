@@ -10,7 +10,7 @@ message TextElement {
 
 /// 艾特元素
 message AtElement {
-    string target_id = 1;
+  string target_id = 1;
 }
 
 /// 回复元素
@@ -51,12 +51,12 @@ message RecordElement {
 
 /// JSON 元素
 message JsonElement {
-  string json = 1;
+  string data = 1;
 }
 
 /// XML 元素
 message XmlElement {
-  string xml = 1;
+  string data = 1;
 }
 
 message Elements {

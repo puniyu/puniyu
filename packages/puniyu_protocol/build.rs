@@ -4,7 +4,7 @@ fn main() {
 	prost_build.protoc_executable(&bin_path);
 	prost_build
 		.compile_protos(
-			&["protos/element/send.proto", "protos/element/receive.proto"],
+			&["protos/*"],
 			&["protos/"],
 		)
 		.unwrap();

@@ -79,11 +79,13 @@ impl ImageElement {
 pub struct FileElement {
 	/// 文件元素
 	pub file: Vec<u8>,
+	/// 文件名
+	pub file_name: String,
 }
 
 impl FileElement {
-	pub fn new(file: Vec<u8>) -> Self {
-		Self { file }
+	pub fn new(file: Vec<u8>, file_name: Option<String>) -> Self {
+		Self { file, file_name: file_name.unwrap_or(String::from("image.png")) }
 	}
 }
 
@@ -139,14 +141,15 @@ impl XmlElement {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Display)]
 pub enum Elements {
-	At(AtElement),
-	File(FileElement),
-	Image(ImageElement),
-	Json(JsonElement),
-	Record(RecordElement),
-	Reply(ReplyElement),
 	Text(TextElement),
+	At(AtElement),
+	Reply(ReplyElement),
+	Face(FaceElement),
+	Image(ImageElement),
+	File(FileElement),
 	Video(VideoElement),
+	Record(RecordElement),
+	Json(JsonElement),
 	Xml(XmlElement),
 }
 

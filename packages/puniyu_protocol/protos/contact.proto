@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package puniyu.contact;
+
+enum SceneType {
+  Friend = 0;
+  Group = 1;
+}
+
+message Contact {
+  SceneType scene = 1;
+  string peer = 2;
+  optional string name = 3;
+}

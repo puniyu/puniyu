@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package puniyu.sender;
+
+enum Sex {
+  Male = 0;
+  Female = 1;
+  SexUnknown = 2;
+}
+
+enum Role {
+    Owner = 0;
+    Admin = 1;
+    Member = 2;
+    RoleUnknown = 3;
+}
+message FriendSender {
+  string user_id = 1;
+  optional string nick = 2;
+  Sex sex = 3;
+  uint32 age = 4;
+}
+
+message GroupSender {
+  string user_id = 1;
+  optional string nick = 2;
+  Sex sex = 4;
+  uint32 age = 5;
+  Role role = 6;
+  optional string card = 7;
+  optional uint32 level = 8;
+  optional string title = 9;
+}
+
+message SenderType {
+  oneof sender_type {
+    FriendSender friend_sender = 1;
+    GroupSender group_sender = 2;
+  }
+}

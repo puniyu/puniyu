@@ -149,14 +149,15 @@ impl RawMessage for XmlElement {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum Elements {
-	At(AtElement),
-	File(FileElement),
-	Image(ImageElement),
-	Json(JsonElement),
-	Record(RecordElement),
-	Reply(ReplyElement),
 	Text(TextElement),
+	At(AtElement),
+	Reply(ReplyElement),
+	Face(FaceElement),
+	Image(ImageElement),
+	File(FileElement),
 	Video(VideoElement),
+	Record(RecordElement),
+	Json(JsonElement),
 	Xml(XmlElement),
 }
 
@@ -181,6 +182,7 @@ impl RawMessage for Elements {
 		match self {
 			Elements::Text(text_element) => text_element.raw(),
 			Elements::File(file_element) => file_element.raw(),
+			Elements::Face(face_element) => face_element.raw(),
 			Elements::Image(image_element) => image_element.raw(),
 			Elements::Json(json_element) => json_element.raw(),
 			Elements::Record(record_element) => record_element.raw(),

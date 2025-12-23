@@ -95,7 +95,7 @@ impl App {
 		print_start_log();
 		init_config();
 		log_init();
-		let start_time = std::time::Instant::now();
+		let start_time = std::time::Instant::now().elapsed();
 		let app_name = self.app_name.clone();
 		init_app(self.plugins.clone(), self.adapters.clone()).await;
 		let logo_path = RESOURCE_DIR.join("logo.png");
@@ -104,8 +104,7 @@ impl App {
 			puniyu_server::LOGO.get_or_init(|| self.app_logo.clone());
 		}
 		start_config_watcher();
-		let duration = start_time.elapsed();
-		let duration_str = format_duration(duration);
+		let duration_str = format_duration(start_time);
 		info!(
 			"{} 初始化完成，耗时: {}",
 			app_name.to_case(Case::Lower).fg_rgb::<64, 224, 208>(),
@@ -149,17 +148,17 @@ async fn init_app(
 
 async fn init_plugin(plugins: Vec<&'static dyn PluginBuilder>) {
 	if !PLUGIN_DIR.as_path().exists() {
-		fs::create_dir(PLUGIN_DIR.as_path()).await.unwrap();
+		fs::create_dir(PLUGIN_DIR.as_path()).await.expect("Failed to create plugin directory");
 	}
 
 	if !PLUGIN_DATA_DIR.as_path().exists() {
-		fs::create_dir(PLUGIN_DATA_DIR.as_path()).await.unwrap();
+		fs::create_dir(PLUGIN_DATA_DIR.as_path()).await.expect("Failed to create plugin data directory");
 	}
 	let mut plugins_list =
 		plugins.iter().map(|p| PluginType::Builder(*p)).collect::<Vec<PluginType>>();
 
 	let pattern = PLUGIN_DIR.join(format!("*.{}", DLL_EXTENSION));
-	if let Ok(paths) = glob::glob(pattern.to_str().unwrap()) {
+	if let Ok(paths) = glob::glob(pattern.to_str().expect("Failed to parse plugin path")) {
 		for entry in paths.filter_map(Result::ok) {
 			plugins_list.push(entry.into());
 		}
