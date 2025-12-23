@@ -1,16 +1,13 @@
 mod api;
 mod common;
 
-use crate::common::make_message_id;
+use crate::common::make_random_id;
 use async_trait::async_trait;
 use puniyu_adapter::Result;
 use puniyu_adapter::logger::info;
 use puniyu_adapter::prelude::*;
 use puniyu_core::APP_NAME;
 use std::env;
-use std::sync::atomic::{AtomicU64, Ordering};
-
-static EVENT_ID: AtomicU64 = AtomicU64::new(0);
 
 #[adapter]
 struct Console;
@@ -27,7 +24,6 @@ impl AdapterBuilder for Console {
 
 	async fn init(&self) -> Result<()> {
 		use std::time::{SystemTime, UNIX_EPOCH};
-
 
 		let adapter_info = adapter_info!(
 			name: self.name(),
@@ -53,7 +49,6 @@ impl AdapterBuilder for Console {
 		let adapter_info = adapter_info.clone();
 		std::thread::spawn(move || {
 			loop {
-				static FILE_ID: AtomicU64 = AtomicU64::new(0);
 				let message = {
 					let mut input = String::new();
 					match std::io::stdin().read_line(&mut input) {
@@ -84,7 +79,7 @@ impl AdapterBuilder for Console {
 					}
 					Some(("image", image_url)) => {
 						vec![Elements::Image(ImageElement {
-							file: Vec::from(image_url),
+							file: image_url.to_string(),
 							is_flash: false,
 							height: 0,
 							width: 0,
@@ -106,7 +101,7 @@ impl AdapterBuilder for Console {
 					Some(("file", file_url)) => {
 						vec![Elements::File(FileElement {
 							file: Vec::from(file_url),
-							file_id: FILE_ID.fetch_add(1, Ordering::Relaxed).to_string(),
+							file_id: make_random_id(),
 							file_name: AdapterProtocol::Console.to_string(),
 							file_size: 100,
 						})]
@@ -120,9 +115,9 @@ impl AdapterBuilder for Console {
 				};
 
 				let timestamp = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs();
-				let message_id = make_message_id();
+				let message_id = make_random_id();
 				let adapter = &api::ConsoleAdapterApi as &'static dyn AdapterApi;
-				let event_id = EVENT_ID.fetch_add(1, Ordering::Relaxed).to_string();
+				let event_id = make_random_id();
 
 				let bot = Bot {
 					adapter: adapter_info.clone(),

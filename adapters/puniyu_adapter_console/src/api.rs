@@ -1,4 +1,4 @@
-use crate::common::make_message_id;
+use crate::common::make_random_id;
 use async_trait::async_trait;
 use puniyu_adapter::Result;
 use puniyu_adapter::logger::debug;
@@ -28,7 +28,7 @@ impl AdapterApi for ConsoleAdapterApi {
 			ContactType::Friend(friend) => ("私聊消息", &friend.scene),
 			ContactType::Group(group) => ("群聊消息", &group.scene),
 		};
-		let message_id = make_message_id();
+		let message_id = make_random_id();
 		let timestamp = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs();
 
 		let elements: Vec<element::send::Elements> = message.into();
