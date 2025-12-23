@@ -10,7 +10,7 @@ message TextElement {
 
 /// 艾特元素
 message AtElement {
-    string target_id = 1;
+  string target_id = 1;
 }
 
 /// 回复元素
@@ -26,13 +26,13 @@ message FaceElement {
 /// 图片元素
 message ImageElement {
   bytes file = 1;
-  bool is_flash = 2;
-  optional string summary = 3;
+  optional string summary = 2;
 }
 
 /// 文件元素
 message FileElement {
   bytes file = 1;
+  string file_name = 2;
 }
 
 /// 视频元素
@@ -47,7 +47,7 @@ message RecordElement {
 
 /// JSON 元素
 message JsonElement {
-  string json = 1;
+  string data = 1;
 }
 
 /// XML 元素
