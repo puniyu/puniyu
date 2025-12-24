@@ -1,7 +1,7 @@
 use super::{Contact, Scene};
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
+#[derive(Debug, Default, Clone, PartialEq, Deserialize, Serialize)]
 pub struct GroupContact {
 	/// 事件来源
 	pub scene: Scene,
@@ -33,13 +33,12 @@ impl Contact for GroupContact {
 	}
 }
 
-
 /// 构建群聊事件
 ///
 /// ## 参数
 /// `peer`: 群聊id
 /// `name`: 群聊昵称（可选）
-/// 
+///
 /// ## 示例
 /// ```rust
 /// use puniyu_types::contact_group;
@@ -47,18 +46,37 @@ impl Contact for GroupContact {
 ///
 /// let contact = contact_group!("123456");
 /// ```
+#[cfg(feature = "contact")]
 #[macro_export]
 macro_rules! contact_group {
-	($peer:expr) => {
-		GroupContact { scene: Scene::Group, peer: $peer.to_string(), name: None }
-	};
-	($peer:expr, $name:expr) => {
-		GroupContact { scene: Scene::Group, peer: $peer.to_string(), name: Some($name.to_string()) }
-	};
-	(peer: $peer:expr) => {
-		GroupContact { scene: Scene::Group, peer: $peer.to_string(), name: None }
-	};
-	(peer: $peer:expr, name: $name:expr) => {
-		GroupContact { scene: Scene::Group, peer: $peer.to_string(), name: Some($name.to_string()) }
-	};
+    ( $( $key:ident : $value:expr ),* $(,)? ) => {{
+        GroupContact {
+            scene: Scene::Group,
+            $(
+                $key: contact_group!(@convert $key, $value),
+            )*
+            ..GroupContact::default()
+        }
+    }};
+
+    ($peer:expr, $name:expr) => {{
+        GroupContact {
+            scene: Scene::Group,
+            peer: $peer.to_string(),
+            name: Some($name.to_string()),
+            ..GroupContact::default()
+        }
+    }};
+
+    ($peer:expr) => {{
+        GroupContact {
+            scene: Scene::Group,
+            peer: $peer.to_string(),
+            ..GroupContact::default()
+        }
+    }};
+
+    (@convert peer, $v:expr) => { $v.to_string() };
+    (@convert name, None) => { None };
+    (@convert name, $v:expr) => { Some($v.to_string()) };
 }

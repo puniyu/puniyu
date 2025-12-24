@@ -1,7 +1,7 @@
 use super::{Role, Sender, Sex};
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Deserialize, Serialize)]
+#[derive(Debug, Default, Clone, Deserialize, Serialize)]
 pub struct GroupSender {
 	/// 发送者id
 	pub user_id: String,
@@ -55,138 +55,24 @@ impl Sender for GroupSender {
 	}
 }
 
+#[cfg(feature = "sender")]
 #[macro_export]
 macro_rules! group_sender {
-	(
-        user_id: $user_id:expr,
-        nick: $nick:expr,
-        sex: $sex:expr,
-        age: $age:expr,
-        role: $role:expr,
-        card: $card:expr,
-        level: $level:expr,
-        title: $title:expr
-    ) => {
-		GroupSender {
-			user_id: $user_id.to_string(),
-			nick: Some($nick.to_string()),
-			sex: $sex,
-			age: $age,
-			role: $role,
-			card: Some($card.to_string()),
-			level: Some($level.to_string()),
-			title: Some($title.to_string()),
-		}
-	};
+    ( $( $key:ident : $value:expr ),* $(,)? ) => {{
+        GroupSender {
+            $(
+                $key: group_sender!(@convert $key, $value),
+            )*
+            ..GroupSender::default()
+        }
+    }};
 
-	(
-        user_id: $user_id:expr,
-        nick: $nick:expr,
-        sex: $sex:expr,
-        age: $age:expr,
-        role: $role:expr,
-        card: $card:expr,
-        level: $level:expr
-    ) => {
-		GroupSender {
-			user_id: $user_id.to_string(),
-			nick: Some($nick.to_string()),
-			sex: $sex,
-			age: $age,
-			role: $role,
-			card: Some($card.to_string()),
-			level: Some($level.to_string()),
-			title: None,
-		}
-	};
-
-	(
-        user_id: $user_id:expr,
-        nick: $nick:expr,
-        sex: $sex:expr,
-        age: $age:expr,
-        role: $role:expr,
-        card: $card:expr
-    ) => {
-		GroupSender {
-			user_id: $user_id.to_string(),
-			nick: Some($nick.to_string()),
-			sex: $sex,
-			age: $age,
-			role: $role,
-			card: Some($card.to_string()),
-			level: None,
-			title: None,
-		}
-	};
-	(
-        user_id: $user_id:expr,
-        nick: $nick:expr,
-        sex: $sex:expr,
-        age: $age:expr,
-        role: $role:expr
-    ) => {
-		GroupSender {
-			user_id: $user_id.to_string(),
-			nick: Some($nick.to_string()),
-			sex: $sex,
-			age: $age,
-			role: $role,
-			card: None,
-			level: None,
-			title: None,
-		}
-	};
-
-	($user_id:expr, $nick:expr, $sex:expr, $age:expr) => {
-		GroupSender {
-			user_id: $user_id.to_string(),
-			nick: Some($nick.to_string()),
-			sex: $sex,
-			age: $age,
-			role: Role::Unknown,
-			card: None,
-			level: None,
-			title: None,
-		}
-	};
-
-	($user_id:expr, $nick:expr, $sex:expr) => {
-		GroupSender {
-			user_id: $user_id.to_string(),
-			nick: Some($nick.to_string()),
-			sex: $sex,
-			age: 0,
-			role: Role::Unknown,
-			card: None,
-			level: None,
-			title: None,
-		}
-	};
-
-	($user_id:expr, $nick:expr) => {
-		GroupSender {
-			user_id: $user_id.to_string(),
-			nick: Some($nick.to_string()),
-			sex: Sex::Unknown,
-			age: 0,
-			role: Role::Unknown,
-			card: None,
-			level: None,
-			title: None,
-		}
-	};
-
-	($user_id:expr) => {
-		GroupSender {
-			user_id: $user_id.to_string(),
-			nick: None,
-			sex: Sex::Unknown,
-			age: 0,
-			role: Role::Unknown,
-			card: None,
-			level: None,
-			title: None,
-		}
-	};
+    (@convert user_id, $v:expr) => { $v.to_string() };
+    (@convert nick, $v:expr) => { Some($v.to_string()) };
+    (@convert sex, $v:expr) => { $v };
+    (@convert age, $v:expr) => { $v };
+    (@convert role, $v:expr) => { $v };
+    (@convert card, $v:expr) => { Some($v.to_string()) };
+    (@convert level, $v:expr) => { Some($v) };
+    (@convert title, $v:expr) => { Some($v.to_string()) };
 }

@@ -118,6 +118,7 @@ pub struct AdapterInfo {
 	#[builder(default = "env!(\"CARGO_PKG_NAME\").into()")]
 	pub name: String,
 	/// 适配器版本
+	#[builder(default = "env!(\"CARGO_PKG_VERSION\").into()")]
 	pub version: Version,
 	/// 适配器平台
 	#[builder(default)]
@@ -161,144 +162,14 @@ pub struct AdapterInfo {
 #[cfg(feature = "adapter")]
 #[macro_export]
 macro_rules! adapter_info {
-	(
-		name: $name:expr,
-		version: $version:expr,
-		platform: $platform:expr,
-		standard: $standard:expr,
-		protocol: $protocol:expr,
-		communication: $communication:expr,
-		address: $address:expr,
-		connect_time: $connect_time:expr
-	) => {
-		AdapterInfoBuilder::default()
-			.name($name)
-			.version($version)
-			.platform($platform)
-			.standard($standard)
-			.protocol($protocol)
-			.communication($communication)
-			.address($address)
-			.connect_time($connect_time)
-			.build()
-			.unwrap()
-	};
-	(
-		name: $name:expr,
-		version: $version:expr,
-		platform: $platform:expr,
-		standard: $standard:expr,
-		protocol: $protocol:expr,
-		communication: $communication:expr,
-		connect_time: $connect_time:expr
-	) => {
-		AdapterInfoBuilder::default()
-			.name($name)
-			.version($version)
-			.platform($platform)
-			.standard($standard)
-			.protocol($protocol)
-			.communication($communication)
-			.connect_time($connect_time)
-			.build()
-			.unwrap()
-	};
-	(
-		name: $name:expr,
-		version: $version:expr,
-		platform: $platform:expr,
-		standard: $standard:expr,
-		protocol: $protocol:expr,
-		communication: $communication:expr,
-		address: $address:expr
-	) => {
-		AdapterInfoBuilder::default()
-			.name($name)
-			.version($version)
-			.platform($platform)
-			.standard($standard)
-			.protocol($protocol)
-			.communication($communication)
-			.address(Some($address.into()))
-			.build()
-			.unwrap()
-	};
-	(
-		name: $name:expr,
-		version: $version:expr,
-		platform: $platform:expr,
-		standard: $standard:expr,
-		protocol: $protocol:expr,
-		communication: $communication:expr
-	) => {
-		AdapterInfoBuilder::default()
-			.name($name)
-			.version($version)
-			.platform($platform)
-			.standard($standard)
-			.protocol($protocol)
-			.communication($communication)
-			.build()
-			.unwrap()
-	};
-	(
-		name: $name:expr,
-		version: $version:expr,
-		platform: $platform:expr,
-		standard: $standard:expr,
-		protocol: $protocol:expr
-	) => {
-		AdapterInfoBuilder::default()
-			.name($name)
-			.version($version)
-			.platform($platform)
-			.standard($standard)
-			.protocol($protocol)
-			.build()
-			.unwrap()
-	};
-	(
-		name: $name:expr,
-		version: $version:expr,
-		platform: $platform:expr,
-		standard: $standard:expr
-	) => {
-		AdapterInfoBuilder::default()
-			.name($name)
-			.version($version)
-			.platform($platform)
-			.standard($standard)
-			.build()
-			.unwrap()
-	};
-	(
-		name: $name:expr,
-		version: $version:expr,
-		platform: $platform:expr
-	) => {
-		AdapterInfoBuilder::default()
-			.name($name)
-			.version($version)
-			.platform($platform)
-			.build()
-			.unwrap()
-	};
-	(
-		name: $name:expr,
-		version: $version:expr
-	) => {
-		AdapterInfoBuilder::default()
-			.name($name)
-			.version($version)
-			.build()
-			.unwrap()
-	};
-	(
-		name: $name:expr
-	) => {
-		AdapterInfoBuilder::default()
-			.name($name)
-			.build()
-			.unwrap()
+	( $( $key:ident : $value:expr ),* $(,)? ) => {{
+		let mut builder = AdapterInfoBuilder::default();
+		$(
+			builder.$key($value);
+		)*
+		builder.build().unwrap()
+	}};
+	() => {
+		AdapterInfoBuilder::default().build().unwrap()
 	};
 }
