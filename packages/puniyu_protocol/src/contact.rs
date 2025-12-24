@@ -23,7 +23,7 @@ impl From<Scene> for SceneType {
 
 impl From<FriendContact> for Contact {
 	fn from(value: FriendContact) -> Self {
-		let scene = SceneType::try_from(value.scene).unwrap();
+		let scene = SceneType::from(value.scene);
 		Self {
 			scene: scene.into(),
 			peer: value.peer,
@@ -43,7 +43,7 @@ impl From<Contact> for FriendContact {
 }
 impl From<GroupContact> for Contact {
 	fn from(value: GroupContact) -> Self {
-		let scene = SceneType::try_from(value.scene).unwrap();
+		let scene = SceneType::from(value.scene);
 		Self {
 			scene: scene.into(),
 			peer: value.peer,
