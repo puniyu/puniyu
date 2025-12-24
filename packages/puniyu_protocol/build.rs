@@ -5,6 +5,7 @@ fn main() {
 	let mut prost_build = prost_build::Config::new();
 	prost_build.protoc_executable(&bin_path);
 	prost_build.bytes(["."]);
+	prost_build.boxed("puniyu.event.Event.event.message_event");
 	let proto_files = glob("protos/**/*.proto")
 		.unwrap()
 		.filter_map(|entry| entry.ok())
