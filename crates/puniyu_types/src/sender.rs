@@ -7,7 +7,7 @@ pub use group::GroupSender;
 use serde::{Deserialize, Serialize};
 use strum::{Display, EnumString, IntoStaticStr};
 
-#[derive(Debug, Clone, PartialEq, EnumString, Display, IntoStaticStr, Deserialize, Serialize)]
+#[derive(Debug, Default, Clone, PartialEq, EnumString, Display, IntoStaticStr, Deserialize, Serialize)]
 /// 性别
 pub enum Sex {
 	/// 男性
@@ -18,6 +18,7 @@ pub enum Sex {
 	Female,
 	/// 未知
 	#[strum(serialize = "unknow")]
+	#[default]
 	Unknown,
 }
 
@@ -36,7 +37,7 @@ impl Sex {
 	}
 }
 
-#[derive(Debug, Clone, PartialEq, EnumString, Display, IntoStaticStr, Deserialize, Serialize)]
+#[derive(Debug, Default, Clone, PartialEq, EnumString, Display, IntoStaticStr, Deserialize, Serialize)]
 /// 事件发送者角色
 pub enum Role {
 	/// 群主
@@ -50,6 +51,7 @@ pub enum Role {
 	Member,
 	/// 未知
 	#[strum(serialize = "unknow")]
+	#[default]
 	Unknown,
 }
 

@@ -136,7 +136,7 @@ impl AdapterBuilder for Console {
 					"friend" => {
 						let contact = contact_friend!(name, name);
 						let sender =
-							friend_sender!(user_id: name, nick: name, sex: Sex::Unknown, age: 0);
+							friend_sender!(user_id: name, nick: name);
 
 						create_friend_message!(
 							bot, event_id, contact, bot_id, name, message_id, elements, sender,
@@ -146,7 +146,7 @@ impl AdapterBuilder for Console {
 					_ => {
 						let contact = contact_friend!(name, name);
 						let sender =
-							friend_sender!(user_id: name, nick: name, sex: Sex::Unknown, age: 0);
+							friend_sender!(user_id: name, nick: name);
 
 						create_friend_message!(
 							bot, event_id, contact, bot_id, name, message_id, elements, sender,

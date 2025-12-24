@@ -1,7 +1,7 @@
 use super::{Sender, Sex};
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Deserialize, Serialize)]
+#[derive(Debug, Default, Clone, Deserialize, Serialize)]
 pub struct FriendSender {
 	/// 发送者id
 	pub user_id: String,
@@ -28,47 +28,20 @@ impl Sender for FriendSender {
 	}
 }
 
+#[cfg(feature = "sender")]
 #[macro_export]
 macro_rules! friend_sender {
-	(
-        user_id: $user_id:expr,
-        nick: $nick:expr,
-        sex: $sex:expr,
-        age: $age:expr
-    ) => {
-		FriendSender {
-			user_id: $user_id.to_string(),
-			nick: Some($nick.to_string()),
-			sex: $sex,
-			age: $age,
-		}
-	};
+    ( $( $key:ident : $value:expr ),* $(,)? ) => {{
+        FriendSender {
+            $(
+                $key: friend_sender!(@convert $key, $value),
+            )*
+            ..FriendSender::default()
+        }
+    }};
 
-	($user_id:expr, $nick:expr, $sex:expr, $age:expr) => {
-		FriendSender {
-			user_id: $user_id.to_string(),
-			nick: Some($nick.to_string()),
-			sex: $sex,
-			age: $age,
-		}
-	};
-	($user_id:expr, $nick:expr, $sex:expr) => {
-		FriendSender {
-			user_id: $user_id.to_string(),
-			nick: Some($nick.to_string()),
-			sex: $sex,
-			age: 0,
-		}
-	};
-	($user_id:expr, $nick:expr) => {
-		FriendSender {
-			user_id: $user_id.to_string(),
-			nick: Some($nick.to_string()),
-			sex: Sex::Unknown,
-			age: 0,
-		}
-	};
-	($user_id:expr) => {
-		FriendSender { user_id: $user_id.to_string(), nick: None, sex: Sex::Unknown, age: 0 }
-	};
+    (@convert user_id, $v:expr) => { $v.to_string() };
+    (@convert nick, $v:expr) => { Some($v.to_string()) };
+    (@convert sex, $v:expr) => { $v };
+    (@convert age, $v:expr) => { $v };
 }

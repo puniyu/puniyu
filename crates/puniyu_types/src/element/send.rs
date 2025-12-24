@@ -85,8 +85,8 @@ pub struct FileElement {
 }
 
 impl FileElement {
-	pub fn new(file: impl Into<Bytes>, file_name: Option<String>) -> Self {
-		Self { file: file.into(), file_name: file_name.unwrap_or(String::from("image.png")) }
+	pub fn new(file: impl Into<Bytes>, file_name: String) -> Self {
+		Self { file: file.into(), file_name }
 	}
 }
 

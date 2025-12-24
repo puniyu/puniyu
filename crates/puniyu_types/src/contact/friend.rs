@@ -1,7 +1,7 @@
 use super::{Contact, Scene};
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
+#[derive(Debug, Default, Clone, PartialEq, Deserialize, Serialize)]
 pub struct FriendContact {
 	/// 事件来源
 	pub scene: Scene,
@@ -10,7 +10,6 @@ pub struct FriendContact {
 	/// 好友名称
 	pub name: Option<String>,
 }
-
 
 impl Contact for FriendContact {
 	fn scene(&self) -> Scene {
@@ -34,7 +33,6 @@ impl Contact for FriendContact {
 	}
 }
 
-
 /// 构建好友事件
 ///
 /// ## 参数
@@ -43,16 +41,34 @@ impl Contact for FriendContact {
 #[cfg(feature = "contact")]
 #[macro_export]
 macro_rules! contact_friend {
-	($peer:expr, $name:expr) => {
-		FriendContact { scene: Scene::Friend, peer: $peer.to_string(), name: Some($name.to_string()) }
-	};
-	(peer: $peer:expr, name: $name:expr) => {
-		FriendContact { scene: Scene::Friend, peer: $peer.to_string(), name: Some($name.to_string()) }
-	};
-	($peer:expr) => {
-		FriendContact { scene: Scene::Friend, peer: $peer.to_string(), name: None }
-	};
-	(peer: $peer:expr) => {
-		FriendContact { scene: Scene::Friend, peer: $peer.to_string(), name: None }
-	};
+    ( $( $key:ident : $value:expr ),* $(,)? ) => {{
+        FriendContact {
+            scene: Scene::Friend,
+            $(
+                $key: contact_friend!(@convert $key, $value),
+            )*
+            ..FriendContact::default()
+        }
+    }};
+
+    ($peer:expr, $name:expr) => {{
+        FriendContact {
+            scene: Scene::Friend,
+            peer: $peer.to_string(),
+            name: Some($name.to_string()),
+            ..FriendContact::default()
+        }
+    }};
+
+    ($peer:expr) => {{
+        FriendContact {
+            scene: Scene::Friend,
+            peer: $peer.to_string(),
+            ..FriendContact::default()
+        }
+    }};
+
+    (@convert peer, $v:expr) => { $v.to_string() };
+    (@convert name, None) => { None };
+    (@convert name, $v:expr) => { Some($v.to_string()) };
 }

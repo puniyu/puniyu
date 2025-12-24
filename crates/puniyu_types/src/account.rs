@@ -14,18 +14,16 @@ pub struct AccountInfo {
 #[cfg(feature = "account")]
 #[macro_export]
 macro_rules! account_info {
-	(uin: $uin:expr, name: $name:expr,avatar: $avatar:expr) => {
-		AccountInfo {
-			uin: $uin.to_string(),
-			name: $name.to_string(),
-			avatar: $avatar.to_string(),
-		}
-	};
-	($uin:expr, $name:expr,$avatar:expr) => {
-		AccountInfo {
-			uin: $uin.to_string(),
-			name: $name.to_string(),
-			avatar: $avatar.to_string(),
-		}
-	};
+    ( $( $key:ident : $value:expr ),* $(,)? ) => {{
+        AccountInfo {
+            $(
+                $key: account_info!(@convert $key, $value),
+            )*
+            ..AccountInfo::default()
+        }
+    }};
+
+    (@convert uin, $v:expr) => { $v.to_string() };
+    (@convert name, $v:expr) => { $v.to_string() };
+    (@convert avatar, $v:expr) => { $v.to_string() };
 }

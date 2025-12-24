@@ -8,10 +8,11 @@ use serde::{Deserialize, Serialize};
 use std::fmt::Debug;
 use strum::{Display, EnumString, IntoStaticStr};
 
-#[derive(Debug, Clone, PartialEq, EnumString, Display, IntoStaticStr, Deserialize, Serialize)]
+#[derive(Debug, Default,Clone, PartialEq, EnumString, Display, IntoStaticStr, Deserialize, Serialize)]
 /// 场景
 pub enum Scene {
 	#[strum(serialize = "group")]
+	#[default]
 	/// 群聊场景
 	Group,
 	#[strum(serialize = "friend")]
