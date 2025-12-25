@@ -9,6 +9,7 @@ use std::fmt::Debug;
 use strum::{Display, EnumString, IntoStaticStr};
 
 #[derive(Debug, Default,Clone, PartialEq, EnumString, Display, IntoStaticStr, Deserialize, Serialize)]
+#[serde(rename_all = "lowercase", tag = "type", content = "field0")]
 /// 场景
 pub enum Scene {
 	#[strum(serialize = "group")]

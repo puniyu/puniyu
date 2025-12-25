@@ -2,8 +2,10 @@ pub mod message;
 pub mod notion;
 pub mod request;
 
+use serde::{Deserialize, Serialize};
 use strum::{Display, EnumString, IntoStaticStr};
-#[derive(Clone)]
+#[derive(Clone, Deserialize, Serialize)]
+#[serde(rename_all = "lowercase", tag = "type", content = "field0")]
 pub enum Event {
 	Message(Box<message::MessageEvent>),
 	Notion(Box<notion::NotionEvent>),

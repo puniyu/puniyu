@@ -1,15 +1,17 @@
-#[derive(Debug, Clone)]
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct GroupPokeType {
 	/// 被戳的用户id
 	pub target_id: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct GroupRecallType {
 	pub message_id: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct GroupFileUploadType {
 	/// 文件id
 	pub file_id: String,
@@ -19,18 +21,18 @@ pub struct GroupFileUploadType {
 	pub file_size: u64,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct GroupCardChangeType {
 	/// 群名片，新的群名片
 	pub card: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct GroupMemberTitleChangeType {
 	pub title: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub enum HighlightsAction {
 	/// 添加精华
 	Add,
@@ -38,7 +40,7 @@ pub enum HighlightsAction {
 	Remove,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct GroupHighlightsChangeType {
 	/// 被添加精华消息的用户id
 	pub target_id: String,
@@ -46,14 +48,14 @@ pub struct GroupHighlightsChangeType {
 	pub action: HighlightsAction,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct GroupMemberAddType {
 	/// 加入的用户id
 	pub target_id: String,
 	pub join_type: GroupJoinType,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub enum GroupJoinType {
 	/// 邀请
 	Invite,
@@ -62,14 +64,14 @@ pub enum GroupJoinType {
 }
 
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct GroupMemberDecreaseType {
 	/// 离开的用户id
 	pub target_id: String,
 	pub leave_type: GroupLeaveType,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub enum GroupLeaveType {
 	/// 主动退群
 	Leave,
@@ -79,14 +81,14 @@ pub enum GroupLeaveType {
 	KickBot,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct GroupAdminChangeType {
 	/// 被操作的id
 	pub target_id: String,
 	pub admin_type: GroupAdminType,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub enum GroupAdminType {
 	/// 设置
 	Set,
@@ -94,7 +96,7 @@ pub enum GroupAdminType {
 	Remove,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct GroupMemberBanType {
 	/// 被禁用的用户id
 	pub target_id: String,
@@ -103,7 +105,7 @@ pub struct GroupMemberBanType {
 	pub ban_type: GroupBanType,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub enum GroupBanType {
 	/// 禁言
 	Ban,
@@ -111,12 +113,12 @@ pub enum GroupBanType {
 	Unban,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct GroupWholeBanType {
 	pub action: GroupWholeBanActionType,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub enum GroupWholeBanActionType {
 	/// 全员禁言
 	WholeBan,
@@ -124,7 +126,7 @@ pub enum GroupWholeBanActionType {
 	WholeUnban,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct GroupMessageReactionType {
 	pub message_id: String,
 	pub face_id: u32,
@@ -132,7 +134,7 @@ pub struct GroupMessageReactionType {
 	pub action: GroupMessageReactionAction,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub enum GroupMessageReactionAction {
 	/// 添加
 	Add,
@@ -140,18 +142,18 @@ pub enum GroupMessageReactionAction {
 	Remove,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct GroupLuckKingType {
 	/// 运气王id
 	pub target_id: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct GroupHonorChangeType {
 	pub honor_type: HonorType,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub enum HonorType {
 	/// 龙王
 	Talkative,

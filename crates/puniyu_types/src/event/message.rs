@@ -7,6 +7,7 @@ use super::EventBase;
 use crate::element::receive::Elements;
 use strum::{Display, EnumString, IntoStaticStr};
 use bytes::Bytes;
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, EnumString, Display, IntoStaticStr)]
 pub enum MessageSubType {
@@ -18,7 +19,8 @@ pub enum MessageSubType {
 	Guild,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
+#[serde(rename_all = "lowercase", tag = "type", content = "field0")]
 pub enum MessageEvent {
 	Friend(FriendMessage),
 	Group(GroupMessage),

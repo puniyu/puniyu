@@ -141,6 +141,7 @@ impl XmlElement {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Display)]
+#[serde(rename_all = "lowercase", tag = "type", content = "field0")]
 pub enum Elements {
 	Text(TextElement),
 	At(AtElement),

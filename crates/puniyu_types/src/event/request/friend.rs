@@ -1,15 +1,16 @@
+use serde::{Deserialize, Serialize};
 use super::{RequestBase, RequestBuilder, RequestSubEvent};
 use crate::event::{EventBase, EventType};
 use crate::contact::FriendContact;
 use crate::sender::FriendSender;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct PrivateApplyType {
 	/// 验证信息
 	pub message: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct PrivateApply {
 	/// 事件id
 	event_id: String,

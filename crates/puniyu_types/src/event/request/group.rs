@@ -1,15 +1,16 @@
+use serde::{Deserialize, Serialize};
 use super::{RequestBase, RequestBuilder, RequestSubEvent};
 use crate::event::{EventBase, EventType};
 use crate::contact::GroupContact;
 use crate::sender::GroupSender;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct GroupApplyType {
 	/// 申请理由
 	pub reason: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct GroupApply {
 	/// 事件id
 	event_id: String,
@@ -124,12 +125,12 @@ macro_rules! create_group_apply {
 	}};
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct GroupInviteType {
 	pub target_id: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct GroupInvite {
 	/// 事件id
 	event_id: String,

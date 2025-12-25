@@ -5,6 +5,7 @@ use super::{NotionBase, NotionBuilder, NotionSubEvent};
 use crate::contact::GroupContact;
 use crate::event::{EventBase, EventType};
 use crate::sender::GroupSender;
+use serde::{Deserialize, Serialize};
 
 macro_rules! impl_notion_event {
     (
@@ -16,7 +17,7 @@ macro_rules! impl_notion_event {
         $content_struct:ty
     ) => {
         $(#[$attr])*
-        #[derive(Debug, Clone)]
+        #[derive(Debug, Clone,Deserialize, Serialize)]
         pub struct $struct_name {
             /// 事件id
             event_id: String,

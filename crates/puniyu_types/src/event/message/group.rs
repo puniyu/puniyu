@@ -4,9 +4,10 @@ use crate::element::receive::Elements;
 use crate::event::{EventBase, EventType};
 use crate::sender::{GroupSender, Role};
 use std::fmt;
+use serde::{Deserialize, Serialize};
 use puniyu_config::Config;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct GroupMessage {
 	/// 事件id
 	event_id: String,

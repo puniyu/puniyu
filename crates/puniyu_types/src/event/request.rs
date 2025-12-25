@@ -1,4 +1,6 @@
 mod friend;
+
+use serde::{Deserialize, Serialize};
 pub use friend::*;
 mod group;
 pub use group::*;
@@ -19,7 +21,8 @@ pub enum RequestSubEvent {
 	GroupInvite,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
+#[serde(rename_all = "lowercase", tag = "type", content = "field0")]
 pub enum RequestEvent {
 	/// 好友申请
 	PrivateApply(PrivateApply),
