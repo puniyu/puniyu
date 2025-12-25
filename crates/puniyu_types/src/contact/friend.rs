@@ -42,30 +42,33 @@ impl Contact for FriendContact {
 #[macro_export]
 macro_rules! contact_friend {
     ( $( $key:ident : $value:expr ),* $(,)? ) => {{
-        FriendContact {
+        let mut contact = FriendContact {
             scene: Scene::Friend,
-            $(
-                $key: contact_friend!(@convert $key, $value),
-            )*
             ..FriendContact::default()
-        }
+        };
+        $(
+            contact.$key = contact_friend!(@convert $key, $value);
+        )*
+        contact
     }};
 
     ($peer:expr, $name:expr) => {{
-        FriendContact {
+        let mut contact = FriendContact {
             scene: Scene::Friend,
-            peer: $peer.to_string(),
-            name: Some($name.to_string()),
             ..FriendContact::default()
-        }
+        };
+        contact.peer = $peer.to_string();
+        contact.name = Some($name.to_string());
+        contact
     }};
 
     ($peer:expr) => {{
-        FriendContact {
+        let mut contact = FriendContact {
             scene: Scene::Friend,
-            peer: $peer.to_string(),
             ..FriendContact::default()
-        }
+        };
+        contact.peer = $peer.to_string();
+        contact
     }};
 
     (@convert peer, $v:expr) => { $v.to_string() };

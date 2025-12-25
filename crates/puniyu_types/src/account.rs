@@ -15,15 +15,15 @@ pub struct AccountInfo {
 #[macro_export]
 macro_rules! account_info {
     ( $( $key:ident : $value:expr ),* $(,)? ) => {{
-        AccountInfo {
-            $(
-                $key: account_info!(@convert $key, $value),
-            )*
-            ..AccountInfo::default()
-        }
+        let mut info = AccountInfo::default();
+        $(
+            info.$key = account_info!(@convert $key, $value);
+        )*
+        info
     }};
 
     (@convert uin, $v:expr) => { $v.to_string() };
     (@convert name, $v:expr) => { $v.to_string() };
     (@convert avatar, $v:expr) => { $v.to_string() };
 }
+

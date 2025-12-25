@@ -59,15 +59,15 @@ impl Sender for GroupSender {
 #[macro_export]
 macro_rules! group_sender {
     ( $( $key:ident : $value:expr ),* $(,)? ) => {{
-        GroupSender {
-            $(
-                $key: group_sender!(@convert $key, $value),
-            )*
-            ..GroupSender::default()
-        }
+        let mut sender = GroupSender::default();
+        $(
+            sender.$key = group_sender!(@convert $key, $value);
+        )*
+        sender
     }};
 
     (@convert user_id, $v:expr) => { $v.to_string() };
+    (@convert nick, None) => { None };
     (@convert nick, $v:expr) => { Some($v.to_string()) };
     (@convert sex, $v:expr) => { $v };
     (@convert age, $v:expr) => { $v };
@@ -76,3 +76,4 @@ macro_rules! group_sender {
     (@convert level, $v:expr) => { Some($v) };
     (@convert title, $v:expr) => { Some($v.to_string()) };
 }
+

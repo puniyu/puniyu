@@ -32,15 +32,15 @@ impl Sender for FriendSender {
 #[macro_export]
 macro_rules! friend_sender {
     ( $( $key:ident : $value:expr ),* $(,)? ) => {{
-        FriendSender {
-            $(
-                $key: friend_sender!(@convert $key, $value),
-            )*
-            ..FriendSender::default()
-        }
+        let mut sender = FriendSender::default();
+        $(
+            sender.$key = friend_sender!(@convert $key, $value);
+        )*
+        sender
     }};
 
     (@convert user_id, $v:expr) => { $v.to_string() };
+    (@convert nick, None) => { None };
     (@convert nick, $v:expr) => { Some($v.to_string()) };
     (@convert sex, $v:expr) => { $v };
     (@convert age, $v:expr) => { $v };
