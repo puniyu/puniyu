@@ -50,30 +50,33 @@ impl Contact for GroupContact {
 #[macro_export]
 macro_rules! contact_group {
     ( $( $key:ident : $value:expr ),* $(,)? ) => {{
-        GroupContact {
+        let mut contact = GroupContact {
             scene: Scene::Group,
-            $(
-                $key: contact_group!(@convert $key, $value),
-            )*
             ..GroupContact::default()
-        }
+        };
+        $(
+            contact.$key = contact_group!(@convert $key, $value);
+        )*
+        contact
     }};
 
     ($peer:expr, $name:expr) => {{
-        GroupContact {
+        let mut contact = GroupContact {
             scene: Scene::Group,
-            peer: $peer.to_string(),
-            name: Some($name.to_string()),
             ..GroupContact::default()
-        }
+        };
+        contact.peer = $peer.to_string();
+        contact.name = Some($name.to_string());
+        contact
     }};
 
     ($peer:expr) => {{
-        GroupContact {
+        let mut contact = GroupContact {
             scene: Scene::Group,
-            peer: $peer.to_string(),
             ..GroupContact::default()
-        }
+        };
+        contact.peer = $peer.to_string();
+        contact
     }};
 
     (@convert peer, $v:expr) => { $v.to_string() };

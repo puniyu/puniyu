@@ -10,6 +10,7 @@ use tokio::sync::OnceCell;
 use tokio_cron_scheduler::{JobBuilder, JobScheduler};
 use uuid::Uuid;
 
+
 #[derive(Clone)]
 struct Task {
 	plugin_name: String,

@@ -1,3 +1,4 @@
+use std::time::Duration;
 use derive_builder::Builder;
 use strum::{Display, EnumString, IntoStaticStr};
 
@@ -115,10 +116,10 @@ pub enum AdapterCommunication {
 /// 适配器信息
 pub struct AdapterInfo {
 	/// 适配器名称 如lagrange-onebot
-	#[builder(default = "env!(\"CARGO_PKG_NAME\").into()")]
+	#[builder(default = "self.default_name()")]
 	pub name: String,
 	/// 适配器版本
-	#[builder(default = "env!(\"CARGO_PKG_VERSION\").into()")]
+	#[builder(default = "self.default_version()")]
 	pub version: Version,
 	/// 适配器平台
 	#[builder(default)]
@@ -141,10 +142,22 @@ pub struct AdapterInfo {
 	#[builder(default)]
 	pub address: Option<String>,
 	/// 连接时间
-	#[builder(default = "std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap()")]
-	pub connect_time: std::time::Duration,
+	#[builder(default = "self.default_connect_time()")]
+	pub connect_time: Duration,
 }
 
+impl AdapterInfoBuilder {
+	fn default_name(&self) -> String {
+		env!("CARGO_PKG_NAME").into()
+	}
+	fn default_version(&self) -> Version {
+		env!("CARGO_PKG_VERSION").into()
+	}
+	fn default_connect_time(&self) -> Duration {
+		use std::time::{SystemTime, UNIX_EPOCH};
+		SystemTime::now().duration_since(UNIX_EPOCH).unwrap()
+	}
+}
 /// 创建 AdapterInfo 的便捷宏
 ///
 /// # 示例
