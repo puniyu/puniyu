@@ -1,7 +1,10 @@
 use super::Error;
-use serde::{de::DeserializeOwned, Serialize};
-use std::{fs, path::{Path, PathBuf}};
-use toml::{from_str, to_string_pretty, Value};
+use serde::{Serialize, de::DeserializeOwned};
+use std::{
+	fs,
+	path::{Path, PathBuf},
+};
+use toml::{Value, from_str, to_string_pretty};
 
 fn build_config_path(path: &Path, name: &str) -> PathBuf {
 	path.join(format!("{}.toml", name))
@@ -140,7 +143,7 @@ pub fn delete_config(path: &Path, name: &str, node_path: &str) -> Result<(), Err
 	let full_path = build_config_path(path, name);
 	let config_str = fs::read_to_string(&full_path)?;
 	let mut toml_value: Value = from_str(&config_str)?;
-	
+
 	delete_toml_node(&mut toml_value, node_path);
 	write_to_file(&full_path, &toml_value)
 }
@@ -166,22 +169,13 @@ fn delete_toml_node(value: &mut Value, node_path: &str) {
 		return;
 	}
 
-	let (last_key, parent_keys) = keys.split_last().unwrap();
-	
-	let mut current = value;
-	for &key in parent_keys {
-		if let Value::Table(table) = current {
-			if let Some(next) = table.get_mut(key) {
-				current = next;
-			} else {
-				return;
-			}
-		} else {
-			return;
-		}
-	}
-	
-	if let Value::Table(table) = current {
+	let target_table =
+		keys.iter().take(keys.len() - 1).try_fold(value, |current, &key| match current {
+			Value::Table(table) => table.get_mut(key),
+			_ => None,
+		});
+
+	if let (Some(Value::Table(table)), Some(last_key)) = (target_table, keys.last()) {
 		table.remove(*last_key);
 	}
 }
