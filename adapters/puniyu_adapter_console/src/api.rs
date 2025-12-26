@@ -8,7 +8,8 @@ use std::sync::LazyLock;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 pub(crate) static AVATAR_URL: LazyLock<String> = LazyLock::new(|| {
-	let server = Config::app().server();
+	let config = Config::app();
+	let server = config.server();
 	format!("http://{}:{}/logo.png", server.host(), server.port())
 });
 pub struct ConsoleAdapterApi;

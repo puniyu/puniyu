@@ -114,7 +114,8 @@ impl App {
 		{
 			use crate::config::Config;
 			use std::net::IpAddr;
-			let config = Config::app().server();
+			let config = Config::app();
+			let config = config.server();
 			let host = IpAddr::V4(config.host().parse().unwrap());
 			let port = config.port();
 			puniyu_server::run_server_spawn(Some(host), Some(port));

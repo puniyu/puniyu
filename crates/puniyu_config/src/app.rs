@@ -54,6 +54,7 @@ pub struct AppConfig {
 }
 
 impl Default for AppConfig {
+	#[inline]
 	fn default() -> Self {
 		AppConfig {
 			logger: LoggerConfig::default(),
@@ -72,45 +73,38 @@ impl AppConfig {
 		APP_CONFIG.read().unwrap().clone()
 	}
 	/// 获取日志配置
-	pub fn logger(&self) -> LoggerConfig {
-		let config = APP_CONFIG.read().unwrap();
-		config.logger.clone()
+	pub fn logger(&self) -> &LoggerConfig {
+		&self.logger
 	}
 	/// 获取服务器配置
-	pub fn server(&self) -> ServerConfig {
-		let config = APP_CONFIG.read().unwrap();
-		config.server.clone()
+	pub fn server(&self) -> &ServerConfig {
+		&self.server
 	}
 	/// 获取适配器配置
-	pub fn adapter(&self) -> AdapterConfig {
-		let config = APP_CONFIG.read().unwrap();
-		config.adapter.clone()
+	pub fn adapter(&self) -> &AdapterConfig {
+		&self.adapter
 	}
 
 	/// 获取bot主人列表
-	pub fn masters(&self) -> Vec<String> {
-		let config = APP_CONFIG.read().unwrap();
-		config.masters.clone()
+	pub fn masters(&self) -> &Vec<String> {
+		&self.masters
 	}
 
 	/// 获取应用群组配置
 	///
 	/// 包含群聊黑白名单
-	pub fn group(&self) -> GroupConfig {
-		let config = APP_CONFIG.read().unwrap();
-		config.group.clone()
+	pub fn group(&self) -> &GroupConfig {
+		&self.group
 	}
 
 	/// 获取应用好友配置
 	///
 	/// 包含好友黑白名单
-	pub fn friend(&self) -> FriendConfig {
-		let config = APP_CONFIG.read().unwrap();
-		config.friend.clone()
+	pub fn friend(&self) -> &FriendConfig {
+		&self.friend
 	}
 	/// 获取前缀
-	pub fn prefix(&self) -> String {
-		let config = APP_CONFIG.read().unwrap();
-		config.prefix.clone()
+	pub fn prefix(&self) -> &String {
+		&self.prefix
 	}
 }

@@ -364,7 +364,8 @@ macro_rules! impl_message_event {
             }
 
             fn is_master(&self) -> bool {
-                let masters = Config::app().masters();
+				let config = Config::app();
+                let masters = config.masters();
                 masters.contains(&self.user_id)
             }
         }
