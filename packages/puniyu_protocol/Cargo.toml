@@ -13,12 +13,7 @@ include = ["src", "protos", "Cargo.toml", "build.rs"]
 
 [dependencies]
 bytes.workspace = true
-puniyu_types = { version = "0.6.0", path = "../../crates/puniyu_types", default-features = false, features = [
-    "element",
-    "contact",
-    "sender",
-    "event"
-] }
+puniyu_types = { version = "0.6.0", path = "../../crates/puniyu_types" }
 prost = "0.14.1"
 prost-types = "0.14.1"
 

@@ -13,15 +13,16 @@ fn check_list(id: &str, enable_list: &[String], disable_list: &[String]) -> bool
 
 /// 检查消息权限（黑白名单）
 pub fn check(event: &MessageEvent) -> bool {
+	let config = Config::app();
 	match event {
 		MessageEvent::Friend(m) => {
 			let user_id = m.user_id().to_string();
-			let config = Config::app().friend();
+			let config = config.friend();
 			check_list(&user_id, &config.enable_list(), &config.disable_list())
 		}
 		MessageEvent::Group(m) => {
 			let group_id = m.group_id().to_string();
-			let config = Config::app().group();
+			let config = config.group();
 			check_list(&group_id, &config.enable_list(), &config.disable_list())
 		}
 	}

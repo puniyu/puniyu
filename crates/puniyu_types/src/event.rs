@@ -1,9 +1,12 @@
+
 pub mod message;
 pub mod notion;
 pub mod request;
 
 use serde::{Deserialize, Serialize};
 use strum::{Display, EnumString, IntoStaticStr};
+use crate::bot::BotInfo;
+
 #[derive(Clone, Deserialize, Serialize)]
 #[serde(rename_all = "lowercase", tag = "type", content = "field0")]
 pub enum Event {
@@ -45,6 +48,8 @@ pub enum EventType {
 pub trait EventBase: Send + Sync {
 	type ContactType;
 	type SenderType;
+	
+	fn bot(&self) -> &BotInfo;
 	/// 事件触发时间戳(秒）
 	fn time(&self) -> u64;
 	/// 事件类型
@@ -65,4 +70,10 @@ pub trait EventBase: Send + Sync {
 
 	/// 发送者
 	fn sender(&self) -> Self::SenderType;
+	
+	/// 是否为好友事件
+	fn is_friend(&self) -> bool;
+	
+	/// 是否为群事件
+	fn is_group(&self) -> bool;
 }

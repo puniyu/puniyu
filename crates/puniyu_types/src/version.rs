@@ -4,16 +4,20 @@ use std::fmt;
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Version {
 	/// 主版本号
-	pub major: &'static str,
+	pub major: u16,
 	/// 次版本号
-	pub minor: &'static str,
+	pub minor: u16,
 	/// 补丁版本号
-	pub patch: &'static str,
+	pub patch: u16,
 }
 
 impl Default for Version {
 	fn default() -> Self {
-		Version::from("0.0.1")
+		Self {
+			major: 0,
+			minor: 0,
+			patch: 1,
+		}
 	}
 }
 
@@ -26,17 +30,26 @@ impl fmt::Display for Version {
 impl From<&'static str> for Version {
 	fn from(s: &'static str) -> Self {
 		let mut v = s.split('.');
-		Version { major: v.next().unwrap(), minor: v.next().unwrap(), patch: v.next().unwrap() }
+		Self {
+			major: v.next().unwrap_or_default().parse().unwrap_or_default(),
+			minor: v.next().unwrap_or_default().parse().unwrap_or_default(),
+			patch: v.next().unwrap_or_default().parse().unwrap_or_default()
+		}
 	}
 }
 
+
 impl From<String> for Version {
 	fn from(s: String) -> Self {
-		let leaked = Box::leak(s.into_boxed_str());
-		let mut v = leaked.split('.');
-		Version { major: v.next().unwrap(), minor: v.next().unwrap(), patch: v.next().unwrap() }
+		let mut parts = s.split('.');
+		Self {
+			major: parts.next().unwrap_or_default().parse().unwrap_or_default(),
+			minor: parts.next().unwrap_or_default().parse().unwrap_or_default(),
+			patch: parts.next().unwrap_or_default().parse().unwrap_or_default(),
+		}
 	}
 }
+
 
 impl From<Version> for String {
 	fn from(v: Version) -> Self {

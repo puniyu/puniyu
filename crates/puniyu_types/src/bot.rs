@@ -2,6 +2,7 @@ use crate::account::AccountInfo;
 use crate::adapter::{AdapterApi, AdapterInfo, Result, SendMsgType};
 use crate::contact::ContactType;
 use crate::element::Message;
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum BotId {
@@ -27,15 +28,34 @@ impl From<String> for BotId {
 	}
 }
 
-#[derive(Clone)]
+#[derive(Clone, Serialize)]
 pub struct Bot {
 	/// 适配器信息
 	pub adapter: AdapterInfo,
 	/// 适配器API
+	#[serde(skip)]
 	pub api: &'static dyn AdapterApi,
 	/// 账户信息
 	pub account: AccountInfo,
 }
+#[derive(Debug, Default, Clone, Deserialize, Serialize, Eq, PartialEq)]
+pub struct BotInfo {
+	/// 适配器信息
+	pub adapter: AdapterInfo,
+	/// 账户信息
+	pub account: AccountInfo,
+}
+
+impl From<Bot> for BotInfo {
+	fn from(bot: Bot) -> Self {
+		Self {
+			adapter: bot.adapter,
+			account: bot.account,
+		}
+	}
+}
+
+impl Eq for Bot {}
 
 impl std::fmt::Debug for Bot {
 	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -52,7 +72,6 @@ impl PartialEq for Bot {
 	}
 }
 
-impl Eq for Bot {}
 
 impl Bot {
 	pub async fn send_msg(&self, contact: ContactType, message: Message) -> Result<SendMsgType> {

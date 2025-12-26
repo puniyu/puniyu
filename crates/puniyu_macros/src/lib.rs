@@ -97,9 +97,9 @@ pub fn adapter(_: TokenStream, item: TokenStream) -> TokenStream {
 
 	let struct_name = &input_struct.ident;
 	let adapter_struct_name = Ident::new("Adapter", proc_macro2::Span::call_site());
-	let version_major = quote! { env!("CARGO_PKG_VERSION_MAJOR") };
-	let version_minor = quote! { env!("CARGO_PKG_VERSION_MINOR") };
-	let version_patch = quote! { env!("CARGO_PKG_VERSION_PATCH") };
+	let version_major = quote! { env!("CARGO_PKG_VERSION_MAJOR").parse::<u16>().unwrap() };
+	let version_minor = quote! { env!("CARGO_PKG_VERSION_MINOR").parse::<u16>().unwrap() };
+	let version_patch = quote! { env!("CARGO_PKG_VERSION_PATCH").parse::<u16>().unwrap() };
 
 	let expanded = quote! {
 		#input_struct
@@ -272,9 +272,9 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
 	}
 
 	let plugin_name = quote! { env!("CARGO_PKG_NAME") };
-	let version_major = quote! { env!("CARGO_PKG_VERSION_MAJOR") };
-	let version_minor = quote! { env!("CARGO_PKG_VERSION_MINOR") };
-	let version_patch = quote! { env!("CARGO_PKG_VERSION_PATCH") };
+	let version_major = quote! { env!("CARGO_PKG_VERSION_MAJOR").parse::<u16>().unwrap() };
+	let version_minor = quote! { env!("CARGO_PKG_VERSION_MINOR").parse::<u16>().unwrap() };
+	let version_patch = quote! { env!("CARGO_PKG_VERSION_PATCH").parse::<u16>().unwrap() };
 	let version_string = quote! { env!("CARGO_PKG_VERSION") };
 	let plugin_author = quote! {
 		{

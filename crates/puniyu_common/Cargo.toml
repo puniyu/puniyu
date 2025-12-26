@@ -15,14 +15,15 @@ doctest = false
 
 [dependencies]
 toml = { workspace = true }
+strum.workspace = true
 puniyu_system_info = { workspace = true, features = ["gpu"], optional = true }
 
 serde.workspace = true
 thiserror.workspace = true
 
 [features]
-default = []
-stable = []
+default = ["version"]
+version = []
 system-info = ["dep:puniyu_system_info"]
 
 

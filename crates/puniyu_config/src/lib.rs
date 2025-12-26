@@ -182,23 +182,24 @@ fn init_env() {
 			env::set_var("APP_NAME", APP_NAME.get().unwrap());
 		}
 	}
+	let config = Config::app();
 	if env::var("LOGGER_LEVEL").is_err() {
-		let config = Config::app().logger();
+		let config = config.logger();
 		let level = config.level();
 		unsafe {
-			env::set_var("LOGGER_LEVEL", level.to_string());
+			env::set_var("LOGGER_LEVEL", level);
 		}
 	}
 
 	if env::var("LOGGER_RETENTION_DAYS").is_err() {
-		let config = Config::app().logger();
+		let config = config.logger();
 		let retention_day = config.retention_days();
 		unsafe {
 			env::set_var("LOGGER_RETENTION_DAYS", retention_day.to_string());
 		}
 	}
 	if env::var("LOGGER_FILE_ENABLE").is_err() {
-		let config = Config::app().logger();
+		let config = config.logger();
 		let file_logging = config.enable_file();
 		unsafe {
 			env::set_var("LOGGER_FILE_ENABLE", file_logging.to_string());

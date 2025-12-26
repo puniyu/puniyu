@@ -62,12 +62,13 @@ impl CommandMatcher {
 
 	/// 匹配注册的命令
 	fn match_commands(text: &str) -> Option<MatchResult> {
-		let global_prefix = Config::app().prefix();
+		let config = Config::app();
+		let global_prefix = config.prefix();
 
 		for command in CommandRegistry::get_all() {
 			let after_global = if global_prefix.is_empty() {
 				text.to_string()
-			} else if let Some(stripped) = text.strip_prefix(&global_prefix) {
+			} else if let Some(stripped) = text.strip_prefix(global_prefix) {
 				stripped.to_string()
 			} else {
 				continue;

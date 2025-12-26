@@ -6,8 +6,11 @@ pub mod toml;
 pub use toml::{delete_config, merge_config, read_config, update_config, write_config};
 #[cfg(feature = "system-info")]
 pub mod system;
+
+#[cfg(feature = "version")]
 mod version;
-pub use version::VERSION;
+#[cfg(feature = "version")]
+pub use version::{VERSION, Version, Channel};
 
 use std::sync::OnceLock;
 /// 当前应用名称, 也就是此实例的名称

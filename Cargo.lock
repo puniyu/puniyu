@@ -1885,6 +1885,7 @@ version = "0.6.0"
 dependencies = [
  "puniyu_system_info",
  "serde",
+ "strum",
  "thiserror 2.0.17",
  "toml",
 ]
