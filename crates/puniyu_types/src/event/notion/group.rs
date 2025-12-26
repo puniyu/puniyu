@@ -125,6 +125,7 @@ macro_rules! create_notion_event {
         $( $key:ident : $value:expr ),* $(,)?
     ) => {{
         let mut builder = NotionBuilder {
+            bot: Default::default(),
             event_id: String::new(),
             time: 0,
             self_id: String::new(),
@@ -140,7 +141,7 @@ macro_rules! create_notion_event {
         let notion = $variant::new(builder, builder.content.clone());
         let event = Event::Notion(NotionEvent::$variant(notion));
 
-        send_event(std::sync::Arc::clone(&builder.adapter), event);
+        send_event($bot.clone(), event);
     }};
 
     (@convert adapter, $v:expr) => { $v };

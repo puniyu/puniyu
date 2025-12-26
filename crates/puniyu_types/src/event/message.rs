@@ -399,7 +399,7 @@ impl GroupMessage {
 	}
 
 	pub fn is_owner(&self) -> bool {
-		matches!(self.sender.role, Role::Member)
+		matches!(self.sender.role, Role::Owner)
 	}
 }
 

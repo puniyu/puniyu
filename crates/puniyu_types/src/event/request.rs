@@ -157,9 +157,11 @@ impl_request_event!(
 macro_rules! create_request_event {
     (
         $variant:ident,
+        $bot:ident,
         $( $key:ident : $value:expr ),* $(,)?
     ) => {{
         let mut builder = RequestBuilder {
+            bot: Default::default(),
             event_id: String::new(),
             time: 0,
             self_id: String::new(),
@@ -175,7 +177,7 @@ macro_rules! create_request_event {
         let request = $variant::new(builder);
         let event = Event::Request(RequestEvent::$variant(request));
 
-        send_event(std::sync::Arc::clone(&builder.adapter), event);
+        send_event($bot.clone(), event);
     }};
 
     (@convert adapter, $v:expr) => { $v };
