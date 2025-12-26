@@ -1,6 +1,7 @@
 mod error;
-
 pub use error::Error;
+mod version;
+pub use version::VERSION;
 
 use crate::command::CommandRegistry;
 use crate::server::ServerRegistry;
@@ -16,15 +17,8 @@ use puniyu_library::{LibraryRegistry, libloading};
 use puniyu_logger::{SharedLogger, debug, error, owo_colors::OwoColorize, warn};
 use puniyu_types::bus::EVENT_BUS;
 use puniyu_types::plugin::{Plugin, PluginBuilder, PluginId, PluginType};
-use puniyu_types::version::Version;
 use std::sync::Arc;
 use tokio::fs;
-
-pub const VERSION: Version = Version {
-	major: env!("CARGO_PKG_VERSION_MAJOR"),
-	minor: env!("CARGO_PKG_VERSION_MINOR"),
-	patch: env!("CARGO_PKG_VERSION_PATCH"),
-};
 
 macro_rules! create_plugin_info {
 	($name:expr, $version:expr, $author:expr) => {
@@ -87,7 +81,6 @@ impl PluginRegistry {
 							plugin_abi_version,
 							VERSION.to_string()
 						);
-					
 
 						debug!(
 							"[{}:{}] 检测到配置，开始强制加载",
@@ -197,7 +190,6 @@ impl PluginRegistry {
 						plugin_abi_version,
 						VERSION.to_string()
 					);
-					
 
 					debug!("[{}:{}] 检测到配置，开始强制加载", plugin_tag, plugin_name);
 				}

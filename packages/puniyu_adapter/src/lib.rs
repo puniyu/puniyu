@@ -10,6 +10,7 @@ pub use puniyu_common::path::{ADAPTER_CONFIG_DIR, ADAPTER_DATA_DIR};
 pub use puniyu_common::toml::read_config;
 pub use puniyu_config::ConfigRegistry;
 pub use puniyu_logger as logger;
+pub use puniyu_types::bot::{Bot, BotInfo};
 pub use puniyu_macros::{adapter, adapter_config as config};
 pub use puniyu_types::adapter::{AdapterApi, Error, Result};
 pub use puniyu_types::adapter::{AdapterBuilder, AdapterInfo};

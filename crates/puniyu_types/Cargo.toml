@@ -44,7 +44,7 @@ adapter = [
     "element",
     "config",
 ]
-event = ["dep:strum", "dep:puniyu_config", "dep:bytes", "element", "sender", "contact"]
+event = ["dep:strum", "dep:puniyu_config", "dep:bytes", "bot", "element", "sender", "contact"]
 context = ["dep:bytes", "adapter", "bot", "element", "event", "contact", "sender"]
 account = ["dep:serde"]
 contact = ["dep:serde", "dep:strum"]

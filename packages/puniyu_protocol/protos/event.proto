@@ -2,29 +2,32 @@ syntax = "proto3";
 import "element/receive.proto";
 import "contact.proto";
 import "sender.proto";
+import "bot.proto";
 
 package puniyu.event;
 
 message FriendMessage {
-  string event_id = 1;
-  uint64 time = 2;
-  string self_id = 3;
-  string user_id = 4;
-  string message_id = 5;
-  repeated puniyu.element.receive.Elements elements = 6;
-  puniyu.contact.Contact contact = 7;
-  puniyu.sender.FriendSender sender = 8;
+  puniyu.bot.BotInfo FriendMessage_bot = 1;
+  string event_id = 2;
+  uint64 time = 3;
+  string self_id = 4;
+  string user_id = 5;
+  string message_id = 6;
+  repeated puniyu.element.receive.Elements elements = 7;
+  puniyu.contact.Contact contact = 8;
+  puniyu.sender.FriendSender sender = 9;
 }
 
 message GroupMessage {
-  string event_id = 1;
-  uint64 time = 2;
-  string self_id = 3;
-  string user_id = 4;
-  string message_id = 5;
-  repeated puniyu.element.receive.Elements elements = 6;
-  puniyu.contact.Contact contact = 7;
-  puniyu.sender.GroupSender sender = 8;
+  puniyu.bot.BotInfo FriendMessage_bot = 1;
+  string event_id = 2;
+  uint64 time = 3;
+  string self_id = 4;
+  string user_id = 5;
+  string message_id = 6;
+  repeated puniyu.element.receive.Elements elements = 7;
+  puniyu.contact.Contact contact = 8;
+  puniyu.sender.GroupSender sender = 9;
 }
 
 

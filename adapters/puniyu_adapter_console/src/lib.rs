@@ -8,6 +8,7 @@ use puniyu_adapter::logger::info;
 use puniyu_adapter::prelude::*;
 use puniyu_core::APP_NAME;
 use std::env;
+use std::sync::Arc;
 
 #[adapter]
 struct Console;
@@ -47,6 +48,13 @@ impl AdapterBuilder for Console {
 
 		let account_info = account_info.clone();
 		let adapter_info = adapter_info.clone();
+		let adapter = &api::ConsoleAdapterApi as &'static dyn AdapterApi;
+
+		let bot = Arc::new(Bot {
+			adapter: adapter_info.clone(),
+			account: account_info.clone(),
+			api: adapter,
+		});
 		std::thread::spawn(move || {
 			loop {
 				let message = {
@@ -69,9 +77,7 @@ impl AdapterBuilder for Console {
 
 				let elements: Vec<Elements> = match content.split_once(':') {
 					Some(("at", target_id)) if !target_id.is_empty() => {
-						vec![Elements::At(AtElement {
-							target_id: target_id.to_string()
-						})]
+						vec![Elements::At(AtElement { target_id: target_id.to_string() })]
 					}
 					Some(("text", text_content)) => {
 						vec![Elements::Text(TextElement { text: text_content.to_string() })]
@@ -94,7 +100,9 @@ impl AdapterBuilder for Console {
 						})]
 					}
 					Some(("record", record_url)) => {
-						vec![Elements::Record(RecordElement { file: record_url.to_string().into() })]
+						vec![Elements::Record(RecordElement {
+							file: record_url.to_string().into(),
+						})]
 					}
 					Some(("file", file_url)) => {
 						vec![Elements::File(FileElement {
@@ -114,43 +122,62 @@ impl AdapterBuilder for Console {
 
 				let timestamp = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs();
 				let message_id = make_random_id();
-				let adapter = &api::ConsoleAdapterApi as &'static dyn AdapterApi;
 				let event_id = make_random_id();
-
-				let bot = Bot {
-					adapter: adapter_info.clone(),
-					account: account_info.clone(),
-					api: adapter,
-				};
 
 				match msg_type {
 					"group" => {
+						let bot = bot.as_ref();
+						let bot_info: BotInfo = bot.clone().into();
 						let contact = contact_group!(name, name);
 						let sender = group_sender!(user_id: name, nick: name, sex: Sex::Unknown, age: 0, role: Role::Member);
 
-						create_group_message!(
-							bot, event_id, contact, bot_id, name, message_id, elements, sender,
-							timestamp
+						create_message_event!(
+							Group,
+							bot,
+							bot: bot_info,
+							event_id: event_id,
+							contact: contact,
+							self_id: bot_id,
+							user_id: name,
+							message_id: message_id,
+							elements: elements,
+							sender: sender,
+							time: timestamp
 						);
 					}
 					"friend" => {
+						let bot = bot.as_ref();
+						let bot_info: BotInfo = bot.clone().into();
 						let contact = contact_friend!(name, name);
-						let sender =
-							friend_sender!(user_id: name, nick: name);
-
-						create_friend_message!(
-							bot, event_id, contact, bot_id, name, message_id, elements, sender,
-							timestamp
+						let sender = friend_sender!(user_id: name, nick: name);
+						create_message_event!(Friend, bot,
+							bot: bot_info,
+							event_id: event_id,
+							self_id: bot_id,
+							user_id: name,
+							message_id: message_id,
+							elements: elements,
+							sender: sender,
+							contact: contact,
+							time: timestamp
 						);
 					}
 					_ => {
+						let bot = bot.as_ref();
+						let bot_info: BotInfo = bot.clone().into();
 						let contact = contact_friend!(name, name);
-						let sender =
-							friend_sender!(user_id: name, nick: name);
+						let sender = friend_sender!(user_id: name, nick: name);
 
-						create_friend_message!(
-							bot, event_id, contact, bot_id, name, message_id, elements, sender,
-							timestamp
+						create_message_event!(Friend, bot,
+							bot: bot_info,
+							event_id: event_id,
+							self_id: bot_id,
+							user_id: name,
+							message_id: message_id,
+							elements: elements,
+							contact: contact,
+							sender: sender,
+							time: timestamp
 						);
 					}
 				};

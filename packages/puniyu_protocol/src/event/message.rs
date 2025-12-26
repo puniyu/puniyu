@@ -5,6 +5,7 @@ use puniyu_types::event::{EventBase, message};
 impl From<FriendMessage> for message::FriendMessage {
 	fn from(message: FriendMessage) -> Self {
 		let builder = MessageBuilder {
+			bot: message.friend_message_bot.unwrap().into(),
 			event_id: message.event_id,
 			self_id: message.self_id,
 			user_id: message.user_id,
@@ -24,7 +25,9 @@ impl From<FriendMessage> for message::FriendMessage {
 
 impl From<message::FriendMessage> for FriendMessage {
 	fn from(message: message::FriendMessage) -> Self {
+		let bot = message.bot().clone();
 		Self {
+			friend_message_bot: Some(bot.into()),
 			event_id: message.event_id().to_string(),
 			time: message.time(),
 			self_id: message.self_id().to_string(),
@@ -44,6 +47,7 @@ impl From<message::FriendMessage> for FriendMessage {
 impl From<GroupMessage> for message::GroupMessage {
 	fn from(message: GroupMessage) -> Self {
 		let builder = MessageBuilder {
+			bot: message.friend_message_bot.unwrap().into(),
 			event_id: message.event_id,
 			self_id: message.self_id,
 			user_id: message.user_id,
@@ -63,7 +67,9 @@ impl From<GroupMessage> for message::GroupMessage {
 
 impl From<message::GroupMessage> for GroupMessage {
 	fn from(message: message::GroupMessage) -> Self {
+		let bot = message.bot().clone();
 		Self {
+			friend_message_bot: Some(bot.into()),
 			event_id: message.event_id().to_string(),
 			time: message.time(),
 			self_id: message.self_id().to_string(),

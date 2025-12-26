@@ -1,14 +1,15 @@
 mod friend;
 
-use serde::{Deserialize, Serialize};
 pub use friend::*;
+use serde::{Deserialize, Serialize};
 mod group;
 pub use group::*;
 
 use super::EventBase;
+use crate::bot::BotInfo;
 use strum::{Display, EnumString, IntoStaticStr};
 
-#[derive(Debug, Clone, EnumString, Display, IntoStaticStr)]
+#[derive(Debug, Clone, EnumString, Display, IntoStaticStr, Deserialize, Serialize)]
 pub enum NotionSubEvent {
 	#[strum(serialize = "receiveLike")]
 	/// 收到点赞
@@ -99,6 +100,7 @@ pub trait NotionBase: Send + Sync + EventBase {
 
 #[derive(Debug, Clone)]
 pub struct NotionBuilder<Contact, Sender> {
+	pub bot: BotInfo,
 	pub event_id: String,
 	pub time: u64,
 	pub self_id: String,

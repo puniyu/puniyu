@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+package puniyu.adapter;
+
+enum AdapterPlatform {
+  QQ = 0;
+  WeChat = 1;
+  Telegram = 2;
+  Discord = 3;
+  Kook = 4;
+  PLATFORM_OTHER = 5;
+}
+
+enum AdapterStandard {
+  OneBotV11 = 0;
+  OneBotV12 = 1;
+  Oicq = 2;
+  AdapterStandard_Icqq = 3;
+  STANDARD_OTHER = 4;
+}
+
+enum AdapterProtocol {
+  QQBot = 0;
+  AdapterProtocol_Icqq = 1;
+  GoCqHttp = 2;
+  NapCat = 3;
+  LLOneBot = 4;
+  Conwechat = 5;
+  Lagrange = 6;
+  Console = 7;
+  AdapterProtocol_Other = 8;
+}
+
+enum AdapterCommunication {
+  Http = 0;
+  WebSocketServer = 1;
+  WebSocketClient = 2;
+  Grpc = 3;
+  AdapterCommunication_Other = 4;
+}
+
+message AdapterInfo {
+  string name = 1;
+  string version = 2;
+  AdapterPlatform platform = 3;
+  AdapterStandard standard = 4;
+  AdapterProtocol protocol = 5;
+  AdapterCommunication communication = 6;
+  optional string address = 7;
+  uint64 connect_time = 8;
+}

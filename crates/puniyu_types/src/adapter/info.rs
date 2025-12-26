@@ -1,7 +1,7 @@
-use std::time::Duration;
 use derive_builder::Builder;
+use serde::{Deserialize, Serialize};
+use std::time::SystemTime;
 use strum::{Display, EnumString, IntoStaticStr};
-
 use crate::version::Version;
 
 /// 适配器平台
@@ -13,7 +13,7 @@ use crate::version::Version;
 /// - Discord: Discord 平台
 /// - Kook: 开黑吧 平台
 /// - Other: 其他平台
-#[derive(Debug, Default, Clone, PartialEq, Eq, Display, EnumString, IntoStaticStr)]
+#[derive(Debug, Default, Clone, PartialEq, Eq, Display, Deserialize, Serialize, EnumString, IntoStaticStr)]
 pub enum AdapterPlatform {
 	#[strum(serialize = "qq")]
 	QQ,
@@ -37,15 +37,15 @@ pub enum AdapterPlatform {
 /// - OICQ: OICQ 标准
 /// - ICQQ: OICQ fork 标准
 /// - Other: 其他标准
-#[derive(Debug, Default, Clone, PartialEq, Eq, Display, EnumString, IntoStaticStr)]
+#[derive(Debug, Default, Clone, PartialEq, Eq, Display, Deserialize, Serialize, EnumString, IntoStaticStr)]
 pub enum AdapterStandard {
-	#[strum(serialize = "Onebot v11")]
+	#[strum(serialize = "OnebotV11")]
 	OneBotV11,
-	#[strum(serialize = "Onebot v12")]
+	#[strum(serialize = "OnebotV12")]
 	OneBotV12,
-	#[strum(serialize = "OICQ")]
+	#[strum(serialize = "Oicq")]
 	Oicq,
-	#[strum(serialize = "ICQQ")]
+	#[strum(serialize = "Icqq")]
 	Icqq,
 	#[strum(serialize = "Other")]
 	#[default]
@@ -64,7 +64,7 @@ pub enum AdapterStandard {
 /// - Lagrange: [Lagrange 协议实现](ttps://lagrangedev.github.io/Lagrange.Doc/Lagrange.OneBot/)
 /// - Console: 控制台协议实现
 /// - Other: 其他协议实现
-#[derive(Debug, Default, Clone, PartialEq, Eq, Display, EnumString, IntoStaticStr)]
+#[derive(Debug, Default, Clone, PartialEq, Eq, Display, Deserialize, Serialize, EnumString, IntoStaticStr)]
 pub enum AdapterProtocol {
 	#[strum(serialize = "QQBot")]
 	QQBot,
@@ -96,7 +96,7 @@ pub enum AdapterProtocol {
 /// - WebSocketClient: WebSocket 客户端通信方式
 /// - Grpc: Grpc 通信方式
 /// - Other: 其他通信方式
-#[derive(Debug, Default, Clone, PartialEq, Eq, Display, EnumString, IntoStaticStr)]
+#[derive(Debug, Default, Clone, PartialEq, Eq, Display, Deserialize, Serialize, EnumString, IntoStaticStr)]
 pub enum AdapterCommunication {
 	#[strum(serialize = "Http")]
 	Http,
@@ -111,15 +111,15 @@ pub enum AdapterCommunication {
 	Other,
 }
 
-#[derive(Debug, Default, Clone, PartialEq, Eq, Builder)]
+#[derive(Debug, Clone, PartialEq, Eq, Builder, Deserialize, Serialize)]
 #[builder(setter(into))]
 /// 适配器信息
 pub struct AdapterInfo {
 	/// 适配器名称 如lagrange-onebot
-	#[builder(default = "self.default_name()")]
+	#[builder(default)]
 	pub name: String,
 	/// 适配器版本
-	#[builder(default = "self.default_version()")]
+	#[builder(default)]
 	pub version: Version,
 	/// 适配器平台
 	#[builder(default)]
@@ -142,20 +142,20 @@ pub struct AdapterInfo {
 	#[builder(default)]
 	pub address: Option<String>,
 	/// 连接时间
-	#[builder(default = "self.default_connect_time()")]
-	pub connect_time: Duration,
+	#[builder(default = "Self::default_connect_time()")]
+	pub connect_time: SystemTime,
+}
+
+impl Default for AdapterInfo {
+	fn default() -> Self {
+		AdapterInfoBuilder::default().build().unwrap()
+	}
 }
 
 impl AdapterInfoBuilder {
-	fn default_name(&self) -> String {
-		env!("CARGO_PKG_NAME").into()
-	}
-	fn default_version(&self) -> Version {
-		env!("CARGO_PKG_VERSION").into()
-	}
-	fn default_connect_time(&self) -> Duration {
-		use std::time::{SystemTime, UNIX_EPOCH};
-		SystemTime::now().duration_since(UNIX_EPOCH).unwrap()
+	fn default_connect_time() -> SystemTime {
+		use std::time::{SystemTime};
+		SystemTime::now()
 	}
 }
 /// 创建 AdapterInfo 的便捷宏
