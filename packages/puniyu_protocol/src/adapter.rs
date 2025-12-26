@@ -133,7 +133,7 @@ impl From<AdapterInfo> for puniyu_adapter::AdapterInfo {
 			protocol: protocol.into(),
 			communication: communication.into(),
 			address: adapter.address,
-			connect_time,
+			connect_time: connect_time.into(),
 		}
 	}
 }
@@ -142,9 +142,7 @@ impl From<puniyu_adapter::AdapterInfo> for AdapterInfo {
 	fn from(adapter: puniyu_adapter::AdapterInfo) -> Self {
 		let connect_time = adapter
 			.connect_time
-			.duration_since(std::time::UNIX_EPOCH)
-			.unwrap_or_else(|_| std::time::Duration::from_secs(0))
-			.as_secs();
+			.unix_timestamp();
 		Self {
 			name: adapter.name,
 			version: adapter.version.into(),
@@ -153,7 +151,7 @@ impl From<puniyu_adapter::AdapterInfo> for AdapterInfo {
 			protocol: AdapterProtocol::from(adapter.protocol).into(),
 			communication: AdapterCommunication::from(adapter.communication).into(),
 			address: adapter.address,
-			connect_time,
+			connect_time: connect_time as u64,
 		}
 	}
 }

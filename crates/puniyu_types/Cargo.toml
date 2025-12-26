@@ -11,6 +11,7 @@ edition.workspace = true
 rust-version.workspace = true
 
 [dependencies]
+time = { workspace = true, optional = true }
 puniyu_logger = { workspace = true, optional = true }
 serde = { workspace = true, optional = true }
 serde_json = { workspace = true, optional = true }
@@ -33,6 +34,7 @@ async-trait = { workspace = true }
 [features]
 default = ["full"]
 adapter = [
+    "dep:time",
     "dep:thiserror",
     "dep:reqwest",
     "dep:async-trait",

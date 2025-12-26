@@ -1,8 +1,8 @@
 use derive_builder::Builder;
 use serde::{Deserialize, Serialize};
-use std::time::SystemTime;
 use strum::{Display, EnumString, IntoStaticStr};
 use crate::version::Version;
+use time::OffsetDateTime;
 
 /// 适配器平台
 ///
@@ -143,7 +143,7 @@ pub struct AdapterInfo {
 	pub address: Option<String>,
 	/// 连接时间
 	#[builder(default = "Self::default_connect_time()")]
-	pub connect_time: SystemTime,
+	pub connect_time: OffsetDateTime,
 }
 
 impl Default for AdapterInfo {
@@ -153,9 +153,8 @@ impl Default for AdapterInfo {
 }
 
 impl AdapterInfoBuilder {
-	fn default_connect_time() -> SystemTime {
-		use std::time::{SystemTime};
-		SystemTime::now()
+	fn default_connect_time() -> OffsetDateTime {
+		OffsetDateTime::now_utc()
 	}
 }
 /// 创建 AdapterInfo 的便捷宏
