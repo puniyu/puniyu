@@ -22,8 +22,8 @@ serde.workspace = true
 thiserror.workspace = true
 
 [features]
-default = ["vserion"]
-vserion = []
+default = ["version"]
+version = []
 system-info = ["dep:puniyu_system_info"]
 
 

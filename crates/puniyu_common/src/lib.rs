@@ -7,9 +7,9 @@ pub use toml::{delete_config, merge_config, read_config, update_config, write_co
 #[cfg(feature = "system-info")]
 pub mod system;
 
-#[cfg(feature = "vserion")]
+#[cfg(feature = "version")]
 mod version;
-#[cfg(feature = "vserion")]
+#[cfg(feature = "version")]
 pub use version::{VERSION, Version, Channel};
 
 use std::sync::OnceLock;
