@@ -41,15 +41,15 @@ impl From<&'static str> for Version {
 
 impl From<String> for Version {
 	fn from(s: String) -> Self {
-		let leaked = Box::leak(s.into_boxed_str());
-		let mut v = leaked.split('.');
+		let mut parts = s.split('.');
 		Self {
-			major: v.next().unwrap_or_default().parse().unwrap_or_default(),
-			minor: v.next().unwrap_or_default().parse().unwrap_or_default(),
-			patch: v.next().unwrap_or_default().parse().unwrap_or_default(),
+			major: parts.next().unwrap_or_default().parse().unwrap_or_default(),
+			minor: parts.next().unwrap_or_default().parse().unwrap_or_default(),
+			patch: parts.next().unwrap_or_default().parse().unwrap_or_default(),
 		}
 	}
 }
+
 
 impl From<Version> for String {
 	fn from(v: Version) -> Self {

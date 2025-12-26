@@ -19,7 +19,7 @@ message FriendMessage {
 }
 
 message GroupMessage {
-  puniyu.bot.BotInfo FriendMessage_bot = 1;
+  puniyu.bot.BotInfo GroupMessage_bot = 1;
   string event_id = 2;
   uint64 time = 3;
   string self_id = 4;
