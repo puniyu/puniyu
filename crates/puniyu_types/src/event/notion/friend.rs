@@ -14,7 +14,6 @@ macro_rules! impl_notion_event {
         $struct_name:ident,
         $notion_desc:expr,
         $sub_event:expr,
-        $event_variant:ident,
         $content_struct:ty
         $(;)?
     ) => {
@@ -24,7 +23,6 @@ macro_rules! impl_notion_event {
             $struct_name,
             $notion_desc,
             $sub_event,
-            $event_variant,
             $content_struct
         );
     };
@@ -35,7 +33,6 @@ macro_rules! impl_notion_event {
             $struct_name:ident,
             $notion_desc:expr,
             $sub_event:expr,
-            $event_variant:ident,
             $content_struct:ty;
         )+
     ) => {
@@ -46,7 +43,6 @@ macro_rules! impl_notion_event {
                 $struct_name,
                 $notion_desc,
                 $sub_event,
-                $event_variant,
                 $content_struct
             );
         )+
@@ -57,7 +53,6 @@ macro_rules! impl_notion_event {
         $struct_name:ident,
         $notion_desc:expr,
         $sub_event:expr,
-        $event_variant:ident,
         $content_struct:ty
     ) => {
         $(#[$attr])*
@@ -117,10 +112,10 @@ macro_rules! impl_notion_event {
 
 
 impl_notion_event!(
-    ReceiveLike, "收到点赞事件", NotionSubEvent::ReceiveLike, ReceiveLike, ReceiveLikeOption;
-    FriendAdd, "收到好友增加事件", NotionSubEvent::FriendAdd, FriendAdd, ();
-    FriendDecrease, "收到好友减少事件", NotionSubEvent::FriendDecrease, FriendDecrease, ();
-    PrivatePoke, "收到好友戳一戳事件", NotionSubEvent::PrivatePoke, PrivatePoke, PrivatePokeOption;
-    PrivateRecall, "收到好友撤回事件", NotionSubEvent::PrivateRecall, PrivateRecall, PrivateRecallOption;
-    PrivateFileUpload, "收到好友文件上传事件", NotionSubEvent::PrivateFileUpload, PrivateFileUpload, PrivateFileUploadOption;
+    ReceiveLike, "收到点赞事件", NotionSubEvent::ReceiveLike, ReceiveLikeOption;
+    FriendAdd, "收到好友增加事件", NotionSubEvent::FriendAdd, ();
+    FriendDecrease, "收到好友减少事件", NotionSubEvent::FriendDecrease, ();
+    PrivatePoke, "收到好友戳一戳事件", NotionSubEvent::PrivatePoke, PrivatePokeOption;
+    PrivateRecall, "收到好友撤回事件", NotionSubEvent::PrivateRecall, PrivateRecallOption;
+    PrivateFileUpload, "收到好友文件上传事件", NotionSubEvent::PrivateFileUpload, PrivateFileUploadOption;
 );

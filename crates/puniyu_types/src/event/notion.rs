@@ -108,3 +108,41 @@ pub struct NotionBuilder<Contact, Sender> {
 	pub contact: Contact,
 	pub sender: Sender,
 }
+
+#[cfg(feature = "event")]
+#[macro_export]
+macro_rules! create_notion_event {
+    (
+        $variant:ident,
+        $( $key:ident : $value:expr ),* $(,)?
+    ) => {{
+        let mut builder = NotionBuilder {
+            bot: Default::default(),
+            event_id: String::new(),
+            time: 0,
+            self_id: String::new(),
+            user_id: String::new(),
+            contact: Default::default(),
+            sender: Default::default(),
+        };
+
+        $(
+            builder.$key = create_notion_event!(@convert $key, $value);
+        )*
+
+        let notion = $variant::new(builder, builder.content.clone());
+        let event = Event::Notion(NotionEvent::$variant(notion));
+
+        send_event($bot.clone(), event);
+    }};
+
+    (@convert bot, $v:expr) => { $v.into() };
+    (@convert adapter, $v:expr) => { $v };
+    (@convert event_id, $v:expr) => { $v.to_string() };
+    (@convert time, $v:expr) => { $v };
+    (@convert self_id, $v:expr) => { $v.to_string() };
+    (@convert user_id, $v:expr) => { $v.to_string() };
+    (@convert contact, $v:expr) => { $v };
+    (@convert sender, $v:expr) => { $v };
+    (@convert content, $v:expr) => { $v };
+}

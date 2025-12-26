@@ -14,7 +14,6 @@ macro_rules! impl_notion_event {
         $struct_name:ident,
         $notion_desc:expr,
         $sub_event:expr,
-        $event_variant:ident,
         $content_struct:ty
         $(;)?
     ) => {
@@ -24,7 +23,6 @@ macro_rules! impl_notion_event {
             $struct_name,
             $notion_desc,
             $sub_event,
-            $event_variant,
             $content_struct
         );
     };
@@ -35,7 +33,6 @@ macro_rules! impl_notion_event {
             $struct_name:ident,
             $notion_desc:expr,
             $sub_event:expr,
-            $event_variant:ident,
             $content_struct:ty;
         )+
     ) => {
@@ -46,7 +43,6 @@ macro_rules! impl_notion_event {
                 $struct_name,
                 $notion_desc,
                 $sub_event,
-                $event_variant,
                 $content_struct
             );
         )+
@@ -57,7 +53,6 @@ macro_rules! impl_notion_event {
         $struct_name:ident,
         $notion_desc:expr,
         $sub_event:expr,
-        $event_variant:ident,
         $content_struct:ty
     ) => {
         $(#[$attr])*
@@ -117,58 +112,21 @@ macro_rules! impl_notion_event {
 }
 
 
-#[cfg(feature = "event")]
-#[macro_export]
-macro_rules! create_notion_event {
-    (
-        $variant:ident,
-        $( $key:ident : $value:expr ),* $(,)?
-    ) => {{
-        let mut builder = NotionBuilder {
-            bot: Default::default(),
-            event_id: String::new(),
-            time: 0,
-            self_id: String::new(),
-            user_id: String::new(),
-            contact: Default::default(),
-            sender: Default::default(),
-        };
-
-        $(
-            builder.$key = create_notion_event!(@convert $key, $value);
-        )*
-
-        let notion = $variant::new(builder, builder.content.clone());
-        let event = Event::Notion(NotionEvent::$variant(notion));
-
-        send_event($bot.clone(), event);
-    }};
-
-    (@convert adapter, $v:expr) => { $v };
-    (@convert event_id, $v:expr) => { $v.to_string() };
-    (@convert time, $v:expr) => { $v };
-    (@convert self_id, $v:expr) => { $v.to_string() };
-    (@convert user_id, $v:expr) => { $v.to_string() };
-    (@convert contact, $v:expr) => { $v };
-    (@convert sender, $v:expr) => { $v };
-    (@convert content, $v:expr) => { $v };
-}
-
 
 impl_notion_event!(
-	GroupPoke, "收到群聊戳一戳事件", NotionSubEvent::GroupPoke, create_group_poke, GroupPokeType;
-	GroupRecall, "收到群聊撤回事件", NotionSubEvent::GroupRecall, create_group_recall, GroupRecallType;
-	GroupFileUpload, "收到群聊文件上传事件", NotionSubEvent::GroupFileUpload, create_group_file_upload, GroupFileUploadType;
-	GroupCardChange, "收到群成员名片变动事件", NotionSubEvent::GroupCardChange, create_group_card_change, GroupCardChangeType;
-	GroupMemberTitleChange, "收到群成员头衔变动事件", NotionSubEvent::GroupMemberTitleChange, create_group_member_title_change, GroupMemberTitleChangeType;
-	GroupHighlightsChange, "收到群精华消息变动事件", NotionSubEvent::GroupHighlightsChange, create_group_highlights_change, GroupHighlightsChangeType;
-	GroupMemberAdd, "收到群成员添加事件", NotionSubEvent::GroupMemberAdd, create_group_memeber_add, GroupMemberAddType;
-	GroupMemberDecrease, "收到群成员减少事件", NotionSubEvent::GroupMemberDecrease, create_group_memeber_decrease, GroupMemberAddType;
-	GroupAdminChange, "收到群聊管理员变动事件", NotionSubEvent::GroupAdminChange, create_group_admin_change, GroupAdminChangeType;
-	GroupSignIn, "收到群成员打卡事件", NotionSubEvent::GroupSignIn, create_group_sign_in, ();
-	GroupMemberBan, "收到群成员禁言事件", NotionSubEvent::GroupMemberBan, create_group_member_ban, GroupMemberBanType;
-	GroupWholeBan, "收到群全体成员禁言事件", NotionSubEvent::GroupWholeBan, create_group_whole_ban, GroupWholeBanType;
-	GroupMessageReaction, "收到群消息表情动态事件", NotionSubEvent::GroupMessageReaction, create_group_message_reaction, GroupMessageReactionType;
-	GroupLuckKing, "收到群运气王事件", NotionSubEvent::GroupLuckKing, create_group_luck_king, GroupLuckKingType;
-	GroupHonorChange, "收到群聊荣誉变更事件", NotionSubEvent::GroupHonorChange, create_group_honor_change, GroupHonorChangeType;
+	GroupPoke, "收到群聊戳一戳事件", NotionSubEvent::GroupPoke, GroupPokeType;
+	GroupRecall, "收到群聊撤回事件", NotionSubEvent::GroupRecall, GroupRecallType;
+	GroupFileUpload, "收到群聊文件上传事件", NotionSubEvent::GroupFileUpload, GroupFileUploadType;
+	GroupCardChange, "收到群成员名片变动事件", NotionSubEvent::GroupCardChange, GroupCardChangeType;
+	GroupMemberTitleChange, "收到群成员头衔变动事件", NotionSubEvent::GroupMemberTitleChange, GroupMemberTitleChangeType;
+	GroupHighlightsChange, "收到群精华消息变动事件", NotionSubEvent::GroupHighlightsChange, GroupHighlightsChangeType;
+	GroupMemberAdd, "收到群成员添加事件", NotionSubEvent::GroupMemberAdd, GroupMemberAddType;
+	GroupMemberDecrease, "收到群成员减少事件", NotionSubEvent::GroupMemberDecrease, GroupMemberAddType;
+	GroupAdminChange, "收到群聊管理员变动事件", NotionSubEvent::GroupAdminChange, GroupAdminChangeType;
+	GroupSignIn, "收到群成员打卡事件", NotionSubEvent::GroupSignIn, ();
+	GroupMemberBan, "收到群成员禁言事件", NotionSubEvent::GroupMemberBan, GroupMemberBanType;
+	GroupWholeBan, "收到群全体成员禁言事件", NotionSubEvent::GroupWholeBan, GroupWholeBanType;
+	GroupMessageReaction, "收到群消息表情动态事件", NotionSubEvent::GroupMessageReaction, GroupMessageReactionType;
+	GroupLuckKing, "收到群运气王事件", NotionSubEvent::GroupLuckKing, GroupLuckKingType;
+	GroupHonorChange, "收到群聊荣誉变更事件", NotionSubEvent::GroupHonorChange, GroupHonorChangeType;
 );
