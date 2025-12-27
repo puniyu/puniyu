@@ -93,7 +93,10 @@ impl App {
 		use std::time::Duration;
 		print_start_log();
 		init_config();
-		log_init();
+		#[cfg(feature = "logger")]
+		{
+			log_init();
+		}
 		let start_time = std::time::Instant::now().elapsed();
 		let app_name = self.app_name.clone();
 		init_app(self.plugins.clone(), self.adapters.clone()).await;

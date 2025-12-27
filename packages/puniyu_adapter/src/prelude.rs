@@ -15,7 +15,7 @@ pub use puniyu_types::element::receive::{
 	AtElement, FileElement, ImageElement, JsonElement, RecordElement, ReplyElement, TextElement,
 	VideoElement, XmlElement,
 };
-pub use puniyu_types::element::{ElementType, Message, receive::Elements};
+pub use puniyu_types::element::{ElementType, Message, receive::Elements, send};
 pub use puniyu_types::event::message::{
 	FriendMessage, GroupMessage, MessageBase, MessageBuilder, MessageEvent,
 };
