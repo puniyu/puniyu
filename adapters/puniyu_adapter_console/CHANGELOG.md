@@ -1,5 +1,47 @@
 # 变更日志
 
+## [0.4.0](https://github.com/puniyu/puniyu/compare/adapter-console-v0.3.0...adapter-console-v0.4.0) (2025-12-27)
+
+
+### ✨ 新功能
+
+* **element:** 重构消息元素类型和协议定义 ([e0d01c2](https://github.com/puniyu/puniyu/commit/e0d01c24f48d68a655cb19ed909938e4cd433a1c))
+* **protocol:** 实现事件协议和字节数据类型支持 ([ec854ca](https://github.com/puniyu/puniyu/commit/ec854caf1c2ee6e722c295cc317721c87539953e))
+* **protocol:** 添加账户和适配器协议定义及Bot信息结构 ([#93](https://github.com/puniyu/puniyu/issues/93)) ([9611fba](https://github.com/puniyu/puniyu/commit/9611fba37182df82297bd1a4596473f9e81c2b5c))
+
+
+### 🐛 错误修复
+
+* **console:** 处理控制台输入错误并优雅退出 ([667ce30](https://github.com/puniyu/puniyu/commit/667ce308ab764e374b05fe27ad132c8d5ff262c2))
+
+
+### 🎨 代码样式
+
+* **code:** 项目格式化 ([dc3d850](https://github.com/puniyu/puniyu/commit/dc3d850bcca149de821bc5ec700ae98f567f4a79))
+
+
+### 🔧 其他更新
+
+* **puniyu_types:** 修改图片数据结构类型 ([b9c195b](https://github.com/puniyu/puniyu/commit/b9c195b46d86b16a1688874036ce6cfed16fe308))
+* **puniyu_types:** 更新 AdapterInfo 结构体字段默认值及构造宏 ([76e8ebe](https://github.com/puniyu/puniyu/commit/76e8ebe2b6d2a60ebc935378fc4a98bdc47b414b))
+
+
+### ♻️ 代码重构
+
+* **adapter:** 重命名控制台适配器模块路径 ([5f9dcf3](https://github.com/puniyu/puniyu/commit/5f9dcf3c448225e54f1b3349b4746fb86fdf9897))
+* **adapter:** 重构适配器信息结构与初始化逻辑 ([2e45256](https://github.com/puniyu/puniyu/commit/2e4525633031ec401f058507218cb2731ac24479))
+* **core:** 重构命令匹配器与上下文处理逻辑 ([3aca600](https://github.com/puniyu/puniyu/commit/3aca600a94a09079ecbd8e84cf51376fc1222a99))
+* **element:** 修改图片文件字段类型从Vec&lt;u8&gt;到String ([744e7aa](https://github.com/puniyu/puniyu/commit/744e7aa6b8daaf43a7720ad7b65156ef63ef572e))
+* **types:** 重构类型定义和宏实现 ([23561c9](https://github.com/puniyu/puniyu/commit/23561c9d33724d59b9b22228f4d2b192efad8faf))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puniyu_adapter bumped from 0.6.0 to 0.7.0
+    * puniyu_core bumped from 0.6.0 to 0.7.0
+
 ## [0.3.0](https://github.com/puniyu/puniyu/compare/adapter-console-v0.2.13...adapter-console-v0.3.0) (2025-12-02)
 
 

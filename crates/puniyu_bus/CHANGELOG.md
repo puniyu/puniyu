@@ -1,5 +1,46 @@
 # 变更日志
 
+## [0.7.0](https://github.com/puniyu/puniyu/compare/event-bus-v0.6.0...event-bus-v0.7.0) (2025-12-27)
+
+
+### ✨ 新功能
+
+* **command:** 添加命令权限控制功能 ([cc0013a](https://github.com/puniyu/puniyu/commit/cc0013aff04d8efea0b9cdda3f11eae4d1eac97b))
+* **config:** 添加全局命令前缀配置并优化模块结构 ([e0e5bb5](https://github.com/puniyu/puniyu/commit/e0e5bb5ac9eb24a37189a3d50b42d3db8db58dde))
+* **macro:** 重构宏系统并增强命令参数支持 ([e8f3c23](https://github.com/puniyu/puniyu/commit/e8f3c23e42cd94fb567dce569cbe4477014300b1))
+* **plugin:** 新增服务端插件支持 ([7f15acf](https://github.com/puniyu/puniyu/commit/7f15acf148d002e33ef246b3a65a08866a44393f))
+* **protocol:** 实现事件协议和字节数据类型支持 ([ec854ca](https://github.com/puniyu/puniyu/commit/ec854caf1c2ee6e722c295cc317721c87539953e))
+* **protocol:** 添加账户和适配器协议定义及Bot信息结构 ([#93](https://github.com/puniyu/puniyu/issues/93)) ([9611fba](https://github.com/puniyu/puniyu/commit/9611fba37182df82297bd1a4596473f9e81c2b5c))
+
+
+### 🎨 代码样式
+
+* **code:** 项目格式化 ([dc3d850](https://github.com/puniyu/puniyu/commit/dc3d850bcca149de821bc5ec700ae98f567f4a79))
+
+
+### 🔧 其他更新
+
+* release main ([63f497e](https://github.com/puniyu/puniyu/commit/63f497e6284153150f15b9c17e22bd84d532415c))
+* release main ([804ce90](https://github.com/puniyu/puniyu/commit/804ce901131bea9b332d0c72e384cf79c2489e92))
+* release main ([6f7468e](https://github.com/puniyu/puniyu/commit/6f7468ec24102d954e87ff14ccc7f2609d04613a))
+* release main ([96f558f](https://github.com/puniyu/puniyu/commit/96f558fbc98d71420c967936ae90d6dffa553b1b))
+* release main ([e480f93](https://github.com/puniyu/puniyu/commit/e480f93818cd35e4a5cd2e102ed8b725d36ef6b8))
+
+
+### ♻️ 代码重构
+
+* **bus:** 重构事件总线模块 ([7f53e97](https://github.com/puniyu/puniyu/commit/7f53e9731a5f58831c758c372ef46171a8e5208b))
+* **core:** 重新组织模块导入顺序并清理无用导出 ([8da3556](https://github.com/puniyu/puniyu/commit/8da35564bb6e99777d30d5c48497e11358c51915))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puniyu_types bumped from 0.6.0 to 0.7.0
+    * puniyu_matcher_command bumped from 0.6.0 to 0.7.0
+    * puniyu_handler_command bumped from 0.6.0 to 0.7.0
+
 ## [0.6.0](https://github.com/puniyu/puniyu/compare/event-bus-v0.5.12...event-bus-v0.6.0) (2025-12-02)
 
 

@@ -1,5 +1,54 @@
 # 变更日志
 
+## [0.7.0](https://github.com/puniyu/puniyu/compare/server-v0.6.0...server-v0.7.0) (2025-12-27)
+
+
+### ✨ 新功能
+
+* **cli:** 引入命令行参数解析功能 ([11e3137](https://github.com/puniyu/puniyu/commit/11e31372aca53c35f15e8cab8b3067af353d25a7))
+* **server:** 实现服务器控制功能并完善插件卸载功能 ([3cab133](https://github.com/puniyu/puniyu/commit/3cab133589d93d2d7592ed867db245999c774723))
+
+
+### 📝 文档更新
+
+* **puniyu_library:** 更新 README 文档并优化库重载逻辑 ([f561597](https://github.com/puniyu/puniyu/commit/f561597ee8a829f648cc52a91f0bfe717b218449))
+
+
+### 🎨 代码样式
+
+* **code:** 项目格式化 ([dc3d850](https://github.com/puniyu/puniyu/commit/dc3d850bcca149de821bc5ec700ae98f567f4a79))
+
+
+### 🔧 其他更新
+
+* **puniyu_logger:** 更新 puniyu_logger 依赖版本 ([f949ad4](https://github.com/puniyu/puniyu/commit/f949ad40d00b11b9caa3f78fecb35fc37055742f))
+* **puniyu_types:** 更新 AdapterInfo 结构体字段默认值及构造宏 ([76e8ebe](https://github.com/puniyu/puniyu/commit/76e8ebe2b6d2a60ebc935378fc4a98bdc47b414b))
+* release main ([63f497e](https://github.com/puniyu/puniyu/commit/63f497e6284153150f15b9c17e22bd84d532415c))
+* release main ([804ce90](https://github.com/puniyu/puniyu/commit/804ce901131bea9b332d0c72e384cf79c2489e92))
+* release main ([6f7468e](https://github.com/puniyu/puniyu/commit/6f7468ec24102d954e87ff14ccc7f2609d04613a))
+* release main ([96f558f](https://github.com/puniyu/puniyu/commit/96f558fbc98d71420c967936ae90d6dffa553b1b))
+* release main ([e480f93](https://github.com/puniyu/puniyu/commit/e480f93818cd35e4a5cd2e102ed8b725d36ef6b8))
+
+
+### ♻️ 代码重构
+
+* **core:** 重新组织模块导入顺序并清理无用导出 ([8da3556](https://github.com/puniyu/puniyu/commit/8da35564bb6e99777d30d5c48497e11358c51915))
+* **puniyu_common:** 添加 stable 特性并重构版本信息模块 ([5509982](https://github.com/puniyu/puniyu/commit/550998233d7ee02150b15c16f7ef3fa139086137))
+* **puniyu_core:** 移除重复的 version 模块引用 ([5509982](https://github.com/puniyu/puniyu/commit/550998233d7ee02150b15c16f7ef3fa139086137))
+* **puniyu_server:** 优化 API 路由结构与响应类型泛型化 ([5509982](https://github.com/puniyu/puniyu/commit/550998233d7ee02150b15c16f7ef3fa139086137))
+* **server:** 将服务器命令通道从 tokio mpsc 迁移至 flume ([1345cae](https://github.com/puniyu/puniyu/commit/1345caefb4b07f094d00521fd9286eb6b33b9ab5))
+* **types:** 重构构造器实现 ([d0684d2](https://github.com/puniyu/puniyu/commit/d0684d273ca1efc67608daae50df71eecd888ded))
+* **types:** 重构构造器实现 ([#92](https://github.com/puniyu/puniyu/issues/92)) ([db1763a](https://github.com/puniyu/puniyu/commit/db1763abd59f270a7c78f8c2b0025f05b40954c4))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puniyu_common bumped from 0.6.0 to 0.7.0
+    * puniyu_types bumped from 0.6.0 to 0.7.0
+    * puniyu_registry bumped from 0.6.0 to 0.7.0
+
 ## [0.6.0](https://github.com/puniyu/puniyu/compare/server-v0.5.12...server-v0.6.0) (2025-12-02)
 
 
