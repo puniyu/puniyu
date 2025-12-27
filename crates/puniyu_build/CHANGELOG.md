@@ -1,5 +1,12 @@
 # 变更日志
 
+## [0.2.3](https://github.com/puniyu/puniyu/compare/build-v0.2.2...build-v0.2.3) (2025-12-27)
+
+
+### 🎨 代码样式
+
+* **code:** 项目格式化 ([dc3d850](https://github.com/puniyu/puniyu/commit/dc3d850bcca149de821bc5ec700ae98f567f4a79))
+
 ## [0.2.2](https://github.com/puniyu/puniyu/compare/build-v0.2.1...build-v0.2.2) (2025-12-02)
 
 

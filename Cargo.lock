@@ -1827,7 +1827,7 @@ checksum = "95067976aca6421a523e491fce939a3e65249bac4b977adee0ee9771568e8aa3"
 
 [[package]]
 name = "puniyu"
-version = "0.6.0"
+version = "0.7.0"
 dependencies = [
  "puniyu_adapter_console",
  "puniyu_core",
@@ -1837,7 +1837,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_adapter"
-version = "0.6.0"
+version = "0.7.0"
 dependencies = [
  "actix-web",
  "async-trait",
@@ -1857,7 +1857,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_adapter_console"
-version = "0.3.0"
+version = "0.4.0"
 dependencies = [
  "async-trait",
  "puniyu_adapter",
@@ -1867,11 +1867,11 @@ dependencies = [
 
 [[package]]
 name = "puniyu_build"
-version = "0.2.2"
+version = "0.2.3"
 
 [[package]]
 name = "puniyu_bus"
-version = "0.6.0"
+version = "0.7.0"
 dependencies = [
  "puniyu_handler_command",
  "puniyu_logger",
@@ -1882,7 +1882,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_common"
-version = "0.6.0"
+version = "0.7.0"
 dependencies = [
  "puniyu_system_info",
  "serde",
@@ -1893,7 +1893,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_config"
-version = "0.6.0"
+version = "0.7.0"
 dependencies = [
  "notify-debouncer-full",
  "puniyu_common",
@@ -1905,7 +1905,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_core"
-version = "0.6.0"
+version = "0.7.0"
 dependencies = [
  "async-trait",
  "convert_case",
@@ -1926,7 +1926,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_handler_command"
-version = "0.6.0"
+version = "0.7.0"
 dependencies = [
  "async-trait",
  "clap",
@@ -1938,7 +1938,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_library"
-version = "0.5.1"
+version = "0.5.2"
 dependencies = [
  "libloading 0.9.0",
  "thiserror 2.0.17",
@@ -1964,7 +1964,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_macros"
-version = "0.6.0"
+version = "0.7.0"
 dependencies = [
  "convert_case",
  "croner",
@@ -1975,7 +1975,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_matcher_command"
-version = "0.6.0"
+version = "0.7.0"
 dependencies = [
  "puniyu_config",
  "puniyu_logger",
@@ -1985,7 +1985,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_plugin"
-version = "0.6.0"
+version = "0.7.0"
 dependencies = [
  "actix-web",
  "async-trait",
@@ -2003,7 +2003,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_plugin_basic"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "puniyu_common",
  "puniyu_core",
@@ -2012,7 +2012,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_plugin_server"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "actix-web",
  "puniyu_plugin",
@@ -2021,7 +2021,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_protocol"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "bytes",
  "glob",
@@ -2033,7 +2033,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_registry"
-version = "0.6.0"
+version = "0.7.0"
 dependencies = [
  "chrono-tz",
  "convert_case",
@@ -2053,7 +2053,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_server"
-version = "0.6.0"
+version = "0.7.0"
 dependencies = [
  "actix-web",
  "clap",
@@ -2089,7 +2089,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_types"
-version = "0.6.0"
+version = "0.7.0"
 dependencies = [
  "actix-web",
  "async-trait",

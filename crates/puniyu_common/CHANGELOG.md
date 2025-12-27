@@ -1,5 +1,26 @@
 # 变更日志
 
+## [0.7.0](https://github.com/puniyu/puniyu/compare/common-v0.6.0...common-v0.7.0) (2025-12-27)
+
+
+### ✨ 新功能
+
+* **core:** 引入系统信息模块并优化运行时间获取逻辑 ([f0dd848](https://github.com/puniyu/puniyu/commit/f0dd8488d25708e9d01485d28193f1b17cb94dba))
+* **protocol:** 添加账户和适配器协议定义及Bot信息结构 ([#93](https://github.com/puniyu/puniyu/issues/93)) ([9611fba](https://github.com/puniyu/puniyu/commit/9611fba37182df82297bd1a4596473f9e81c2b5c))
+
+
+### 🎨 代码样式
+
+* **code:** 项目格式化 ([dc3d850](https://github.com/puniyu/puniyu/commit/dc3d850bcca149de821bc5ec700ae98f567f4a79))
+
+
+### ♻️ 代码重构
+
+* **puniyu_common:** 添加 stable 特性并重构版本信息模块 ([5509982](https://github.com/puniyu/puniyu/commit/550998233d7ee02150b15c16f7ef3fa139086137))
+* **puniyu_core:** 移除重复的 version 模块引用 ([5509982](https://github.com/puniyu/puniyu/commit/550998233d7ee02150b15c16f7ef3fa139086137))
+* **puniyu_server:** 优化 API 路由结构与响应类型泛型化 ([5509982](https://github.com/puniyu/puniyu/commit/550998233d7ee02150b15c16f7ef3fa139086137))
+* **toml:** 优化 TOML 配置文件处理逻辑 ([fd0af6f](https://github.com/puniyu/puniyu/commit/fd0af6f3792741ccfc1087ea6acc0db00fbfa289))
+
 ## [0.6.0](https://github.com/puniyu/puniyu/compare/common-v0.5.12...common-v0.6.0) (2025-12-02)
 
 
