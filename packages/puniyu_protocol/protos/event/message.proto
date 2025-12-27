@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package puniyu.event.message;
+import "event/message/receive.proto";
+import "event/message/send.proto";
+
+message MessageEventReceive {
+  oneof message_event {
+    puniyu.event.message.receive.FriendMessage friend_message = 1;
+    puniyu.event.message.receive.GroupMessage group_message = 2;
+  }
+}
+
+message MessageEventSend {
+  oneof message_event {
+    puniyu.event.message.send.FriendMessage friend_message = 1;
+    puniyu.event.message.send.GroupMessage group_message = 2;
+  }
+}
