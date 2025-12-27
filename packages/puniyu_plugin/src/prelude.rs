@@ -9,12 +9,12 @@ pub use puniyu_types::command::{CommandBuilder, HandlerAction, HandlerResult};
 pub use puniyu_types::config::Config;
 pub use puniyu_types::contact::{Contact, FriendContact, GroupContact, Scene};
 pub use puniyu_types::context::{BotContext, MessageContext};
-pub use puniyu_types::element::{ElementType, Message, send::Elements};
 pub use puniyu_types::element::send::{
 	AtElement, FileElement, ImageElement, JsonElement, RecordElement, ReplyElement, TextElement,
 	VideoElement, XmlElement,
 };
-pub use puniyu_types::{segment, message};
+pub use puniyu_types::element::{ElementType, Message, send::Elements};
+pub use puniyu_types::event::EventBase;
 pub use puniyu_types::event::message::{
 	FriendMessage, GroupMessage, MessageBase, MessageBuilder, MessageEvent,
 };
@@ -26,7 +26,7 @@ pub use puniyu_types::event::notion::{
 pub use puniyu_types::event::request::{
 	GroupApply, GroupInvite, PrivateApply, RequestBase, RequestBuilder, RequestEvent,
 };
-pub use puniyu_types::event::EventBase;
 pub use puniyu_types::plugin::PluginBuilder;
 pub use puniyu_types::{contact_friend, contact_group};
+pub use puniyu_types::{message, segment};
 pub use serde_json;

@@ -4,7 +4,7 @@ use quote::quote;
 #[cfg(any(feature = "plugin", feature = "command"))]
 use syn::ItemFn;
 #[cfg(any(feature = "command", feature = "task"))]
-use syn::{parse_macro_input, Ident};
+use syn::{Ident, parse_macro_input};
 
 #[cfg(any(feature = "plugin", feature = "command", feature = "task"))]
 mod plugin;
@@ -14,9 +14,7 @@ use plugin::{CommandArgs, PluginArg, TaskArgs};
 
 #[cfg(any(feature = "adapter", feature = "plugin"))]
 fn parse_struct_input(item: TokenStream) -> syn::Result<syn::ItemStruct> {
-	syn::parse(item).map_err(|e| {
-		syn::Error::new(e.span(), "呜哇~这个宏只能用在结构体上！杂鱼~")
-	})
+	syn::parse(item).map_err(|e| syn::Error::new(e.span(), "呜哇~这个宏只能用在结构体上！杂鱼~"))
 }
 
 #[cfg(any(feature = "adapter", feature = "plugin"))]
@@ -111,7 +109,7 @@ pub fn adapter(_: TokenStream, item: TokenStream) -> TokenStream {
 			fn name(&self) -> &'static str {
 				::puniyu_adapter::AdapterBuilder::name(&#struct_name)
 			}
-			
+
 			fn version(&self) -> ::puniyu_adapter::Version {
 				::puniyu_adapter::Version {
 					major: #version_major,
@@ -631,12 +629,9 @@ pub fn command(args: TokenStream, item: TokenStream) -> TokenStream {
 		let ty = &*pat_type.ty;
 		let ty_str = quote!(#ty).to_string();
 		if !ty_str.contains("BotContext") {
-			return syn::Error::new_spanned(
-				ty,
-				"呜哇~第一个参数必须是 &BotContext 类型！杂鱼~",
-			)
-			.to_compile_error()
-			.into();
+			return syn::Error::new_spanned(ty, "呜哇~第一个参数必须是 &BotContext 类型！杂鱼~")
+				.to_compile_error()
+				.into();
 		}
 	}
 	if let Some(syn::FnArg::Typed(pat_type)) = params.next() {
@@ -730,15 +725,15 @@ pub fn command(args: TokenStream, item: TokenStream) -> TokenStream {
 }
 
 /// 定时任务宏
-/// 
+///
 /// 用于定义基于 Cron 表达式的定时任务。
-/// 
+///
 /// # 参数
 /// - `cron`: Cron 表达式（必需），定义任务执行的时间规则
 /// - `name`: 任务名称（可选），默认使用函数名
-/// 
+///
 /// # Cron 表达式格式
-/// 
+///
 /// 支持标准的 Cron 表达式，格式为：
 /// ```text
 /// ┌───────────── 秒 (0 - 59)
@@ -750,27 +745,27 @@ pub fn command(args: TokenStream, item: TokenStream) -> TokenStream {
 /// │ │ │ │ │ │
 /// * * * * * *
 /// ```
-/// 
+///
 /// ## 特殊字符
 /// - `*`: 匹配所有值
 /// - `,`: 分隔多个值，如 `1,3,5`
 /// - `-`: 指定范围，如 `1-5`
 /// - `/`: 指定步长，如 `*/5` 表示每 5 个单位
-/// 
+///
 /// ## 常用示例
 /// - `0 0 * * * *`: 每小时整点执行
 /// - `0 */30 * * * *`: 每 30 分钟执行
 /// - `0 0 9 * * *`: 每天上午 9 点执行
 /// - `0 0 0 * * 1`: 每周一凌晨执行
 /// - `0 0 0 1 * *`: 每月 1 号凌晨执行
-/// 
+///
 /// # 函数要求
 /// - 必须是 `async` 函数
 /// - 不能有任何参数
 /// - 返回类型必须是 `Result<(), Box<dyn std::error::Error + Send + Sync>>`
-/// 
+///
 /// # 示例
-/// 
+///
 /// ## 基础示例
 /// ```rust,ignore
 /// #[task(cron = "0 0 * * * *")]
@@ -779,7 +774,7 @@ pub fn command(args: TokenStream, item: TokenStream) -> TokenStream {
 ///     Ok(())
 /// }
 /// ```
-/// 
+///
 /// ## 指定任务名称
 /// ```rust,ignore
 /// #[task(name = "数据备份", cron = "0 0 2 * * *")]
@@ -788,7 +783,7 @@ pub fn command(args: TokenStream, item: TokenStream) -> TokenStream {
 ///     Ok(())
 /// }
 /// ```
-/// 
+///
 /// ## 高频任务
 /// ```rust,ignore
 /// #[task(cron = "*/10 * * * * *")]
@@ -797,7 +792,7 @@ pub fn command(args: TokenStream, item: TokenStream) -> TokenStream {
 ///     Ok(())
 /// }
 /// ```
-/// 
+///
 /// ## 复杂定时任务
 /// ```rust,ignore
 /// #[task(

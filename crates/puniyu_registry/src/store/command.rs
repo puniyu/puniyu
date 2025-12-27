@@ -41,7 +41,9 @@ impl CommandStore {
 	}
 
 	pub fn get_with_plugin(&self, plugin_name: &str, name: &str) -> Option<Arc<Command>> {
-		self.0.read().unwrap()
+		self.0
+			.read()
+			.unwrap()
 			.values()
 			.find(|registry| registry.plugin_name == plugin_name && registry.builder.name() == name)
 			.cloned()

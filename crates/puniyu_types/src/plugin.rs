@@ -1,11 +1,11 @@
+use crate::command::CommandBuilder;
+use crate::config::Config;
+use crate::server::ServerType;
 use crate::task::TaskBuilder;
 use crate::version::Version;
 use async_trait::async_trait;
-use crate::command::CommandBuilder;
 use std::fmt;
 use std::path::PathBuf;
-use crate::server::ServerType;
-use crate::config::Config;
 
 #[async_trait]
 pub trait PluginBuilder: Send + Sync + 'static {
@@ -104,4 +104,3 @@ impl From<&str> for PluginId {
 		Self::Name(value.to_string())
 	}
 }
-

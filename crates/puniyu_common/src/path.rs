@@ -59,9 +59,9 @@ pub static CONFIG_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
 });
 
 /// 插件配置文件夹路径
-/// 
+///
 /// 存放插件配置文件
-/// 
+///
 /// # 示例
 /// ```
 /// use puniyu_common::path::PLUGIN_CONFIG_DIR;
@@ -74,9 +74,9 @@ pub static PLUGIN_CONFIG_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
 });
 
 /// 适配器配置文件夹路径
-/// 
+///
 /// 存放适配器配置文件
-/// 
+///
 /// # 示例
 /// ```
 /// use puniyu_common::path::ADAPTER_CONFIG_DIR;
@@ -87,8 +87,6 @@ pub static ADAPTER_CONFIG_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
 	path.push("adapters");
 	path
 });
-
-
 
 /// 临时文件夹路径
 ///
@@ -105,9 +103,9 @@ pub static TEMP_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
 });
 
 /// 适配器临时文件夹路径
-/// 
+///
 /// 存放适配器临时文件
-/// 
+///
 /// ## 示例
 /// ```
 /// use puniyu_common::path::ADAPTER_TEMP_DIR;
@@ -120,9 +118,9 @@ pub static ADAPTER_TEMP_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
 });
 
 /// 插件临时文件夹路径
-/// 
+///
 /// 存放插件临时文件
-/// 
+///
 /// # 示例
 /// ```
 /// use puniyu_common::path::PLUGIN_TEMP_DIR;
@@ -191,9 +189,9 @@ pub static ADAPTER_DATA_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
 });
 
 /// 资源文件夹路径
-/// 
+///
 /// 此目录存放插件资源文件，如图片，字体等
-/// 
+///
 /// # 示例
 /// ```
 /// use puniyu_common::path::RESOURCE_DIR;
@@ -206,9 +204,9 @@ pub static RESOURCE_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
 });
 
 /// 插件资源文件夹路径
-/// 
+///
 /// 此目录存放插件资源文件，如图片，字体等
-/// 
+///
 /// # 示例
 /// ```
 /// use puniyu_common::path::PLUGIN_RESOURCE_DIR;
@@ -221,9 +219,9 @@ pub static PLUGIN_RESOURCE_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
 });
 
 /// 适配器资源文件夹路径
-/// 
+///
 /// 此目录存放适配器资源文件，如图片，字体等
-/// 
+///
 /// # 示例
 /// ```
 /// use puniyu_common::path::ADAPTER_RESOURCE_DIR;

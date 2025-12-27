@@ -52,7 +52,6 @@ macro_rules! segment {
 	};
 }
 
-
 #[cfg(feature = "event")]
 #[macro_export]
 macro_rules! message {

@@ -1,7 +1,6 @@
 use puniyu_system_info::ProcessInfo;
 use std::time::Duration;
 
-
 /// 获取应用运行时间
 ///
 /// # 返回

@@ -2,11 +2,11 @@ mod types;
 pub use types::*;
 
 use super::{NotionBase, NotionBuilder, NotionSubEvent};
+use crate::bot::BotInfo;
 use crate::contact::{FriendContact, Scene};
 use crate::event::{EventBase, EventType};
 use crate::sender::FriendSender;
-use serde::{Serialize, Deserialize};
-use crate::bot::BotInfo;
+use serde::{Deserialize, Serialize};
 
 macro_rules! impl_notion_event {
     (
@@ -110,12 +110,11 @@ macro_rules! impl_notion_event {
     };
 }
 
-
 impl_notion_event!(
-    ReceiveLike, "收到点赞事件", NotionSubEvent::ReceiveLike, ReceiveLikeOption;
-    FriendAdd, "收到好友增加事件", NotionSubEvent::FriendAdd, ();
-    FriendDecrease, "收到好友减少事件", NotionSubEvent::FriendDecrease, ();
-    PrivatePoke, "收到好友戳一戳事件", NotionSubEvent::PrivatePoke, PrivatePokeOption;
-    PrivateRecall, "收到好友撤回事件", NotionSubEvent::PrivateRecall, PrivateRecallOption;
-    PrivateFileUpload, "收到好友文件上传事件", NotionSubEvent::PrivateFileUpload, PrivateFileUploadOption;
+	ReceiveLike, "收到点赞事件", NotionSubEvent::ReceiveLike, ReceiveLikeOption;
+	FriendAdd, "收到好友增加事件", NotionSubEvent::FriendAdd, ();
+	FriendDecrease, "收到好友减少事件", NotionSubEvent::FriendDecrease, ();
+	PrivatePoke, "收到好友戳一戳事件", NotionSubEvent::PrivatePoke, PrivatePokeOption;
+	PrivateRecall, "收到好友撤回事件", NotionSubEvent::PrivateRecall, PrivateRecallOption;
+	PrivateFileUpload, "收到好友文件上传事件", NotionSubEvent::PrivateFileUpload, PrivateFileUploadOption;
 );

@@ -35,7 +35,11 @@ impl AdapterRegistry {
 			_ => false,
 		};
 		if !adapter_enabled {
-			warn!("[{}:{}] 跳过加载","adapter".fg_rgb::<175, 238, 238>(), adapter_name.fg_rgb::<240, 128, 128>());
+			warn!(
+				"[{}:{}] 跳过加载",
+				"adapter".fg_rgb::<175, 238, 238>(),
+				adapter_name.fg_rgb::<240, 128, 128>()
+			);
 			return Ok(());
 		}
 		let config_dir =

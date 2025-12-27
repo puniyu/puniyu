@@ -1,5 +1,6 @@
 pub mod option;
 
+use option::BotOption;
 use puniyu_common::path::CONFIG_DIR;
 use puniyu_common::toml;
 use serde::{Deserialize, Serialize};
@@ -7,13 +8,10 @@ use std::{
 	collections::HashMap,
 	sync::{Arc, LazyLock, RwLock},
 };
-use option::BotOption;
 
 pub(crate) static BOT_CONFIG: LazyLock<Arc<RwLock<BotConfig>>> = LazyLock::new(|| {
 	Arc::new(RwLock::new(toml::read_config(CONFIG_DIR.as_path(), "bot").unwrap_or_default()))
 });
-
-
 
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct BotConfig {
@@ -38,10 +36,10 @@ impl BotConfig {
 	}
 
 	/// 获取全局配置
-	pub fn global(&self) -> BotOption { 
+	pub fn global(&self) -> BotOption {
 		let config = BOT_CONFIG.read().unwrap();
 		config.global.clone()
-	} 
+	}
 
 	/// 获取bot配置
 	///

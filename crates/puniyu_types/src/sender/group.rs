@@ -76,4 +76,3 @@ macro_rules! group_sender {
     (@convert level, $v:expr) => { Some($v) };
     (@convert title, $v:expr) => { Some($v.to_string()) };
 }
-

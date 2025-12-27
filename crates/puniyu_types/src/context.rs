@@ -6,9 +6,9 @@ use crate::element::{Message, receive::Elements};
 use crate::event::EventBase;
 use crate::event::message::{FriendMessage, GroupMessage, MessageEvent};
 use crate::sender::SenderType;
+use bytes::Bytes;
 use std::collections::HashMap;
 use std::sync::Arc;
-use bytes::Bytes;
 
 #[derive(Clone)]
 pub struct BotContext {

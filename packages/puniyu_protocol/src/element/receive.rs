@@ -1,6 +1,5 @@
-
-use puniyu_types::element::receive as element;
 use elements::Element;
+use puniyu_types::element::receive as element;
 
 include!(concat!(env!("OUT_DIR"), "/puniyu.element.receive.rs"));
 macro_rules! impl_from_element {

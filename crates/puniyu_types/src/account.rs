@@ -26,4 +26,3 @@ macro_rules! account_info {
     (@convert name, $v:expr) => { $v.to_string() };
     (@convert avatar, $v:expr) => { $v.to_string() };
 }
-

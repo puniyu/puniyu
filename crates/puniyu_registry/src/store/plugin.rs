@@ -39,9 +39,6 @@ impl PluginStore {
 	}
 
 	pub fn find_index_by_name(&self, name: &str) -> Option<u64> {
-		self.0.read().unwrap()
-			.iter()
-			.find(|(_, plugin)| plugin.name == name)
-			.map(|(idx, _)| *idx)
+		self.0.read().unwrap().iter().find(|(_, plugin)| plugin.name == name).map(|(idx, _)| *idx)
 	}
 }

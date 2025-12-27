@@ -19,7 +19,6 @@ pub struct SystemInfo {
 	pub bot: BotStatusInfo,
 }
 
-
 impl SystemInfo {
 	pub fn new() -> Self {
 		Self::default()

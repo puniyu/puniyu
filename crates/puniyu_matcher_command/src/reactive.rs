@@ -20,7 +20,9 @@ pub fn get_bot_config(event: &MessageEvent) -> (Vec<String>, ReactiveMode) {
 /// 尝试移除 bot 别名前缀，返回 (移除后的文本, 是否匹配到别名)
 pub fn strip_bot_alias(text: &str, aliases: &[String]) -> (String, bool) {
 	for alias in aliases {
-		if !alias.is_empty() && let Some(stripped) = text.strip_prefix(alias) {
+		if !alias.is_empty()
+			&& let Some(stripped) = text.strip_prefix(alias)
+		{
 			return (stripped.trim_start().to_string(), true);
 		}
 	}

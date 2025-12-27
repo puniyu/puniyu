@@ -1,16 +1,16 @@
 mod friend;
 
-use serde::{Deserialize, Serialize};
 pub use friend::*;
+use serde::{Deserialize, Serialize};
 mod group;
 pub use group::*;
 
 use super::EventBase;
-use strum::{Display, EnumString, IntoStaticStr};
 use crate::bot::BotInfo;
 use crate::contact::{FriendContact, GroupContact, Scene};
-use crate::sender::{FriendSender, GroupSender};
 use crate::event::EventType;
+use crate::sender::{FriendSender, GroupSender};
+use strum::{Display, EnumString, IntoStaticStr};
 
 #[derive(Debug, Clone, EnumString, Display, IntoStaticStr, Deserialize, Serialize)]
 pub enum RequestSubEvent {
@@ -47,7 +47,7 @@ pub trait RequestBase: Send + Sync + EventBase {
 
 #[derive(Debug, Clone)]
 pub struct RequestBuilder<Contact, Sender> {
-    pub bot: BotInfo,
+	pub bot: BotInfo,
 	pub event_id: String,
 	pub time: u64,
 	pub self_id: String,
@@ -147,9 +147,9 @@ macro_rules! impl_request_event {
 }
 
 impl_request_event!(
-    PrivateApply, "收到好友申请请求", RequestSubEvent::PrivateApply, FriendContact, FriendSender, PrivateApplyType;
-    GroupApply, "收到入群申请请求", RequestSubEvent::GroupApply, GroupContact, GroupSender, GroupApplyType;
-    GroupInvite, "收到群邀请请求", RequestSubEvent::GroupInvite, GroupContact, GroupSender, GroupInviteType;
+	PrivateApply, "收到好友申请请求", RequestSubEvent::PrivateApply, FriendContact, FriendSender, PrivateApplyType;
+	GroupApply, "收到入群申请请求", RequestSubEvent::GroupApply, GroupContact, GroupSender, GroupApplyType;
+	GroupInvite, "收到群邀请请求", RequestSubEvent::GroupInvite, GroupContact, GroupSender, GroupInviteType;
 );
 
 #[cfg(feature = "event")]
@@ -188,4 +188,3 @@ macro_rules! create_request_event {
     (@convert contact, $v:expr) => { $v };
     (@convert sender, $v:expr) => { $v };
 }
-

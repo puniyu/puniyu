@@ -1,6 +1,6 @@
+use puniyu_common::system::BotStatusInfo;
 use puniyu_core::APP_NAME;
 use puniyu_core::VERSION;
-use puniyu_common::system::BotStatusInfo;
 use puniyu_plugin::prelude::*;
 
 #[command(name = "state")]
@@ -10,7 +10,7 @@ async fn state(bot: &BotContext, _ev: &MessageContext) -> HandlerResult {
 	let hours = (status.run_time % 86400) / 3600;
 	let minutes = (status.run_time % 3600) / 60;
 	let seconds = status.run_time % 60;
-	
+
 	let info_text = format!(
 		"------机器人状态------\n\
 		框架名称:{}\n\
@@ -20,9 +20,12 @@ async fn state(bot: &BotContext, _ev: &MessageContext) -> HandlerResult {
 		APP_NAME.get().unwrap(),
 		VERSION,
 		status.used_memory,
-		days, hours, minutes, seconds
+		days,
+		hours,
+		minutes,
+		seconds
 	);
-	
+
 	bot.reply(message!(segment!(text, info_text))).await?;
 	Ok(().into())
 }

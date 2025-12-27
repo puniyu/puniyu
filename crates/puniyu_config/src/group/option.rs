@@ -1,5 +1,5 @@
-use serde::{Deserialize, Serialize};
 use crate::bot::option::ReactiveMode;
+use serde::{Deserialize, Serialize};
 
 /// TODO: 群组中的禁用/启用插件
 #[derive(Debug, Clone, Serialize, Deserialize)]

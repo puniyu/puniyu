@@ -1,9 +1,9 @@
+use crate::cooldown::CooldownScope;
 use std::{
 	collections::HashMap,
 	sync::{Arc, RwLock},
-	time::{SystemTime, UNIX_EPOCH, Duration},
+	time::{Duration, SystemTime, UNIX_EPOCH},
 };
-use crate::cooldown::CooldownScope;
 
 pub(crate) struct CooldownStore(pub(crate) Arc<RwLock<HashMap<String, u128>>>);
 

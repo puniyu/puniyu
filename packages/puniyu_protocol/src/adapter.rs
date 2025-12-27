@@ -140,9 +140,7 @@ impl From<AdapterInfo> for puniyu_adapter::AdapterInfo {
 
 impl From<puniyu_adapter::AdapterInfo> for AdapterInfo {
 	fn from(adapter: puniyu_adapter::AdapterInfo) -> Self {
-		let connect_time = adapter
-			.connect_time
-			.unix_timestamp();
+		let connect_time = adapter.connect_time.unix_timestamp();
 		Self {
 			name: adapter.name,
 			version: adapter.version.into(),

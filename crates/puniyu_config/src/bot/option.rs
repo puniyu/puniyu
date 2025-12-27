@@ -33,11 +33,7 @@ pub struct BotOption {
 impl Default for BotOption {
 	#[inline]
 	fn default() -> Self {
-		Self {
-			cd: default_bot_cd(),
-			mode: default_reactive_mode(),
-			alias: default_alias(),
-		}
+		Self { cd: default_bot_cd(), mode: default_reactive_mode(), alias: default_alias() }
 	}
 }
 
@@ -54,7 +50,7 @@ impl BotOption {
 	pub fn cd(&self) -> u16 {
 		self.cd
 	}
-	
+
 	/// 获取Bot别名
 	pub fn alias(&self) -> Vec<String> {
 		self.alias.clone()

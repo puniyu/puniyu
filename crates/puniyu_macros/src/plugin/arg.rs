@@ -29,23 +29,36 @@ impl Default for Arg {
 }
 
 impl Arg {
-	pub fn parse_from_tuple(&mut self, elems: &Punctuated<syn::Expr, Token![,]>) -> syn::Result<()> {
+	pub fn parse_from_tuple(
+		&mut self,
+		elems: &Punctuated<syn::Expr, Token![,]>,
+	) -> syn::Result<()> {
 		let mut iter = elems.iter();
 
-		if let Some(syn::Expr::Lit(syn::ExprLit { lit: syn::Lit::Str(lit_str), .. })) = iter.next() {
+		if let Some(syn::Expr::Lit(syn::ExprLit { lit: syn::Lit::Str(lit_str), .. })) = iter.next()
+		{
 			self.name = lit_str.clone();
 		} else {
-			return Err(syn::Error::new_spanned(elems, "呜哇~第一个元素必须是参数名(字符串)！杂鱼~"));
+			return Err(syn::Error::new_spanned(
+				elems,
+				"呜哇~第一个元素必须是参数名(字符串)！杂鱼~",
+			));
 		}
 
-		if let Some(syn::Expr::Lit(syn::ExprLit { lit: syn::Lit::Str(lit_str), .. })) = iter.next() {
+		if let Some(syn::Expr::Lit(syn::ExprLit { lit: syn::Lit::Str(lit_str), .. })) = iter.next()
+		{
 			if !VALID_ARG_TYPES.contains(&lit_str.value().as_str()) {
-				return Err(syn::Error::new_spanned(lit_str, format!("呜哇~类型必须是 {:?} 之一！杂鱼~", VALID_ARG_TYPES)));
+				return Err(syn::Error::new_spanned(
+					lit_str,
+					format!("呜哇~类型必须是 {:?} 之一！杂鱼~", VALID_ARG_TYPES),
+				));
 			}
 			self.arg_type = lit_str.clone();
 		}
 
-		if let Some(syn::Expr::Lit(syn::ExprLit { lit: syn::Lit::Bool(lit_bool), .. })) = iter.next() {
+		if let Some(syn::Expr::Lit(syn::ExprLit { lit: syn::Lit::Bool(lit_bool), .. })) =
+			iter.next()
+		{
 			self.required = lit_bool.value;
 		}
 
@@ -53,13 +66,18 @@ impl Arg {
 			self.default = Some(expr.clone());
 		}
 
-		if let Some(syn::Expr::Lit(syn::ExprLit { lit: syn::Lit::Str(lit_str), .. })) = iter.next() {
+		if let Some(syn::Expr::Lit(syn::ExprLit { lit: syn::Lit::Str(lit_str), .. })) = iter.next()
+		{
 			self.desc = lit_str.clone();
 		}
 
-		if let Some(syn::Expr::Lit(syn::ExprLit { lit: syn::Lit::Str(lit_str), .. })) = iter.next() {
+		if let Some(syn::Expr::Lit(syn::ExprLit { lit: syn::Lit::Str(lit_str), .. })) = iter.next()
+		{
 			if !VALID_ARG_MODES.contains(&lit_str.value().as_str()) {
-				return Err(syn::Error::new_spanned(lit_str, format!("呜哇~mode 必须是 {:?} 之一！杂鱼~", VALID_ARG_MODES)));
+				return Err(syn::Error::new_spanned(
+					lit_str,
+					format!("呜哇~mode 必须是 {:?} 之一！杂鱼~", VALID_ARG_MODES),
+				));
 			}
 			self.mode = lit_str.clone();
 		}
@@ -132,14 +150,12 @@ impl Arg {
 		let required = self.required;
 		let desc = &self.desc;
 		let default_value = match &self.default {
-			Some(expr) => {
-				match arg_type_str.as_str() {
-					"int" => quote! { Some(::puniyu_plugin::ArgValue::Int(#expr as i64)) },
-					"float" => quote! { Some(::puniyu_plugin::ArgValue::Float(#expr as f64)) },
-					"bool" => quote! { Some(::puniyu_plugin::ArgValue::Bool(#expr)) },
-					_ => quote! { Some(::puniyu_plugin::ArgValue::String(#expr.to_string())) },
-				}
-			}
+			Some(expr) => match arg_type_str.as_str() {
+				"int" => quote! { Some(::puniyu_plugin::ArgValue::Int(#expr as i64)) },
+				"float" => quote! { Some(::puniyu_plugin::ArgValue::Float(#expr as f64)) },
+				"bool" => quote! { Some(::puniyu_plugin::ArgValue::Bool(#expr)) },
+				_ => quote! { Some(::puniyu_plugin::ArgValue::String(#expr.to_string())) },
+			},
 			None => quote! { None },
 		};
 		quote! {
@@ -154,4 +170,3 @@ impl Arg {
 		}
 	}
 }
-

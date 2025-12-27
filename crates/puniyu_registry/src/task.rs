@@ -1,5 +1,5 @@
 use chrono_tz::Asia::Shanghai;
-use puniyu_logger::{info, error, owo_colors::OwoColorize};
+use puniyu_logger::{error, info, owo_colors::OwoColorize};
 use puniyu_types::task::{TaskBuilder, TaskId};
 use std::time::Instant;
 use std::{
@@ -9,7 +9,6 @@ use std::{
 use tokio::sync::OnceCell;
 use tokio_cron_scheduler::{JobBuilder, JobScheduler};
 use uuid::Uuid;
-
 
 #[derive(Clone)]
 struct Task {

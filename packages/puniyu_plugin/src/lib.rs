@@ -2,6 +2,7 @@ pub use actix_web;
 pub use actix_web::web::ServiceConfig;
 pub use async_trait::async_trait;
 pub use inventory;
+pub use puniyu_bus::{EVENT_BUS, EventBus};
 pub use puniyu_common::APP_NAME;
 pub use puniyu_common::path::{PLUGIN_CONFIG_DIR, PLUGIN_DATA_DIR};
 pub use puniyu_common::toml::read_config;
@@ -10,14 +11,15 @@ pub use puniyu_logger as logger;
 pub use puniyu_macros::{command, plugin, plugin_config as config, server, task};
 pub use puniyu_registry::command::CommandRegistry;
 pub use puniyu_registry::plugin::VERSION as ABI_VERSION;
-pub use puniyu_types::command::{Arg, ArgMode, ArgType, ArgValue, CommandBuilder, HandlerAction, HandlerResult, Permission};
+pub use puniyu_types::command::{
+	Arg, ArgMode, ArgType, ArgValue, CommandBuilder, HandlerAction, HandlerResult, Permission,
+};
 pub use puniyu_types::config::Config;
 pub use puniyu_types::context::{BotContext, MessageContext};
 pub use puniyu_types::plugin::PluginBuilder;
 pub use puniyu_types::server::ServerType;
 pub use puniyu_types::task::TaskBuilder;
 pub use puniyu_types::version::Version;
-pub use puniyu_bus::{EventBus, EVENT_BUS};
 pub use serde_json;
 pub use toml;
 

@@ -16,9 +16,7 @@ impl AdapterConfig {
 impl Default for AdapterConfig {
 	#[inline]
 	fn default() -> Self {
-		Self {
-			console: default_console(),
-		}
+		Self { console: default_console() }
 	}
 }
 fn default_console() -> bool {

@@ -13,11 +13,7 @@ pub struct Version {
 
 impl Default for Version {
 	fn default() -> Self {
-		Self {
-			major: 0,
-			minor: 0,
-			patch: 1,
-		}
+		Self { major: 0, minor: 0, patch: 1 }
 	}
 }
 
@@ -33,11 +29,10 @@ impl From<&'static str> for Version {
 		Self {
 			major: v.next().unwrap_or_default().parse().unwrap_or_default(),
 			minor: v.next().unwrap_or_default().parse().unwrap_or_default(),
-			patch: v.next().unwrap_or_default().parse().unwrap_or_default()
+			patch: v.next().unwrap_or_default().parse().unwrap_or_default(),
 		}
 	}
 }
-
 
 impl From<String> for Version {
 	fn from(s: String) -> Self {
@@ -49,7 +44,6 @@ impl From<String> for Version {
 		}
 	}
 }
-
 
 impl From<Version> for String {
 	fn from(v: Version) -> Self {

@@ -10,7 +10,7 @@ pub mod system;
 #[cfg(feature = "version")]
 mod version;
 #[cfg(feature = "version")]
-pub use version::{VERSION, Version, Channel};
+pub use version::{Channel, VERSION, Version};
 
 use std::sync::OnceLock;
 /// 当前应用名称, 也就是此实例的名称

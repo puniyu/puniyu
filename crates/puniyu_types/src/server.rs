@@ -37,11 +37,7 @@ pub fn get_server_config() -> Option<ServerConfig> {
 }
 
 pub fn send_server_command(cmd: ServerCommand) -> Result<(), flume::SendError<ServerCommand>> {
-	if let Some(tx) = SERVER_COMMAND_TX.get() {
-		tx.send(cmd)
-	} else {
-		Err(flume::SendError(cmd))
-	}
+	if let Some(tx) = SERVER_COMMAND_TX.get() { tx.send(cmd) } else { Err(flume::SendError(cmd)) }
 }
 
 /// 启动服务器
@@ -58,4 +54,3 @@ pub fn stop_server() -> Result<(), flume::SendError<ServerCommand>> {
 pub fn restart_server() -> Result<(), flume::SendError<ServerCommand>> {
 	send_server_command(ServerCommand::Restart)
 }
-

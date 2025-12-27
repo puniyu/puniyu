@@ -24,41 +24,25 @@ impl From<Scene> for SceneType {
 impl From<FriendContact> for Contact {
 	fn from(value: FriendContact) -> Self {
 		let scene = SceneType::from(value.scene);
-		Self {
-			scene: scene.into(),
-			peer: value.peer,
-			name: value.name,
-		}
+		Self { scene: scene.into(), peer: value.peer, name: value.name }
 	}
 }
 
 impl From<Contact> for FriendContact {
 	fn from(value: Contact) -> Self {
-		Self { 
-			scene: Scene::Friend, 
-			peer: value.peer, 
-			name: value.name 
-		}
+		Self { scene: Scene::Friend, peer: value.peer, name: value.name }
 	}
 }
 impl From<GroupContact> for Contact {
 	fn from(value: GroupContact) -> Self {
 		let scene = SceneType::from(value.scene);
-		Self {
-			scene: scene.into(),
-			peer: value.peer,
-			name: value.name,
-		}
+		Self { scene: scene.into(), peer: value.peer, name: value.name }
 	}
 }
 
 impl From<Contact> for GroupContact {
 	fn from(value: Contact) -> Self {
-		Self {
-			scene: Scene::Group,
-			peer: value.peer,
-			name: value.name,
-		}
+		Self { scene: Scene::Group, peer: value.peer, name: value.name }
 	}
 }
 

@@ -1,7 +1,7 @@
-pub mod element;
-pub mod contact;
-pub mod sender;
-pub mod event;
+pub mod account;
 pub mod adapter;
 pub mod bot;
-pub mod account;
+pub mod contact;
+pub mod element;
+pub mod event;
+pub mod sender;

@@ -17,7 +17,6 @@ use std::path::{Path, PathBuf};
 use std::{env, env::consts::DLL_EXTENSION};
 use tokio::{fs, signal};
 
-
 pub struct AppBuilder {
 	app_name: String,
 	app_logo: Vec<u8>,
@@ -153,7 +152,9 @@ async fn init_plugin(plugins: Vec<&'static dyn PluginBuilder>) {
 	}
 
 	if !PLUGIN_DATA_DIR.as_path().exists() {
-		fs::create_dir(PLUGIN_DATA_DIR.as_path()).await.expect("Failed to create plugin data directory");
+		fs::create_dir(PLUGIN_DATA_DIR.as_path())
+			.await
+			.expect("Failed to create plugin data directory");
 	}
 	let mut plugins_list =
 		plugins.iter().map(|p| PluginType::Builder(*p)).collect::<Vec<PluginType>>();

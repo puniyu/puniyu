@@ -37,20 +37,16 @@ const fn is_stable(s: &str) -> bool {
 		if bytes[5] >= b'A' && bytes[5] <= b'Z' { bytes[5] + 32 } else { bytes[5] },
 	];
 
-	lower_bytes[0] == b's' &&
-		lower_bytes[1] == b't' &&
-		lower_bytes[2] == b'a' &&
-		lower_bytes[3] == b'b' &&
-		lower_bytes[4] == b'l' &&
-		lower_bytes[5] == b'e'
+	lower_bytes[0] == b's'
+		&& lower_bytes[1] == b't'
+		&& lower_bytes[2] == b'a'
+		&& lower_bytes[3] == b'b'
+		&& lower_bytes[4] == b'l'
+		&& lower_bytes[5] == b'e'
 }
 
 const fn str_to_channel(s: &str) -> Channel {
-	if is_stable(s) {
-		Channel::Stable
-	} else {
-		Channel::Nightly
-	}
+	if is_stable(s) { Channel::Stable } else { Channel::Nightly }
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
@@ -72,7 +68,7 @@ pub enum Channel {
 	#[strum(serialize = "Stable")]
 	Stable,
 	#[strum(serialize = "Nightly")]
-	Nightly
+	Nightly,
 }
 
 impl fmt::Display for Version {
@@ -85,5 +81,5 @@ pub const VERSION: Version = Version {
 	major: str_to_u16(env!("CARGO_PKG_VERSION_MAJOR")),
 	minor: str_to_u16(env!("CARGO_PKG_VERSION_MINOR")),
 	patch: str_to_u16(env!("CARGO_PKG_VERSION_PATCH")),
-	channel: str_to_channel(env!("VERSION_CHANNEL"))
+	channel: str_to_channel(env!("VERSION_CHANNEL")),
 };

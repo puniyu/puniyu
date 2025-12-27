@@ -75,12 +75,10 @@ impl CommandMatcher {
 			};
 
 			let content = match command.prefix.as_deref() {
-				Some(prefix) if !prefix.is_empty() => {
-					match after_global.strip_prefix(prefix) {
-						Some(stripped) => stripped.to_string(),
-						None => continue,
-					}
-				}
+				Some(prefix) if !prefix.is_empty() => match after_global.strip_prefix(prefix) {
+					Some(stripped) => stripped.to_string(),
+					None => continue,
+				},
 				_ => after_global,
 			};
 
@@ -95,12 +93,8 @@ impl CommandMatcher {
 
 			let is_alias_match = alias.is_some_and(|a| a.contains(&input_name));
 			if input_name == command_name || is_alias_match {
-				let args: Vec<String> = parts
-					.next()
-					.unwrap_or("")
-					.split_whitespace()
-					.map(String::from)
-					.collect();
+				let args: Vec<String> =
+					parts.next().unwrap_or("").split_whitespace().map(String::from).collect();
 				return Some(MatchResult::new(command_name, args));
 			}
 		}

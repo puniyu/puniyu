@@ -1,7 +1,10 @@
 use puniyu_logger::{debug, info};
 use puniyu_types::{
 	element::RawMessage,
-	event::{EventBase, message::{MessageBase, MessageEvent}},
+	event::{
+		EventBase,
+		message::{MessageBase, MessageEvent},
+	},
 };
 
 /// 记录消息日志

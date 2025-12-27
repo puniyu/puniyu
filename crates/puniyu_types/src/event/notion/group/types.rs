@@ -63,7 +63,6 @@ pub enum GroupJoinType {
 	Apply,
 }
 
-
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct GroupMemberDecreaseType {
 	/// 离开的用户id

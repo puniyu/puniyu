@@ -1,16 +1,14 @@
 use super::EventBase;
-use crate::element::receive::Elements;
-use strum::{Display, EnumString, IntoStaticStr};
-use bytes::Bytes;
-use serde::{Deserialize, Serialize};
 use crate::bot::BotInfo;
 use crate::contact::{FriendContact, GroupContact, Scene};
-use crate::sender::{FriendSender, GroupSender, Role};
-use puniyu_config::Config;
-use std::fmt;
+use crate::element::receive::Elements;
 use crate::event::EventType;
-
-
+use crate::sender::{FriendSender, GroupSender, Role};
+use bytes::Bytes;
+use puniyu_config::Config;
+use serde::{Deserialize, Serialize};
+use std::fmt;
+use strum::{Display, EnumString, IntoStaticStr};
 
 #[derive(Debug, Clone, EnumString, Display, IntoStaticStr)]
 pub enum MessageSubType {
@@ -385,8 +383,8 @@ macro_rules! impl_message_event {
 }
 
 impl_message_event!(
-    GroupMessage, GroupContact, GroupSender, MessageSubType::Group;
-    FriendMessage, FriendContact, FriendSender, MessageSubType::Friend;
+	GroupMessage, GroupContact, GroupSender, MessageSubType::Group;
+	FriendMessage, FriendContact, FriendSender, MessageSubType::Friend;
 );
 
 impl GroupMessage {
@@ -402,7 +400,6 @@ impl GroupMessage {
 		matches!(self.sender.role, Role::Owner)
 	}
 }
-
 
 #[cfg(feature = "event")]
 #[macro_export]

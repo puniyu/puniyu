@@ -7,10 +7,10 @@ pub use api::AdapterApi;
 mod info;
 pub use info::*;
 
+use crate::version::Version;
+use crate::{config::Config, server::ServerType};
 use async_trait::async_trait;
 use puniyu_logger::info;
-use crate::{config::Config, server::ServerType};
-use crate::version::Version;
 
 pub type Result<T> = std::result::Result<T, Error>;
 
@@ -24,7 +24,6 @@ pub struct Adapter {
 	/// 适配器 API
 	pub api: &'static dyn AdapterApi,
 }
-
 
 /// 适配器构建器
 #[async_trait]

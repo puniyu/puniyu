@@ -6,7 +6,7 @@ use crate::bot::BotInfo;
 use crate::contact::{GroupContact, Scene};
 use crate::event::{EventBase, EventType};
 use crate::sender::GroupSender;
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 macro_rules! impl_notion_event {
     (
@@ -89,7 +89,7 @@ macro_rules! impl_notion_event {
         impl EventBase for $struct_name {
             type ContactType = GroupContact;
             type SenderType = GroupSender;
-            
+
             fn bot(&self) -> &BotInfo { &self.bot }
             fn time(&self) -> u64 { self.time }
             fn event(&self) -> &str { EventType::Notice.into() }
@@ -110,8 +110,6 @@ macro_rules! impl_notion_event {
         }
     };
 }
-
-
 
 impl_notion_event!(
 	GroupPoke, "收到群聊戳一戳事件", NotionSubEvent::GroupPoke, GroupPokeType;

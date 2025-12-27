@@ -48,10 +48,7 @@ pub struct BotInfo {
 
 impl From<Bot> for BotInfo {
 	fn from(bot: Bot) -> Self {
-		Self {
-			adapter: bot.adapter,
-			account: bot.account,
-		}
+		Self { adapter: bot.adapter, account: bot.account }
 	}
 }
 
@@ -71,7 +68,6 @@ impl PartialEq for Bot {
 		self.adapter == other.adapter && self.account == other.account
 	}
 }
-
 
 impl Bot {
 	pub async fn send_msg(&self, contact: ContactType, message: Message) -> Result<SendMsgType> {
