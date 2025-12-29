@@ -168,7 +168,10 @@ impl AdapterInfoBuilder {
 /// 创建 AdapterInfo 的便捷宏
 ///
 /// # 示例
-/// ```rust,ignore
+/// ```rust
+/// use puniyu_types::{adapter_info, adapter::*};
+/// use time::OffsetDateTime;
+/// 
 /// let info = adapter_info!(
 ///     name: "my_adapter",
 ///     version: "1.0.0",
@@ -176,20 +179,20 @@ impl AdapterInfoBuilder {
 ///     standard: AdapterStandard::OneBotV11,
 ///     protocol: AdapterProtocol::NapCat,
 ///     communication: AdapterCommunication::WebSocketClient,
-///     connect_time: start_time
+///     connect_time: OffsetDateTime::now_utc()
 /// );
 /// ```
 #[cfg(feature = "adapter")]
 #[macro_export]
 macro_rules! adapter_info {
 	( $( $key:ident : $value:expr ),* $(,)? ) => {{
-		let mut builder = AdapterInfoBuilder::default();
+		let mut builder = $crate::adapter::AdapterInfoBuilder::default();
 		$(
 			builder.$key($value);
 		)*
 		builder.build().unwrap()
 	}};
 	() => {
-		AdapterInfoBuilder::default().build().unwrap()
+		$crate::adapter::AdapterInfoBuilder::default().build().unwrap()
 	};
 }

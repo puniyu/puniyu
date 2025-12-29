@@ -42,17 +42,15 @@ impl Contact for GroupContact {
 /// ## 示例
 /// ```rust
 /// use puniyu_types::contact_group;
-/// use puniyu_types::contact::{Scene, GroupContact};
-///
-/// let contact = contact_group!("123456");
+/// let contact = contact_group!("2233");
 /// ```
 #[cfg(feature = "contact")]
 #[macro_export]
 macro_rules! contact_group {
     ( $( $key:ident : $value:expr ),* $(,)? ) => {{
-        let mut contact = GroupContact {
-            scene: Scene::Group,
-            ..GroupContact::default()
+        let mut contact = $crate::contact::GroupContact {
+            scene: $crate::contact::Scene::Group,
+            ..$crate::contact::GroupContact::default()
         };
         $(
             contact.$key = contact_group!(@convert $key, $value);
@@ -61,9 +59,9 @@ macro_rules! contact_group {
     }};
 
     ($peer:expr, $name:expr) => {{
-        let mut contact = GroupContact {
-            scene: Scene::Group,
-            ..GroupContact::default()
+        let mut contact = $crate::contact::GroupContact {
+            scene: $crate::contact::Scene::Group,
+            ..$crate::contact::GroupContact::default()
         };
         contact.peer = $peer.to_string();
         contact.name = Some($name.to_string());
@@ -71,9 +69,9 @@ macro_rules! contact_group {
     }};
 
     ($peer:expr) => {{
-        let mut contact = GroupContact {
-            scene: Scene::Group,
-            ..GroupContact::default()
+        let mut contact = $crate::contact::GroupContact {
+            scene: $crate::contact::Scene::Group,
+            ..$crate::contact::GroupContact::default()
         };
         contact.peer = $peer.to_string();
         contact

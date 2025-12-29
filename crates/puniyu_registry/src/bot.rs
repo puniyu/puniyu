@@ -1,7 +1,7 @@
 use crate::store::STORE;
 use puniyu_logger::{info, owo_colors::OwoColorize, warn};
-use puniyu_types::bot::Bot;
-use puniyu_types::bot::BotId;
+pub use puniyu_types::bot::Bot;
+pub use puniyu_types::bot::BotId;
 
 pub struct BotRegistry;
 
@@ -77,15 +77,16 @@ impl BotRegistry {
 #[cfg(feature = "bot")]
 #[macro_export]
 macro_rules! register_bot {
-	($adapter:expr, $account:expr, $api:expr) => {
-		let bot = Bot { adapter: $adapter, api: $api, account: $account };
-		BotRegistry::register(bot)
-	};
-	(adapter: $adapter:expr, account: $account:expr, api: $api:expr) => {
-		let bot = Bot { adapter: $adapter, api: $api, account: $account };
-		BotRegistry::register(bot)
-	};
+    ($adapter:expr, $account:expr, $api:expr) => {
+        let bot = $crate::bot::Bot { adapter: $adapter, api: $api, account: $account };
+        $crate::bot::BotRegistry::register(bot)
+    };
+    (adapter: $adapter:expr, account: $account:expr, api: $api:expr) => {
+        let bot = $crate::bot::Bot { adapter: $adapter, api: $api, account: $account };
+        $crate::bot::BotRegistry::register(bot)
+    };
 }
+
 
 /// 卸载Bot实例
 ///

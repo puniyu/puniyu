@@ -160,7 +160,7 @@ macro_rules! create_request_event {
         $bot:ident,
         $( $key:ident : $value:expr ),* $(,)?
     ) => {{
-        let mut builder = RequestBuilder {
+        let mut builder = $crate::event::request::RequestBuilder {
             bot: Default::default(),
             event_id: String::new(),
             time: 0,
@@ -175,9 +175,9 @@ macro_rules! create_request_event {
         )*
 
         let request = $variant::new(builder);
-        let event = Event::Request(RequestEvent::$variant(request));
+        let event = $crate::event::Event::Request($crate::event::request::RequestEvent::$variant(request));
 
-        send_event($bot.clone(), event);
+        $crate::bus::send_event($bot.clone(), event);
     }};
 
     (@convert adapter, $v:expr) => { $v };

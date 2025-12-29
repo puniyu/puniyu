@@ -409,7 +409,7 @@ macro_rules! create_message_event {
 		$bot:ident,
         $( $key:ident : $value:expr ),* $(,)?
     ) => {{
-        let mut builder = MessageBuilder::<GroupContact, GroupSender> {
+        let mut builder = $crate::event::message::MessageBuilder::<$crate::contact::GroupContact, $crate::sender::GroupSender> {
             bot: Default::default(),
             event_id: String::new(),
             time: 0,
@@ -425,9 +425,9 @@ macro_rules! create_message_event {
             builder.$key = create_message_event!(@convert $key, $value);
         )*
 
-        let message = GroupMessage::new(builder);
-        let event = Event::Message(Box::new(MessageEvent::Group(message)));
-        send_event($bot.clone(), event);
+        let message = $crate::event::message::GroupMessage::new(builder);
+        let event = $crate::event::Event::Message(Box::new($crate::event::message::MessageEvent::Group(message)));
+     	$crate::bus::send_event($bot.clone(), event);
     }};
 
     (
@@ -435,7 +435,7 @@ macro_rules! create_message_event {
 		$bot:ident,
         $( $key:ident : $value:expr ),* $(,)?
     ) => {{
-        let mut builder = MessageBuilder::<FriendContact, FriendSender> {
+        let mut builder = $crate::event::message::MessageBuilder::<$crate::contact::FriendContact, $crate::sender::FriendSender> {
             bot: Default::default(),
             event_id: String::new(),
             time: 0,
@@ -451,9 +451,9 @@ macro_rules! create_message_event {
             builder.$key = create_message_event!(@convert $key, $value);
         )*
 
-        let message = FriendMessage::new(builder);
-        let event = Event::Message(Box::new(MessageEvent::Friend(message)));
-        send_event($bot.clone(), event);
+        let message = $crate::event::message::FriendMessage::new(builder);
+        let event = $crate::event::Event::Message(Box::new($crate::event::message::MessageEvent::Friend(message)));
+        $crate::bus::send_event($bot.clone(), event);
     }};
 
     (@convert bot, $v:expr) => { $v.into() };

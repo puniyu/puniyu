@@ -38,13 +38,19 @@ impl Contact for FriendContact {
 /// ## 参数
 /// `peer`: 好友id
 /// `name`: 好友昵称
+/// 
+/// ## 示例
+/// ```rust
+/// use puniyu_types::contact_friend;
+/// contact_friend!("2233")
+/// ```
 #[cfg(feature = "contact")]
 #[macro_export]
 macro_rules! contact_friend {
     ( $( $key:ident : $value:expr ),* $(,)? ) => {{
-        let mut contact = FriendContact {
-            scene: Scene::Friend,
-            ..FriendContact::default()
+        let mut contact = $crate::contact::FriendContact {
+            scene: $crate::contact::Scene::Friend,
+            ..$crate::contact::FriendContact::default()
         };
         $(
             contact.$key = contact_friend!(@convert $key, $value);
@@ -53,9 +59,9 @@ macro_rules! contact_friend {
     }};
 
     ($peer:expr, $name:expr) => {{
-        let mut contact = FriendContact {
-            scene: Scene::Friend,
-            ..FriendContact::default()
+        let mut contact = $crate::contact::FriendContact {
+            scene: $crate::contact::Scene::Friend,
+            ..$crate::contact::FriendContact::default()
         };
         contact.peer = $peer.to_string();
         contact.name = Some($name.to_string());
@@ -63,9 +69,9 @@ macro_rules! contact_friend {
     }};
 
     ($peer:expr) => {{
-        let mut contact = FriendContact {
-            scene: Scene::Friend,
-            ..FriendContact::default()
+        let mut contact = $crate::contact::FriendContact {
+            scene: $crate::contact::Scene::Friend,
+            ..$crate::contact::FriendContact::default()
         };
         contact.peer = $peer.to_string();
         contact

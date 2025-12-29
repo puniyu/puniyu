@@ -59,7 +59,7 @@ impl Sender for GroupSender {
 #[macro_export]
 macro_rules! group_sender {
     ( $( $key:ident : $value:expr ),* $(,)? ) => {{
-        let mut sender = GroupSender::default();
+        let mut sender = $crate::sender::GroupSender::default();
         $(
             sender.$key = group_sender!(@convert $key, $value);
         )*

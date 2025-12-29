@@ -15,7 +15,7 @@ pub struct AccountInfo {
 #[macro_export]
 macro_rules! account_info {
     ( $( $key:ident : $value:expr ),* $(,)? ) => {{
-        let mut info = AccountInfo::default();
+        let mut info = $crate::account::AccountInfo::default();
         $(
             info.$key = account_info!(@convert $key, $value);
         )*

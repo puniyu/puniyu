@@ -116,7 +116,7 @@ macro_rules! create_notion_event {
         $variant:ident,
         $( $key:ident : $value:expr ),* $(,)?
     ) => {{
-        let mut builder = NotionBuilder {
+        let mut builder = $crate::event::notion::NotionBuilder {
             bot: Default::default(),
             event_id: String::new(),
             time: 0,
@@ -131,9 +131,9 @@ macro_rules! create_notion_event {
         )*
 
         let notion = $variant::new(builder, builder.content.clone());
-        let event = Event::Notion(NotionEvent::$variant(notion));
+        let event = $crate::event::Event::Notion($crate::event::notion::NotionEvent::$variant(notion));
 
-        send_event($bot.clone(), event);
+        $crate::bus::send_event($bot.clone(), event);
     }};
 
     (@convert bot, $v:expr) => { $v.into() };

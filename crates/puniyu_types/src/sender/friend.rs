@@ -32,7 +32,7 @@ impl Sender for FriendSender {
 #[macro_export]
 macro_rules! friend_sender {
     ( $( $key:ident : $value:expr ),* $(,)? ) => {{
-        let mut sender = FriendSender::default();
+        let mut sender = $crate::sender::FriendSender::default();
         $(
             sender.$key = friend_sender!(@convert $key, $value);
         )*
