@@ -177,11 +177,6 @@ pub fn start_config_watcher() {
 	});
 }
 fn init_env() {
-	if env::var("APP_NAME").is_err() {
-		unsafe {
-			env::set_var("APP_NAME", APP_NAME.get().unwrap());
-		}
-	}
 	let config = Config::app();
 	if env::var("LOGGER_LEVEL").is_err() {
 		let config = config.logger();

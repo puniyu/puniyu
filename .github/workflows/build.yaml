@@ -42,7 +42,9 @@ jobs:
       - name: 构建
         shell: bash
         run: |
-          cargo build --release ${{ inputs.stable && '--features stable' || '' }} --target ${{ matrix.platform.target }}
+          cargo build --release --target ${{ matrix.platform.target }}
+        env:
+          VERSION_CHANNEL: ${{ inputs.stable && 'stable' || 'nightly' }}
 
       - name: 上传构建产物
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
@@ -78,8 +80,11 @@ jobs:
           prefix-key: ${{ env.APP_NAME }}
 
       - name: 构建
+        shell: bash
         run: |
-          cargo build --release ${{ inputs.stable && '--features stable' || '' }} --target ${{ matrix.platform.target }}
+          cargo build --release --target ${{ matrix.platform.target }}
+        env:
+          VERSION_CHANNEL: ${{ inputs.stable && 'stable' || 'nightly' }}
 
       - name: 上传构建产物
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
@@ -116,8 +121,11 @@ jobs:
           prefix-key: ${{ env.APP_NAME }}
 
       - name: 构建
+        shell: bash
         run: |
-          cargo build --release ${{ inputs.stable && '--features stable' || '' }} --target ${{ matrix.platform.target }}
+          cargo build --release --target ${{ matrix.platform.target }}
+        env:
+          VERSION_CHANNEL: ${{ inputs.stable && 'stable' || 'nightly' }}
 
       - name: 上传构建产物
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0

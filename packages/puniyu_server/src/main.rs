@@ -1,6 +1,6 @@
 use clap::Parser;
 use puniyu_logger::{LoggerOptions, init};
-use std::{env, net::IpAddr};
+use std::{net::IpAddr};
 
 #[derive(Parser)]
 #[command(
@@ -24,8 +24,7 @@ struct Args {
 #[tokio::main]
 async fn main() -> std::io::Result<()> {
 	let args = Args::parse();
-	let log_level = env::var("LOGGER_LEVEL").unwrap_or("info".to_string());
-	init(Some(LoggerOptions::default().with_level(log_level.as_str()).with_file_logging(true)));
+	init(Some(LoggerOptions::default()));
 	puniyu_server::run_server_with_control(args.host, args.port).await?;
 	Ok(())
 }

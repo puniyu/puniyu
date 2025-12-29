@@ -88,7 +88,6 @@ macro_rules! segment {
     };
 }
 
-
 #[macro_export]
 macro_rules! message {
     // 单个参数

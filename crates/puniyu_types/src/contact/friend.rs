@@ -38,11 +38,11 @@ impl Contact for FriendContact {
 /// ## 参数
 /// `peer`: 好友id
 /// `name`: 好友昵称
-/// 
+///
 /// ## 示例
 /// ```rust
 /// use puniyu_types::contact_friend;
-/// contact_friend!("2233")
+/// contact_friend!("2233");
 /// ```
 #[cfg(feature = "contact")]
 #[macro_export]

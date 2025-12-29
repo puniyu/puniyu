@@ -43,45 +43,39 @@ impl AppBuilder {
 		Self::default()
 	}
 
-	pub fn with_name(&mut self, name: &str) -> &mut Self {
+	pub fn with_name(mut self, name: &str) -> Self {
 		self.app_name = name.to_string();
 		self
 	}
 
-	pub fn with_logo(&mut self, logo: Vec<u8>) -> &mut Self {
+	pub fn with_logo(mut self, logo: Vec<u8>) -> Self {
 		self.app_logo = logo;
 		self
 	}
 
-	pub fn with_working_dir(&mut self, path: &Path) -> &Self {
+	pub fn with_working_dir(mut self, path: &Path) -> Self {
 		self.working_dir = path.to_path_buf();
 		self
 	}
 
-	pub fn with_plugin(&mut self, plugin: &'static dyn PluginBuilder) -> &mut Self {
+	pub fn with_plugin(mut self, plugin: &'static dyn PluginBuilder) -> Self {
 		self.plugins.push(plugin);
 		self
 	}
 
-	pub fn with_adapter(&mut self, adapter: &'static dyn AdapterBuilder) -> &mut Self {
+	pub fn with_adapter(mut self, adapter: &'static dyn AdapterBuilder) -> Self {
 		self.adapters.push(adapter);
 		self
 	}
 
-	pub fn build(&self) -> App {
+	pub fn build(self) -> App {
 		WORKING_DIR.get_or_init(|| self.working_dir.clone());
 		APP_NAME.get_or_init(|| self.app_name.clone());
-		App {
-			app_name: self.app_name.clone(),
-			app_logo: self.app_logo.clone(),
-			plugins: self.plugins.clone(),
-			adapters: self.adapters.clone(),
-		}
+		App { app_logo: self.app_logo, plugins: self.plugins, adapters: self.adapters }
 	}
 }
 
 pub struct App {
-	app_name: String,
 	app_logo: Vec<u8>,
 	plugins: Vec<&'static dyn PluginBuilder>,
 	adapters: Vec<&'static dyn AdapterBuilder>,
@@ -98,8 +92,8 @@ impl App {
 			log_init();
 		}
 		let start_time = std::time::Instant::now().elapsed();
-		let app_name = self.app_name.clone();
-		init_app(self.plugins.clone(), self.adapters.clone()).await;
+		let app_name = APP_NAME.get().unwrap();
+		init_app(&self.plugins, &self.adapters).await;
 		let logo_path = RESOURCE_DIR.join("logo.png");
 		if !logo_path.exists() {
 			fs::write(&logo_path, &self.app_logo).await.expect("写入logo失败");
@@ -132,8 +126,8 @@ impl App {
 }
 
 async fn init_app(
-	plugins: Vec<&'static dyn PluginBuilder>,
-	adapters: Vec<&'static dyn AdapterBuilder>,
+	plugins: &[&'static dyn PluginBuilder],
+	adapters: &[&'static dyn AdapterBuilder],
 ) {
 	if !DATA_DIR.as_path().exists() {
 		fs::create_dir(DATA_DIR.as_path()).await.unwrap();
@@ -149,7 +143,7 @@ async fn init_app(
 	init_adapter(adapters).await;
 }
 
-async fn init_plugin(plugins: Vec<&'static dyn PluginBuilder>) {
+async fn init_plugin(plugins: &[&'static dyn PluginBuilder]) {
 	if !PLUGIN_DIR.as_path().exists() {
 		fs::create_dir(PLUGIN_DIR.as_path()).await.expect("Failed to create plugin directory");
 	}
@@ -182,7 +176,7 @@ async fn init_plugin(plugins: Vec<&'static dyn PluginBuilder>) {
 	)
 }
 
-async fn init_adapter(adapters: Vec<&'static dyn AdapterBuilder>) {
+async fn init_adapter(adapters: &[&'static dyn AdapterBuilder]) {
 	AdapterRegistry::load_adapters(adapters).await.unwrap_or_else(|e| {
 		error!("适配器加载失败: {:?}", e);
 	});

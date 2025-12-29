@@ -77,16 +77,15 @@ impl BotRegistry {
 #[cfg(feature = "bot")]
 #[macro_export]
 macro_rules! register_bot {
-    ($adapter:expr, $account:expr, $api:expr) => {
-        let bot = $crate::bot::Bot { adapter: $adapter, api: $api, account: $account };
-        $crate::bot::BotRegistry::register(bot)
-    };
-    (adapter: $adapter:expr, account: $account:expr, api: $api:expr) => {
-        let bot = $crate::bot::Bot { adapter: $adapter, api: $api, account: $account };
-        $crate::bot::BotRegistry::register(bot)
-    };
+	($adapter:expr, $account:expr, $api:expr) => {
+		let bot = $crate::bot::Bot { adapter: $adapter, api: $api, account: $account };
+		$crate::bot::BotRegistry::register(bot)
+	};
+	(adapter: $adapter:expr, account: $account:expr, api: $api:expr) => {
+		let bot = $crate::bot::Bot { adapter: $adapter, api: $api, account: $account };
+		$crate::bot::BotRegistry::register(bot)
+	};
 }
-
 
 /// 卸载Bot实例
 ///

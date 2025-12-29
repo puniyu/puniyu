@@ -10,6 +10,7 @@ use puniyu_config::{Config, ConfigRegistry};
 use puniyu_logger::warn;
 use puniyu_logger::{debug, error, owo_colors::OwoColorize};
 use puniyu_types::adapter::{Adapter, AdapterBuilder};
+use std::future::Future;
 use tokio::fs;
 
 pub struct AdapterRegistry;
@@ -91,8 +92,9 @@ impl AdapterRegistry {
 	}
 
 	/// 加载多个适配器
-	pub async fn load_adapters(adapters: Vec<&'static dyn AdapterBuilder>) -> Result<(), Error> {
-		futures::future::try_join_all(adapters.into_iter().map(Self::load_adapter)).await?;
+	pub async fn load_adapters(adapters: &[&'static dyn AdapterBuilder]) -> Result<(), Error> {
+		futures::future::try_join_all(adapters.iter().map(|&adapter| Self::load_adapter(adapter)))
+			.await?;
 		Ok(())
 	}
 

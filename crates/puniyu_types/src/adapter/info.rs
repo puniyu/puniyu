@@ -171,7 +171,7 @@ impl AdapterInfoBuilder {
 /// ```rust
 /// use puniyu_types::{adapter_info, adapter::*};
 /// use time::OffsetDateTime;
-/// 
+///
 /// let info = adapter_info!(
 ///     name: "my_adapter",
 ///     version: "1.0.0",
