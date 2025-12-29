@@ -27,10 +27,6 @@ pub fn log(event: &MessageEvent) {
 	}
 }
 
-pub fn extract_text(event: &MessageEvent) -> String {
-	event.elements().iter().filter_map(|e| e.as_text()).collect::<Vec<_>>().join(" ")
-}
-
 pub fn is_at_bot(event: &MessageEvent) -> bool {
 	let bot_id = event.self_id();
 	event.elements().iter().any(|e| e.as_at().is_some_and(|at| at.target_id == bot_id))

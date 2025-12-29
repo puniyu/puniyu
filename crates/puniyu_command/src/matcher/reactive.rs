@@ -1,9 +1,7 @@
+use crate::matcher::message;
 use puniyu_config::{Config, ReactiveMode};
 use puniyu_types::event::{EventBase, message::MessageEvent};
 
-use crate::message;
-
-/// 获取 bot 配置信息（别名列表和响应模式）
 pub fn get_bot_config(event: &MessageEvent) -> (Vec<String>, ReactiveMode) {
 	let bot_id = match event {
 		MessageEvent::Friend(m) => m.self_id().to_string(),
@@ -29,7 +27,6 @@ pub fn strip_bot_alias(text: &str, aliases: &[String]) -> (String, bool) {
 	(text.to_string(), false)
 }
 
-/// 根据响应模式检查是否应该响应消息
 pub fn check_mode(event: &MessageEvent, mode: &ReactiveMode, has_alias: bool) -> bool {
 	match mode {
 		ReactiveMode::All => true,

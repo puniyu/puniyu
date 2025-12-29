@@ -1,6 +1,6 @@
 use clap::Parser;
 use puniyu_logger::{LoggerOptions, init};
-use std::{net::IpAddr};
+use std::net::IpAddr;
 
 #[derive(Parser)]
 #[command(

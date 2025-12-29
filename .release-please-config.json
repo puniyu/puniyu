@@ -21,8 +21,7 @@
         "registry",
         "config",
         "event-bus",
-        "matcher-command",
-        "handler-command"
+        "command"
       ]
     }
   ],
@@ -116,13 +115,9 @@
       "release-type": "rust",
       "component": "registry"
     },
-    "crates/puniyu_matcher_command": {
+    "crates/puniyu_command": {
       "release-type": "rust",
-      "component": "matcher-command"
-    },
-    "crates/puniyu_handler_command": {
-      "release-type": "rust",
-      "component": "handler-command"
+      "component": "command"
     },
     "crates/puniyu_bus": {
       "release-type": "rust",
