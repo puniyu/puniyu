@@ -1,8 +1,8 @@
 use crate::version::Version;
+use chrono::{DateTime, Utc};
 use derive_builder::Builder;
 use serde::{Deserialize, Serialize};
 use strum::{Display, EnumString, IntoStaticStr};
-use time::OffsetDateTime;
 
 /// 适配器平台
 ///
@@ -151,7 +151,7 @@ pub struct AdapterInfo {
 	pub address: Option<String>,
 	/// 连接时间
 	#[builder(default = "Self::default_connect_time()")]
-	pub connect_time: OffsetDateTime,
+	pub connect_time: DateTime<Utc>,
 }
 
 impl Default for AdapterInfo {
@@ -161,8 +161,8 @@ impl Default for AdapterInfo {
 }
 
 impl AdapterInfoBuilder {
-	fn default_connect_time() -> OffsetDateTime {
-		OffsetDateTime::now_utc()
+	fn default_connect_time() -> DateTime<Utc> {
+		Utc::now()
 	}
 }
 /// 创建 AdapterInfo 的便捷宏
@@ -170,7 +170,7 @@ impl AdapterInfoBuilder {
 /// # 示例
 /// ```rust
 /// use puniyu_types::{adapter_info, adapter::*};
-/// use time::OffsetDateTime;
+/// use chrono::Utc;
 ///
 /// let info = adapter_info!(
 ///     name: "my_adapter",
@@ -179,7 +179,7 @@ impl AdapterInfoBuilder {
 ///     standard: AdapterStandard::OneBotV11,
 ///     protocol: AdapterProtocol::NapCat,
 ///     communication: AdapterCommunication::WebSocketClient,
-///     connect_time: OffsetDateTime::now_utc()
+///     connect_time: Utc::now()
 /// );
 /// ```
 #[cfg(feature = "adapter")]

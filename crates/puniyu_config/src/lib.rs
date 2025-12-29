@@ -15,7 +15,6 @@ use notify_debouncer_full::{DebounceEventResult, new_debouncer, notify};
 use puniyu_common::Error;
 use puniyu_common::path::LOG_DIR;
 use puniyu_common::{
-	APP_NAME,
 	path::CONFIG_DIR,
 	toml::{merge_config, read_config},
 };

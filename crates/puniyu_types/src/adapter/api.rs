@@ -4,6 +4,7 @@ use crate::element::Message;
 use async_trait::async_trait;
 use std::path::PathBuf;
 use std::time::Duration;
+
 #[async_trait]
 pub trait AdapterApi: Send + Sync + 'static {
 	/// 获取头像, 默认返回url, http/https/file协议(一般来说只有console适配器返回这个)
