@@ -1,10 +1,8 @@
-use puniyu_handler_command::CommandHandler;
-use puniyu_matcher_command::CommandMatcher;
+use puniyu_command::{CommandHandler, CommandMatcher};
 pub use puniyu_types::bus::{EVENT_BUS, EventBus, init_event_bus, send_event, stop_event_bus};
 use puniyu_types::handler::Handler;
 use puniyu_types::matcher::Matcher;
 
-/// EventBus 的运行时扩展
 pub trait EventBusExt {
 	fn run(&self);
 }

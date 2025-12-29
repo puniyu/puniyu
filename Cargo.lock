@@ -1872,11 +1872,21 @@ version = "0.2.2"
 name = "puniyu_bus"
 version = "0.6.0"
 dependencies = [
- "puniyu_handler_command",
- "puniyu_logger",
- "puniyu_matcher_command",
+ "puniyu_command",
  "puniyu_types",
  "tokio",
+]
+
+[[package]]
+name = "puniyu_command"
+version = "0.6.0"
+dependencies = [
+ "async-trait",
+ "clap",
+ "puniyu_config",
+ "puniyu_logger",
+ "puniyu_registry",
+ "puniyu_types",
 ]
 
 [[package]]
@@ -1924,18 +1934,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "puniyu_handler_command"
-version = "0.6.0"
-dependencies = [
- "async-trait",
- "clap",
- "puniyu_logger",
- "puniyu_matcher_command",
- "puniyu_registry",
- "puniyu_types",
-]
-
-[[package]]
 name = "puniyu_library"
 version = "0.5.1"
 dependencies = [
@@ -1970,16 +1968,6 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn",
-]
-
-[[package]]
-name = "puniyu_matcher_command"
-version = "0.6.0"
-dependencies = [
- "puniyu_config",
- "puniyu_logger",
- "puniyu_registry",
- "puniyu_types",
 ]
 
 [[package]]

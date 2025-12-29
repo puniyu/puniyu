@@ -41,7 +41,8 @@ impl CommandMatcher {
 
 		message::log(event);
 
-		let text = message::extract_text(event).trim().to_string();
+		let text =
+			event.elements().iter().filter_map(|e| e.as_text()).collect::<Vec<_>>().join(" ");
 		if text.is_empty() {
 			return None;
 		}

@@ -28,8 +28,7 @@ jobs:
       config: ${{ steps.release-please.outputs['crates/puniyu_config--release_created'] }}
       types: ${{ steps.release-please.outputs['crates/puniyu_types--release_created'] }}
       registry: ${{ steps.release-please.outputs['crates/puniyu_registry--release_created'] }}
-      matcher_command: ${{ steps.release-please.outputs['crates/puniyu_matcher_command--release_created'] }}
-      handler_command: ${{ steps.release-please.outputs['crates/puniyu_handler_command--release_created'] }}
+      command: ${{ steps.release-please.outputs['crates/puniyu_command--release_created'] }}
       bus: ${{ steps.release-please.outputs['crates/puniyu_bus--release_created'] }}
       server: ${{ steps.release-please.outputs['packages/puniyu_server--release_created'] }}
       plugin: ${{ steps.release-please.outputs['packages/puniyu_plugin--release_created'] }}
@@ -134,13 +133,9 @@ jobs:
         if: needs.release.outputs.registry
         run: cargo publish --package puniyu_registry --registry crates-io
 
-      - name: 发布 matcher_command
-        if: needs.release.outputs.matcher_command
-        run: cargo publish --package puniyu_matcher_command --registry crates-io
-
-      - name: 发布 handler_command
-        if: needs.release.outputs.handler_command
-        run: cargo publish --package puniyu_handler_command --registry crates-io
+      - name: 发布 command
+        if: needs.release.outputs.command
+        run: cargo publish --package puniyu_command --registry crates-io
 
       - name: 发布 bus
         if: needs.release.outputs.bus
