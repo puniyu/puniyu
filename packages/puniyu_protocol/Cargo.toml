@@ -13,6 +13,7 @@ include = ["src", "protos", "Cargo.toml", "build.rs"]
 
 [dependencies]
 bytes.workspace = true
+chrono.workspace = true
 puniyu_types = { version = "0.6.0", path = "../../crates/puniyu_types" }
 prost = "0.14.1"
 

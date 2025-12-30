@@ -1,4 +1,4 @@
-use crate::bot::option::ReactiveMode;
+use crate::common::ReactiveMode;
 use serde::{Deserialize, Serialize};
 
 /// TODO: 群组中的禁用/启用插件
@@ -6,10 +6,10 @@ use serde::{Deserialize, Serialize};
 pub struct GroupOption {
 	/// 群组cd冷却时间
 	#[serde(default = "default_group_cd")]
-	cd: u8,
+	cd: u64,
 	/// 用户cd冷却时间
 	#[serde(default = "default_group_user_cd")]
-	user_cd: u8,
+	user_cd: u64,
 	#[serde(default = "default_reactive_mode")]
 	/// 响应模式
 	mode: ReactiveMode,
@@ -30,11 +30,11 @@ impl Default for GroupOption {
 	}
 }
 
-fn default_group_cd() -> u8 {
+fn default_group_cd() -> u64 {
 	0
 }
 
-fn default_group_user_cd() -> u8 {
+fn default_group_user_cd() -> u64 {
 	0
 }
 
@@ -48,11 +48,11 @@ fn default_alias() -> Vec<String> {
 
 impl GroupOption {
 	/// 获取群组cd冷却时间
-	pub fn cd(&self) -> u8 {
+	pub fn cd(&self) -> u64 {
 		self.cd
 	}
 	/// 获取用户cd冷却时间
-	pub fn user_cd(&self) -> u8 {
+	pub fn user_cd(&self) -> u64 {
 		self.user_cd
 	}
 	/// 获取响应模式

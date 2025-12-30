@@ -3,12 +3,15 @@ pub mod store;
 pub use registry::ConfigRegistry;
 mod app;
 mod bot;
-pub use bot::option::{BotOption, ReactiveMode};
+mod common;
+mod friend;
 mod group;
+pub use common::ReactiveMode;
 
 use crate::{
 	app::{APP_CONFIG, AppConfig},
 	bot::{BOT_CONFIG, BotConfig},
+	friend::{FRIEND_CONFIG, FriendConfig},
 	group::{GROUP_CONFIG, GroupConfig},
 };
 use notify_debouncer_full::{DebounceEventResult, new_debouncer, notify};
@@ -26,16 +29,8 @@ fn reload_config<T>(name: &str, config: &mut T) -> Result<(), Error>
 where
 	T: Default + DeserializeOwned,
 {
-	match read_config(CONFIG_DIR.as_path(), name) {
-		Ok(new_config) => {
-			*config = new_config;
-			Ok(())
-		}
-		Err(_) => {
-			*config = T::default();
-			Ok(())
-		}
-	}
+	*config = read_config(CONFIG_DIR.as_path(), name).unwrap_or_else(|_| T::default());
+	Ok(())
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -55,6 +50,11 @@ impl Config {
 	/// ```
 	pub fn app() -> AppConfig {
 		AppConfig::get()
+	}
+
+	/// 获取好友配置
+	pub fn friend() -> FriendConfig {
+		FriendConfig::get()
 	}
 
 	/// 获取群组配置
@@ -105,6 +105,10 @@ pub fn init_config() {
 		.unwrap_or_else(|e| {
 			error!("[配置文件] 合并Group配置失败: {}", e);
 		});
+	merge_config(CONFIG_DIR.as_path(), "friend", &FriendConfig::default(), &FriendConfig::get())
+		.unwrap_or_else(|e| {
+			error!("[配置文件] 合并Friend配置失败: {}", e);
+		});
 	merge_config(CONFIG_DIR.as_path(), "bot", &BotConfig::default(), &BotConfig::get())
 		.unwrap_or_else(|e| {
 			error!("[配置文件] 合并Bot配置失败: {}", e);
@@ -150,6 +154,14 @@ pub fn start_config_watcher() {
 												error!("[Config] 重载Group配置失败: {}", e)
 											})
 											.unwrap();
+									}
+									"friend.toml" => {
+										reload_config(
+											"friend",
+											&mut *FRIEND_CONFIG.write().unwrap(),
+										)
+										.map_err(|e| error!("[Config] 重载Friend配置失败: {}", e))
+										.unwrap();
 									}
 									_ => {}
 								}

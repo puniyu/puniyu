@@ -1,6 +1,7 @@
 use std::fmt;
 
 use crate::context::{BotContext, MessageContext};
+use crate::event::Permission;
 use async_trait::async_trait;
 
 /// 命令处理动作
@@ -37,6 +38,17 @@ pub enum ArgType {
 	Int,
 	Float,
 	Bool,
+}
+
+impl ArgType {
+	pub const fn type_name(&self) -> &'static str {
+		match self {
+			ArgType::String => "字符串",
+			ArgType::Int => "整数",
+			ArgType::Float => "浮点数",
+			ArgType::Bool => "布尔值",
+		}
+	}
 }
 
 /// 参数模式
@@ -213,27 +225,6 @@ impl From<f64> for ArgValue {
 impl From<bool> for ArgValue {
 	fn from(b: bool) -> Self {
 		ArgValue::Bool(b)
-	}
-}
-
-/// 权限等级
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-pub enum Permission {
-	/// 所有人可用（默认）
-	#[default]
-	All,
-	/// 仅主人可用
-	Master,
-}
-
-impl std::str::FromStr for Permission {
-	type Err = std::convert::Infallible;
-
-	fn from_str(s: &str) -> Result<Self, Self::Err> {
-		Ok(match s.to_lowercase().as_str() {
-			"master" => Permission::Master,
-			_ => Permission::All,
-		})
 	}
 }
 

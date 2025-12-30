@@ -72,7 +72,7 @@ pub(crate) struct Store {
 	#[cfg(feature = "server")]
 	server: Arc<RwLock<HashMap<String, ServerType>>>,
 	#[cfg(feature = "cooldown")]
-	cooldown: Arc<RwLock<HashMap<String, u128>>>,
+	cooldown: Arc<RwLock<HashMap<String, u64>>>,
 }
 
 impl Store {

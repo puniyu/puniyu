@@ -12,19 +12,19 @@ use std::sync::Arc;
 
 #[derive(Clone)]
 pub struct BotContext {
-	inner: Bot,
-	contact: ContactType,
+	bot: Arc<Bot>,
+	contact: Arc<ContactType>,
 }
 
 impl BotContext {
 	pub fn new(bot: Bot, contact: ContactType) -> Self {
-		Self { inner: bot, contact }
+		Self { bot: Arc::new(bot), contact: Arc::new(contact) }
 	}
 	pub fn api(&self) -> &dyn AdapterApi {
-		self.inner.api
+		self.bot.api
 	}
 	pub async fn reply(&self, message: Message) -> Result<types::SendMsgType> {
-		self.inner.send_msg(self.contact.clone(), message).await
+		self.bot.send_msg(self.contact.as_ref().clone(), message).await
 	}
 }
 
@@ -36,7 +36,7 @@ pub struct MessageContext {
 
 impl MessageContext {
 	pub fn new(event: MessageEvent, args: HashMap<String, ArgValue>) -> Self {
-		Self { event: Arc::from(event), args }
+		Self { event: Arc::new(event), args }
 	}
 
 	pub fn as_friend(&self) -> Option<&FriendMessage> {
@@ -121,7 +121,7 @@ impl MessageContext {
 
 	/// 是否为艾特全体成员
 	pub fn mentions_everyone(&self) -> bool {
-		self.elements().iter().any(|e| matches!(e, Elements::At(at) if !at.is_all()))
+		self.elements().iter().any(|e| matches!(e, Elements::At(at) if at.is_all()))
 	}
 
 	/// 是否为艾特Bot

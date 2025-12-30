@@ -8,6 +8,7 @@ use bytes::Bytes;
 use puniyu_config::Config;
 use serde::{Deserialize, Serialize};
 use std::fmt;
+use std::sync::Arc;
 use strum::{Display, EnumString, IntoStaticStr};
 
 #[derive(Debug, Clone, EnumString, Display, IntoStaticStr)]
@@ -257,6 +258,21 @@ pub struct MessageBuilder<Contact, Sender> {
 	pub elements: Vec<Elements>,
 }
 
+fn serialize_arc_bot_info<S>(bot_info: &Arc<BotInfo>, serializer: S) -> Result<S::Ok, S::Error>
+where
+	S: serde::Serializer,
+{
+	bot_info.serialize(serializer)
+}
+
+fn deserialize_arc_bot_info<'de, D>(deserializer: D) -> Result<Arc<BotInfo>, D::Error>
+where
+	D: serde::Deserializer<'de>,
+{
+	let bot_info = BotInfo::deserialize(deserializer)?;
+	Ok(Arc::new(bot_info))
+}
+
 macro_rules! impl_message_event {
     (
         $(
@@ -276,9 +292,13 @@ macro_rules! impl_message_event {
 
     (@impl $struct_name:ident, $contact_ty:ty, $sender_ty:ty, $sub_event:expr) => {
 
-#[derive(Debug, Clone, Deserialize, Serialize)]
+		#[derive(Debug, Clone, Deserialize, Serialize)]
         pub struct $struct_name {
-            bot: BotInfo,
+            #[serde(
+				serialize_with = "serialize_arc_bot_info",
+				deserialize_with = "deserialize_arc_bot_info"
+			)]
+            bot: Arc<BotInfo>,
             event_id: String,
             time: u64,
             self_id: String,
@@ -288,10 +308,11 @@ macro_rules! impl_message_event {
             contact: $contact_ty,
             sender: $sender_ty,
         }
+
 		impl $struct_name {
             pub fn new(message_builder: MessageBuilder<$contact_ty, $sender_ty>) -> Self {
                 Self {
-                    bot: message_builder.bot,
+                    bot: Arc::new(message_builder.bot),
                     event_id: message_builder.event_id,
                     time: message_builder.time,
                     self_id: message_builder.self_id,

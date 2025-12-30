@@ -37,9 +37,6 @@ pub mod plugin;
 #[cfg(feature = "handler")]
 pub mod handler;
 
-#[cfg(feature = "matcher")]
-pub mod matcher;
-
 #[cfg(feature = "version")]
 pub mod version;
 

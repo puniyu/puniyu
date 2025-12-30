@@ -1887,6 +1887,7 @@ dependencies = [
  "puniyu_logger",
  "puniyu_registry",
  "puniyu_types",
+ "thiserror 2.0.17",
 ]
 
 [[package]]
@@ -1998,19 +1999,11 @@ dependencies = [
 ]
 
 [[package]]
-name = "puniyu_plugin_server"
-version = "0.1.0"
-dependencies = [
- "actix-web",
- "puniyu_plugin",
- "serde_json",
-]
-
-[[package]]
 name = "puniyu_protocol"
 version = "0.1.0"
 dependencies = [
  "bytes",
+ "chrono",
  "glob",
  "prost",
  "prost-build",
@@ -2022,6 +2015,7 @@ dependencies = [
 name = "puniyu_registry"
 version = "0.6.0"
 dependencies = [
+ "chrono",
  "chrono-tz",
  "convert_case",
  "futures",
