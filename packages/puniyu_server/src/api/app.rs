@@ -12,10 +12,10 @@ struct AppInfo {
 
 #[get("/info")]
 pub async fn info() -> HttpResponse {
-	let veriosn = format!("{}.{}.{}", VERSION.major, VERSION.minor, VERSION.patch);
+	let version = format!("{}.{}.{}", VERSION.major, VERSION.minor, VERSION.patch);
 	let info = AppInfo {
 		name: APP_NAME.get().unwrap().to_owned(),
-		version: veriosn,
+		version,
 		channel: VERSION.channel.to_string(),
 	};
 

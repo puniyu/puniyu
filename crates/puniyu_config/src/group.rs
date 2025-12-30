@@ -27,21 +27,18 @@ impl GroupConfig {
 		GROUP_CONFIG.read().unwrap().clone()
 	}
 
+	/// 获取全局群组配置
+	pub fn global(&self) -> &GroupOption {
+		&self.global
+	}
+
 	/// 获取指定群组配置
-	pub fn group(&self, group_id: &str) -> GroupOption {
-		let config = GROUP_CONFIG.read().unwrap();
-		config.group.get(group_id).cloned().unwrap_or_default()
+	pub fn group(&self, group_id: &str) -> &GroupOption {
+		self.group.get(group_id).unwrap_or(&self.global)
 	}
 
 	/// 获取所有群组配置
-	pub fn groups(&self) -> Vec<GroupOption> {
-		let config = GROUP_CONFIG.read().unwrap();
-		config.group.values().cloned().collect()
-	}
-
-	/// 获取全局群组配置
-	pub fn global(&self) -> GroupOption {
-		let config = GROUP_CONFIG.read().unwrap();
-		config.global.clone()
+	pub fn list(&self) -> Vec<&GroupOption> {
+		self.group.values().collect()
 	}
 }

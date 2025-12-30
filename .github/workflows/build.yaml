@@ -133,3 +133,57 @@ jobs:
           name: "${{ env.APP_NAME }}-${{ matrix.platform.target }}"
           path: |
             target/${{ matrix.platform.target }}/release/${{ env.APP_NAME }}
+
+  build_plugins:
+    runs-on: ${{ matrix.platform.runner }}
+    strategy:
+      matrix:
+        platform:
+          - runner: windows-latest
+            target: x86_64-pc-windows-msvc
+            label: windows-x86_64
+            extension: dll
+            plugins: [ puniyu_plugin_basic ]
+          - runner: windows-latest
+            target: aarch64-pc-windows-msvc
+            label: windows-aarch64
+            extension: dll
+          - runner: macos-latest
+            target: x86_64-apple-darwin
+            label: macos-x86_64
+            extension: dylib
+          - runner: macos-latest
+            target: aarch64-apple-darwin
+            label: macos-aarch64
+            extension: dylib
+          - runner: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            label: linux-x86_64
+            extension: so
+          - runner: ubuntu-24.04-arm
+            target: aarch64-unknown-linux-gnu
+            label: linux-aarch64
+            extension: so
+    steps:
+      - name: 检出仓库
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+
+      - name: 设置 rust
+        uses: puniyu/setup-rust@main
+        with:
+          target: ${{ matrix.platform.target }}
+          save-cache: true
+          prefix-key: puniyu-plugins
+
+      - name: 构建 puniyu_plugin_basic
+        uses: ./.github/actions/build-plugin
+        with:
+          target: ${{ matrix.platform.target }}
+          label: ${{ matrix.platform.label }}
+          plugin: puniyu_plugin_basic
+          extension: ${{ matrix.platform.extension }}
+        env:
+          VERSION_CHANNEL: ${{ inputs.stable && 'stable' || 'nightly' }}

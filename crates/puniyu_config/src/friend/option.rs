@@ -1,10 +1,9 @@
 use crate::common::ReactiveMode;
 use serde::{Deserialize, Serialize};
 
-/// TODO: Bot中的禁用/启用插件
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct BotOption {
-	/// 消息cd冷却时间
+pub struct FriendOption {
+	/// 好友消息cd冷却时间
 	#[serde(default = "default_bot_cd")]
 	cd: u64,
 	#[serde(default = "default_reactive_mode")]
@@ -15,7 +14,7 @@ pub struct BotOption {
 	alias: Vec<String>,
 }
 
-impl Default for BotOption {
+impl Default for FriendOption {
 	#[inline]
 	fn default() -> Self {
 		Self { cd: default_bot_cd(), mode: default_reactive_mode(), alias: default_alias() }
@@ -34,7 +33,7 @@ fn default_bot_cd() -> u64 {
 	0
 }
 
-impl BotOption {
+impl FriendOption {
 	/// 获取消息cd冷却时间
 	pub fn cd(&self) -> u64 {
 		self.cd

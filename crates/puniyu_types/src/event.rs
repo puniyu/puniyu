@@ -1,6 +1,8 @@
 pub mod message;
 pub mod notion;
+mod permission;
 pub mod request;
+pub use permission::Permission;
 
 use crate::bot::BotInfo;
 use serde::{Deserialize, Serialize};

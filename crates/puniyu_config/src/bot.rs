@@ -1,4 +1,4 @@
-pub mod option;
+mod option;
 
 use option::BotOption;
 use puniyu_common::path::CONFIG_DIR;
@@ -36,9 +36,8 @@ impl BotConfig {
 	}
 
 	/// 获取全局配置
-	pub fn global(&self) -> BotOption {
-		let config = BOT_CONFIG.read().unwrap();
-		config.global.clone()
+	pub fn global(&self) -> &BotOption {
+		&self.global
 	}
 
 	/// 获取bot配置
@@ -49,9 +48,13 @@ impl BotConfig {
 	///
 	/// # 返回值
 	///
-	/// 返回对应bot的配置，如果找不到则返回默认配置
-	pub fn bot(&self, bot_id: &str) -> BotOption {
-		let config = BOT_CONFIG.read().unwrap();
-		config.bot.get(bot_id).cloned().unwrap_or_default()
+	/// 返回对应bot的配置，如果找不到则返回全局配置
+	pub fn bot(&self, bot_id: &str) -> &BotOption {
+		self.bot.get(bot_id).unwrap_or(&self.global)
+	}
+
+	/// 获取所有bot配置
+	pub fn list(&self) -> Vec<&BotOption> {
+		self.bot.values().collect()
 	}
 }

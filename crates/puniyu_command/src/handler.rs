@@ -1,53 +1,57 @@
-use crate::matcher::MatchResult;
+mod arg;
+mod matcher;
+
+use crate::{config, tools};
+use arg::ArgParser;
 use async_trait::async_trait;
-use puniyu_logger::{info, owo_colors::OwoColorize};
+use matcher::CommandMatcher;
+use puniyu_config::Config;
+use puniyu_logger::info;
+use puniyu_logger::owo_colors::OwoColorize;
 use puniyu_registry::command::CommandRegistry;
 use puniyu_types::bot::Bot;
-use puniyu_types::command::{HandlerAction, Permission};
+use puniyu_types::command::HandlerAction;
 use puniyu_types::context::{BotContext, MessageContext};
-use puniyu_types::event::{Event, EventBase, message::MessageEvent};
-use puniyu_types::handler::Handler;
+use puniyu_types::event::message::MessageEvent;
+use puniyu_types::event::{Event, EventBase, Permission};
+use puniyu_types::handler::{Handler, HandlerResult, Matcher};
 
-mod parse;
-use parse::ArgParser;
-
+#[derive(Default)]
 pub struct CommandHandler;
 
 impl CommandHandler {
-	pub async fn handle_matched(
-		bot: Bot,
-		message_event: &MessageEvent,
-		match_result: &MatchResult,
-	) {
-		let command_name = &match_result.command_name;
-		let args = &match_result.args;
+	fn command_name(&self, event: &MessageEvent) -> String {
+		let matcher = CommandMatcher::new(event);
+		matcher.command_name()
+	}
 
-		let bot_ctx = match message_event {
+	async fn handle_command(&self, bot: &Bot, event: &MessageEvent) {
+		let command = CommandMatcher::new(event);
+		let command_name = self.command_name(event);
+		let args = command.args();
+		let Some(command) = CommandRegistry::get_with_name(&command_name) else {
+			return;
+		};
+
+		let bot_ctx = match event {
 			MessageEvent::Friend(msg) => BotContext::new(bot.clone(), msg.contact().into()),
 			MessageEvent::Group(msg) => BotContext::new(bot.clone(), msg.contact().into()),
 		};
-
-		let Some(command) = CommandRegistry::get_with_name(command_name) else {
-			return;
-		};
-
 		let permission = command.builder.permission();
-		if permission == Permission::Master && !message_event.is_master() {
+		if permission == Permission::Master && !event.is_master() {
 			let _ = bot_ctx.reply("呜喵～这是只有主人才能用的命令哦!".into()).await;
 			return;
 		}
+		let builder_args = command.builder.args();
 
-		let arg_defs = command.builder.args();
-
-		let parsed_args = match ArgParser::parse(command_name, args, &arg_defs) {
+		let parsed_args = match ArgParser::parse(&command_name, &args, &builder_args) {
 			Ok(args) => args,
 			Err(e) => {
 				let _ = bot_ctx.reply(e.into()).await;
 				return;
 			}
 		};
-
-		let message_ctx = match message_event {
+		let message_ctx = match event {
 			MessageEvent::Friend(msg) => {
 				MessageContext::new(MessageEvent::Friend(msg.clone()), parsed_args)
 			}
@@ -55,8 +59,7 @@ impl CommandHandler {
 				MessageContext::new(MessageEvent::Group(msg.clone()), parsed_args)
 			}
 		};
-
-		Self::execute_command(&bot_ctx, &message_ctx, command_name).await;
+		Self::execute_command(&bot_ctx, &message_ctx, &command_name).await;
 	}
 
 	async fn execute_command(bot: &BotContext, event: &MessageContext, command_name: &str) {
@@ -85,21 +88,26 @@ impl CommandHandler {
 	}
 }
 
+impl Matcher for CommandHandler {
+	fn matches(&self, event: &Event) -> bool {
+		if let Event::Message(message) = event {
+			let command = CommandMatcher::new(message);
+			command.matcher()
+		} else {
+			false
+		}
+	}
+}
+
 #[async_trait]
 impl Handler for CommandHandler {
-	type MatchResult = MatchResult;
-
 	fn name(&self) -> &str {
 		"command"
 	}
-
-	async fn handle(&self, bot: Bot, event: Event, match_result: Option<Self::MatchResult>) {
-		let Some(match_result) = match_result else {
-			return;
-		};
-
+	async fn handle(&self, bot: &Bot, event: &Event) -> HandlerResult {
 		if let Event::Message(message_event) = &event {
-			Self::handle_matched(bot, message_event.as_ref(), &match_result).await;
+			self.handle_command(bot, message_event.as_ref()).await;
 		}
+		Ok(())
 	}
 }

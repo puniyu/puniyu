@@ -1,15 +1,16 @@
 use crate::cooldown::CooldownScope;
+use chrono::Utc;
 use std::{
 	collections::HashMap,
 	sync::{Arc, RwLock},
-	time::{Duration, SystemTime, UNIX_EPOCH},
+	time::Duration,
 };
 
-pub(crate) struct CooldownStore(pub(crate) Arc<RwLock<HashMap<String, u128>>>);
+pub(crate) struct CooldownStore(pub(crate) Arc<RwLock<HashMap<String, u64>>>);
 
 impl CooldownStore {
-	fn now() -> u128 {
-		SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis()
+	fn now() -> u64 {
+		Utc::now().timestamp_millis() as u64
 	}
 
 	pub fn is_cooling_down(&self, scope: &CooldownScope) -> bool {
@@ -22,7 +23,7 @@ impl CooldownStore {
 	}
 
 	pub fn set_cooldown(&self, scope: &CooldownScope, duration: Duration) {
-		let time = duration.as_millis();
+		let time = duration.as_millis() as u64;
 		if time == 0 {
 			return;
 		}

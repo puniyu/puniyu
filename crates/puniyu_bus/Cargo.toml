@@ -15,7 +15,6 @@ tokio = { workspace = true, features = ["macros"] }
 
 puniyu_types = { version = "0.6.0", path = "../puniyu_types", default-features = false, features = [
   "bus",
-  "matcher",
   "handler",
 ] }
 puniyu_command = { version = "0.6.0", path = "../puniyu_command" }

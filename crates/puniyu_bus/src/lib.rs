@@ -1,7 +1,6 @@
-use puniyu_command::{CommandHandler, CommandMatcher};
+use puniyu_command::CommandHandler;
 pub use puniyu_types::bus::{EVENT_BUS, EventBus, init_event_bus, send_event, stop_event_bus};
-use puniyu_types::handler::Handler;
-use puniyu_types::matcher::Matcher;
+use puniyu_types::handler::{Handler, Matcher};
 
 pub trait EventBusExt {
 	fn run(&self);
@@ -16,9 +15,10 @@ impl EventBusExt for EventBus {
 			loop {
 				tokio::select! {
 					Some((bot, event)) = receiver.recv() => {
-						if let Some(result) = CommandMatcher.matches(&event) {
-							CommandHandler.handle(bot, event, Some(result)).await;
+						if CommandHandler.matches(&event) {
+							CommandHandler.handle(&bot, &event).await.expect("处理事件时出错");
 						}
+
 					}
 					_ = shutdown_rx.recv() => {
 						break;

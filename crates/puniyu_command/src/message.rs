@@ -1,13 +1,8 @@
 use puniyu_logger::{debug, info};
-use puniyu_types::{
-	element::RawMessage,
-	event::{
-		EventBase,
-		message::{MessageBase, MessageEvent},
-	},
-};
+use puniyu_types::element::RawMessage;
+use puniyu_types::event::EventBase;
+use puniyu_types::event::message::{MessageBase, MessageEvent};
 
-/// 记录消息日志
 pub fn log(event: &MessageEvent) {
 	match event {
 		MessageEvent::Friend(m) => {

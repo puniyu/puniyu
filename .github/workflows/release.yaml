@@ -85,10 +85,6 @@ jobs:
     with:
       stable: ${{ needs.release.outputs.releases_created == 'true' }}
 
-  build-plugins:
-    needs: [ release, test ]
-    uses: ./.github/workflows/build-plugins.yaml
-
   publish-crates-io:
     needs: [ release, test ]
     if: ${{ needs.release.outputs.releases_created  == 'true' }}
@@ -171,7 +167,7 @@ jobs:
 
 
   publish-github-release:
-    needs: [ release, build, build-plugins ]
+    needs: [ release, build ]
     if: ${{ needs.release.outputs.puniyu }}
     runs-on: ubuntu-latest
     steps:

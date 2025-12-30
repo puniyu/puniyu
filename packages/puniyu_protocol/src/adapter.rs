@@ -1,3 +1,4 @@
+use chrono::DateTime;
 use puniyu_types::adapter as puniyu_adapter;
 
 include!(concat!(env!("OUT_DIR"), "/puniyu.adapter.rs"));
@@ -122,8 +123,7 @@ impl From<AdapterInfo> for puniyu_adapter::AdapterInfo {
 		let standard = AdapterStandard::try_from(adapter.standard).unwrap();
 		let protocol = AdapterProtocol::try_from(adapter.protocol).unwrap();
 		let communication = AdapterCommunication::try_from(adapter.communication).unwrap();
-		let connect_time = std::time::SystemTime::UNIX_EPOCH
-			+ std::time::Duration::from_secs(adapter.connect_time);
+		let connect_time = DateTime::from_timestamp_secs(adapter.connect_time as i64).unwrap();
 
 		Self {
 			name: adapter.name,
@@ -133,7 +133,7 @@ impl From<AdapterInfo> for puniyu_adapter::AdapterInfo {
 			protocol: protocol.into(),
 			communication: communication.into(),
 			address: adapter.address,
-			connect_time: connect_time.into(),
+			connect_time,
 		}
 	}
 }
