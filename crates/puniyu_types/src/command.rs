@@ -1,3 +1,5 @@
+use std::fmt;
+
 use crate::context::{BotContext, MessageContext};
 use async_trait::async_trait;
 
@@ -171,11 +173,15 @@ impl ArgValue {
 			_ => None,
 		}
 	}
+}
 
-	pub fn into_string(self) -> Option<String> {
+impl fmt::Display for ArgValue {
+	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
 		match self {
-			ArgValue::String(s) => Some(s),
-			_ => None,
+			ArgValue::String(s) => write!(f, "{}", s),
+			ArgValue::Int(i) => write!(f, "{}", i),
+			ArgValue::Float(fl) => write!(f, "{}", fl),
+			ArgValue::Bool(b) => write!(f, "{}", b),
 		}
 	}
 }
