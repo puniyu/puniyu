@@ -3,6 +3,7 @@ use crate::adapter::{AdapterApi, AdapterInfo, Result, SendMsgType};
 use crate::contact::ContactType;
 use crate::element::Message;
 use serde::{Deserialize, Serialize};
+use std::sync::Arc;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum BotId {
@@ -49,6 +50,12 @@ pub struct BotInfo {
 impl From<Bot> for BotInfo {
 	fn from(bot: Bot) -> Self {
 		Self { adapter: bot.adapter, account: bot.account }
+	}
+}
+
+impl From<Arc<Bot>> for BotInfo {
+	fn from(bot: Arc<Bot>) -> Self {
+		Self { adapter: bot.adapter.clone(), account: bot.account.clone() }
 	}
 }
 

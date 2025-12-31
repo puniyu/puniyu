@@ -29,7 +29,7 @@ jobs:
       types: ${{ steps.release-please.outputs['crates/puniyu_types--release_created'] }}
       registry: ${{ steps.release-please.outputs['crates/puniyu_registry--release_created'] }}
       command: ${{ steps.release-please.outputs['crates/puniyu_command--release_created'] }}
-      bus: ${{ steps.release-please.outputs['crates/puniyu_bus--release_created'] }}
+      event: ${{ steps.release-please.outputs['crates/puniyu_event--release_created'] }}
       server: ${{ steps.release-please.outputs['packages/puniyu_server--release_created'] }}
       plugin: ${{ steps.release-please.outputs['packages/puniyu_plugin--release_created'] }}
       adapter: ${{ steps.release-please.outputs['packages/puniyu_adapter--release_created'] }}
@@ -133,9 +133,9 @@ jobs:
         if: needs.release.outputs.command
         run: cargo publish --package puniyu_command --registry crates-io
 
-      - name: 发布 bus
-        if: needs.release.outputs.bus
-        run: cargo publish --package puniyu_bus --registry crates-io
+      - name: 发布 event
+        if: needs.release.outputs.event
+        run: cargo publish --package puniyu_event --registry crates-io
 
       - name: 发布 server
         if: needs.release.outputs.server

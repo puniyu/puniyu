@@ -17,8 +17,8 @@ pub struct BotContext {
 }
 
 impl BotContext {
-	pub fn new(bot: Bot, contact: ContactType) -> Self {
-		Self { bot: Arc::new(bot), contact: Arc::new(contact) }
+	pub fn new(bot: Arc<Bot>, contact: ContactType) -> Self {
+		Self { bot, contact: Arc::new(contact) }
 	}
 	pub fn api(&self) -> &dyn AdapterApi {
 		self.bot.api

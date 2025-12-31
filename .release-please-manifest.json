@@ -7,7 +7,7 @@
   "crates/puniyu_types": "0.6.0",
   "crates/puniyu_registry": "0.6.0",
   "crates/puniyu_command": "0.6.0",
-  "crates/puniyu_bus": "0.6.0",
+  "crates/puniyu_event": "0.6.0",
   "crates/puniyu_server": "0.4.1",
   "packages/puniyu_plugin": "0.6.0",
   "packages/puniyu_adapter": "0.6.0",

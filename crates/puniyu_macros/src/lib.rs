@@ -277,7 +277,7 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
 	let plugin_author = quote! {
 		{
 			let authors = env!("CARGO_PKG_AUTHORS");
-			if authors.is_empty() { "Unknown" } else { authors }
+			if authors.is_empty() { None } else { Some(authors) }
 		}
 	};
 
@@ -321,7 +321,7 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
 				}
 			}
 
-			fn author(&self) -> &'static str {
+			fn author(&self) -> Option<&'static str> {
 				#plugin_author
 			}
 
@@ -453,12 +453,6 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
 		#[unsafe(no_mangle)]
 		pub unsafe extern "C" fn setup_app_name(name: String) {
 			::puniyu_plugin::APP_NAME.get_or_init(|| name);
-		}
-
-		#[cfg(feature = "cdylib")]
-		#[unsafe(no_mangle)]
-		pub unsafe extern "C" fn setup_event_bus(bus: ::std::sync::Arc<::puniyu_plugin::EventBus>) {
-			::puniyu_plugin::EVENT_BUS.get_or_init(|| bus);
 		}
 
 	};

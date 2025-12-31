@@ -1,11 +1,9 @@
 mod arg;
 mod matcher;
 
-use crate::{config, tools};
 use arg::ArgParser;
 use async_trait::async_trait;
 use matcher::CommandMatcher;
-use puniyu_config::Config;
 use puniyu_logger::info;
 use puniyu_logger::owo_colors::OwoColorize;
 use puniyu_registry::command::CommandRegistry;
@@ -15,6 +13,7 @@ use puniyu_types::context::{BotContext, MessageContext};
 use puniyu_types::event::message::MessageEvent;
 use puniyu_types::event::{Event, EventBase, Permission};
 use puniyu_types::handler::{Handler, HandlerResult, Matcher};
+use std::sync::Arc;
 
 #[derive(Default)]
 pub struct CommandHandler;
@@ -34,8 +33,12 @@ impl CommandHandler {
 		};
 
 		let bot_ctx = match event {
-			MessageEvent::Friend(msg) => BotContext::new(bot.clone(), msg.contact().into()),
-			MessageEvent::Group(msg) => BotContext::new(bot.clone(), msg.contact().into()),
+			MessageEvent::Friend(msg) => {
+				BotContext::new(Arc::new(bot.clone()), msg.contact().into())
+			}
+			MessageEvent::Group(msg) => {
+				BotContext::new(Arc::new(bot.clone()), msg.contact().into())
+			}
 		};
 		let permission = command.builder.permission();
 		if permission == Permission::Master && !event.is_master() {

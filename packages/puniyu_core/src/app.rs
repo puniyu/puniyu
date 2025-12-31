@@ -5,10 +5,10 @@ use crate::{
 };
 use convert_case::{Case, Casing};
 use figlet_rs::FIGfont;
-use puniyu_bus::{EVENT_BUS, EventBusExt, init_event_bus};
 pub use puniyu_common::APP_NAME;
 use puniyu_common::path::{DATA_DIR, PLUGIN_DATA_DIR, PLUGIN_DIR, RESOURCE_DIR, WORKING_DIR};
 use puniyu_config::{init_config, start_config_watcher};
+use puniyu_event::init_event_bus;
 use puniyu_registry::{adapter::AdapterRegistry, plugin::PluginRegistry};
 use puniyu_types::adapter::AdapterBuilder;
 use puniyu_types::plugin::{PluginBuilder, PluginType};
@@ -137,8 +137,6 @@ async fn init_app(
 		fs::create_dir(RESOURCE_DIR.as_path()).await.unwrap();
 	}
 	init_event_bus();
-	let event_bus = EVENT_BUS.get().unwrap();
-	event_bus.run();
 	init_plugin(plugins).await;
 	init_adapter(adapters).await;
 }

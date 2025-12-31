@@ -139,7 +139,7 @@ impl TaskRegistry {
 	}
 
 	/// 获取所有任务
-	pub fn get_all_tasks() -> Vec<puniyu_types::task::Task> {
+	pub fn all() -> Vec<puniyu_types::task::Task> {
 		let store = TASK_STORE.read().unwrap();
 		store
 			.values()
@@ -155,7 +155,7 @@ impl TaskRegistry {
 	/// # 参数
 	/// - `task`: 任务 ID 或插件名称
 	///
-	pub fn get_task(task: impl Into<TaskId>) -> Option<puniyu_types::task::Task> {
+	pub fn get(task: impl Into<TaskId>) -> Option<puniyu_types::task::Task> {
 		let store = TASK_STORE.read().unwrap();
 		match task.into() {
 			TaskId::Index(id) => store.get(&id).map(|task| puniyu_types::task::Task {

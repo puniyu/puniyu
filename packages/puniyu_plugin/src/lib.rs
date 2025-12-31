@@ -2,7 +2,6 @@ pub use actix_web;
 pub use actix_web::web::ServiceConfig;
 pub use async_trait::async_trait;
 pub use inventory;
-pub use puniyu_bus::{EVENT_BUS, EventBus};
 pub use puniyu_common::APP_NAME;
 pub use puniyu_common::path::{PLUGIN_CONFIG_DIR, PLUGIN_DATA_DIR};
 pub use puniyu_common::toml::read_config;

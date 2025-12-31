@@ -6,6 +6,8 @@ mod bot;
 mod command;
 #[cfg(feature = "cooldown")]
 mod cooldown;
+#[cfg(feature = "handler")]
+mod handler;
 #[cfg(feature = "plugin")]
 mod plugin;
 #[cfg(feature = "server")]
@@ -21,6 +23,7 @@ use puniyu_types::bot::Bot;
 use puniyu_types::plugin::Plugin;
 #[cfg(feature = "server")]
 use puniyu_types::server::ServerType;
+use std::collections::BTreeMap;
 #[cfg(any(
 	feature = "adapter",
 	feature = "bot",
@@ -49,8 +52,12 @@ use bot::BotStore;
 use command::CommandStore;
 #[cfg(feature = "cooldown")]
 use cooldown::CooldownStore;
+#[cfg(feature = "handler")]
+use handler::HandlerStore;
 #[cfg(feature = "plugin")]
 use plugin::PluginStore;
+#[cfg(feature = "handler")]
+use puniyu_types::handler::Handler;
 #[cfg(feature = "server")]
 use server::ServerStore;
 
@@ -73,6 +80,8 @@ pub(crate) struct Store {
 	server: Arc<RwLock<HashMap<String, ServerType>>>,
 	#[cfg(feature = "cooldown")]
 	cooldown: Arc<RwLock<HashMap<String, u64>>>,
+	#[cfg(feature = "handler")]
+	handler: Arc<RwLock<BTreeMap<u32, Arc<dyn Handler>>>>,
 }
 
 impl Store {
@@ -109,5 +118,9 @@ impl Store {
 	#[cfg(feature = "bot")]
 	pub(crate) fn bot(&self) -> BotStore {
 		BotStore(self.bot.clone())
+	}
+	#[cfg(feature = "handler")]
+	pub(crate) fn handler(&self) -> HandlerStore {
+		HandlerStore(self.handler.clone())
 	}
 }

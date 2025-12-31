@@ -14,7 +14,7 @@ pub trait Handler: Matcher {
 	fn name(&self) -> &str;
 
 	/// 优先级
-	fn rank(&self) -> u8 {
+	fn rank(&self) -> u32 {
 		5
 	}
 
