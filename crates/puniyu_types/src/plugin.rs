@@ -20,7 +20,7 @@ pub trait PluginBuilder: Send + Sync + 'static {
 	/// 插件描述
 	fn description(&self) -> &'static str;
 	/// 插件作者
-	fn author(&self) -> &'static str;
+	fn author(&self) -> Option<&'static str>;
 
 	/// 插件命令前缀
 	fn prefix(&self) -> Option<&'static str> {
@@ -51,9 +51,9 @@ pub struct Plugin {
 	/// 插件名称
 	pub name: String,
 	/// 插件版本
-	pub version: String,
+	pub version: Version,
 	/// 插件作者
-	pub author: String,
+	pub author: Option<String>,
 }
 
 #[derive(Clone)]

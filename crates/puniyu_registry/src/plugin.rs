@@ -15,15 +15,13 @@ use puniyu_common::{merge_config, read_config, write_config};
 use puniyu_config::ConfigRegistry;
 use puniyu_library::{LibraryRegistry, libloading};
 use puniyu_logger::{SharedLogger, debug, error, owo_colors::OwoColorize, warn};
-use puniyu_types::bus::EVENT_BUS;
 use puniyu_types::plugin::{Plugin, PluginBuilder, PluginId, PluginType};
+use puniyu_types::version::Version;
 use std::sync::Arc;
 use tokio::fs;
 
-macro_rules! create_plugin_info {
-	($name:expr, $version:expr, $author:expr) => {
-		Plugin { name: $name, version: $version, author: $author }
-	};
+fn create_plugin_info(name: impl Into<String>, version: Version, author: Option<String>) -> Plugin {
+	Plugin { name: name.into(), version, author }
 }
 
 #[derive(Debug, Default)]
@@ -53,11 +51,6 @@ impl PluginRegistry {
 					set_logger(&SharedLogger::new());
 					let setup_app_name: fn(name: String) = *lib.get(b"setup_app_name").unwrap();
 					setup_app_name(APP_NAME.get().unwrap().to_string());
-					if let Some(bus) = EVENT_BUS.get() {
-						let setup_event_bus: fn(Arc<puniyu_types::bus::EventBus>) =
-							*lib.get(b"setup_event_bus").unwrap();
-						setup_event_bus(bus.clone());
-					}
 					let plugins = STORE.plugin().get_all_plugins();
 					let plugin_name = plugin_builder.name();
 					let plugin_version = plugin_builder.version().to_string();
@@ -105,10 +98,10 @@ impl PluginRegistry {
 
 					join_all(tasks).await;
 
-					let plugin_info = create_plugin_info!(
-						plugin_name.to_string(),
-						plugin_builder.version().to_string(),
-						plugin_builder.author().to_string()
+					let plugin_info = create_plugin_info(
+						plugin_name,
+						plugin_builder.version(),
+						plugin_builder.author().map(|s| s.to_string()),
 					);
 
 					if let Some(server) = plugin_builder.server() {
@@ -208,10 +201,10 @@ impl PluginRegistry {
 					CommandRegistry::insert(plugin_name, prefix, Arc::from(command));
 				});
 
-				let plugin_info = create_plugin_info!(
-					plugin_name.to_string(),
-					plugin_builder.version().to_string(),
-					plugin_builder.author().to_string()
+				let plugin_info = create_plugin_info(
+					plugin_name,
+					plugin_builder.version(),
+					plugin_builder.author().map(|s| s.to_string()),
 				);
 
 				if let Some(server) = plugin_builder.server() {

@@ -20,7 +20,7 @@
         "server",
         "registry",
         "config",
-        "event-bus",
+        "event",
         "command"
       ]
     }
@@ -119,9 +119,9 @@
       "release-type": "rust",
       "component": "command"
     },
-    "crates/puniyu_bus": {
+    "crates/puniyu_event": {
       "release-type": "rust",
-      "component": "event-bus"
+      "component": "event"
     },
     "packages/puniyu_server": {
       "release-type": "rust",

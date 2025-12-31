@@ -4,7 +4,6 @@ pub use actix_web::web::ServiceConfig;
 pub use async_trait::async_trait;
 pub use convert_case;
 pub use inventory;
-pub use puniyu_bus::{EventBus, send_event};
 pub use puniyu_common::APP_NAME;
 pub use puniyu_common::path::{ADAPTER_CONFIG_DIR, ADAPTER_DATA_DIR};
 pub use puniyu_common::toml::read_config;

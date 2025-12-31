@@ -55,6 +55,7 @@ impl AdapterBuilder for Console {
 			account: account_info.clone(),
 			api: adapter,
 		});
+
 		std::thread::spawn(move || {
 			loop {
 				let message = {
@@ -126,15 +127,12 @@ impl AdapterBuilder for Console {
 
 				match msg_type {
 					"group" => {
-						let bot = bot.as_ref();
-						let bot_info: BotInfo = bot.clone().into();
 						let contact = contact_group!(name, name);
 						let sender = group_sender!(user_id: name, nick: name, sex: Sex::Unknown, age: 0, role: Role::Member);
 
 						create_message_event!(
 							Group,
 							bot,
-							bot: bot_info,
 							event_id: event_id,
 							contact: contact,
 							self_id: bot_id,
@@ -146,12 +144,9 @@ impl AdapterBuilder for Console {
 						);
 					}
 					"friend" => {
-						let bot = bot.as_ref();
-						let bot_info: BotInfo = bot.clone().into();
 						let contact = contact_friend!(name, name);
 						let sender = friend_sender!(user_id: name, nick: name);
 						create_message_event!(Friend, bot,
-							bot: bot_info,
 							event_id: event_id,
 							self_id: bot_id,
 							user_id: name,
@@ -163,13 +158,11 @@ impl AdapterBuilder for Console {
 						);
 					}
 					_ => {
-						let bot = bot.as_ref();
-						let bot_info: BotInfo = bot.clone().into();
 						let contact = contact_friend!(name, name);
 						let sender = friend_sender!(user_id: name, nick: name);
 
-						create_message_event!(Friend, bot,
-							bot: bot_info,
+						create_message_event!(Friend,
+							bot,
 							event_id: event_id,
 							self_id: bot_id,
 							user_id: name,

@@ -23,6 +23,11 @@ impl fmt::Display for Version {
 	}
 }
 
+impl AsRef<Self> for Version {
+	fn as_ref(&self) -> &Self {
+		self
+	}
+}
 impl From<&'static str> for Version {
 	fn from(s: &'static str) -> Self {
 		let mut v = s.split('.');
