@@ -427,12 +427,10 @@ impl GroupMessage {
 macro_rules! create_message_event {
     (
         Group,
-		$bot:ident,
         $( $key:ident : $value:expr ),* $(,)?
     ) => {{
-		let bot = std::sync::Arc::clone(&$bot);
         let mut builder = $crate::event::message::MessageBuilder::<$crate::contact::GroupContact, $crate::sender::GroupSender> {
-            bot: bot.clone().into(),
+            bot: Default::default(),
             event_id: String::new(),
             time: 0,
             self_id: String::new(),
@@ -449,18 +447,15 @@ macro_rules! create_message_event {
 
         let message = $crate::event::message::GroupMessage::new(builder);
         let event = $crate::event::Event::Message(Box::new($crate::event::message::MessageEvent::Group(message)));
-		let bot = std::sync::Arc::from(bot);
-     	$crate::send_event!(bot, event);
+     	$crate::send_event!(event);
     }};
 
     (
         Friend,
-		$bot:ident,
         $( $key:ident : $value:expr ),* $(,)?
     ) => {{
-		let bot = std::sync::Arc::clone(&$bot);
         let mut builder = $crate::event::message::MessageBuilder::<$crate::contact::FriendContact, $crate::sender::FriendSender> {
-            bot: bot.clone().into(),
+            bot: Default::default(),
             event_id: String::new(),
             time: 0,
             self_id: String::new(),
@@ -477,11 +472,10 @@ macro_rules! create_message_event {
 
         let message = $crate::event::message::FriendMessage::new(builder);
         let event = $crate::event::Event::Message(Box::new($crate::event::message::MessageEvent::Friend(message)));
-		let bot = std::sync::Arc::from(bot);
-     	$crate::send_event!(bot, event);
+     	$crate::send_event!(event);
     }};
 
-    (@convert bot, $v:expr) => { $v.into() };
+    (@convert bot, $v:expr) => { std::sync::Arc::clone(&$v.clone()).into() };
     (@convert event_id, $v:expr) => { $v.to_string() };
     (@convert contact, $v:expr) => { $v };
     (@convert self_id, $v:expr) => { $v.to_string() };

@@ -4,7 +4,6 @@ use puniyu_command::CommandHandler;
 use puniyu_logger::owo_colors::OwoColorize;
 use puniyu_logger::warn;
 use puniyu_registry::HandlerRegistry;
-use puniyu_types::bot::Bot;
 use puniyu_types::bus::{EVENT_BUS, EventBus as EventBusTrait, EventReceiver, EventSender};
 use puniyu_types::event::Event;
 use std::sync::{Arc, Mutex};
@@ -62,8 +61,8 @@ impl EventBusTrait for EventBus {
 
 					event_pair = receiver.recv() => {
 						match event_pair {
-							Some((bot, event)) => {
-								dispatch_event(&bot, &event).await;
+							Some(event) => {
+								dispatch_event(&event).await;
 							}
 							None => {
 								warn!("[{}]: 事件通道已关闭", "Event".blue());
@@ -76,10 +75,10 @@ impl EventBusTrait for EventBus {
 		})
 	}
 
-	fn send_event(&self, bot: Arc<Bot>, event: Event) {
+	fn send_event(&self, event: Event) {
 		let sender = self.sender.clone();
 		self.handle.spawn(async move {
-			if let Err(e) = sender.send((bot, event)).await {
+			if let Err(e) = sender.send(event).await {
 				warn!("[{}]: 事件发送失败: {:?}", "Event".blue(), e);
 			}
 		});

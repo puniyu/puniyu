@@ -11,6 +11,7 @@ edition.workspace = true
 rust-version.workspace = true
 
 [dependencies]
+prost.workspace = true
 actix-web.workspace = true
 async-trait.workspace = true
 puniyu_adapter = { version = "0.6.0", path = "../../packages/puniyu_adapter" }

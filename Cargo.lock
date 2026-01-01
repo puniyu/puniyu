@@ -1973,6 +1973,7 @@ dependencies = [
  "actix-ws",
  "async-trait",
  "futures-util",
+ "prost",
  "puniyu_adapter",
  "puniyu_core",
  "puniyu_protocol",

@@ -1,3 +1,3 @@
 pub(crate) mod bot;
+mod event;
 
-use puniyu_adapter::prelude::*;

@@ -132,7 +132,7 @@ impl AdapterBuilder for Console {
 
 						create_message_event!(
 							Group,
-							bot,
+							bot: bot,
 							event_id: event_id,
 							contact: contact,
 							self_id: bot_id,
@@ -146,7 +146,8 @@ impl AdapterBuilder for Console {
 					"friend" => {
 						let contact = contact_friend!(name, name);
 						let sender = friend_sender!(user_id: name, nick: name);
-						create_message_event!(Friend, bot,
+						create_message_event!(Friend,
+							bot: bot,
 							event_id: event_id,
 							self_id: bot_id,
 							user_id: name,
@@ -162,7 +163,7 @@ impl AdapterBuilder for Console {
 						let sender = friend_sender!(user_id: name, nick: name);
 
 						create_message_event!(Friend,
-							bot,
+							bot: bot,
 							event_id: event_id,
 							self_id: bot_id,
 							user_id: name,

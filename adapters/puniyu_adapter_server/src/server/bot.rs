@@ -2,8 +2,8 @@ mod registry;
 mod store;
 
 use actix_web::{Error, HttpRequest, HttpResponse, web};
-use actix_ws::Message;
 use futures_util::StreamExt;
+use prost::Message;
 use puniyu_core::logger::info;
 use puniyu_protocol::event::EventSend;
 use registry::BotRegistry;
@@ -24,12 +24,14 @@ pub async fn ws_handler(
 	actix_web::rt::spawn(async move {
 		while let Some(Ok(msg)) = msg_stream.next().await {
 			match msg {
-				Message::Text(text) => {
+				actix_ws::Message::Text(text) => {
 					info!("[Bot {}] 收到: {}", bot_name, text);
 				}
-				Message::Binary(binary) => {
+				actix_ws::Message::Binary(binary) => {
+					let event = EventSend::decode(binary).unwrap().event.unwrap();
+					println!("{:?}", event)
 				}
-				Message::Close(reason) => {
+				actix_ws::Message::Close(reason) => {
 					info!("[Bot {}] 断开连接: {:?}", bot_name, reason);
 					BotRegistry::remove(&bot_name);
 					break;
