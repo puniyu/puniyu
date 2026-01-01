@@ -49,4 +49,5 @@ message AdapterInfo {
   AdapterCommunication communication = 6;
   optional string address = 7;
   uint64 connect_time = 8;
+  optional string secret = 9;
 }

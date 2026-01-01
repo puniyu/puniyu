@@ -18,14 +18,14 @@ message FriendSender {
   string user_id = 1;
   optional string nick = 2;
   Sex sex = 3;
-  uint32 age = 4;
+  optional uint32 age = 4;
 }
 
 message GroupSender {
   string user_id = 1;
   optional string nick = 2;
   Sex sex = 4;
-  uint32 age = 5;
+  optional uint32 age = 5;
   Role role = 6;
   optional string card = 7;
   optional uint32 level = 8;

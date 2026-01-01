@@ -136,6 +136,7 @@ impl From<AdapterInfo> for puniyu_adapter::AdapterInfo {
 			communication: communication.into(),
 			address: adapter.address,
 			connect_time,
+			secret: adapter.secret,
 		}
 	}
 }
@@ -152,6 +153,7 @@ impl From<puniyu_adapter::AdapterInfo> for AdapterInfo {
 			communication: AdapterCommunication::from(adapter.communication).into(),
 			address: adapter.address,
 			connect_time: connect_time as u64,
+			secret: adapter.secret,
 		}
 	}
 }
