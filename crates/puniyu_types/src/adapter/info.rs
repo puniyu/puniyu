@@ -156,6 +156,7 @@ pub struct AdapterInfo {
 	#[builder(default = "Self::default_connect_time()")]
 	pub connect_time: DateTime<Utc>,
 	/// 鉴权密钥
+	#[builder(default)]
 	pub secret: Option<String>,
 }
 
