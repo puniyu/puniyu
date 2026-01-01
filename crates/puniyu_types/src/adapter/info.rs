@@ -61,9 +61,10 @@ pub enum AdapterStandard {
 /// 用于标识适配器所使用的协议实现，用于在不同平台之间进行消息传递。
 ///
 /// - QQBOT: [QQ 平台协议实现](https://bot.q.qq.com/wiki)
-/// - ICQQ: [OICQ 平台协议实现](https://github.com/takayama-lily/oicq)
+/// - ICQQ: [Icqq 平台协议实现](https://github.com/icqqjs/icqq)
 /// - GoCqHttp: [go-cqhttp 协议实现](https://docs.go-cqhttp.org/)
 /// - NapCat: [NapCat 协议实现](https://napneko.github.io/zh-CN/)
+/// - Oicq: [Oicq 平台协议实现](https://github.com/takayama-lily/oicq)
 /// - LLOneBot: [LLOneBot 协议实现](https://llonebot.github.io/zh-CN/)
 /// - Lagrange: [Lagrange 协议实现](ttps://lagrangedev.github.io/Lagrange.Doc/Lagrange.OneBot/)
 /// - Console: 控制台协议实现
@@ -76,6 +77,8 @@ pub enum AdapterProtocol {
 	QQBot,
 	#[strum(serialize = "Icqq")]
 	Icqq,
+	#[strum(serialize = "Oicq")]
+	Oicq,
 	#[strum(serialize = "GoCqHttp")]
 	GoCqHttp,
 	#[strum(serialize = "NapCat")]

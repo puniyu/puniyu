@@ -21,14 +21,15 @@ enum AdapterStandard {
 
 enum AdapterProtocol {
   QQBot = 0;
-  AdapterProtocol_Icqq = 1;
-  GoCqHttp = 2;
-  NapCat = 3;
-  LLOneBot = 4;
-  Conwechat = 5;
-  Lagrange = 6;
-  Console = 7;
-  AdapterProtocol_Other = 8;
+  AdapterProtocol_Oicq = 1;
+  AdapterProtocol_Icqq = 2;
+  GoCqHttp = 3;
+  NapCat = 4;
+  LLOneBot = 5;
+  Conwechat = 6;
+  Lagrange = 7;
+  Console = 8;
+  AdapterProtocol_Other = 9;
 }
 
 enum AdapterCommunication {

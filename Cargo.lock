@@ -186,6 +186,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "actix-ws"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a3a1fb4f9f2794b0aadaf2ba5f14a6f034c7e86957b458c506a8cb75953f2d99"
+dependencies = [
+ "actix-codec",
+ "actix-http",
+ "actix-web",
+ "bytestring",
+ "futures-core",
+ "tokio",
+]
+
+[[package]]
 name = "adler2"
 version = "2.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1915,6 +1929,7 @@ name = "puniyu"
 version = "0.6.0"
 dependencies = [
  "puniyu_adapter_console",
+ "puniyu_adapter_server",
  "puniyu_core",
  "puniyu_plugin_basic",
  "tokio",
@@ -1948,6 +1963,19 @@ dependencies = [
  "puniyu_adapter",
  "puniyu_core",
  "rand",
+]
+
+[[package]]
+name = "puniyu_adapter_server"
+version = "0.3.0"
+dependencies = [
+ "actix-web",
+ "actix-ws",
+ "async-trait",
+ "futures-util",
+ "puniyu_adapter",
+ "puniyu_core",
+ "puniyu_protocol",
 ]
 
 [[package]]
