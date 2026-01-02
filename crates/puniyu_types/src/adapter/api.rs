@@ -1,11 +1,11 @@
 mod group;
-pub use group::GroupApi;
+pub use group::*;
 mod friend;
-pub use friend::FriendApi;
+pub use friend::*;
 mod account;
-pub use account::AccountApi;
+pub use account::*;
 mod message;
-pub use message::MessageApi;
+pub use message::*;
 mod inner;
 
 use super::{Error, Result, types::*};
@@ -39,25 +39,9 @@ impl AdapterApi {
 	) -> Self {
 		Self { group_api, friend_api, account_api, message_api }
 	}
-	
-	/// 获取群实例
-	pub fn group(&self) -> &dyn GroupApi {
-		self.group_api.as_ref()
-	}
-	
-	/// 获取好友实例
-	pub fn friend(&self) -> &dyn FriendApi {
-		self.friend_api.as_ref()
-	}
-	
-	/// 获取账号实例
-	pub fn account(&self) -> &dyn AccountApi {
-		self.account_api.as_ref()
-	}
-	
-	/// 获取消息实例
-	pub fn message(&self) -> &dyn MessageApi {
-		self.message_api.as_ref()
-	}
 }
 
+impl GroupApi for AdapterApi {}
+impl FriendApi for AdapterApi {}
+impl AccountApi for AdapterApi {}
+impl MessageApi for AdapterApi {}

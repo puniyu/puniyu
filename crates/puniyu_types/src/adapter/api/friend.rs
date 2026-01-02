@@ -1,4 +1,4 @@
-use super::{AvatarSize, Error, Result, SetFriendApplyType, UserInfo, Avatar};
+use super::{Avatar, AvatarSize, Error, Result, SetFriendApplyType, UserInfo};
 use async_trait::async_trait;
 
 #[async_trait]
@@ -9,12 +9,12 @@ pub trait FriendApi: Send + Sync {
 	/// `target_id` - 目标ID
 	/// `size` - 头像尺寸
 	///
-	async fn get_avatar(&self, _target_id: &str, _size: Option<AvatarSize>) -> Result<Avatar> {
+	async fn get_user_avatar(&self, _target_id: &str, _size: Option<AvatarSize>) -> Result<Avatar> {
 		Err(Error::NotImpl)
 	}
 
 	/// 获取好友列表
-	async fn get_list(&self) -> Result<Vec<UserInfo>> {
+	async fn get_friend_list(&self) -> Result<Vec<UserInfo>> {
 		Err(Error::NotImpl)
 	}
 

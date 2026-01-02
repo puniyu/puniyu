@@ -6,7 +6,6 @@ use puniyu_adapter::{AccountApi, FriendApi, GroupApi, MessageApi, Result};
 use puniyu_core::Config;
 use std::sync::LazyLock;
 use std::time::{SystemTime, UNIX_EPOCH};
-
 pub(crate) static AVATAR_URL: LazyLock<String> = LazyLock::new(|| {
 	let config = Config::app();
 	let server = config.server();

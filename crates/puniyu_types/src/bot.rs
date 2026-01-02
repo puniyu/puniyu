@@ -1,7 +1,7 @@
 use crate::account::AccountInfo;
-use crate::adapter::{AdapterApi, AdapterInfo, Result, SendMsgType};
+use crate::adapter::{AdapterApi, AdapterInfo, MessageApi, Result, SendMsgType};
 use crate::contact::ContactType;
-use crate::element::Message;
+use crate::element;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -39,8 +39,6 @@ pub struct Bot {
 	pub account: AccountInfo,
 }
 
-
-
 impl Eq for Bot {}
 
 impl std::fmt::Debug for Bot {
@@ -59,7 +57,17 @@ impl PartialEq for Bot {
 }
 
 impl Bot {
-	pub async fn send_msg(&self, contact: ContactType, message: Message) -> Result<SendMsgType> {
-		self.api.message().send_msg(contact, message).await
+	/// 发送消息
+	///
+	/// ## 参数
+	/// `_contact` - 联系人
+	/// `_message` - 消息元素
+	///
+	pub async fn send_msg(
+		&self,
+		contact: ContactType,
+		message: element::Message,
+	) -> Result<SendMsgType> {
+		self.api.send_msg(contact, message).await
 	}
 }

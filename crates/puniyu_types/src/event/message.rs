@@ -420,7 +420,7 @@ macro_rules! create_message_event {
         $( $key:ident : $value:expr ),* $(,)?
     ) => {{
         let mut builder = $crate::event::message::MessageBuilder::<$crate::contact::GroupContact, $crate::sender::GroupSender> {
-            bot: Arc::new(Default::default()),
+            bot: Default::default(),
             event_id: String::new(),
             time: 0,
             self_id: String::new(),
