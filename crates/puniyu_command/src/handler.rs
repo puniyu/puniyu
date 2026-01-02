@@ -7,7 +7,6 @@ use matcher::CommandMatcher;
 use puniyu_logger::info;
 use puniyu_logger::owo_colors::OwoColorize;
 use puniyu_registry::command::CommandRegistry;
-use puniyu_types::bot::Bot;
 use puniyu_types::command::HandlerAction;
 use puniyu_types::context::{BotContext, MessageContext};
 use puniyu_types::event::message::MessageEvent;
@@ -24,7 +23,7 @@ impl CommandHandler {
 		matcher.command_name()
 	}
 
-	async fn handle_command(&self, bot: &Bot, event: &MessageEvent) {
+	async fn handle_command(&self, event: &MessageEvent) {
 		let command = CommandMatcher::new(event);
 		let command_name = self.command_name(event);
 		let args = command.args();
@@ -34,9 +33,11 @@ impl CommandHandler {
 
 		let bot_ctx = match event {
 			MessageEvent::Friend(msg) => {
+				let bot = event.bot();
 				BotContext::new(Arc::new(bot.clone()), msg.contact().into())
 			}
 			MessageEvent::Group(msg) => {
+				let bot = event.bot();
 				BotContext::new(Arc::new(bot.clone()), msg.contact().into())
 			}
 		};
@@ -107,9 +108,9 @@ impl Handler for CommandHandler {
 	fn name(&self) -> &str {
 		"command"
 	}
-	async fn handle(&self, bot: &Bot, event: &Event) -> HandlerResult {
+	async fn handle(&self, event: &Event) -> HandlerResult {
 		if let Event::Message(message_event) = &event {
-			self.handle_command(bot, message_event.as_ref()).await;
+			self.handle_command(message_event.as_ref()).await;
 		}
 		Ok(())
 	}

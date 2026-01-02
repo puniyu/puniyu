@@ -118,7 +118,7 @@ pub fn adapter(_: TokenStream, item: TokenStream) -> TokenStream {
 				}
 			}
 
-			fn api(&self) -> &'static dyn ::puniyu_adapter::AdapterApi {
+			fn api(&self) -> ::puniyu_adapter::AdapterApi {
 				::puniyu_adapter::AdapterBuilder::api(&#struct_name)
 			}
 

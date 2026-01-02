@@ -1,16 +1,18 @@
 mod friend;
 
+use std::sync::Arc;
 pub use friend::*;
 use serde::{Deserialize, Serialize};
 mod group;
 pub use group::*;
 
 use super::EventBase;
-use crate::bot::BotInfo;
+use crate::bot::Bot;
 use crate::contact::{FriendContact, GroupContact, Scene};
 use crate::event::EventType;
 use crate::sender::{FriendSender, GroupSender};
 use strum::{Display, EnumString, IntoStaticStr};
+use crate::event::inner::{deserialize_bot, serialize_bot};
 
 #[derive(Debug, Clone, EnumString, Display, IntoStaticStr, Deserialize, Serialize)]
 pub enum RequestSubEvent {
@@ -47,7 +49,7 @@ pub trait RequestBase: Send + Sync + EventBase {
 
 #[derive(Debug, Clone)]
 pub struct RequestBuilder<Contact, Sender> {
-	pub bot: BotInfo,
+	pub bot: Arc<Bot>,
 	pub event_id: String,
 	pub time: u64,
 	pub self_id: String,
@@ -93,7 +95,11 @@ macro_rules! impl_request_event {
         $(#[$attr])*
         #[derive(Debug, Clone, Deserialize, Serialize)]
         pub struct $struct_name {
-            bot: BotInfo,
+            #[serde(
+				serialize_with = "serialize_bot",
+				deserialize_with = "deserialize_bot"
+			)]
+            bot: Arc<Bot>,
             event_id: String,
             time: u64,
             self_id: String,
@@ -125,7 +131,7 @@ macro_rules! impl_request_event {
             type ContactType = $contact_ty;
             type SenderType = $sender_ty;
 
-            fn bot(&self) -> &BotInfo { &self.bot }
+            fn bot(&self) -> &Bot { &self.bot }
             fn time(&self) -> u64 { self.time }
             fn event(&self) -> &str { EventType::Request.into() }
             fn event_id(&self) -> &str { &self.event_id }
@@ -180,6 +186,7 @@ macro_rules! create_request_event {
         $crate::bus::send_event($bot.clone(), event);
     }};
 
+    (@convert bot, $v:expr) => { $v };
     (@convert adapter, $v:expr) => { $v };
     (@convert event_id, $v:expr) => { $v.to_string() };
     (@convert time, $v:expr) => { $v };

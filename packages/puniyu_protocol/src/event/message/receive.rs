@@ -1,3 +1,4 @@
+use std::sync::Arc;
 use puniyu_types::event::message as puniyu_message;
 use puniyu_types::event::message::MessageBuilder;
 use puniyu_types::event::{EventBase, message::MessageBase};
@@ -7,7 +8,7 @@ include!(concat!(env!("OUT_DIR"), "/puniyu.event.message.receive.rs"));
 impl From<FriendMessage> for puniyu_message::FriendMessage {
 	fn from(message: FriendMessage) -> Self {
 		let builder = MessageBuilder {
-			bot: message.friend_message_bot.unwrap().into(),
+			bot: Arc::new(message.friend_message_bot.unwrap().into()),
 			event_id: message.event_id,
 			self_id: message.self_id,
 			user_id: message.user_id,
@@ -49,7 +50,7 @@ impl From<puniyu_message::FriendMessage> for FriendMessage {
 impl From<GroupMessage> for puniyu_message::GroupMessage {
 	fn from(message: GroupMessage) -> Self {
 		let builder = MessageBuilder {
-			bot: message.group_message_bot.unwrap().into(),
+			bot: Arc::new(message.group_message_bot.unwrap().into()),
 			event_id: message.event_id,
 			self_id: message.self_id,
 			user_id: message.user_id,

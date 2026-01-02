@@ -1,12 +1,13 @@
 mod friend;
 
+use std::sync::Arc;
 pub use friend::*;
 use serde::{Deserialize, Serialize};
 mod group;
 pub use group::*;
 
 use super::EventBase;
-use crate::bot::BotInfo;
+use crate::bot::Bot;
 use strum::{Display, EnumString, IntoStaticStr};
 
 #[derive(Debug, Clone, EnumString, Display, IntoStaticStr, Deserialize, Serialize)]
@@ -98,9 +99,8 @@ pub trait NotionBase: Send + Sync + EventBase {
 	fn content(&self) -> Self::Content;
 }
 
-#[derive(Debug, Clone)]
 pub struct NotionBuilder<Contact, Sender> {
-	pub bot: BotInfo,
+	pub bot: Arc<Bot>,
 	pub event_id: String,
 	pub time: u64,
 	pub self_id: String,
@@ -136,7 +136,7 @@ macro_rules! create_notion_event {
         $crate::bus::send_event($bot.clone(), event);
     }};
 
-    (@convert bot, $v:expr) => { $v.into() };
+    (@convert bot, $v:expr) => { $v };
     (@convert adapter, $v:expr) => { $v };
     (@convert event_id, $v:expr) => { $v.to_string() };
     (@convert time, $v:expr) => { $v };

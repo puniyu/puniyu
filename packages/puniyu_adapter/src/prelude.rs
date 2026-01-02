@@ -7,7 +7,7 @@ pub use puniyu_types::adapter::{
 	AdapterApi, AdapterBuilder, AdapterCommunication, AdapterInfo, AdapterInfoBuilder,
 	AdapterPlatform, AdapterProtocol, AdapterStandard,
 };
-pub use puniyu_types::bot::{Bot, BotInfo};
+pub use puniyu_types::bot::Bot;
 pub use puniyu_types::config::Config;
 pub use puniyu_types::contact::{Contact, ContactType, FriendContact, GroupContact, Scene};
 pub use puniyu_types::element::receive::{

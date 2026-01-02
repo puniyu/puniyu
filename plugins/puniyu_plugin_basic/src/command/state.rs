@@ -2,7 +2,6 @@ use puniyu_common::system::BotStatusInfo;
 use puniyu_core::APP_NAME;
 use puniyu_core::VERSION;
 use puniyu_plugin::prelude::*;
-
 #[command(name = "state")]
 async fn state(bot: &BotContext, _ev: &MessageContext) -> HandlerResult {
 	let status = BotStatusInfo::new();
