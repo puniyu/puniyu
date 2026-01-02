@@ -12,7 +12,6 @@ use puniyu_types::context::{BotContext, MessageContext};
 use puniyu_types::event::message::MessageEvent;
 use puniyu_types::event::{Event, EventBase, Permission};
 use puniyu_types::handler::{Handler, HandlerResult, Matcher};
-use puniyu_registry::bot::BotRegistry;
 use std::sync::Arc;
 
 #[derive(Default)]
@@ -34,18 +33,12 @@ impl CommandHandler {
 
 		let bot_ctx = match event {
 			MessageEvent::Friend(msg) => {
-				if let Some(bot) = BotRegistry::get_with_self_id(&event.self_id()) {
-					BotContext::new(Arc::new(bot), msg.contact().into())
-				} else {
-					return;
-				}
+				let bot = event.bot();
+				BotContext::new(Arc::new(bot.clone()), msg.contact().into())
 			}
 			MessageEvent::Group(msg) => {
-				if let Some(bot) = BotRegistry::get_with_self_id(&event.self_id()) {
-					BotContext::new(Arc::new(bot.clone()), msg.contact().into())
-				} else {
-					return;
-				}
+				let bot = event.bot();
+				BotContext::new(Arc::new(bot.clone()), msg.contact().into())
 			}
 		};
 		let permission = command.builder.permission();

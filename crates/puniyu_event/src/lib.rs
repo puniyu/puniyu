@@ -75,7 +75,7 @@ impl EventBusTrait for EventBus {
 		})
 	}
 
-	fn send_event(&self, event: Event) {
+	fn send_event(&self, event: Arc<Event>) {
 		let sender = self.sender.clone();
 		self.handle.spawn(async move {
 			if let Err(e) = sender.send(event).await {

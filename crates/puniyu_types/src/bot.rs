@@ -1,9 +1,8 @@
 use crate::account::AccountInfo;
-use crate::adapter::{AdapterApi, AdapterInfo, Result, SendMsgType};
+use crate::adapter::{AdapterApi, AdapterInfo, MessageApi, Result, SendMsgType};
 use crate::contact::ContactType;
-use crate::element::Message;
+use crate::element;
 use serde::{Deserialize, Serialize};
-use std::sync::Arc;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum BotId {
@@ -29,34 +28,15 @@ impl From<String> for BotId {
 	}
 }
 
-#[derive(Clone, Serialize)]
+#[derive(Clone, Default, Serialize, Deserialize)]
 pub struct Bot {
 	/// 适配器信息
 	pub adapter: AdapterInfo,
 	/// 适配器API
 	#[serde(skip)]
-	pub api: &'static dyn AdapterApi,
+	pub api: AdapterApi,
 	/// 账户信息
 	pub account: AccountInfo,
-}
-#[derive(Debug, Default, Clone, Deserialize, Serialize, Eq, PartialEq)]
-pub struct BotInfo {
-	/// 适配器信息
-	pub adapter: AdapterInfo,
-	/// 账户信息
-	pub account: AccountInfo,
-}
-
-impl From<Bot> for BotInfo {
-	fn from(bot: Bot) -> Self {
-		Self { adapter: bot.adapter, account: bot.account }
-	}
-}
-
-impl From<Arc<Bot>> for BotInfo {
-	fn from(bot: Arc<Bot>) -> Self {
-		Self { adapter: bot.adapter.clone(), account: bot.account.clone() }
-	}
 }
 
 impl Eq for Bot {}
@@ -77,7 +57,17 @@ impl PartialEq for Bot {
 }
 
 impl Bot {
-	pub async fn send_msg(&self, contact: ContactType, message: Message) -> Result<SendMsgType> {
+	/// 发送消息
+	///
+	/// ## 参数
+	/// `_contact` - 联系人
+	/// `_message` - 消息元素
+	///
+	pub async fn send_msg(
+		&self,
+		contact: ContactType,
+		message: element::Message,
+	) -> Result<SendMsgType> {
 		self.api.send_msg(contact, message).await
 	}
 }

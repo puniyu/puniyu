@@ -1,5 +1,5 @@
 use super::EventBase;
-use crate::bot::BotInfo;
+use crate::bot::Bot;
 use crate::contact::{FriendContact, GroupContact, Scene};
 use crate::element::receive::Elements;
 use crate::event::EventType;
@@ -10,6 +10,7 @@ use serde::{Deserialize, Serialize};
 use std::fmt;
 use std::sync::Arc;
 use strum::{Display, EnumString, IntoStaticStr};
+use super::inner::{deserialize_bot, serialize_bot};
 
 #[derive(Debug, Clone, EnumString, Display, IntoStaticStr)]
 pub enum MessageSubType {
@@ -56,7 +57,7 @@ impl MessageEvent {
 		}
 	}
 
-	pub fn get_bot(&self) -> &BotInfo {
+	pub fn bot(&self) -> &Bot {
 		match self {
 			MessageEvent::Friend(msg) => msg.bot(),
 			MessageEvent::Group(msg) => msg.bot(),
@@ -245,9 +246,9 @@ pub trait MessageBase: Send + Sync + EventBase {
 	fn is_master(&self) -> bool;
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct MessageBuilder<Contact, Sender> {
-	pub bot: BotInfo,
+	pub bot: Arc<Bot>,
 	pub event_id: String,
 	pub self_id: String,
 	pub user_id: String,
@@ -258,20 +259,9 @@ pub struct MessageBuilder<Contact, Sender> {
 	pub elements: Vec<Elements>,
 }
 
-fn serialize_arc_bot_info<S>(bot_info: &Arc<BotInfo>, serializer: S) -> Result<S::Ok, S::Error>
-where
-	S: serde::Serializer,
-{
-	bot_info.serialize(serializer)
-}
 
-fn deserialize_arc_bot_info<'de, D>(deserializer: D) -> Result<Arc<BotInfo>, D::Error>
-where
-	D: serde::Deserializer<'de>,
-{
-	let bot_info = BotInfo::deserialize(deserializer)?;
-	Ok(Arc::new(bot_info))
-}
+
+
 
 macro_rules! impl_message_event {
     (
@@ -295,10 +285,10 @@ macro_rules! impl_message_event {
 		#[derive(Debug, Clone, Deserialize, Serialize)]
         pub struct $struct_name {
             #[serde(
-				serialize_with = "serialize_arc_bot_info",
-				deserialize_with = "deserialize_arc_bot_info"
+				serialize_with = "serialize_bot",
+				deserialize_with = "deserialize_bot"
 			)]
-            bot: Arc<BotInfo>,
+            bot: Arc<Bot>,
             event_id: String,
             time: u64,
             self_id: String,
@@ -312,7 +302,7 @@ macro_rules! impl_message_event {
 		impl $struct_name {
             pub fn new(message_builder: MessageBuilder<$contact_ty, $sender_ty>) -> Self {
                 Self {
-                    bot: Arc::new(message_builder.bot),
+                    bot: message_builder.bot,
                     event_id: message_builder.event_id,
                     time: message_builder.time,
                     self_id: message_builder.self_id,
@@ -328,7 +318,7 @@ macro_rules! impl_message_event {
             type ContactType = $contact_ty;
             type SenderType = $sender_ty;
 
-			fn bot(&self) -> &BotInfo {
+			fn bot(&self) -> &Bot {
                 &self.bot
             }
 
@@ -475,7 +465,7 @@ macro_rules! create_message_event {
      	$crate::send_event!(event);
     }};
 
-    (@convert bot, $v:expr) => { std::sync::Arc::clone(&$v.clone()).into() };
+    (@convert bot, $v:expr) => { std::sync::Arc::from($v) };
     (@convert event_id, $v:expr) => { $v.to_string() };
     (@convert contact, $v:expr) => { $v };
     (@convert self_id, $v:expr) => { $v.to_string() };

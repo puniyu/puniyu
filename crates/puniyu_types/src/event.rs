@@ -2,9 +2,11 @@ pub mod message;
 pub mod notion;
 mod permission;
 pub mod request;
+mod inner;
+
 pub use permission::Permission;
 
-use crate::bot::BotInfo;
+use crate::bot::Bot;
 use serde::{Deserialize, Serialize};
 use strum::{Display, EnumString, IntoStaticStr};
 
@@ -50,7 +52,8 @@ pub trait EventBase: Send + Sync {
 	type ContactType;
 	type SenderType;
 
-	fn bot(&self) -> &BotInfo;
+	/// 获取bot实例
+	fn bot(&self) -> &Bot;
 	/// 事件触发时间戳(秒）
 	fn time(&self) -> u64;
 	/// 事件类型

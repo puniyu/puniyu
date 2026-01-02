@@ -19,8 +19,12 @@ impl AdapterBuilder for Console {
 		env!("CARGO_PKG_NAME")
 	}
 
-	fn api(&self) -> &'static dyn AdapterApi {
-		&api::ConsoleAdapterApi
+	fn api(&self) -> AdapterApi {
+		let group_api = Arc::new(api::ConsoleGroupApi);
+		let friend_api = Arc::new(api::ConsoleFriendApi);
+		let message_api = Arc::new(api::ConsoleMessageApi);
+		let account_api = Arc::new(api::ConsoleAccountApi);
+		AdapterApi::new(group_api, friend_api, account_api, message_api)
 	}
 
 	async fn init(&self) -> Result<()> {
@@ -48,12 +52,11 @@ impl AdapterBuilder for Console {
 
 		let account_info = account_info.clone();
 		let adapter_info = adapter_info.clone();
-		let adapter = &api::ConsoleAdapterApi as &'static dyn AdapterApi;
 
 		let bot = Arc::new(Bot {
 			adapter: adapter_info.clone(),
 			account: account_info.clone(),
-			api: adapter,
+			api: self.api(),
 		});
 
 		std::thread::spawn(move || {
@@ -132,7 +135,7 @@ impl AdapterBuilder for Console {
 
 						create_message_event!(
 							Group,
-							bot: bot,
+							bot: Arc::clone(&bot),
 							event_id: event_id,
 							contact: contact,
 							self_id: bot_id,
@@ -147,7 +150,7 @@ impl AdapterBuilder for Console {
 						let contact = contact_friend!(name, name);
 						let sender = friend_sender!(user_id: name, nick: name);
 						create_message_event!(Friend,
-							bot: bot,
+							bot: Arc::clone(&bot),
 							event_id: event_id,
 							self_id: bot_id,
 							user_id: name,
@@ -163,7 +166,7 @@ impl AdapterBuilder for Console {
 						let sender = friend_sender!(user_id: name, nick: name);
 
 						create_message_event!(Friend,
-							bot: bot,
+							bot: Arc::clone(&bot),
 							event_id: event_id,
 							self_id: bot_id,
 							user_id: name,

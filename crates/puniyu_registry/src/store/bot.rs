@@ -40,9 +40,4 @@ impl BotStore {
 		let index = bots.iter().find(|(_, bot)| bot.account.uin == self_id).map(|(i, _)| *i);
 		index.and_then(|i| bots.remove(&i))
 	}
-
-	#[allow(dead_code)]
-	pub fn len(&self) -> usize {
-		self.0.read().unwrap().len()
-	}
 }
