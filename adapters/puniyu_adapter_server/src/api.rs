@@ -1,8 +1,16 @@
-use async_trait::async_trait;
-use puniyu_adapter::prelude::*;
+use puniyu_adapter::{AccountApi, FriendApi, GroupApi, MessageApi};
 
-pub struct ServerAdapterApi;
+pub struct ServerMessageApi;
 
-#[async_trait]
-impl AdapterApi for ServerAdapterApi {
-}
+impl MessageApi for ServerMessageApi {}
+
+pub struct ServerAccountApi;
+
+impl AccountApi for ServerAccountApi {}
+
+pub struct ServerFriendApi;
+
+impl FriendApi for ServerFriendApi {}
+
+pub struct ServerGroupApi;
+impl GroupApi for ServerGroupApi {}

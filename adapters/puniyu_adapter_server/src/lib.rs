@@ -7,6 +7,7 @@ use puniyu_adapter::actix_web::web;
 use puniyu_adapter::prelude::*;
 use puniyu_adapter::{Result, ServerType, ServiceConfig};
 use std::env;
+use std::sync::Arc;
 use puniyu_core::logger::info;
 use puniyu_core::Config;
 use server::bot;
@@ -20,8 +21,12 @@ impl AdapterBuilder for Server {
 		env!("CARGO_PKG_NAME")
 	}
 
-	fn api(&self) -> &'static dyn AdapterApi {
-		&api::ServerAdapterApi
+	fn api(&self) -> AdapterApi {
+		let group_api = Arc::new(api::ServerGroupApi);
+		let friend_api = Arc::new(api::ServerFriendApi);
+		let message_api = Arc::new(api::ServerMessageApi);
+		let account_api = Arc::new(api::ServerAccountApi);
+		AdapterApi::new(group_api, friend_api, account_api, message_api)
 	}
 
 	fn server(&self) -> Option<ServerType> {
@@ -31,7 +36,7 @@ impl AdapterBuilder for Server {
 				cfg.route("/{bot_app}/ws", web::get().to(bot::ws_handler));
 			}));
 		};
-		Some(std::sync::Arc::new(server))
+		Some(Arc::new(server))
 	}
 
 	async fn init(&self) -> Result<()> {
