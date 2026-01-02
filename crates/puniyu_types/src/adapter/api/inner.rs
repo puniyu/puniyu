@@ -1,16 +1,22 @@
+use crate::adapter::GroupApi;
 use super::{FriendApi, AccountApi, MessageApi};
 
-pub(crate) struct EmptyFriendApi;
+pub(crate) struct DefaultGroupApi;
 
-impl FriendApi for EmptyFriendApi {
+impl GroupApi for DefaultGroupApi {
 }
 
-pub(crate) struct EmptyAccountApi;
+pub(crate) struct DefaultFriendApi;
 
-impl AccountApi for EmptyAccountApi {
+impl FriendApi for DefaultFriendApi {
 }
 
-pub(crate) struct EmptyMessageApi;
+pub(crate) struct DefaultAccountApi;
 
-impl MessageApi for EmptyMessageApi {
+impl AccountApi for DefaultAccountApi {
+}
+
+pub(crate) struct DefaultMessageApi;
+
+impl MessageApi for DefaultMessageApi {
 }

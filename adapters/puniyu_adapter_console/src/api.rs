@@ -2,7 +2,7 @@ use crate::common::make_random_id;
 use async_trait::async_trait;
 use puniyu_adapter::logger::debug;
 use puniyu_adapter::prelude::*;
-use puniyu_adapter::{AccountApi, FriendApi, MessageApi, Result};
+use puniyu_adapter::{AccountApi, FriendApi, GroupApi, MessageApi, Result};
 use puniyu_core::Config;
 use std::sync::LazyLock;
 use std::time::{SystemTime, UNIX_EPOCH};
@@ -39,3 +39,6 @@ impl AccountApi for ConsoleAccountApi {}
 pub struct ConsoleFriendApi;
 
 impl FriendApi for ConsoleFriendApi {}
+
+pub struct ConsoleGroupApi;
+impl GroupApi for ConsoleGroupApi {}

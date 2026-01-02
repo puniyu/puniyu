@@ -1,10 +1,9 @@
-use std::any::Any;
 use async_trait::async_trait;
 use super::{Result, Error};
 use bytes::Bytes;
 
 #[async_trait]
-pub trait AccountApi: Send + Sync + Any {
+pub trait AccountApi: Send + Sync {
     /// 设置头像
     ///
     /// ## 参数

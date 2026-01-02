@@ -1,8 +1,9 @@
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use crate::contact::ContactType;
 use crate::element::receive::Elements;
 use crate::sender::SenderType;
 
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub enum MessageType {
     MessageId(String),
     MessageSeq(u64),
@@ -25,7 +26,7 @@ impl From<u64> for MessageType {
     }
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct SendMsgType {
     /// 消息ID
     pub message_id: String,
@@ -33,7 +34,7 @@ pub struct SendMsgType {
     pub time: u64,
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct MessageInfo {
     /// 消息发送时间戳(秒)
     pub time: u64,

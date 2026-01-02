@@ -20,10 +20,11 @@ impl AdapterBuilder for Console {
 	}
 
 	fn api(&self) -> AdapterApi {
+		let group_api = Arc::new(api::ConsoleGroupApi);
 		let friend_api = Arc::new(api::ConsoleFriendApi);
 		let message_api = Arc::new(api::ConsoleMessageApi);
 		let account_api = Arc::new(api::ConsoleAccountApi);
-		AdapterApi::new(friend_api, account_api, message_api)
+		AdapterApi::new(group_api, friend_api, account_api, message_api)
 	}
 
 	async fn init(&self) -> Result<()> {

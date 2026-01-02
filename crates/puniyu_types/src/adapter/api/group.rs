@@ -1,20 +1,19 @@
-use std::any::Any;
 use super::{
-	AvatarSize, Error, GroupInfo, GroupMuteInfo, MuteType, Result, SetAdminType, SetGroupApplyType,
-	UserInfo,
+	Avatar, AvatarSize, Error, GroupInfo, GroupMuteInfo, MuteType, Result, SetAdminType,
+	SetGroupApplyType, UserInfo,
 };
 use async_trait::async_trait;
 use std::time::Duration;
 
 #[async_trait]
-pub trait GroupApi: Send + Sync + Any {
+pub trait GroupApi: Send + Sync {
 	/// 获取头像
 	///
 	/// ## 参数
 	/// `group_id` - 目标群Id
 	/// `size` - 头像尺寸
 	///
-	async fn get_avatar(&self, _group_id: &str, _size: Option<AvatarSize>) -> Result<String> {
+	async fn get_avatar(&self, _group_id: &str, _size: Option<AvatarSize>) -> Result<Avatar> {
 		Err(Error::NotImpl)
 	}
 

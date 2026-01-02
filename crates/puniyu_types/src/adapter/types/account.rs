@@ -1,4 +1,5 @@
 use bytes::Bytes;
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone)]
 pub enum AvatarSize {
@@ -24,7 +25,7 @@ impl Avatar {
 }
 
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub enum SetFriendApplyType {
     /// 同意好友申请
     Agree,

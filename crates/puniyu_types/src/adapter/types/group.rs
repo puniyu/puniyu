@@ -1,7 +1,7 @@
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use crate::sender::{Role, Sex};
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct GroupInfo {
     /// 群ID
     pub group_id: String,
@@ -11,7 +11,7 @@ pub struct GroupInfo {
     pub avatar: String,
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct MemberInfo {
     /// 用户ID
     pub user_id: String,
@@ -33,7 +33,7 @@ pub struct MemberInfo {
     pub joined_at: u64,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub enum MuteType {
     /// 禁言
     Set,
@@ -41,7 +41,7 @@ pub enum MuteType {
     Remove,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub enum SetAdminType {
     /// 设置管理员
     Set,
@@ -49,7 +49,7 @@ pub enum SetAdminType {
     Remove,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub enum SetGroupApplyType {
     /// 同意入群申请
     Agree,
@@ -57,7 +57,7 @@ pub enum SetGroupApplyType {
     Refuse,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct GroupMuteInfo {
     /// 用户ID
     pub user_id: String,

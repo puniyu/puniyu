@@ -3,7 +3,7 @@ pub use types::*;
 mod error;
 pub use error::Error;
 mod api;
-pub use api::{AdapterApi, GroupApi, FriendApi, MessageApi, AccountApi};
+pub use api::*;
 mod info;
 pub use info::*;
 

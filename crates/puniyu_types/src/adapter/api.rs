@@ -8,48 +8,56 @@ mod message;
 pub use message::MessageApi;
 mod inner;
 
-use std::sync::Arc;
 use super::{Error, Result, types::*};
+use std::sync::Arc;
 
 #[derive(Clone)]
 pub struct AdapterApi {
-	pub friend_api: Arc<dyn FriendApi>,
-	pub account_api: Arc<dyn AccountApi>,
-	pub message_api: Arc<dyn MessageApi>,
+	group_api: Arc<dyn GroupApi>,
+	friend_api: Arc<dyn FriendApi>,
+	account_api: Arc<dyn AccountApi>,
+	message_api: Arc<dyn MessageApi>,
 }
 
 impl Default for AdapterApi {
 	fn default() -> Self {
 		Self {
-			friend_api: Arc::new(inner::EmptyFriendApi),
-			account_api: Arc::new(inner::EmptyAccountApi),
-			message_api: Arc::new(inner::EmptyMessageApi),
+			group_api: Arc::new(inner::DefaultGroupApi),
+			friend_api: Arc::new(inner::DefaultFriendApi),
+			account_api: Arc::new(inner::DefaultAccountApi),
+			message_api: Arc::new(inner::DefaultMessageApi),
 		}
 	}
 }
 
-impl AdapterApi { 
+impl AdapterApi {
 	pub fn new(
+		group_api: Arc<dyn GroupApi>,
 		friend_api: Arc<dyn FriendApi>,
 		account_api: Arc<dyn AccountApi>,
 		message_api: Arc<dyn MessageApi>,
 	) -> Self {
-		Self {
-			friend_api,
-			account_api,
-			message_api,
-		}
+		Self { group_api, friend_api, account_api, message_api }
 	}
 	
+	/// 获取群实例
+	pub fn group(&self) -> &dyn GroupApi {
+		self.group_api.as_ref()
+	}
+	
+	/// 获取好友实例
 	pub fn friend(&self) -> &dyn FriendApi {
 		self.friend_api.as_ref()
 	}
 	
+	/// 获取账号实例
 	pub fn account(&self) -> &dyn AccountApi {
 		self.account_api.as_ref()
 	}
 	
+	/// 获取消息实例
 	pub fn message(&self) -> &dyn MessageApi {
 		self.message_api.as_ref()
 	}
 }
+

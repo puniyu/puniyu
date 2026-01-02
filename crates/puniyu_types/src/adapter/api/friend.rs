@@ -1,9 +1,8 @@
-use std::any::Any;
 use super::{AvatarSize, Error, Result, SetFriendApplyType, UserInfo, Avatar};
 use async_trait::async_trait;
 
 #[async_trait]
-pub trait FriendApi: Send + Sync + Any {
+pub trait FriendApi: Send + Sync {
 	/// 获取头像
 	///
 	/// ## 参数
