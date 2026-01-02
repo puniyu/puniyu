@@ -1,6 +1,5 @@
 mod matcher;
 
-use crate::bot::Bot;
 use crate::event::Event;
 use async_trait::async_trait;
 pub use matcher::Matcher;
@@ -23,5 +22,5 @@ pub trait Handler: Matcher {
 	/// - `bot`: Bot 实例
 	/// - `event`: 事件
 	///
-	async fn handle(&self, bot: &Bot, event: &Event) -> HandlerResult;
+	async fn handle(&self, event: &Event) -> HandlerResult;
 }

@@ -59,10 +59,10 @@ server = ["dep:actix-web", "dep:flume"]
 task = ["dep:async-trait"]
 command = ["dep:async-trait", "context", "event"]
 plugin = ["dep:async-trait", "version", "task", "command", "server", "config"]
-handler = ["dep:async-trait", "event", "bot"]
+handler = ["dep:async-trait", "event"]
 version = ["dep:serde"]
 config = ["dep:toml"]
-bus = ["dep:tokio", "dep:puniyu_logger", "bot", "event"]
+bus = ["dep:tokio", "dep:puniyu_logger", "event"]
 full = [
     "adapter",
     "event",
