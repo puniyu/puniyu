@@ -89,7 +89,7 @@ pub trait Sender: Send + Sync {
 	/// 发送者性别
 	fn sex(&self) -> Sex;
 	/// 发送者年龄
-	fn age(&self) -> u8;
+	fn age(&self) -> Option<u8>;
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
@@ -118,7 +118,7 @@ impl Sender for SenderType {
 			SenderType::Group(sender) => sender.sex(),
 		}
 	}
-	fn age(&self) -> u8 {
+	fn age(&self) -> Option<u8> {
 		match self {
 			SenderType::Friend(sender) => sender.age(),
 			SenderType::Group(sender) => sender.age(),

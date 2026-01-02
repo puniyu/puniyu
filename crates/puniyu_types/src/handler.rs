@@ -19,7 +19,6 @@ pub trait Handler: Matcher {
 
 	/// 处理事件
 	///
-	/// - `bot`: Bot 实例
 	/// - `event`: 事件
 	///
 	async fn handle(&self, event: &Event) -> HandlerResult;

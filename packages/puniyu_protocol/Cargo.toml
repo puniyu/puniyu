@@ -12,10 +12,10 @@ rust-version.workspace = true
 include = ["src", "protos", "Cargo.toml", "build.rs"]
 
 [dependencies]
+prost.workspace = true
 bytes.workspace = true
 chrono.workspace = true
 puniyu_types = { version = "0.6.0", path = "../../crates/puniyu_types" }
-prost = "0.14.1"
 
 
 [build-dependencies]

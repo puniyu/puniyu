@@ -10,7 +10,7 @@ pub struct GroupSender {
 	/// 性别
 	pub sex: Sex,
 	/// 年龄
-	pub age: u8,
+	pub age: Option<u8>,
 	/// 角色
 	pub role: Role,
 	/// 群名片
@@ -50,7 +50,7 @@ impl Sender for GroupSender {
 	fn sex(&self) -> Sex {
 		self.sex.clone()
 	}
-	fn age(&self) -> u8 {
+	fn age(&self) -> Option<u8> {
 		self.age
 	}
 }
@@ -70,7 +70,7 @@ macro_rules! group_sender {
     (@convert nick, None) => { None };
     (@convert nick, $v:expr) => { Some($v.to_string()) };
     (@convert sex, $v:expr) => { $v };
-    (@convert age, $v:expr) => { $v };
+    (@convert age, $v:expr) => { Some($v) };
     (@convert role, $v:expr) => { $v };
     (@convert card, $v:expr) => { Some($v.to_string()) };
     (@convert level, $v:expr) => { Some($v) };

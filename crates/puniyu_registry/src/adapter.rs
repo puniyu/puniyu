@@ -33,6 +33,7 @@ impl AdapterRegistry {
 
 		let adapter_enabled = match adapter_name.as_str() {
 			"puniyu_adapter_console" => Config::app().adapter().console(),
+			"puniyu_adapter_server" => Config::app().adapter().server(),
 			_ => false,
 		};
 		if !adapter_enabled {

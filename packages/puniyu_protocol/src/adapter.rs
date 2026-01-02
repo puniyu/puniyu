@@ -57,6 +57,7 @@ impl From<AdapterProtocol> for puniyu_adapter::AdapterProtocol {
 	fn from(adapter: AdapterProtocol) -> Self {
 		match adapter {
 			AdapterProtocol::QqBot => puniyu_adapter::AdapterProtocol::QQBot,
+			AdapterProtocol::Oicq => puniyu_adapter::AdapterProtocol::Oicq,
 			AdapterProtocol::Icqq => puniyu_adapter::AdapterProtocol::Icqq,
 			AdapterProtocol::GoCqHttp => puniyu_adapter::AdapterProtocol::GoCqHttp,
 			AdapterProtocol::NapCat => puniyu_adapter::AdapterProtocol::NapCat,
@@ -73,6 +74,7 @@ impl From<puniyu_adapter::AdapterProtocol> for AdapterProtocol {
 	fn from(adapter: puniyu_adapter::AdapterProtocol) -> Self {
 		match adapter {
 			puniyu_adapter::AdapterProtocol::QQBot => AdapterProtocol::QqBot,
+			puniyu_adapter::AdapterProtocol::Oicq => AdapterProtocol::Oicq,
 			puniyu_adapter::AdapterProtocol::Icqq => AdapterProtocol::Icqq,
 			puniyu_adapter::AdapterProtocol::GoCqHttp => AdapterProtocol::GoCqHttp,
 			puniyu_adapter::AdapterProtocol::NapCat => AdapterProtocol::NapCat,
@@ -134,6 +136,7 @@ impl From<AdapterInfo> for puniyu_adapter::AdapterInfo {
 			communication: communication.into(),
 			address: adapter.address,
 			connect_time,
+			secret: adapter.secret,
 		}
 	}
 }
@@ -150,6 +153,7 @@ impl From<puniyu_adapter::AdapterInfo> for AdapterInfo {
 			communication: AdapterCommunication::from(adapter.communication).into(),
 			address: adapter.address,
 			connect_time: connect_time as u64,
+			secret: adapter.secret,
 		}
 	}
 }
