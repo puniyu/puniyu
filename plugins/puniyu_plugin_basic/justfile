@@ -1,0 +1,7 @@
+set windows-shell := ["powershell.exe", "-c"]
+set shell := ["bash", "-cu"]
+
+build:
+    cargo build --release
+build-cdylib:
+    cargo build --release --features cdylib

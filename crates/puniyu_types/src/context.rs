@@ -20,8 +20,8 @@ impl BotContext {
 	pub fn new(bot: Arc<Bot>, contact: ContactType) -> Self {
 		Self { bot, contact: Arc::new(contact) }
 	}
-	pub fn api(&self) -> &dyn AdapterApi {
-		self.bot.api
+	pub fn api(&self) -> &AdapterApi {
+		&self.bot.api
 	}
 	pub async fn reply(&self, message: Message) -> Result<types::SendMsgType> {
 		self.bot.send_msg(self.contact.as_ref().clone(), message).await

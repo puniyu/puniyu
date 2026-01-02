@@ -3,7 +3,7 @@ pub use types::*;
 mod error;
 pub use error::Error;
 mod api;
-pub use api::AdapterApi;
+pub use api::{AdapterApi, GroupApi, FriendApi, MessageApi, AccountApi};
 mod info;
 pub use info::*;
 
@@ -14,7 +14,7 @@ use puniyu_logger::info;
 
 pub type Result<T> = std::result::Result<T, Error>;
 
-/// 适配器（registry 层面的存储结构）
+/// 适配器
 #[derive(Clone)]
 pub struct Adapter {
 	/// 适配器名称
@@ -22,10 +22,9 @@ pub struct Adapter {
 	/// 适配器版本
 	pub version: String,
 	/// 适配器 API
-	pub api: &'static dyn AdapterApi,
+	pub api: AdapterApi,
 }
 
-/// 适配器构建器
 #[async_trait]
 pub trait AdapterBuilder: Send + Sync + 'static {
 	/// 适配器名称
@@ -37,7 +36,7 @@ pub trait AdapterBuilder: Send + Sync + 'static {
 	}
 
 	/// 获取适配器API
-	fn api(&self) -> &'static dyn AdapterApi;
+	fn api(&self) -> AdapterApi;
 
 	/// 配置文件
 	fn config(&self) -> Option<Vec<Box<dyn Config>>> {

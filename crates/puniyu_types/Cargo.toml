@@ -41,6 +41,7 @@ adapter = [
     "dep:async-trait",
     "dep:puniyu_logger",
     "dep:derive_builder",
+    "dep:bytes",
     "version",
     "contact",
     "sender",

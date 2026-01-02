@@ -1,12 +1,15 @@
 mod types;
+
+use std::sync::Arc;
 pub use types::*;
 
 use super::{NotionBase, NotionBuilder, NotionSubEvent};
-use crate::bot::BotInfo;
+use crate::bot::Bot;
 use crate::contact::{FriendContact, Scene};
 use crate::event::{EventBase, EventType};
 use crate::sender::FriendSender;
 use serde::{Deserialize, Serialize};
+use crate::event::inner::{deserialize_bot, serialize_bot};
 
 macro_rules! impl_notion_event {
     (
@@ -58,7 +61,11 @@ macro_rules! impl_notion_event {
         $(#[$attr])*
         #[derive(Debug, Clone, Deserialize, Serialize)]
         pub struct $struct_name {
-            bot: BotInfo,
+            #[serde(
+				serialize_with = "serialize_bot",
+				deserialize_with = "deserialize_bot"
+			)]
+            bot: Arc<Bot>,
             event_id: String,
             time: u64,
             self_id: String,
@@ -89,7 +96,7 @@ macro_rules! impl_notion_event {
         impl EventBase for $struct_name {
             type ContactType = FriendContact;
             type SenderType = FriendSender;
-            fn bot(&self) -> &BotInfo { &self.bot }
+            fn bot(&self) -> &Bot { &self.bot }
             fn time(&self) -> u64 { self.time }
             fn event(&self) -> &str { EventType::Notice.into() }
             fn event_id(&self) -> &str { &self.event_id }
