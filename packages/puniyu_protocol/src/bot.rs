@@ -5,9 +5,9 @@ include!(concat!(env!("OUT_DIR"), "/puniyu.bot.rs"));
 impl From<BotInfo> for puniyu_bot {
 	fn from(bot: BotInfo) -> Self {
 		Self {
-			adapter: bot.adapter.unwrap().into(),
+			adapter: bot.adapter.unwrap_or_default().into(),
 			api: AdapterApi::default(),
-			account: bot.account.unwrap().into()
+			account: bot.account.unwrap_or_default().into()
 		}
 	}
 }

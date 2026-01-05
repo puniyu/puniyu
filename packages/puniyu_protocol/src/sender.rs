@@ -45,27 +45,37 @@ impl From<sender::Role> for Role {
 
 impl From<FriendSender> for sender::FriendSender {
 	fn from(value: FriendSender) -> Self {
-		let sex = Sex::try_from(value.sex).unwrap();
-		Self { user_id: value.user_id, nick: value.nick, sex: sex.into(), age: value.age as u8 }
+		let sex = Sex::try_from(value.sex).unwrap_or_default();
+		Self {
+			user_id: value.user_id,
+			nick: value.nick,
+			sex: sex.into(),
+			age: value.age.map(|age| age as u8),
+		}
 	}
 }
 
 impl From<sender::FriendSender> for FriendSender {
 	fn from(value: sender::FriendSender) -> Self {
 		let sex = Sex::from(value.sex);
-		Self { user_id: value.user_id, nick: value.nick, sex: sex.into(), age: value.age as u32 }
+		Self {
+			user_id: value.user_id,
+			nick: value.nick,
+			sex: sex.into(),
+			age: value.age.map(|age| age as u32),
+		}
 	}
 }
 
 impl From<GroupSender> for sender::GroupSender {
 	fn from(value: GroupSender) -> Self {
-		let sex = Sex::try_from(value.sex).unwrap();
-		let role = Role::try_from(value.role).unwrap();
+		let sex = Sex::try_from(value.sex).unwrap_or_default();
+		let role = Role::try_from(value.role).unwrap_or_default();
 		Self {
 			user_id: value.user_id,
 			nick: value.nick,
 			sex: sex.into(),
-			age: value.age as u8,
+			age: value.age.map(|age| age as u8),
 			role: role.into(),
 			card: value.card,
 			level: value.level.map(|level| level as u8),
@@ -82,7 +92,7 @@ impl From<sender::GroupSender> for GroupSender {
 			user_id: value.user_id,
 			nick: value.nick,
 			sex: sex.into(),
-			age: value.age as u32,
+			age: value.age.map(|age| age as u32),
 			role: role.into(),
 			card: value.card,
 			level: value.level.map(|level| level as u32),
@@ -110,6 +120,30 @@ impl From<sender_type::SenderType> for sender::SenderType {
 			}
 			sender_type::SenderType::GroupSender(group) => sender::SenderType::Group(group.into()),
 		}
+	}
+}
+
+impl From<FriendSender> for sender_type::SenderType {
+	fn from(sender: FriendSender) -> Self {
+		Self::FriendSender(sender)
+	}
+}
+
+impl From<FriendSender> for sender::SenderType {
+	fn from(sender: FriendSender) -> Self {
+		Self::Friend(sender.into())
+	}
+}
+
+impl From<GroupSender> for sender::SenderType {
+	fn from(sender: GroupSender) -> Self {
+		Self::Group(sender.into())
+	}
+}
+
+impl From<GroupSender> for sender_type::SenderType {
+	fn from(sender: GroupSender) -> Self {
+		Self::GroupSender(sender)
 	}
 }
 

@@ -50,7 +50,7 @@ impl From<puniyu_message::FriendMessage> for FriendMessage {
 impl From<GroupMessage> for puniyu_message::GroupMessage {
 	fn from(message: GroupMessage) -> Self {
 		let builder = MessageBuilder {
-			bot: Arc::new(message.group_message_bot.unwrap().into()),
+			bot: Arc::new(message.group_message_bot.unwrap_or_default().into()),
 			event_id: message.event_id,
 			self_id: message.self_id,
 			user_id: message.user_id,

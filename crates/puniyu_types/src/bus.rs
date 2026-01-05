@@ -23,6 +23,7 @@ macro_rules! send_event {
 	($event:ident) => {{
 		use std::sync::Arc;
 		let bus = $crate::bus::EVENT_BUS.get().unwrap();
-		bus.send_event(Arc::from($event));
+		let event = Arc::from($event);
+		bus.send_event(event);
 	}};
 }

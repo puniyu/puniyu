@@ -1,7 +1,8 @@
 use glob::glob;
+use protoc_bin_vendored::protoc_bin_path;
 
 fn main() {
-	let bin_path = protoc_bin_vendored::protoc_bin_path().expect("protoc executable not found");
+	let bin_path = protoc_bin_path().expect("protoc executable not found");
 	let mut prost_build = prost_build::Config::new();
 	prost_build.protoc_executable(&bin_path);
 	prost_build.bytes(["."]);

@@ -8,4 +8,6 @@ pub enum Error {
 	Request(#[from] reqwest::Error),
 	#[error("IO错误: {0}")]
 	Io(#[from] std::io::Error),
+	#[error("其他错误: {0}")]
+	Other(String)
 }

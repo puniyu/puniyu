@@ -56,6 +56,10 @@ message XmlElement {
 }
 
 message Elements {
+  repeated Element element = 1;
+}
+
+message Element {
   oneof element {
     TextElement text_element = 1;
     AtElement at_element = 2;

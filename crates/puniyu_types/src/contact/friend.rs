@@ -48,9 +48,10 @@ impl Contact for FriendContact {
 #[macro_export]
 macro_rules! contact_friend {
     ( $( $key:ident : $value:expr ),* $(,)? ) => {{
-        let mut contact = $crate::contact::FriendContact {
-            scene: $crate::contact::Scene::Friend,
-            ..$crate::contact::FriendContact::default()
+        use $crate::contact::{FriendContact, Scene};
+        let mut contact = FriendContact {
+            scene: Scene::Friend,
+            ..FriendContact::default()
         };
         $(
             contact.$key = contact_friend!(@convert $key, $value);
@@ -59,9 +60,10 @@ macro_rules! contact_friend {
     }};
 
     ($peer:expr, $name:expr) => {{
-        let mut contact = $crate::contact::FriendContact {
-            scene: $crate::contact::Scene::Friend,
-            ..$crate::contact::FriendContact::default()
+        use $crate::contact::{FriendContact, Scene};
+        let mut contact = FriendContact {
+            scene: Scene::Friend,
+            ..FriendContact::default()
         };
         contact.peer = $peer.to_string();
         contact.name = Some($name.to_string());

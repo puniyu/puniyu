@@ -69,9 +69,9 @@ pub struct ImageElement {
 	/// 图片外显
 	pub summary: String,
 	/// 图片宽度
-	pub width: u64,
+	pub width: u32,
 	/// 图片高度
-	pub height: u64,
+	pub height: u32,
 }
 
 impl RawMessage for ImageElement {
