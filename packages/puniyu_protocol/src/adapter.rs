@@ -1,4 +1,4 @@
-use chrono::DateTime;
+use chrono::{DateTime, Utc};
 use puniyu_types::adapter as puniyu_adapter;
 
 include!(concat!(env!("OUT_DIR"), "/puniyu.adapter.rs"));
@@ -121,11 +121,11 @@ impl From<puniyu_adapter::AdapterCommunication> for AdapterCommunication {
 
 impl From<AdapterInfo> for puniyu_adapter::AdapterInfo {
 	fn from(adapter: AdapterInfo) -> Self {
-		let platform = AdapterPlatform::try_from(adapter.platform).unwrap();
-		let standard = AdapterStandard::try_from(adapter.standard).unwrap();
-		let protocol = AdapterProtocol::try_from(adapter.protocol).unwrap();
-		let communication = AdapterCommunication::try_from(adapter.communication).unwrap();
-		let connect_time = DateTime::from_timestamp_secs(adapter.connect_time as i64).unwrap();
+		let platform = AdapterPlatform::try_from(adapter.platform).unwrap_or_default();
+		let standard = AdapterStandard::try_from(adapter.standard).unwrap_or_default();
+		let protocol = AdapterProtocol::try_from(adapter.protocol).unwrap_or_default();
+		let communication = AdapterCommunication::try_from(adapter.communication).unwrap_or_default();
+		let connect_time = DateTime::from_timestamp_secs(adapter.connect_time as i64).unwrap_or(Utc::now());
 
 		Self {
 			name: adapter.name,

@@ -27,8 +27,8 @@ message FaceElement {
 message ImageElement {
   bytes file = 1;
   string summary = 2;
-  uint64 width = 3;
-  uint64 height = 4;
+  uint32 width = 3;
+  uint32 height = 4;
 }
 
 /// 文件元素
@@ -60,6 +60,10 @@ message XmlElement {
 }
 
 message Elements {
+  repeated Element element = 1;
+}
+
+message Element {
   oneof element {
     TextElement text_element = 1;
     AtElement at_element = 2;

@@ -135,30 +135,34 @@ impl AdapterBuilder for Console {
 
 						create_message_event!(
 							Group,
-							bot: Arc::clone(&bot),
-							event_id: event_id,
-							contact: contact,
-							self_id: bot_id,
-							user_id: name,
-							message_id: message_id,
-							elements: elements,
-							sender: sender,
-							time: timestamp
+							{
+								bot: Arc::clone(&bot),
+								event_id: event_id,
+								contact: contact,
+								self_id: bot_id,
+								user_id: name,
+								message_id: message_id,
+								elements: elements,
+								sender: sender,
+								time: timestamp
+							}
 						);
 					}
 					"friend" => {
 						let contact = contact_friend!(name, name);
 						let sender = friend_sender!(user_id: name, nick: name);
 						create_message_event!(Friend,
-							bot: Arc::clone(&bot),
-							event_id: event_id,
-							self_id: bot_id,
-							user_id: name,
-							message_id: message_id,
-							elements: elements,
-							sender: sender,
-							contact: contact,
-							time: timestamp
+							{
+								bot: Arc::clone(&bot),
+								event_id: event_id,
+								self_id: bot_id,
+								user_id: name,
+								message_id: message_id,
+								elements: elements,
+								sender: sender,
+								contact: contact,
+								time: timestamp
+							}
 						);
 					}
 					_ => {
@@ -166,15 +170,17 @@ impl AdapterBuilder for Console {
 						let sender = friend_sender!(user_id: name, nick: name);
 
 						create_message_event!(Friend,
-							bot: Arc::clone(&bot),
-							event_id: event_id,
-							self_id: bot_id,
-							user_id: name,
-							message_id: message_id,
-							elements: elements,
-							contact: contact,
-							sender: sender,
-							time: timestamp
+							{
+								bot: Arc::clone(&bot),
+								event_id: event_id,
+								self_id: bot_id,
+								user_id: name,
+								message_id: message_id,
+								elements: elements,
+								contact: contact,
+								sender: sender,
+								time: timestamp
+							}
 						);
 					}
 				};

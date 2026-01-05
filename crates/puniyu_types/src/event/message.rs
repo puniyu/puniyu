@@ -247,7 +247,11 @@ pub trait MessageBase: Send + Sync + EventBase {
 }
 
 #[derive(Debug)]
-pub struct MessageBuilder<Contact, Sender> {
+pub struct MessageBuilder<Contact, Sender>
+where
+	Contact: crate::contact::Contact,
+	Sender: crate::sender::Sender,
+{
 	pub bot: Arc<Bot>,
 	pub event_id: String,
 	pub self_id: String,
@@ -258,10 +262,6 @@ pub struct MessageBuilder<Contact, Sender> {
 	pub message_id: String,
 	pub elements: Vec<Elements>,
 }
-
-
-
-
 
 macro_rules! impl_message_event {
     (
@@ -417,9 +417,13 @@ impl GroupMessage {
 macro_rules! create_message_event {
     (
         Group,
-        $( $key:ident : $value:expr ),* $(,)?
+        { $( $key:ident : $value:expr ),* $(,)? }
     ) => {{
-        let mut builder = $crate::event::message::MessageBuilder::<$crate::contact::GroupContact, $crate::sender::GroupSender> {
+		use $crate::contact::GroupContact;
+		use $crate::sender::GroupSender;
+		use $crate::event::{Event, message::{MessageEvent, MessageBuilder, GroupMessage}};
+
+        let mut builder = MessageBuilder::<GroupContact, GroupSender> {
             bot: Default::default(),
             event_id: String::new(),
             time: 0,
@@ -435,16 +439,20 @@ macro_rules! create_message_event {
             builder.$key = create_message_event!(@convert $key, $value);
         )*
 
-        let message = $crate::event::message::GroupMessage::new(builder);
-        let event = $crate::event::Event::Message(Box::new($crate::event::message::MessageEvent::Group(message)));
+        let message = GroupMessage::new(builder);
+        let event = Event::Message(Box::new(MessageEvent::Group(message)));
      	$crate::send_event!(event);
     }};
 
     (
         Friend,
-        $( $key:ident : $value:expr ),* $(,)?
+        { $( $key:ident : $value:expr ),* $(,)? }
     ) => {{
-        let mut builder = $crate::event::message::MessageBuilder::<$crate::contact::FriendContact, $crate::sender::FriendSender> {
+		use $crate::contact::FriendContact;
+		use $crate::sender::FriendSender;
+		use $crate::event::{Event, message::{MessageEvent, MessageBuilder, GroupMessage}};
+
+        let mut builder = MessageBuilder::<FriendContact, FriendSender> {
             bot: Default::default(),
             event_id: String::new(),
             time: 0,

@@ -1977,6 +1977,9 @@ dependencies = [
  "puniyu_adapter",
  "puniyu_core",
  "puniyu_protocol",
+ "puniyu_types",
+ "thiserror 2.0.17",
+ "tokio",
 ]
 
 [[package]]

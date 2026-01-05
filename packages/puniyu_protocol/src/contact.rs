@@ -50,7 +50,7 @@ impl From<Contact> for ContactType {
 	fn from(value: Contact) -> Self {
 		let peer = value.peer;
 		let name = value.name;
-		let scene = SceneType::try_from(value.scene).unwrap();
+		let scene = SceneType::try_from(value.scene).unwrap_or_default();
 		match scene {
 			SceneType::Friend => {
 				ContactType::Friend(FriendContact { scene: Scene::Friend, peer, name })
@@ -74,3 +74,4 @@ impl From<ContactType> for Contact {
 		}
 	}
 }
+

@@ -1,16 +1,18 @@
 mod api;
 mod common;
+mod error;
 mod server;
+mod bot;
 
+use actix_web::web::{ServiceConfig, self};
 use async_trait::async_trait;
-use puniyu_adapter::actix_web::web;
 use puniyu_adapter::prelude::*;
-use puniyu_adapter::{Result, ServerType, ServiceConfig};
+use puniyu_adapter::{Result, ServerType};
+use puniyu_core::Config;
+use puniyu_core::logger::info;
+use server::ws_handler;
 use std::env;
 use std::sync::Arc;
-use puniyu_core::logger::info;
-use puniyu_core::Config;
-use server::bot;
 
 #[adapter]
 struct Server;
@@ -24,7 +26,7 @@ impl AdapterBuilder for Server {
 	fn api(&self) -> AdapterApi {
 		let group_api = Arc::new(api::ServerGroupApi);
 		let friend_api = Arc::new(api::ServerFriendApi);
-		let message_api = Arc::new(api::ServerMessageApi);
+		let message_api = Arc::new(api::ServerMessageApi::default());
 		let account_api = Arc::new(api::ServerAccountApi);
 		AdapterApi::new(group_api, friend_api, account_api, message_api)
 	}
@@ -32,8 +34,8 @@ impl AdapterBuilder for Server {
 	fn server(&self) -> Option<ServerType> {
 		let server = |cfg: &mut ServiceConfig| {
 			cfg.service(web::scope("/api/bot").configure(|cfg: &mut ServiceConfig| {
-				cfg.route("/{bot_app}", web::get().to(bot::ws_handler));
-				cfg.route("/{bot_app}/ws", web::get().to(bot::ws_handler));
+				cfg.route("/{bot_app}", web::get().to(ws_handler));
+				cfg.route("/{bot_app}/ws", web::get().to(ws_handler));
 			}));
 		};
 		Some(Arc::new(server))
