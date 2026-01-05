@@ -131,7 +131,7 @@ impl MessageApi for ServerMessageApi {
 		let pb = EventSend { event: Some(event_send::Event::MessageEvent(message_event)) }
 			.encode_to_vec();
 		bot.session.lock().await.binary(pb).await.map_err(|e| Error::Other(e.to_string()))?;
-		Ok(SendMsgType { message_id: message_id.to_string(), time: 0 })
+		Ok(SendMsgType { message_id: message_id.to_string(), time: event.time })
 	}
 }
 
