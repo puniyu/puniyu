@@ -19,7 +19,6 @@ tokio.workspace = true
 puniyu_adapter = { version = "0.6.0", path = "../../packages/puniyu_adapter" }
 puniyu_core = { version = "0.6.0", path = "../../packages/puniyu_core" }
 puniyu_protocol = { version = "0.1.0", path = "../../packages/puniyu_protocol" }
-puniyu_types = { version = "0.6.0", path = "../../crates/puniyu_types", default-features = false, features = ["bot", "contact", "sender", "element"] }
 futures-util = "0.3.31"
 actix-ws = "0.3.0"
 

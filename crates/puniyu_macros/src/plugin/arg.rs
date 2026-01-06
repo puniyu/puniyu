@@ -137,29 +137,29 @@ impl Arg {
 		let name = &self.name;
 		let arg_type_str = self.arg_type.value();
 		let arg_type = match arg_type_str.as_str() {
-			"int" => quote! { ::puniyu_plugin::ArgType::Int },
-			"float" => quote! { ::puniyu_plugin::ArgType::Float },
-			"bool" => quote! { ::puniyu_plugin::ArgType::Bool },
-			_ => quote! { ::puniyu_plugin::ArgType::String },
+			"int" => quote! { ::puniyu_plugin::macros::proc_macro::ArgType::Int },
+			"float" => quote! { ::puniyu_plugin::macros::proc_macro::ArgType::Float },
+			"bool" => quote! { ::puniyu_plugin::macros::proc_macro::ArgType::Bool },
+			_ => quote! { ::puniyu_plugin::macros::proc_macro::ArgType::String },
 		};
 		let mode_str = self.mode.value();
 		let mode = match mode_str.as_str() {
-			"named" => quote! { ::puniyu_plugin::ArgMode::Named },
-			_ => quote! { ::puniyu_plugin::ArgMode::Positional },
+			"named" => quote! { ::puniyu_plugin::macros::proc_macro::ArgMode::Named },
+			_ => quote! { ::puniyu_plugin::macros::proc_macro::ArgMode::Positional },
 		};
 		let required = self.required;
 		let desc = &self.desc;
 		let default_value = match &self.default {
 			Some(expr) => match arg_type_str.as_str() {
-				"int" => quote! { Some(::puniyu_plugin::ArgValue::Int(#expr as i64)) },
-				"float" => quote! { Some(::puniyu_plugin::ArgValue::Float(#expr as f64)) },
-				"bool" => quote! { Some(::puniyu_plugin::ArgValue::Bool(#expr)) },
-				_ => quote! { Some(::puniyu_plugin::ArgValue::String(#expr.to_string())) },
+				"int" => quote! { Some(::puniyu_plugin::macros::proc_macro::ArgValue::Int(#expr as i64)) },
+				"float" => quote! { Some(::puniyu_plugin::macros::proc_macro::ArgValue::Float(#expr as f64)) },
+				"bool" => quote! { Some(::puniyu_plugin::macros::proc_macro::ArgValue::Bool(#expr)) },
+				_ => quote! { Some(::puniyu_plugin::macros::proc_macro::ArgValue::String(#expr.to_string())) },
 			},
 			None => quote! { None },
 		};
 		quote! {
-			::puniyu_plugin::Arg {
+			::puniyu_plugin::macros::proc_macro::Arg {
 				name: #name,
 				arg_type: #arg_type,
 				mode: #mode,

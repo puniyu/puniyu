@@ -28,7 +28,6 @@ macro_rules! segment {
     (image, $file:expr, $is_flash:expr, $summary:expr) => {
         $crate::element::send::Elements::Image($crate::element::send::ImageElement {
             file: $file,
-            is_flash: $is_flash,
             summary: $summary,
         })
     };
@@ -86,14 +85,3 @@ macro_rules! segment {
     };
 }
 
-#[macro_export]
-macro_rules! message {
-    // 单个参数
-    ($single:expr) => {
-        $crate::element::Message::from($single)
-    };
-    // 多个 Elements
-    ($first:expr, $($rest:expr),+ $(,)?) => {
-        $crate::element::Message::from(vec![$first, $($rest),+])
-    };
-}

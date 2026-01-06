@@ -1,0 +1,1 @@
+pub use puniyu_types::contact::{ContactType, FriendContact, GroupContact, Scene, Contact};

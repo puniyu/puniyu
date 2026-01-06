@@ -1941,16 +1941,13 @@ version = "0.6.0"
 dependencies = [
  "actix-web",
  "async-trait",
- "convert_case",
  "inventory",
  "puniyu_common",
  "puniyu_config",
- "puniyu_event",
  "puniyu_logger",
  "puniyu_macros",
  "puniyu_registry",
  "puniyu_types",
- "serde",
  "serde_json",
  "toml",
 ]
@@ -1977,7 +1974,6 @@ dependencies = [
  "puniyu_adapter",
  "puniyu_core",
  "puniyu_protocol",
- "puniyu_types",
  "thiserror 2.0.17",
  "tokio",
 ]
@@ -2100,7 +2096,6 @@ dependencies = [
  "inventory",
  "puniyu_common",
  "puniyu_config",
- "puniyu_event",
  "puniyu_logger",
  "puniyu_macros",
  "puniyu_registry",
@@ -2135,7 +2130,6 @@ dependencies = [
 name = "puniyu_registry"
 version = "0.6.0"
 dependencies = [
- "async-trait",
  "chrono",
  "chrono-tz",
  "convert_case",

@@ -15,13 +15,7 @@
         "puniyu",
         "core",
         "plugin",
-        "adapter",
-        "types",
-        "server",
-        "registry",
-        "config",
-        "event",
-        "command"
+        "adapter"
       ]
     }
   ],
@@ -108,6 +102,10 @@
       "component": "macros"
     },
     "crates/puniyu_types": {
+      "release-type": "rust",
+      "component": "types"
+    },
+    "packages/puniyu_protocol": {
       "release-type": "rust",
       "component": "types"
     },

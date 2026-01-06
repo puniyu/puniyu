@@ -1,8 +1,5 @@
 use actix_ws::Session;
-use puniyu_types::account::AccountInfo;
-use puniyu_types::adapter::AdapterInfo;
-use puniyu_types::contact::ContactType;
-use puniyu_types::sender::SenderType;
+use puniyu_adapter::prelude::*;
 use std::sync::Arc;
 use tokio::sync::Mutex;
 

@@ -26,7 +26,8 @@ default = ["version"]
 version = []
 system-info = ["dep:puniyu_system_info"]
 
-
+[package.metadata.workspaces]
+independent = true
 
 
 

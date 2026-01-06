@@ -27,6 +27,7 @@ jobs:
       macros: ${{ steps.release-please.outputs['crates/puniyu_macros--release_created'] }}
       config: ${{ steps.release-please.outputs['crates/puniyu_config--release_created'] }}
       types: ${{ steps.release-please.outputs['crates/puniyu_types--release_created'] }}
+      protocol: ${{ steps.release-please.outputs['packages/puniyu_protocol--release_created'] }}
       registry: ${{ steps.release-please.outputs['crates/puniyu_registry--release_created'] }}
       command: ${{ steps.release-please.outputs['crates/puniyu_command--release_created'] }}
       event: ${{ steps.release-please.outputs['crates/puniyu_event--release_created'] }}
@@ -124,6 +125,12 @@ jobs:
       - name: 发布 types
         if: needs.release.outputs.types
         run: cargo publish --package puniyu_types --registry crates-io
+
+
+      - name: 发布 protocol
+        if: needs.release.outputs.protocol
+        run: cargo publish --package puniyu_protocol --registry crates-io
+
 
       - name: 发布 registry
         if: needs.release.outputs.registry

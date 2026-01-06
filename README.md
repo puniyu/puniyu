@@ -1,9 +1,11 @@
 # puniyu
 速糖， 一个高效·稳定·可高度灵活扩展 的机器人框架
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/puniyu/puniyu)
 
 ## 社区
 
 [![QQ群](https://img.shields.io/badge/QQ群-1022851882-blue.svg)](https://qm.qq.com/q/vnVbBH7IIg)
+
 
 ## 贡献者
 

@@ -2,15 +2,16 @@ use crate::common::make_random_id;
 use async_trait::async_trait;
 use puniyu_adapter::logger::debug;
 use puniyu_adapter::prelude::*;
-use puniyu_adapter::{AccountApi, FriendApi, GroupApi, MessageApi, Result};
 use puniyu_core::Config;
 use std::sync::LazyLock;
 use std::time::{SystemTime, UNIX_EPOCH};
+
 pub(crate) static AVATAR_URL: LazyLock<String> = LazyLock::new(|| {
 	let config = Config::app();
 	let server = config.server();
 	format!("http://{}:{}/logo.png", server.host(), server.port())
 });
+
 pub struct ConsoleMessageApi;
 
 #[async_trait]
@@ -23,7 +24,7 @@ impl MessageApi for ConsoleMessageApi {
 		let message_id = make_random_id();
 		let timestamp = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs();
 
-		let elements: Vec<send::Elements> = message.into();
+		let elements: Vec<Elements> = message.into();
 
 		debug!("[发送{}:{}]\n{:#?}", msg_type, source, elements);
 

@@ -28,3 +28,6 @@ adapter = []
 plugin = ["task", "command"]
 command = []
 task = []
+
+[package.metadata.workspaces]
+independent = true

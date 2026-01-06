@@ -300,7 +300,6 @@ impl PluginRegistry {
 		}
 	}
 
-	#[inline]
 	pub fn get_all_plugins() -> Vec<Plugin> {
 		STORE.plugin().get_all_plugins().into_values().collect()
 	}

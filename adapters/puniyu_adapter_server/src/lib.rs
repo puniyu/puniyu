@@ -1,13 +1,11 @@
 mod api;
-mod common;
+mod bot;
 mod error;
 mod server;
-mod bot;
 
-use actix_web::web::{ServiceConfig, self};
+use actix_web::web::{self, ServiceConfig};
 use async_trait::async_trait;
 use puniyu_adapter::prelude::*;
-use puniyu_adapter::{Result, ServerType};
 use puniyu_core::Config;
 use puniyu_core::logger::info;
 use server::ws_handler;
@@ -45,7 +43,11 @@ impl AdapterBuilder for Server {
 		let config = Config::app();
 		let server = config.server();
 		info!("{} v{} 初始化完成", self.name(), self.version());
-		info!("服务端适配器连接地址: ws://{}:{}", server.host(), server.port());
+		info!(
+			"服务端适配器连接地址: ws://{}:{}/api/bot/{{bot_app}}ws",
+			server.host(),
+			server.port()
+		);
 		Ok(())
 	}
 }

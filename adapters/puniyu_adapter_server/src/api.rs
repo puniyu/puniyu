@@ -1,13 +1,8 @@
 use crate::bot::Bot;
 use async_trait::async_trait;
 use prost::Message;
-use puniyu_adapter::prelude::{ContactType, Scene, SendMsgType};
-use puniyu_adapter::{AccountApi, Error, FriendApi, GroupApi, MessageApi, Result};
-use puniyu_types::account::AccountInfo;
-use puniyu_types::adapter::AdapterInfo;
-use puniyu_types::contact::Contact;
-use puniyu_types::element::send::Elements;
-use puniyu_types::sender::SenderType;
+use puniyu_adapter::prelude::*;
+use puniyu_adapter::{Result, Error};
 use std::sync::Arc;
 
 #[derive(Default)]
@@ -32,7 +27,7 @@ impl ServerMessageApi {
 	}
 
 	fn create_friend_sender(
-		sender: &puniyu_types::sender::FriendSender,
+		sender: &FriendSender,
 	) -> puniyu_protocol::sender::FriendSender {
 		use puniyu_protocol::sender::{FriendSender, Sex};
 		FriendSender {
@@ -44,7 +39,7 @@ impl ServerMessageApi {
 	}
 
 	fn create_group_sender(
-		sender: &puniyu_types::sender::GroupSender,
+		sender: &GroupSender,
 	) -> puniyu_protocol::sender::GroupSender {
 		use puniyu_protocol::sender::{GroupSender, Role, Sex};
 		GroupSender {

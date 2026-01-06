@@ -1,10 +1,8 @@
 use crate::api;
 use actix_ws::Session;
-use puniyu_adapter::{AdapterApi, Bot, create_message_event};
+use puniyu_adapter::prelude::*;
 use puniyu_protocol::event::message::{MessageEventReceive, message_event_receive};
 use puniyu_protocol::event::{EventReceive, event_receive};
-use puniyu_types::account::AccountInfo;
-use puniyu_types::adapter::AdapterInfo;
 use std::sync::Arc;
 use tokio::sync::Mutex;
 

@@ -3,12 +3,15 @@ mod common;
 
 use crate::common::make_random_id;
 use async_trait::async_trait;
-use puniyu_adapter::Result;
 use puniyu_adapter::logger::info;
-use puniyu_adapter::prelude::*;
 use puniyu_core::APP_NAME;
 use std::env;
 use std::sync::Arc;
+use puniyu_adapter::bot::*;
+use puniyu_adapter::adapter::*;
+use puniyu_adapter::sender::*;
+use puniyu_adapter::macros::*;
+use puniyu_adapter::element::receive::*;
 
 #[adapter]
 struct Console;
@@ -81,7 +84,7 @@ impl AdapterBuilder for Console {
 
 				let elements: Vec<Elements> = match content.split_once(':') {
 					Some(("at", target_id)) if !target_id.is_empty() => {
-						vec![Elements::At(AtElement { target_id: target_id.to_string() })]
+						vec![Elements::At(AtElement { target_id: target_id.to_string()})]
 					}
 					Some(("text", text_content)) => {
 						vec![Elements::Text(TextElement { text: text_content.to_string() })]

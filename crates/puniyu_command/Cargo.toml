@@ -27,3 +27,5 @@ puniyu_types = { version = "0.6.0", path = "../puniyu_types", default-features =
     "event",
 ] }
 
+[package.metadata.workspaces]
+independent = true

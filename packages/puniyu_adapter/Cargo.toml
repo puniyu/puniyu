@@ -14,11 +14,9 @@ rust-version.workspace = true
 async-trait.workspace = true
 inventory.workspace = true
 puniyu_logger.workspace = true
-serde.workspace = true
 serde_json.workspace = true
 toml.workspace = true
 actix-web.workspace = true
-convert_case.workspace = true
 
 puniyu_config = { version = "0.6.0", path = "../../crates/puniyu_config" }
 puniyu_macros = { version = "0.6.0", path = "../../crates/puniyu_macros", features = [
@@ -33,4 +31,3 @@ puniyu_types = { version = "0.6.0", path = "../../crates/puniyu_types", default-
 puniyu_registry = { version = "0.6.0", path = "../../crates/puniyu_registry", default-features = false, features = [
   "adapter",
 ] }
-puniyu_event = { version = "0.6.0", path = "../../crates/puniyu_event" }

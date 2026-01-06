@@ -21,3 +21,6 @@ puniyu_command = { version = "0.6.0", path = "../puniyu_command" }
 puniyu_registry = { version = "0.6.0", path = "../puniyu_registry", default-features = false, features = [
   "handler",
 ] }
+
+[package.metadata.workspaces]
+independent = true

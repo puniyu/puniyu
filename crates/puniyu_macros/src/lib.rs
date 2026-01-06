@@ -48,34 +48,34 @@ pub fn adapter_config(args: TokenStream, item: TokenStream) -> TokenStream {
 	let expanded = quote! {
 		#input_struct
 
-		impl ::puniyu_adapter::Config for #struct_name {
+		impl ::puniyu_adapter::macros::proc_macro::Config for #struct_name {
 			fn name(&self) -> &'static str {
 				#config_name
 			}
 
-			fn config(&self) -> ::puniyu_adapter::toml::Value {
-				let config_str = ::puniyu_adapter::toml::to_string(&Self::default())
+			fn config(&self) -> ::puniyu_adapter::macros::proc_macro::toml::Value {
+				let config_str = ::puniyu_adapter::macros::proc_macro::toml::to_string(&Self::default())
 					.expect("Failed to serialize config");
-				::puniyu_adapter::toml::from_str(&config_str)
+				::puniyu_adapter::macros::proc_macro::toml::from_str(&config_str)
 					.expect("Failed to deserialize config")
 			}
 		}
 
 		impl #struct_name {
 			pub fn get() -> Self {
-				use ::puniyu_adapter::AdapterBuilder;
+				use ::puniyu_adapter::macros::proc_macro::AdapterBuilder;
 				let adapter_name = crate::Adapter.name().to_lowercase();
-				let path = ::puniyu_adapter::ADAPTER_CONFIG_DIR.join(adapter_name).join(format!("{}.toml", #config_name));
-				::puniyu_adapter::ConfigRegistry::get(&path)
+				let path = ::puniyu_adapter::macros::proc_macro::ADAPTER_CONFIG_DIR.join(adapter_name).join(format!("{}.toml", #config_name));
+				::puniyu_adapter::macros::proc_macro::ConfigRegistry::get(&path)
 					.and_then(|cfg| cfg.try_into::<#struct_name>().ok())
 					.unwrap_or_default()
 			}
 		}
 
-		::puniyu_adapter::inventory::submit! {
+		::puniyu_adapter::macros::proc_macro::inventory::submit! {
 			crate::ConfigRegistry {
 				adapter_name: #adapter_name,
-				builder: || -> Box<dyn ::puniyu_adapter::Config> {
+				builder: || -> Box<dyn ::puniyu_adapter::macros::proc_macro::Config> {
 					Box::new(#struct_name::default())
 				}
 			}
@@ -104,38 +104,38 @@ pub fn adapter(_: TokenStream, item: TokenStream) -> TokenStream {
 
 		pub struct #adapter_struct_name;
 
-		#[::puniyu_adapter::async_trait]
-		impl ::puniyu_adapter::AdapterBuilder for #adapter_struct_name {
+		#[::puniyu_adapter::macros::proc_macro::async_trait]
+		impl ::puniyu_adapter::macros::proc_macro::AdapterBuilder for #adapter_struct_name {
 			fn name(&self) -> &'static str {
-				::puniyu_adapter::AdapterBuilder::name(&#struct_name)
+				::puniyu_adapter::macros::proc_macro::AdapterBuilder::name(&#struct_name)
 			}
 
-			fn version(&self) -> ::puniyu_adapter::Version {
-				::puniyu_adapter::Version {
+			fn version(&self) -> ::puniyu_adapter::macros::proc_macro::Version {
+				::puniyu_adapter::macros::proc_macro::Version {
 					major: #version_major,
 					minor: #version_minor,
 					patch: #version_patch,
 				}
 			}
 
-			fn api(&self) -> ::puniyu_adapter::AdapterApi {
-				::puniyu_adapter::AdapterBuilder::api(&#struct_name)
+			fn api(&self) -> ::puniyu_adapter::macros::proc_macro::AdapterApi {
+				::puniyu_adapter::macros::proc_macro::AdapterBuilder::api(&#struct_name)
 			}
 
-			fn config(&self) -> Option<Vec<Box<dyn ::puniyu_adapter::Config>>> {
-				::puniyu_adapter::inventory::iter::<ConfigRegistry>
+			fn config(&self) -> Option<Vec<Box<dyn ::puniyu_adapter::macros::proc_macro::Config>>> {
+				::puniyu_adapter::macros::proc_macro::inventory::iter::<ConfigRegistry>
 					.into_iter()
 					.map(|registry| (registry.builder)())
 					.collect::<Vec<_>>()
 					.into()
 			}
 
-			fn server(&self) -> Option<::puniyu_adapter::ServerType> {
-				::puniyu_adapter::AdapterBuilder::server(&#struct_name)
+			fn server(&self) -> Option<::puniyu_adapter::macros::proc_macro::ServerType> {
+				::puniyu_adapter::macros::proc_macro::AdapterBuilder::server(&#struct_name)
 			}
 
-			async fn init(&self) -> ::puniyu_adapter::Result<()> {
-				::puniyu_adapter::AdapterBuilder::init(&#struct_name).await
+			async fn init(&self) -> ::puniyu_adapter::macros::proc_macro::Result<()> {
+				::puniyu_adapter::macros::proc_macro::AdapterBuilder::init(&#struct_name).await
 			}
 		}
 
@@ -143,9 +143,9 @@ pub fn adapter(_: TokenStream, item: TokenStream) -> TokenStream {
 		pub(crate) struct ConfigRegistry {
 			adapter_name: &'static str,
 			/// 配置构造器
-			builder: fn() -> Box<dyn ::puniyu_adapter::Config>,
+			builder: fn() -> Box<dyn ::puniyu_adapter::macros::proc_macro::Config>,
 		}
-		::puniyu_adapter::inventory::collect!(ConfigRegistry);
+		::puniyu_adapter::macros::proc_macro::inventory::collect!(ConfigRegistry);
 	};
 
 	TokenStream::from(expanded)
@@ -170,34 +170,34 @@ pub fn plugin_config(args: TokenStream, item: TokenStream) -> TokenStream {
 	let expanded = quote! {
 		#input_struct
 
-		impl ::puniyu_plugin::Config for #struct_name {
+		impl ::puniyu_plugin::macros::proc_macro::Config for #struct_name {
 			fn name(&self) -> &'static str {
 				#config_name
 			}
 
-			fn config(&self) -> ::puniyu_plugin::toml::Value {
-				let config_str = ::puniyu_plugin::toml::to_string(&Self::default())
+			fn config(&self) -> ::puniyu_plugin::macros::proc_macro::toml::Value {
+				let config_str = ::puniyu_plugin::macros::proc_macro::toml::to_string(&Self::default())
 					.expect("Failed to serialize config");
-				::puniyu_plugin::toml::from_str(&config_str)
+				::puniyu_plugin::macros::proc_macro::toml::from_str(&config_str)
 					.expect("Failed to deserialize config")
 			}
 		}
 
 		impl #struct_name {
 			pub fn get() -> Self {
-				use ::puniyu_plugin::PluginBuilder;
+				use ::puniyu_plugin::macros::proc_macro::PluginBuilder;
 				let plugin_name = crate::Plugin.name().to_lowercase();
-				let path = ::puniyu_plugin::PLUGIN_CONFIG_DIR.join(plugin_name).join(format!("{}.toml", #config_name));
-				::puniyu_plugin::ConfigRegistry::get(&path)
+				let path = ::puniyu_plugin::macros::proc_macro::PLUGIN_CONFIG_DIR.join(plugin_name).join(format!("{}.toml", #config_name));
+				::puniyu_plugin::macros::proc_macro::ConfigRegistry::get(&path)
 					.and_then(|cfg| cfg.try_into::<#struct_name>().ok())
 					.unwrap_or_default()
 			}
 		}
 
-		::puniyu_plugin::inventory::submit! {
+		::puniyu_plugin::macros::proc_macro::inventory::submit! {
 			crate::ConfigRegistry {
 				plugin_name: #plugin_name,
-				builder: || -> Box<dyn ::puniyu_plugin::Config> {
+				builder: || -> Box<dyn ::puniyu_plugin::macros::proc_macro::Config> {
 					Box::new(#struct_name::default())
 				}
 			}
@@ -307,14 +307,14 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
 
 		#fn_vis #fn_sig #fn_block
 
-		#[::puniyu_plugin::async_trait]
-		impl ::puniyu_plugin::PluginBuilder for #struct_name {
+		#[::puniyu_plugin::macros::proc_macro::async_trait]
+		impl ::puniyu_plugin::macros::proc_macro::PluginBuilder for #struct_name {
 			fn name(&self) -> &'static str {
 				#plugin_name
 			}
 
-			fn version(&self) -> ::puniyu_plugin::Version {
-				::puniyu_plugin::Version {
+			fn version(&self) -> ::puniyu_plugin::macros::proc_macro::Version {
+				::puniyu_plugin::macros::proc_macro::Version {
 					major: #version_major,
 					minor: #version_minor,
 					patch: #version_patch,
@@ -325,8 +325,8 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
 				#plugin_author
 			}
 
-			fn abi_version(&self) -> ::puniyu_plugin::Version {
-				::puniyu_plugin::ABI_VERSION
+			fn abi_version(&self) -> ::puniyu_plugin::macros::proc_macro::Version {
+				::puniyu_plugin::macros::proc_macro::ABI_VERSION
 			}
 
 			fn description(&self) -> &'static str {
@@ -337,27 +337,27 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
 				#plugin_prefix
 			}
 
-			fn tasks(&self) -> Vec<Box<dyn ::puniyu_plugin::TaskBuilder>> {
+			fn tasks(&self) -> Vec<Box<dyn ::puniyu_plugin::macros::proc_macro::TaskBuilder>> {
 				let plugin_name = self.name();
-				::puniyu_plugin::inventory::iter::<TaskRegistry>
+				::puniyu_plugin::macros::proc_macro::inventory::iter::<TaskRegistry>
 					.into_iter()
 					.filter(|task| task.plugin_name == plugin_name)
 					.map(|task| (task.builder)())
 					.collect()
 			}
 
-			fn commands(&self) -> Vec<Box<dyn ::puniyu_plugin::CommandBuilder>> {
+			fn commands(&self) -> Vec<Box<dyn ::puniyu_plugin::macros::proc_macro::CommandBuilder>> {
 				let plugin_name = self.name();
-				::puniyu_plugin::inventory::iter::<CommandRegistry>
+				::puniyu_plugin::macros::proc_macro::inventory::iter::<CommandRegistry>
 					.into_iter()
 					.filter(|command| command.plugin_name == plugin_name)
 					.map(|command| (command.builder)())
 					.collect()
 			}
 
-			fn config(&self) -> Option<Vec<Box<dyn ::puniyu_plugin::Config>>> {
+			fn config(&self) -> Option<Vec<Box<dyn ::puniyu_plugin::macros::proc_macro::Config>>> {
 				let plugin_name = self.name();
-				let configs: Vec<_> = ::puniyu_plugin::inventory::iter::<ConfigRegistry>
+				let configs: Vec<_> = ::puniyu_plugin::macros::proc_macro::inventory::iter::<ConfigRegistry>
 					.into_iter()
 					.filter(|config| config.plugin_name == plugin_name)
 					.map(|config| (config.builder)())
@@ -369,16 +369,16 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
 				}
 			}
 
-			fn server(&self) -> Option<::puniyu_plugin::ServerType> {
+			fn server(&self) -> Option<::puniyu_plugin::macros::proc_macro::ServerType> {
 				let plugin_name = self.name();
-				let servers: Vec<_> = ::puniyu_plugin::inventory::iter::<ServerRegistry>
+				let servers: Vec<_> = ::puniyu_plugin::macros::proc_macro::inventory::iter::<ServerRegistry>
 					.into_iter()
 					.filter(|server| server.plugin_name == plugin_name)
 					.map(|server| (server.builder)())
 					.collect();
 
 				if !servers.is_empty() {
-					Some(::std::sync::Arc::new(move |cfg: &mut ::puniyu_plugin::actix_web::web::ServiceConfig| {
+					Some(::std::sync::Arc::new(move |cfg: &mut ::puniyu_plugin::macros::proc_macro::actix_web::web::ServiceConfig| {
 						servers.iter().for_each(|server| server(cfg));
 					}))
 				} else {
@@ -394,52 +394,52 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
 		/// 插件注册表
 		pub(crate) struct PluginRegistry {
 			/// 插件构造器
-			builder: fn() -> Box<dyn ::puniyu_plugin::PluginBuilder>,
+			builder: fn() -> Box<dyn ::puniyu_plugin::macros::proc_macro::PluginBuilder>,
 		}
-		::puniyu_plugin::inventory::collect!(PluginRegistry);
+		::puniyu_plugin::macros::proc_macro::inventory::collect!(PluginRegistry);
 
 		/// 定时计划注册表
 		pub(crate) struct TaskRegistry {
 			/// 插件名称
 			plugin_name: &'static str,
 			/// 任务构造器
-			builder: fn() -> Box<dyn ::puniyu_plugin::TaskBuilder>,
+			builder: fn() -> Box<dyn ::puniyu_plugin::macros::proc_macro::TaskBuilder>,
 		}
-		::puniyu_plugin::inventory::collect!(TaskRegistry);
+		::puniyu_plugin::macros::proc_macro::inventory::collect!(TaskRegistry);
 
 		pub(crate) struct CommandRegistry {
 			plugin_name: &'static str,
 			/// 命令构造器
-			builder: fn() -> Box<dyn ::puniyu_plugin::CommandBuilder>,
+			builder: fn() -> Box<dyn ::puniyu_plugin::macros::proc_macro::CommandBuilder>,
 		}
-		::puniyu_plugin::inventory::collect!(CommandRegistry);
+		::puniyu_plugin::macros::proc_macro::inventory::collect!(CommandRegistry);
 
 		/// 配置注册表
 		pub(crate) struct ConfigRegistry {
 			plugin_name: &'static str,
 			/// 配置构造器
-			builder: fn() -> Box<dyn ::puniyu_plugin::Config>,
+			builder: fn() -> Box<dyn ::puniyu_plugin::macros::proc_macro::Config>,
 		}
-		::puniyu_plugin::inventory::collect!(ConfigRegistry);
+		::puniyu_plugin::macros::proc_macro::inventory::collect!(ConfigRegistry);
 
 		/// 服务器注册表
 		pub(crate) struct ServerRegistry {
 			/// 插件名称
 			plugin_name: &'static str,
 			/// 服务器配置构造器
-			builder: fn() -> ::puniyu_plugin::ServerType,
+			builder: fn() -> ::puniyu_plugin::macros::proc_macro::ServerType,
 		}
-		::puniyu_plugin::inventory::collect!(ServerRegistry);
+		::puniyu_plugin::macros::proc_macro::inventory::collect!(ServerRegistry);
 
-		::puniyu_plugin::inventory::submit! {
+		::puniyu_plugin::macros::proc_macro::inventory::submit! {
 			PluginRegistry {
-				builder: || -> Box<dyn ::puniyu_plugin::PluginBuilder> { Box::new(#struct_name {}) },
+				builder: || -> Box<dyn ::puniyu_plugin::macros::proc_macro::PluginBuilder> { Box::new(#struct_name {}) },
 			}
 		}
 
 		#[cfg(feature = "cdylib")]
 		#[unsafe(no_mangle)]
-		pub unsafe extern "C" fn plugin_info() -> *mut dyn ::puniyu_plugin::PluginBuilder {
+		pub unsafe extern "C" fn plugin_info() -> *mut dyn ::puniyu_plugin::macros::proc_macro::PluginBuilder {
 			Box::into_raw(Box::new(#struct_name {}))
 		}
 
@@ -452,7 +452,7 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
 		#[cfg(feature = "cdylib")]
 		#[unsafe(no_mangle)]
 		pub unsafe extern "C" fn setup_app_name(name: String) {
-			::puniyu_plugin::APP_NAME.get_or_init(|| name);
+			::puniyu_plugin::common::APP_NAME.get_or_init(|| name);
 		}
 
 	};
@@ -560,10 +560,10 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
 /// 使用 `permission` 限制命令的使用权限，权限不足时会自动提示：
 ///
 /// ```rust,ignore
-/// #[command(name = "reload", desc = "重载配置", permission = "master")]
+/// #[command(name = "help", desc = "帮助", permission = "master")]
 /// async fn reload(bot: &BotContext, ev: &MessageContext) -> HandlerResult {
 ///     // 仅主人可执行此命令，其他用户会收到"权限不足"提示
-///     bot.reply("配置已重载".into()).await?;
+///     bot.reply("help".into()).await?;
 ///     HandlerAction::done()
 /// }
 /// ```
@@ -672,8 +672,8 @@ pub fn command(args: TokenStream, item: TokenStream) -> TokenStream {
 
 		#fn_vis #fn_sig #fn_block
 
-		#[::puniyu_plugin::async_trait]
-		impl ::puniyu_plugin::CommandBuilder for #struct_name {
+		#[::puniyu_plugin::macros::proc_macro::async_trait]
+		impl ::puniyu_plugin::macros::proc_macro::CommandBuilder for #struct_name {
 			fn name(&self) -> &'static str {
 				#command_name
 			}
@@ -686,7 +686,7 @@ pub fn command(args: TokenStream, item: TokenStream) -> TokenStream {
 				}
 			}
 
-			fn args(&self) -> Vec<::puniyu_plugin::Arg> {
+			fn args(&self) -> Vec<::puniyu_plugin::macros::proc_macro::Arg> {
 				vec![#(#arg_defs),*]
 			}
 
@@ -698,19 +698,19 @@ pub fn command(args: TokenStream, item: TokenStream) -> TokenStream {
 				#command_alias
 			}
 
-			fn permission(&self) -> ::puniyu_plugin::Permission {
+			fn permission(&self) -> ::puniyu_plugin::event::Permission {
 				#command_permission.parse().unwrap_or_default()
 			}
 
-			async fn run(&self, bot: &::puniyu_plugin::BotContext, ev: &::puniyu_plugin::MessageContext) -> ::puniyu_plugin::HandlerResult {
+			async fn run(&self, bot: &::puniyu_plugin::macros::proc_macro::BotContext, ev: &::puniyu_plugin::macros::proc_macro::MessageContext) -> ::puniyu_plugin::macros::proc_macro::HandlerResult {
 				#fn_name(bot, ev).await
 			}
 		}
 
-		::puniyu_plugin::inventory::submit! {
+		::puniyu_plugin::macros::proc_macro::inventory::submit! {
 			crate::CommandRegistry {
 				plugin_name: #plugin_name,
-				builder: || -> Box<dyn ::puniyu_plugin::CommandBuilder> { Box::new(#struct_name {}) },
+				builder: || -> Box<dyn ::puniyu_plugin::macros::proc_macro::CommandBuilder> { Box::new(#struct_name {}) },
 			}
 		}
 	};
@@ -853,8 +853,8 @@ pub fn task(args: TokenStream, item: TokenStream) -> TokenStream {
 
 		#fn_vis #fn_sig #fn_block
 
-		#[::puniyu_plugin::async_trait]
-		impl ::puniyu_plugin::TaskBuilder for #struct_name {
+		#[::puniyu_plugin::macros::proc_macro::async_trait]
+		impl ::puniyu_plugin::macros::proc_macro::TaskBuilder for #struct_name {
 			fn name(&self) -> &'static str {
 				#task_name
 			}
@@ -868,10 +868,10 @@ pub fn task(args: TokenStream, item: TokenStream) -> TokenStream {
 			}
 		}
 
-		::puniyu_plugin::inventory::submit! {
+		::puniyu_plugin::macros::proc_macro::inventory::submit! {
 			crate::TaskRegistry  {
 				plugin_name: #plugin_name,
-				builder: || -> Box<dyn ::puniyu_plugin::TaskBuilder> { Box::new(#struct_name {}) },
+				builder: || -> Box<dyn ::puniyu_plugin::macros::proc_macro::TaskBuilder> { Box::new(#struct_name {}) },
 			}
 		}
 	};
@@ -927,10 +927,10 @@ pub fn server(_args: TokenStream, item: TokenStream) -> TokenStream {
 	let expanded = quote! {
 		#fn_vis #fn_sig #fn_block
 
-		::puniyu_plugin::inventory::submit! {
+		::puniyu_plugin::macros::proc_macro::inventory::submit! {
 			crate::ServerRegistry {
 				plugin_name: #plugin_name,
-				builder: || -> ::puniyu_plugin::ServerType { ::std::sync::Arc::new(#fn_name) },
+				builder: || -> ::puniyu_plugin::macros::proc_macro::ServerType { ::std::sync::Arc::new(#fn_name) },
 			}
 		}
 	};

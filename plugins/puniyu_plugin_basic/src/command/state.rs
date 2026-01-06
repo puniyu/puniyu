@@ -11,8 +11,8 @@ async fn state(bot: &BotContext, _ev: &MessageContext) -> HandlerResult {
 	let seconds = status.run_time % 60;
 
 	let info_text = format!(
-		"------机器人状态------\n\
-		框架名称:{}\n\
+		"------应用状态------\n\
+		框架名称: {}\n\
 		当前版本: v{}\n\
 		内存占用：{:.2}MB\n\
 		运行时间：{}天{}小时{}分钟{}秒",

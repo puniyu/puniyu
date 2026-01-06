@@ -52,3 +52,16 @@ impl From<&String> for Message {
 		Message(vec![Elements::Text(v.into())])
 	}
 }
+
+#[cfg(feature = "element")]
+#[macro_export]
+macro_rules! message {
+    // 单个参数
+    ($single:expr) => {
+        $crate::element::Message::from($single)
+    };
+    // 多个 Elements
+    ($first:expr, $($rest:expr),+ $(,)?) => {
+        $crate::element::Message::from(vec![$first, $($rest),+])
+    };
+}

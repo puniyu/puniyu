@@ -9,3 +9,5 @@ build:
     just packages/puniyu/build
 test:
     cargo test
+publish:
+    cargo workspaces publish --publish-interval 10 --no-git-push
