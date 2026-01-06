@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use std::fmt;
+use std::{fmt, str::FromStr};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Version {
@@ -23,6 +23,23 @@ impl fmt::Display for Version {
 	}
 }
 
+impl FromStr for Version {
+	type Err = std::convert::Infallible;
+
+	fn from_str(s: &str) -> Result<Self, Self::Err> {
+		let parts= s.split('.').collect::<Vec<_>>();
+		if parts.len() != 3 {
+			return Ok(Version::default());
+		}
+		
+		Ok(Version {
+			major: parts[0].parse().unwrap_or_default(),
+			minor: parts[1].parse().unwrap_or_default(),
+			patch: parts[2].parse().unwrap_or_default(),
+		})
+	}
+}
+
 impl AsRef<Self> for Version {
 	fn as_ref(&self) -> &Self {
 		self
@@ -30,28 +47,18 @@ impl AsRef<Self> for Version {
 }
 impl From<&'static str> for Version {
 	fn from(s: &'static str) -> Self {
-		let mut v = s.split('.');
-		Self {
-			major: v.next().unwrap_or_default().parse().unwrap_or_default(),
-			minor: v.next().unwrap_or_default().parse().unwrap_or_default(),
-			patch: v.next().unwrap_or_default().parse().unwrap_or_default(),
-		}
+		Self::from_str(s).unwrap_or_default()
 	}
 }
 
 impl From<String> for Version {
 	fn from(s: String) -> Self {
-		let mut parts = s.split('.');
-		Self {
-			major: parts.next().unwrap_or_default().parse().unwrap_or_default(),
-			minor: parts.next().unwrap_or_default().parse().unwrap_or_default(),
-			patch: parts.next().unwrap_or_default().parse().unwrap_or_default(),
-		}
+		Self::from_str(&s).unwrap_or_default()
 	}
 }
 
 impl From<Version> for String {
 	fn from(v: Version) -> Self {
-		format!("{}.{}.{}", v.major, v.minor, v.patch)
+		v.to_string()
 	}
 }
