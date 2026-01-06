@@ -84,7 +84,7 @@ jobs:
     needs: [ release, test ]
     uses: ./.github/workflows/build.yaml
     with:
-      stable: ${{ needs.release.outputs.releases_created == 'true' }}
+      stable: ${{ needs.release.outputs.puniyu == 'true' }}
 
   publish-crates-io:
     needs: [ release, test ]
