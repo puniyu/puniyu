@@ -2,14 +2,12 @@
 #[macro_export]
 macro_rules! segment {
     // 提及元素
+    (at, all) => {
+        segment!(at, "all")
+    };
     (at, $target_id:expr) => {
         $crate::element::send::Elements::At($crate::element::send::AtElement {
             target_id: $target_id.to_string(),
-        })
-    };
-    (at_all) => {
-        $crate::element::send::Elements::At($crate::element::send::AtElement {
-            target_id: String::from("all"),
         })
     };
 

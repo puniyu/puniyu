@@ -24,7 +24,6 @@ async fn state(bot: &BotContext, _ev: &MessageContext) -> HandlerResult {
 		minutes,
 		seconds
 	);
-
 	bot.reply(message!(segment!(text, info_text))).await?;
 	Ok(().into())
 }

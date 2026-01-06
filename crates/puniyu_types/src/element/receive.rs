@@ -27,7 +27,7 @@ pub struct AtElement {
 
 impl AtElement {
 	/// 是否为艾特全体
-	pub fn is_all(&self) -> bool {
+	pub fn is_everyone(&self) -> bool {
 		matches!(self.target_id.as_str(), "all")
 	}
 }

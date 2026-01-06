@@ -62,7 +62,7 @@ impl EventBusTrait for EventBus {
 					event_pair = receiver.recv() => {
 						match event_pair {
 							Some(event) => {
-								dispatch_event(&event).await;
+								dispatch_event(event).await;
 							}
 							None => {
 								warn!("[{}]: 事件通道已关闭", "Event".blue());

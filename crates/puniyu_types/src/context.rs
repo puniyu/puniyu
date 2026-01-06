@@ -121,11 +121,11 @@ impl MessageContext {
 
 	/// 是否为艾特全体成员
 	pub fn mentions_everyone(&self) -> bool {
-		self.elements().iter().any(|e| matches!(e, Elements::At(at) if at.is_all()))
+		self.elements().iter().any(|e| matches!(e, Elements::At(at) if at.is_everyone()))
 	}
 
 	/// 是否为艾特Bot
-	pub fn mentions_me(&self) -> bool {
+	pub fn mentions_bot(&self) -> bool {
 		self.elements()
 			.iter()
 			.any(|e| matches!(e, Elements::At(at) if at.target_id.contains(self.self_id())))
