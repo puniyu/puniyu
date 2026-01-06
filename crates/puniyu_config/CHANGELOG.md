@@ -1,5 +1,57 @@
 # 变更日志
 
+## [0.7.0](https://github.com/puniyu/puniyu/compare/config-v0.6.0...config-v0.7.0) (2026-01-06)
+
+
+### ✨ 新功能
+
+* **adapter:** 实现server适配器 ([#99](https://github.com/puniyu/puniyu/issues/99)) ([e1671ad](https://github.com/puniyu/puniyu/commit/e1671ad8ebc180f066be1ec58a508194d66e4850))
+* **config:** 添加全局命令前缀配置并优化模块结构 ([e0e5bb5](https://github.com/puniyu/puniyu/commit/e0e5bb5ac9eb24a37189a3d50b42d3db8db58dde))
+* **protocol:** 添加账户和适配器协议定义及Bot信息结构 ([#93](https://github.com/puniyu/puniyu/issues/93)) ([9611fba](https://github.com/puniyu/puniyu/commit/9611fba37182df82297bd1a4596473f9e81c2b5c))
+* **types:** 引入 derive_builder 以简化 AdapterInfo 构建 ([9c894fd](https://github.com/puniyu/puniyu/commit/9c894fdf06b49f7f5f73141d03f7769dfc807c5e))
+
+
+### 🐛 错误修复
+
+* **config:** 修正应用初始化日志未正确应用 ([8c5380b](https://github.com/puniyu/puniyu/commit/8c5380b7a2e5c6f57f79b585eb8ece3bbfcee225))
+
+
+### 🎨 代码样式
+
+* **code:** 项目格式化 ([dc3d850](https://github.com/puniyu/puniyu/commit/dc3d850bcca149de821bc5ec700ae98f567f4a79))
+
+
+### 🔧 其他更新
+
+* **puniyu_types:** 更新 AdapterInfo 结构体字段默认值及构造宏 ([76e8ebe](https://github.com/puniyu/puniyu/commit/76e8ebe2b6d2a60ebc935378fc4a98bdc47b414b))
+* release main ([63f497e](https://github.com/puniyu/puniyu/commit/63f497e6284153150f15b9c17e22bd84d532415c))
+
+
+### ♻️ 代码重构
+
+* **adapter:** 重命名控制台适配器模块路径 ([5f9dcf3](https://github.com/puniyu/puniyu/commit/5f9dcf3c448225e54f1b3349b4746fb86fdf9897))
+* **adapter:** 重构适配器模块结构和依赖关系 ([3c8e01f](https://github.com/puniyu/puniyu/commit/3c8e01f3bc7046220d06e4fe9c0a919a4f9d26f2))
+* **app:** 重构应用构建器和适配器加载逻辑 ([58ddb3f](https://github.com/puniyu/puniyu/commit/58ddb3f0decf9b50b2e1270a8da6dc914a88dfd0))
+* **command:** 重构命令处理系统 ([549db91](https://github.com/puniyu/puniyu/commit/549db91d4bd063616c85bced71f3ea69431bf6c0))
+* **config:** 更新配置监听器实现 ([939f336](https://github.com/puniyu/puniyu/commit/939f33679e808191b362430db50039f69d0b809a))
+* **config:** 添加群组和好友配置模块, 实现全局cd注册表 ([285cf4a](https://github.com/puniyu/puniyu/commit/285cf4ade69848654fe13cbd14208bc597b040e0))
+* **config:** 重构配置模块并新增适配器配置支持 ([26874a2](https://github.com/puniyu/puniyu/commit/26874a22ac9114d487ac56767927b7f1b8bbe205))
+* **core:** 重新组织模块导入顺序并清理无用导出 ([8da3556](https://github.com/puniyu/puniyu/commit/8da35564bb6e99777d30d5c48497e11358c51915))
+* **core:** 重构命令匹配器与上下文处理逻辑 ([3aca600](https://github.com/puniyu/puniyu/commit/3aca600a94a09079ecbd8e84cf51376fc1222a99))
+* **types:** 重构类型定义和宏实现 ([23561c9](https://github.com/puniyu/puniyu/commit/23561c9d33724d59b9b22228f4d2b192efad8faf))
+
+
+### ✅ 测试相关
+
+* **adapter:** 添加适配器类型枚举的单元测试 ([31fd2b3](https://github.com/puniyu/puniyu/commit/31fd2b3b8abd6af4b633d620046f05c3385838e4))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puniyu_common bumped from 0.6.0 to 0.7.0
+
 ## [0.6.0](https://github.com/puniyu/puniyu/compare/config-v0.5.12...config-v0.6.0) (2025-12-02)
 
 

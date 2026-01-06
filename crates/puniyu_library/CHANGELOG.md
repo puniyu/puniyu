@@ -1,5 +1,13 @@
 # 变更日志
 
+## [0.5.2](https://github.com/puniyu/puniyu/compare/library-v0.5.1...library-v0.5.2) (2026-01-06)
+
+
+### ♻️ 代码重构
+
+* **adapter:** 重构适配器模块结构和依赖关系 ([3c8e01f](https://github.com/puniyu/puniyu/commit/3c8e01f3bc7046220d06e4fe9c0a919a4f9d26f2))
+* **library:** 优化库管理逻辑并增强错误处理 ([b9fcc14](https://github.com/puniyu/puniyu/commit/b9fcc14e50d80b6a637074ffcb097279363b7394))
+
 ## [0.5.1](https://github.com/puniyu/puniyu/compare/library-v0.5.0...library-v0.5.1) (2025-12-02)
 
 

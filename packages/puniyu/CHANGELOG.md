@@ -1,5 +1,22 @@
 # 变更日志
 
+## [0.7.0](https://github.com/puniyu/puniyu/compare/puniyu-v0.6.0...puniyu-v0.7.0) (2026-01-06)
+
+
+### ✨ 新功能
+
+* **adapter:** 实现server适配器 ([#99](https://github.com/puniyu/puniyu/issues/99)) ([e1671ad](https://github.com/puniyu/puniyu/commit/e1671ad8ebc180f066be1ec58a508194d66e4850))
+* **plugin:** 新增服务端插件支持 ([7f15acf](https://github.com/puniyu/puniyu/commit/7f15acf148d002e33ef246b3a65a08866a44393f))
+* **plugin:** 添加基础插件及状态命令功能 ([2503696](https://github.com/puniyu/puniyu/commit/2503696fa293909244f5110e8504ae00bf8b962b))
+* **protocol:** 添加账户和适配器协议定义及Bot信息结构 ([#93](https://github.com/puniyu/puniyu/issues/93)) ([9611fba](https://github.com/puniyu/puniyu/commit/9611fba37182df82297bd1a4596473f9e81c2b5c))
+
+
+### ♻️ 代码重构
+
+* **account:** 重构 AccountInfo 的结构体 ([0ae3ee2](https://github.com/puniyu/puniyu/commit/0ae3ee2ff7a242a6402458a124604676a191c2a8))
+* **adapter:** 重命名控制台适配器模块路径 ([5f9dcf3](https://github.com/puniyu/puniyu/commit/5f9dcf3c448225e54f1b3349b4746fb86fdf9897))
+* **app:** 重构应用构建器和适配器加载逻辑 ([58ddb3f](https://github.com/puniyu/puniyu/commit/58ddb3f0decf9b50b2e1270a8da6dc914a88dfd0))
+
 ## [0.6.0](https://github.com/puniyu/puniyu/compare/puniyu-v0.5.12...puniyu-v0.6.0) (2025-12-02)
 
 

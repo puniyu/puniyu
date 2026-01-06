@@ -1,6 +1,6 @@
 [package]
 name = "puniyu_adapter_server"
-version = "0.3.0"
+version = "0.3.1"
 description = "puniyu的server适配器"
 authors.workspace = true
 license.workspace = true
@@ -16,9 +16,9 @@ prost.workspace = true
 actix-web.workspace = true
 async-trait.workspace = true
 tokio.workspace = true
-puniyu_adapter = { version = "0.6.0", path = "../../packages/puniyu_adapter" }
-puniyu_core = { version = "0.6.0", path = "../../packages/puniyu_core" }
-puniyu_protocol = { version = "0.1.0", path = "../../packages/puniyu_protocol" }
+puniyu_adapter = { version = "0.7.0", path = "../../packages/puniyu_adapter" }
+puniyu_core = { version = "0.7.0", path = "../../packages/puniyu_core" }
+puniyu_protocol = { version = "0.2.0", path = "../../packages/puniyu_protocol" }
 futures-util = "0.3.31"
 actix-ws = "0.3.0"
 
