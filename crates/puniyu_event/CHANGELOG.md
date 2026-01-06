@@ -1,5 +1,28 @@
 # 变更日志
 
+## [0.6.1](https://github.com/puniyu/puniyu/compare/event-v0.6.0...event-v0.6.1) (2026-01-06)
+
+
+### 🐛 错误修复
+
+* **event:** 优化事件分发机制 ([e634a3c](https://github.com/puniyu/puniyu/commit/e634a3cf25958fe96db62d4b6f56b78aaf843bb8))
+
+
+### ♻️ 代码重构
+
+* **adapter:** 重构适配器API结构并添加模块化接口 ([#100](https://github.com/puniyu/puniyu/issues/100)) ([6558f4f](https://github.com/puniyu/puniyu/commit/6558f4faed67a89a59c4c2790a7ba986581888a5))
+* **adapter:** 重构适配器模块结构和依赖关系 ([3c8e01f](https://github.com/puniyu/puniyu/commit/3c8e01f3bc7046220d06e4fe9c0a919a4f9d26f2))
+* **event:** 重构事件系统并重命名事件总线为事件模块 ([39093d4](https://github.com/puniyu/puniyu/commit/39093d4da202aaac142cd134d38e55e9a40b526d))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puniyu_types bumped from 0.6.0 to 0.7.0
+    * puniyu_command bumped from 0.6.0 to 0.7.0
+    * puniyu_registry bumped from 0.6.0 to 0.7.0
+
 ## [0.6.0](https://github.com/puniyu/puniyu/compare/event-bus-v0.5.12...event-bus-v0.6.0) (2025-12-02)
 
 

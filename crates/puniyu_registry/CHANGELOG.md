@@ -1,5 +1,83 @@
 # 变更日志
 
+## [0.7.0](https://github.com/puniyu/puniyu/compare/registry-v0.6.0...registry-v0.7.0) (2026-01-06)
+
+
+### ✨ 新功能
+
+* **adapter:** 实现server适配器 ([#99](https://github.com/puniyu/puniyu/issues/99)) ([e1671ad](https://github.com/puniyu/puniyu/commit/e1671ad8ebc180f066be1ec58a508194d66e4850))
+* **cli:** 引入命令行参数解析功能 ([11e3137](https://github.com/puniyu/puniyu/commit/11e31372aca53c35f15e8cab8b3067af353d25a7))
+* **command:** 添加命令权限控制功能 ([cc0013a](https://github.com/puniyu/puniyu/commit/cc0013aff04d8efea0b9cdda3f11eae4d1eac97b))
+* **config:** 添加全局命令前缀配置并优化模块结构 ([e0e5bb5](https://github.com/puniyu/puniyu/commit/e0e5bb5ac9eb24a37189a3d50b42d3db8db58dde))
+* **macro:** 支持对象格式的命令参数定义 ([672dddd](https://github.com/puniyu/puniyu/commit/672ddddd276eb24f0572bd5a748d01c9a4ae64af))
+* **macro:** 重构宏系统并增强命令参数支持 ([e8f3c23](https://github.com/puniyu/puniyu/commit/e8f3c23e42cd94fb567dce569cbe4477014300b1))
+* **plugin:** 支持命令参数的位置和命名模式 ([85e92d4](https://github.com/puniyu/puniyu/commit/85e92d4ec50367ad3d1e1194ee1542ce74dd82dd))
+* **plugin:** 新增服务端插件支持 ([7f15acf](https://github.com/puniyu/puniyu/commit/7f15acf148d002e33ef246b3a65a08866a44393f))
+* **protocol:** 添加账户和适配器协议定义及Bot信息结构 ([#93](https://github.com/puniyu/puniyu/issues/93)) ([9611fba](https://github.com/puniyu/puniyu/commit/9611fba37182df82297bd1a4596473f9e81c2b5c))
+* **server:** 实现服务器控制功能并完善插件卸载功能 ([3cab133](https://github.com/puniyu/puniyu/commit/3cab133589d93d2d7592ed867db245999c774723))
+* **types:** 更新图片元素结构与消息处理逻辑 ([9b69689](https://github.com/puniyu/puniyu/commit/9b69689c679b3baa2a2d8acff99661b3e22f1766))
+
+
+### 🐛 错误修复
+
+* **command:** 优化命令行参数错误提示信息 ([3f66a17](https://github.com/puniyu/puniyu/commit/3f66a17c3ec4fa43641f7fe92d31e794b088926a))
+* **macro:** 修复宏中类型引用路径问题 ([a62296f](https://github.com/puniyu/puniyu/commit/a62296fd3da83a61a2d0455f8c2281760c3552cc))
+* **puniyu_plugin:** 修正plugin宏获取crate name错误 ([b8fdbd7](https://github.com/puniyu/puniyu/commit/b8fdbd7b16371cdcbdee23d90c3075aff4cc4ee4))
+* **puniyu_plugin:** 添加缺少的导入 ([23f7f8a](https://github.com/puniyu/puniyu/commit/23f7f8a459f941971a203063d6215c9779b74411))
+
+
+### 🎨 代码样式
+
+* **code:** 项目格式化 ([dc3d850](https://github.com/puniyu/puniyu/commit/dc3d850bcca149de821bc5ec700ae98f567f4a79))
+
+
+### 🔧 其他更新
+
+* release main ([63f497e](https://github.com/puniyu/puniyu/commit/63f497e6284153150f15b9c17e22bd84d532415c))
+
+
+### ♻️ 代码重构
+
+* **account:** 重构 AccountInfo 的结构体 ([0ae3ee2](https://github.com/puniyu/puniyu/commit/0ae3ee2ff7a242a6402458a124604676a191c2a8))
+* **adapter:** 重构适配器API结构并添加模块化接口 ([#100](https://github.com/puniyu/puniyu/issues/100)) ([6558f4f](https://github.com/puniyu/puniyu/commit/6558f4faed67a89a59c4c2790a7ba986581888a5))
+* **adapter:** 重构适配器信息结构与初始化逻辑 ([2e45256](https://github.com/puniyu/puniyu/commit/2e4525633031ec401f058507218cb2731ac24479))
+* **adapter:** 重构适配器存储接口命名 ([eed3b36](https://github.com/puniyu/puniyu/commit/eed3b36ee906f03ac31aec35ec3f5e6d3a038a30))
+* **adapter:** 重构适配器模块结构和依赖关系 ([3c8e01f](https://github.com/puniyu/puniyu/commit/3c8e01f3bc7046220d06e4fe9c0a919a4f9d26f2))
+* **app:** 重构应用构建器和适配器加载逻辑 ([58ddb3f](https://github.com/puniyu/puniyu/commit/58ddb3f0decf9b50b2e1270a8da6dc914a88dfd0))
+* **bus:** 重构事件总线模块 ([7f53e97](https://github.com/puniyu/puniyu/commit/7f53e9731a5f58831c758c372ef46171a8e5208b))
+* **command:** 修正日志格式 ([b8fdbd7](https://github.com/puniyu/puniyu/commit/b8fdbd7b16371cdcbdee23d90c3075aff4cc4ee4))
+* **command:** 重构命令处理系统 ([549db91](https://github.com/puniyu/puniyu/commit/549db91d4bd063616c85bced71f3ea69431bf6c0))
+* **command:** 重构命令模块结构并合并matcher和handler功能 ([a61cb76](https://github.com/puniyu/puniyu/commit/a61cb76138426ccb725c476905be603589cdc231))
+* **config:** 更新配置监听器实现 ([939f336](https://github.com/puniyu/puniyu/commit/939f33679e808191b362430db50039f69d0b809a))
+* **config:** 添加群组和好友配置模块, 实现全局cd注册表 ([285cf4a](https://github.com/puniyu/puniyu/commit/285cf4ade69848654fe13cbd14208bc597b040e0))
+* **config:** 重构配置模块并新增适配器配置支持 ([26874a2](https://github.com/puniyu/puniyu/commit/26874a22ac9114d487ac56767927b7f1b8bbe205))
+* **cooldown:** 重构冷却期检查逻辑以支持统一作用域枚举 ([b5ae1ec](https://github.com/puniyu/puniyu/commit/b5ae1ec7fbea7f5e28e02f0aa6717bfc379979f0))
+* **core:** 重新组织模块导入顺序并清理无用导出 ([8da3556](https://github.com/puniyu/puniyu/commit/8da35564bb6e99777d30d5c48497e11358c51915))
+* **event:** 重构事件系统并重命名事件总线为事件模块 ([39093d4](https://github.com/puniyu/puniyu/commit/39093d4da202aaac142cd134d38e55e9a40b526d))
+* **registry:** 重构命令处理器以支持更灵活的消息事件处理 ([1f06ac9](https://github.com/puniyu/puniyu/commit/1f06ac9810a6947533e7218b70590e8c83117add))
+* **registry:** 重构注册表存储结构 ([2627428](https://github.com/puniyu/puniyu/commit/2627428175d8eb79830ec3c98cd8cc7120bc0909))
+* **server:** 将服务器命令通道从 tokio mpsc 迁移至 flume ([1345cae](https://github.com/puniyu/puniyu/commit/1345caefb4b07f094d00521fd9286eb6b33b9ab5))
+* **types:** 重构构造器实现 ([d0684d2](https://github.com/puniyu/puniyu/commit/d0684d273ca1efc67608daae50df71eecd888ded))
+* **types:** 重构构造器实现 ([#92](https://github.com/puniyu/puniyu/issues/92)) ([db1763a](https://github.com/puniyu/puniyu/commit/db1763abd59f270a7c78f8c2b0025f05b40954c4))
+* **types:** 重构类型定义和宏实现 ([23561c9](https://github.com/puniyu/puniyu/commit/23561c9d33724d59b9b22228f4d2b192efad8faf))
+
+
+### 🎡 持续集成
+
+* **workflows:** 支持可配置的构建模式 ([eed3b36](https://github.com/puniyu/puniyu/commit/eed3b36ee906f03ac31aec35ec3f5e6d3a038a30))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puniyu_common bumped from 0.6.0 to 0.7.0
+    * puniyu_types bumped from 0.6.0 to 0.7.0
+    * puniyu_library bumped from 0.5.1 to 0.5.2
+    * puniyu_config bumped from 0.6.0 to 0.7.0
+  * dev-dependencies
+    * puniyu_types bumped from 0.6.0 to 0.7.0
+
 ## [0.6.0](https://github.com/puniyu/puniyu/compare/registry-v0.5.12...registry-v0.6.0) (2025-12-02)
 
 

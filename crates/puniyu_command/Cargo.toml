@@ -1,6 +1,6 @@
 [package]
 name = "puniyu_command"
-version = "0.6.0"
+version = "0.7.0"
 authors.workspace = true
 license.workspace = true
 readme.workspace = true
@@ -15,13 +15,13 @@ puniyu_logger.workspace = true
 thiserror.workspace = true
 clap = { workspace = true, features = ["string", "error-context"] }
 
-puniyu_config = { version = "0.6.0", path = "../puniyu_config" }
-puniyu_registry = { version = "0.6.0", path = "../puniyu_registry", default-features = false, features = [
+puniyu_config = { version = "0.7.0", path = "../puniyu_config" }
+puniyu_registry = { version = "0.7.0", path = "../puniyu_registry", default-features = false, features = [
     "command",
     "cooldown",
     "bot"
 ] }
-puniyu_types = { version = "0.6.0", path = "../puniyu_types", default-features = false, features = [
+puniyu_types = { version = "0.7.0", path = "../puniyu_types", default-features = false, features = [
     "handler",
     "element",
     "event",
