@@ -1,6 +1,6 @@
 [package]
 name = "puniyu_event"
-version = "0.7.4"
+version = "0.7.5"
 description = "puniyu 事件总线库"
 authors.workspace = true
 license.workspace = true
@@ -17,8 +17,8 @@ puniyu_types = { version = "0.7.4", path = "../puniyu_types", default-features =
   "bus",
   "handler",
 ] }
-puniyu_command = { version = "0.7.4", path = "../puniyu_command" }
-puniyu_registry = { version = "0.7.4", path = "../puniyu_registry", default-features = false, features = [
+puniyu_command = { version = "0.7.5", path = "../puniyu_command" }
+puniyu_registry = { version = "0.7.5", path = "../puniyu_registry", default-features = false, features = [
   "handler",
 ] }
 
