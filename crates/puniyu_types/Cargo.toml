@@ -1,6 +1,6 @@
 [package]
 name = "puniyu_types"
-version.workspace = true
+version = "0.7.3"
 description = "puniyu 通用类型库"
 authors.workspace = true
 license.workspace = true

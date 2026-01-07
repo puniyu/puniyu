@@ -1,6 +1,6 @@
 [package]
 name = "puniyu_event"
-version.workspace = true
+version = "0.7.3"
 description = "puniyu 事件总线库"
 authors.workspace = true
 license.workspace = true

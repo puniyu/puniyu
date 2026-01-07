@@ -1,6 +1,7 @@
 [package]
 name = "puniyu_command"
-version.workspace = true
+version = "0.7.3"
+description = "puniyu的命令处理器"
 authors.workspace = true
 license.workspace = true
 readme.workspace = true

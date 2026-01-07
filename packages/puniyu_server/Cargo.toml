@@ -1,6 +1,6 @@
 [package]
 name = "puniyu_server"
-version.workspace = true
+version = "0.7.3"
 description = "puniyu 的服务器模块"
 readme = "README.md"
 authors.workspace = true
