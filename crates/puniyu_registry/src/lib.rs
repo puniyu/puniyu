@@ -23,5 +23,7 @@ pub mod cooldown;
 
 #[cfg(feature = "handler")]
 pub mod handler;
+mod hook;
+
 #[cfg(feature = "handler")]
 pub use handler::HandlerRegistry;
