@@ -1,4 +1,114 @@
 # 变更日志
+## [0.7.2](https://github.com/puniyu/puniyu/compare/puniyu_registry-v0.7.1...puniyu_registry-v0.7.2) - 2026-01-07
+
+
+### ⛰️ 新功能
+
+
+- *(adapter)* 实现server适配器 ([#99](https://github.com/puniyu/puniyu/pull/99)) (由 @shiwuliya 提供) (#99) - ([e1671ad](https://github.com/puniyu/puniyu/commit/e1671ad8ebc180f066be1ec58a508194d66e4850))
+- *(adapter)* 支持配置文件读取功能 (由 @shiwuliya 提供) - ([a9fc6e2](https://github.com/puniyu/puniyu/commit/a9fc6e2aed53370db0c78a0035c37eec53114445))
+- *(adapter)* 初始化适配器数据目录结构 (由 @shiwuliya 提供) - ([0e7413b](https://github.com/puniyu/puniyu/commit/0e7413b8790cb2b6c7f1bf7ed43046be1169cfaf))
+- *(adapter)* 添加适配器卸载功能 (由 @shiwuliya 提供) (#24) - ([86ca219](https://github.com/puniyu/puniyu/commit/86ca2194f319f11476c729283cebf373da7203c0))
+- *(bot)* 重构Bot注册表与消息发送功能 (由 @shiwuliya 提供) - ([bb4e391](https://github.com/puniyu/puniyu/commit/bb4e3912885ab95e3cd200048240d232f8257279))
+- *(cli)* 引入命令行参数解析功能 (由 @shiwuliya 提供) - ([11e3137](https://github.com/puniyu/puniyu/commit/11e31372aca53c35f15e8cab8b3067af353d25a7))
+- *(command)* 添加命令权限控制功能 (由 @shiwuliya 提供) - ([cc0013a](https://github.com/puniyu/puniyu/commit/cc0013aff04d8efea0b9cdda3f11eae4d1eac97b))
+- *(config)* 添加全局命令前缀配置并优化模块结构 (由 @shiwuliya 提供) - ([e0e5bb5](https://github.com/puniyu/puniyu/commit/e0e5bb5ac9eb24a37189a3d50b42d3db8db58dde))
+- *(config)* 重构配置管理模块以支持动态注册与热重载 (由 @shiwuliya 提供) - ([f3234c1](https://github.com/puniyu/puniyu/commit/f3234c16ea7d49b4cae2cdd0bda024f390778497))
+- *(config)* 将配置序列化格式从 JSON 切换为 TOML (由 @shiwuliya 提供) - ([48fc976](https://github.com/puniyu/puniyu/commit/48fc976274386311b62fa1d344807a68432b99f0))
+- *(core)* 自动创建插件和适配器数据目录 (由 @shiwuliya 提供) - ([881a42e](https://github.com/puniyu/puniyu/commit/881a42ece6fb13ae8ad11c94e01e9c4463a32ec4))
+- *(macro)* 支持对象格式的命令参数定义 (由 @shiwuliya 提供) - ([672dddd](https://github.com/puniyu/puniyu/commit/672ddddd276eb24f0572bd5a748d01c9a4ae64af))
+- *(macro)* 重构宏系统并增强命令参数支持 (由 @shiwuliya 提供) - ([e8f3c23](https://github.com/puniyu/puniyu/commit/e8f3c23e42cd94fb567dce569cbe4477014300b1))
+- *(plugin)* 新增服务端插件支持 (由 @shiwuliya 提供) - ([7f15acf](https://github.com/puniyu/puniyu/commit/7f15acf148d002e33ef246b3a65a08866a44393f))
+- *(plugin)* 支持命令参数的位置和命名模式 (由 @shiwuliya 提供) - ([85e92d4](https://github.com/puniyu/puniyu/commit/85e92d4ec50367ad3d1e1194ee1542ce74dd82dd))
+- *(plugin)* 添加插件配置支持 (由 @shiwuliya 提供) - ([dc7d1eb](https://github.com/puniyu/puniyu/commit/dc7d1ebcf2245f53f3a58b203edd405aa7cc8c1c))
+- *(protocol)* 添加账户和适配器协议定义及Bot信息结构 ([#93](https://github.com/puniyu/puniyu/pull/93)) (由 @shiwuliya 提供) (#93) - ([9611fba](https://github.com/puniyu/puniyu/commit/9611fba37182df82297bd1a4596473f9e81c2b5c))
+- *(registry)* 引入配置驱动的插件/适配器强制加载机制 (由 @shiwuliya 提供) (#24) - ([a7fd2f2](https://github.com/puniyu/puniyu/commit/a7fd2f2dc0bb0427eaf2731d0de752d9ad2d2d39))
+- *(server)* 实现服务器控制功能并完善插件卸载功能 (由 @shiwuliya 提供) - ([3cab133](https://github.com/puniyu/puniyu/commit/3cab133589d93d2d7592ed867db245999c774723))
+- *(types)* 更新图片元素结构与消息处理逻辑 (由 @shiwuliya 提供) - ([9b69689](https://github.com/puniyu/puniyu/commit/9b69689c679b3baa2a2d8acff99661b3e22f1766))
+
+
+
+### 🐛 Bug 修复
+
+
+- *(command)* 优化命令行参数错误提示信息 (由 @shiwuliya 提供) - ([3f66a17](https://github.com/puniyu/puniyu/commit/3f66a17c3ec4fa43641f7fe92d31e794b088926a))
+- *(macro)* 修复宏中类型引用路径问题 (由 @shiwuliya 提供) - ([a62296f](https://github.com/puniyu/puniyu/commit/a62296fd3da83a61a2d0455f8c2281760c3552cc))
+- *(puniyu_plugin)* 添加缺少的导入 (由 @shiwuliya 提供) - ([23f7f8a](https://github.com/puniyu/puniyu/commit/23f7f8a459f941971a203063d6215c9779b74411))
+- *(puniyu_registry)* 补充缺少的依赖 (由 @shiwuliya 提供) - ([8a33e67](https://github.com/puniyu/puniyu/commit/8a33e6775884cf8e65cf3f3baab536d0e3fe4dd6))
+- *(puniyu_registry)* 为 adapter 特性添加 server 支持 (由 @shiwuliya 提供) - ([1c71c3e](https://github.com/puniyu/puniyu/commit/1c71c3e3f223048a55d5bf8bd27f6654e0015064))
+
+
+
+### 🚜 重构
+
+
+- *(account)* 重构 AccountInfo 的结构体 (由 @shiwuliya 提供) - ([0ae3ee2](https://github.com/puniyu/puniyu/commit/0ae3ee2ff7a242a6402458a124604676a191c2a8))
+- *(adapter)* 重构适配器模块结构和依赖关系 (由 @shiwuliya 提供) - ([3c8e01f](https://github.com/puniyu/puniyu/commit/3c8e01f3bc7046220d06e4fe9c0a919a4f9d26f2))
+- *(adapter)* 重构适配器API结构并添加模块化接口 ([#100](https://github.com/puniyu/puniyu/pull/100)) (由 @shiwuliya 提供) (#100) - ([6558f4f](https://github.com/puniyu/puniyu/commit/6558f4faed67a89a59c4c2790a7ba986581888a5))
+- *(adapter)* 重构适配器信息结构与初始化逻辑 (由 @shiwuliya 提供) - ([2e45256](https://github.com/puniyu/puniyu/commit/2e4525633031ec401f058507218cb2731ac24479))
+- *(adapter)* 重构适配器存储接口命名 (由 @shiwuliya 提供) - ([eed3b36](https://github.com/puniyu/puniyu/commit/eed3b36ee906f03ac31aec35ec3f5e6d3a038a30))
+- *(adapter)* 简化适配器加载逻辑并移除ABI版本检查 (由 @shiwuliya 提供) (#37) - ([30104ed](https://github.com/puniyu/puniyu/commit/30104edcd5c1e81ffb87a4da6718bbc0399ff941))
+- *(app)* 重构应用构建器和适配器加载逻辑 (由 @shiwuliya 提供) - ([58ddb3f](https://github.com/puniyu/puniyu/commit/58ddb3f0decf9b50b2e1270a8da6dc914a88dfd0))
+- *(bus)* 重构事件总线模块 (由 @shiwuliya 提供) - ([7f53e97](https://github.com/puniyu/puniyu/commit/7f53e9731a5f58831c758c372ef46171a8e5208b))
+- *(command)* 重构命令处理系统 (由 @shiwuliya 提供) (#96) - ([549db91](https://github.com/puniyu/puniyu/commit/549db91d4bd063616c85bced71f3ea69431bf6c0))
+- *(command)* 重构命令模块结构并合并matcher和handler功能 (由 @shiwuliya 提供) (#96) - ([a61cb76](https://github.com/puniyu/puniyu/commit/a61cb76138426ccb725c476905be603589cdc231))
+- *(command)* 修正日志格式 (由 @shiwuliya 提供) - ([b8fdbd7](https://github.com/puniyu/puniyu/commit/b8fdbd7b16371cdcbdee23d90c3075aff4cc4ee4))
+- *(command)* 重构命令处理结果类型和参数验证 (由 @shiwuliya 提供) - ([58d4eeb](https://github.com/puniyu/puniyu/commit/58d4eebb41cacabc7663b40a93181b789feb1e0a))
+- *(config)* 更新配置监听器实现 (由 @shiwuliya 提供) - ([939f336](https://github.com/puniyu/puniyu/commit/939f33679e808191b362430db50039f69d0b809a))
+- *(config)* 添加群组和好友配置模块, 实现全局cd注册表 (由 @shiwuliya 提供) - ([285cf4a](https://github.com/puniyu/puniyu/commit/285cf4ade69848654fe13cbd14208bc597b040e0))
+- *(config)* 重构配置模块并新增适配器配置支持 (由 @shiwuliya 提供) - ([26874a2](https://github.com/puniyu/puniyu/commit/26874a22ac9114d487ac56767927b7f1b8bbe205))
+- *(config)* 添加适配器配置系统支持 (由 @shiwuliya 提供) - ([5358888](https://github.com/puniyu/puniyu/commit/5358888a950988a6be04c9b539bdac95c9b09b8d))
+- *(cooldown)* 重构冷却期检查逻辑以支持统一作用域枚举 (由 @shiwuliya 提供) (#91) - ([b5ae1ec](https://github.com/puniyu/puniyu/commit/b5ae1ec7fbea7f5e28e02f0aa6717bfc379979f0))
+- *(core)* 重新组织模块导入顺序并清理无用导出 (由 @shiwuliya 提供) - ([8da3556](https://github.com/puniyu/puniyu/commit/8da35564bb6e99777d30d5c48497e11358c51915))
+- *(error)* 统一错误处理机制 (由 @shiwuliya 提供) - ([586272d](https://github.com/puniyu/puniyu/commit/586272ddf8828cfa7af809bc01de95d1245c4d9b))
+- *(event)* 重构事件系统并重命名事件总线为事件模块 (由 @shiwuliya 提供) (#98) - ([39093d4](https://github.com/puniyu/puniyu/commit/39093d4da202aaac142cd134d38e55e9a40b526d))
+- *(library)* 重构库存储接口 (由 @shiwuliya 提供) - ([5918516](https://github.com/puniyu/puniyu/commit/5918516a65943caae4a7bacf29a58dcb96e3ca52))
+- *(registry)* 重构注册表存储结构 (由 @shiwuliya 提供) - ([2627428](https://github.com/puniyu/puniyu/commit/2627428175d8eb79830ec3c98cd8cc7120bc0909))
+- *(registry)* 重构命令处理器以支持更灵活的消息事件处理 (由 @shiwuliya 提供) - ([1f06ac9](https://github.com/puniyu/puniyu/commit/1f06ac9810a6947533e7218b70590e8c83117add))
+- *(server)* 将服务器命令通道从 tokio mpsc 迁移至 flume (由 @shiwuliya 提供) - ([1345cae](https://github.com/puniyu/puniyu/commit/1345caefb4b07f094d00521fd9286eb6b33b9ab5))
+- *(types)* 重构构造器实现 (由 @shiwuliya 提供) (#92) - ([d0684d2](https://github.com/puniyu/puniyu/commit/d0684d273ca1efc67608daae50df71eecd888ded))
+
+- 重构工作区crates ([#53](https://github.com/puniyu/puniyu/pull/53)) (由 @shiwuliya 提供) (#53) - ([f55ab51](https://github.com/puniyu/puniyu/commit/f55ab519b9275c19773f16acfddff0c44db8e48c))
+
+
+### 🎨 样式
+
+
+- *(code)* 项目格式化 (由 @shiwuliya 提供) - ([dc3d850](https://github.com/puniyu/puniyu/commit/dc3d850bcca149de821bc5ec700ae98f567f4a79))
+- *(mes)* 优化消息发送日志记录格式 (由 @shiwuliya 提供) - ([0a8336a](https://github.com/puniyu/puniyu/commit/0a8336a777a568c13d27c7e84a5952c40c0d3055))
+
+
+
+### ⚙️ 杂项
+
+
+- *(config)* 初始化配置模块并添加 README 文档 (由 @shiwuliya 提供) - ([6109f15](https://github.com/puniyu/puniyu/commit/6109f151b73d1ad24c5237f5602aad40a7fbbba4))
+- *(core)* 支持设置app_logo (由 @shiwuliya 提供) - ([3f4f713](https://github.com/puniyu/puniyu/commit/3f4f71344917f671468edfef639ec201440a1251))
+- *(puniyu_registry)* 修补依赖 (由 @shiwuliya 提供) - ([e99a202](https://github.com/puniyu/puniyu/commit/e99a202288428974ea55293c189a70bf3f194110))
+- *(registry)* 在加载日志中显示插件和适配器版本号 (由 @shiwuliya 提供) - ([0184a74](https://github.com/puniyu/puniyu/commit/0184a74b1dc267690d15bd8e1f6ba25669f7c194))
+
+- 修正依赖 (由 @shiwuliya 提供) - ([f16e909](https://github.com/puniyu/puniyu/commit/f16e9098631337f9e47133b5194001ef147c2825))
+
+
+### Fest
+
+
+- *(server)* 添加服务器路由支持 (由 @shiwuliya 提供) - ([7360323](https://github.com/puniyu/puniyu/commit/7360323b64400834013ad246d483dadf01db53ea))
+
+
+
+### Refcator
+
+
+
+- 优化bot实例的使用 (由 @shiwuliya 提供) (#72) - ([73f284e](https://github.com/puniyu/puniyu/commit/73f284e8c594139d2a190fc09cb7ba460ceb4ef8))
+
+
+
+### 贡献者
+
+* @puniyu[bot]
+* @shiwuliya
 ## [0.7.1](https://github.com/puniyu/puniyu/compare/puniyu_registry-v0.7.0...puniyu_registry-v0.7.1) - 2026-01-07
 
 

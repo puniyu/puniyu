@@ -28,7 +28,7 @@ puniyu_common = { version = "0.7.0", path = "../../crates/puniyu_common" }
 puniyu_types = { version = "0.7.1", path = "../../crates/puniyu_types", default-features = false, features = [
   "server",
 ] }
-puniyu_registry = { version = "0.7.1", path = "../../crates/puniyu_registry", default-features = false, features = [
+puniyu_registry = { version = "0.7.2", path = "../../crates/puniyu_registry", default-features = false, features = [
   "server",
 ] }
 

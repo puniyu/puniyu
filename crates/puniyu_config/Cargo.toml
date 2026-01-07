@@ -1,6 +1,6 @@
 [package]
 name = "puniyu_config"
-version = "0.7.0"
+version = "0.7.1"
 description = "puniyu 配置模块"
 readme = "README.md"
 authors.workspace = true
