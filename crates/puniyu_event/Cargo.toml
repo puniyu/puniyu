@@ -1,6 +1,6 @@
 [package]
 name = "puniyu_event"
-version = "0.6.1"
+version = "0.6.2"
 description = "puniyu 事件总线库"
 authors.workspace = true
 license.workspace = true
@@ -13,12 +13,12 @@ rust-version.workspace = true
 [dependencies]
 puniyu_logger.workspace = true
 tokio = { workspace = true, features = ["macros"] }
-puniyu_types = { version = "0.7.0", path = "../puniyu_types", default-features = false, features = [
+puniyu_types = { version = "0.7.1", path = "../puniyu_types", default-features = false, features = [
   "bus",
   "handler",
 ] }
-puniyu_command = { version = "0.7.0", path = "../puniyu_command" }
-puniyu_registry = { version = "0.7.0", path = "../puniyu_registry", default-features = false, features = [
+puniyu_command = { version = "0.7.1", path = "../puniyu_command" }
+puniyu_registry = { version = "0.7.1", path = "../puniyu_registry", default-features = false, features = [
   "handler",
 ] }
 

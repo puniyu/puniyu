@@ -1,4 +1,18 @@
 # 变更日志
+## [0.7.1](https://github.com/puniyu/puniyu/compare/core-v0.7.0...core-v0.7.1) - 2026-01-07
+
+
+### 🐛 Bug 修复
+
+
+
+- 初始化时间计算错误 (由 @shiwuliya 提供) - ([2c53605](https://github.com/puniyu/puniyu/commit/2c536057bc8c59649863117a0e542649faad3adc))
+
+
+
+### 贡献者
+
+* @shiwuliya
 
 ## [0.7.0](https://github.com/puniyu/puniyu/compare/core-v0.6.0...core-v0.7.0) (2026-01-06)
 
