@@ -1,4 +1,18 @@
 # 变更日志
+## [0.7.1](https://github.com/puniyu/puniyu/compare/puniyu_types-v0.7.0...puniyu_types-v0.7.1) - 2026-01-07
+
+
+### ⛰️ 新功能
+
+
+- *(element)* 添加多种元素类型的访问方法 (由 @shiwuliya 提供) - ([7938469](https://github.com/puniyu/puniyu/commit/7938469d20165e36b24d287ecd68fc0324c0fad7))
+
+
+
+
+### 贡献者
+
+* @shiwuliya
 
 ## [0.7.0](https://github.com/puniyu/puniyu/compare/types-v0.6.0...types-v0.7.0) (2026-01-06)
 

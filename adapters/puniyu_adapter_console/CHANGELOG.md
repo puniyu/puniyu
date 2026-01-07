@@ -1,4 +1,74 @@
 # 变更日志
+## [0.4.1](https://github.com/puniyu/puniyu/compare/puniyu_adapter_console-v0.4.0...puniyu_adapter_console-v0.4.1) - 2026-01-07
+
+
+### ⛰️ 新功能
+
+
+- *(adapter)* 实现server适配器 ([#99](https://github.com/puniyu/puniyu/pull/99)) (由 @shiwuliya 提供) (#99) - ([e1671ad](https://github.com/puniyu/puniyu/commit/e1671ad8ebc180f066be1ec58a508194d66e4850))
+- *(adapter)* 初始化适配器数据目录结构 (由 @shiwuliya 提供) - ([0e7413b](https://github.com/puniyu/puniyu/commit/0e7413b8790cb2b6c7f1bf7ed43046be1169cfaf))
+- *(element)* 重构消息元素类型和协议定义 (由 @shiwuliya 提供) (#91) - ([e0d01c2](https://github.com/puniyu/puniyu/commit/e0d01c24f48d68a655cb19ed909938e4cd433a1c))
+- *(protocol)* 添加账户和适配器协议定义及Bot信息结构 ([#93](https://github.com/puniyu/puniyu/pull/93)) (由 @shiwuliya 提供) (#93) - ([9611fba](https://github.com/puniyu/puniyu/commit/9611fba37182df82297bd1a4596473f9e81c2b5c))
+- *(protocol)* 实现事件协议和字节数据类型支持 (由 @shiwuliya 提供) (#91) - ([ec854ca](https://github.com/puniyu/puniyu/commit/ec854caf1c2ee6e722c295cc317721c87539953e))
+
+
+
+### 🐛 Bug 修复
+
+
+- *(console)* 处理控制台输入错误并优雅退出 (由 @shiwuliya 提供) - ([667ce30](https://github.com/puniyu/puniyu/commit/667ce308ab764e374b05fe27ad132c8d5ff262c2))
+
+
+
+### 🚜 重构
+
+
+- *(adapter)* 重构适配器模块结构和依赖关系 (由 @shiwuliya 提供) - ([3c8e01f](https://github.com/puniyu/puniyu/commit/3c8e01f3bc7046220d06e4fe9c0a919a4f9d26f2))
+- *(adapter)* 重构适配器API结构并添加模块化接口 ([#100](https://github.com/puniyu/puniyu/pull/100)) (由 @shiwuliya 提供) (#100) - ([6558f4f](https://github.com/puniyu/puniyu/commit/6558f4faed67a89a59c4c2790a7ba986581888a5))
+- *(adapter)* 重构适配器信息结构与初始化逻辑 (由 @shiwuliya 提供) - ([2e45256](https://github.com/puniyu/puniyu/commit/2e4525633031ec401f058507218cb2731ac24479))
+- *(adapter)* 重命名控制台适配器模块路径 (由 @shiwuliya 提供) - ([5f9dcf3](https://github.com/puniyu/puniyu/commit/5f9dcf3c448225e54f1b3349b4746fb86fdf9897))
+- *(adapter)* 简化适配器加载逻辑并移除ABI版本检查 (由 @shiwuliya 提供) (#37) - ([30104ed](https://github.com/puniyu/puniyu/commit/30104edcd5c1e81ffb87a4da6718bbc0399ff941))
+- *(core)* 重构命令匹配器与上下文处理逻辑 (由 @shiwuliya 提供) - ([3aca600](https://github.com/puniyu/puniyu/commit/3aca600a94a09079ecbd8e84cf51376fc1222a99))
+- *(core)* 重新组织模块导入顺序并清理无用导出 (由 @shiwuliya 提供) - ([8da3556](https://github.com/puniyu/puniyu/commit/8da35564bb6e99777d30d5c48497e11358c51915))
+- *(core)* 重构应用初始化逻辑 (由 @shiwuliya 提供) - ([e7755e5](https://github.com/puniyu/puniyu/commit/e7755e5362ffa318fd38abfd30a00e5f8b25d43e))
+- *(element)* 修改图片文件字段类型从Vec<u8>到String (由 @shiwuliya 提供) (#91) - ([744e7aa](https://github.com/puniyu/puniyu/commit/744e7aa6b8daaf43a7720ad7b65156ef63ef572e))
+- *(event)* 重构事件系统并重命名事件总线为事件模块 (由 @shiwuliya 提供) (#98) - ([39093d4](https://github.com/puniyu/puniyu/commit/39093d4da202aaac142cd134d38e55e9a40b526d))
+- *(project)* 重构项目结构 (由 @shiwuliya 提供) - ([b1b389f](https://github.com/puniyu/puniyu/commit/b1b389f25dae5899b49133be88ba348930117972))
+- *(types)* 重构类型定义和宏实现 (由 @shiwuliya 提供) (#91) - ([23561c9](https://github.com/puniyu/puniyu/commit/23561c9d33724d59b9b22228f4d2b192efad8faf))
+
+- 重构项目配置 (由 @shiwuliya 提供) - ([883dfa4](https://github.com/puniyu/puniyu/commit/883dfa4fb525d7e5c27821026d727e3d8eda8600))
+
+
+### 📚 文档
+
+
+- *(readme)* 添加社区QQ群链接 (由 @shiwuliya 提供) - ([60bf1e7](https://github.com/puniyu/puniyu/commit/60bf1e788718844583f6a2e6809b930b7d262775))
+
+- Update README.md (由 @allcontributors[bot] 提供) (#17) - ([52c8b9f](https://github.com/puniyu/puniyu/commit/52c8b9fcc37d46e92147e02fff0f2bf09b9eede2))
+
+
+### 🎨 样式
+
+
+- *(code)* 项目格式化 (由 @shiwuliya 提供) - ([dc3d850](https://github.com/puniyu/puniyu/commit/dc3d850bcca149de821bc5ec700ae98f567f4a79))
+
+
+
+### ⚙️ 杂项
+
+
+- *(puniyu_types)* 更新 AdapterInfo 结构体字段默认值及构造宏 (由 @shiwuliya 提供) (#91) - ([76e8ebe](https://github.com/puniyu/puniyu/commit/76e8ebe2b6d2a60ebc935378fc4a98bdc47b414b))
+- *(puniyu_types)* 修改图片数据结构类型 (由 @shiwuliya 提供) (#91) - ([b9c195b](https://github.com/puniyu/puniyu/commit/b9c195b46d86b16a1688874036ce6cfed16fe308))
+
+- 初始化仓库 (由 @shiwuliya 提供) - ([51af186](https://github.com/puniyu/puniyu/commit/51af186b465079c274bb094dc3dc8b38ba959f15))
+
+
+
+### 贡献者
+
+* @puniyu[bot]
+* @shiwuliya
+* @allcontributors[bot]
 
 ## [0.4.0](https://github.com/puniyu/puniyu/compare/adapter-console-v0.3.0...adapter-console-v0.4.0) (2026-01-06)
 
