@@ -1,6 +1,6 @@
 [package]
 name = "puniyu_macros"
-version = "0.7.1"
+version.workspace = true
 description = "puniyu 的属性宏库"
 readme = "README.md"
 authors.workspace = true

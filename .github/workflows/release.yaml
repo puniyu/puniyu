@@ -20,7 +20,7 @@ jobs:
     if: "!startsWith(github.head_ref, 'release')"
     runs-on: ubuntu-latest
     outputs:
-      prs_created: ${{ steps.release-please.outputs.prs_created }}
+      prs_created: ${{ steps.release-plz.outputs.prs_created }}
     steps:
       - name: 检出仓库
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1

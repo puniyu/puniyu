@@ -135,6 +135,7 @@ git_release_enable = true
 git_tag_enable = true
 git_tag_name = "puniyu-v{{ version }}"
 publish = false
+version_group = "puniyu"
 
 [[package]]
 name = "puniyu_plugin_basic"

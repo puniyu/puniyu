@@ -1,6 +1,6 @@
 [package]
 name = "puniyu_config"
-version = "0.7.1"
+version.workspace = true
 description = "puniyu 配置模块"
 readme = "README.md"
 authors.workspace = true
@@ -16,7 +16,7 @@ puniyu_logger.workspace = true
 serde.workspace = true
 serde_repr.workspace = true
 
-puniyu_common = { version = "0.7.0", path = "../puniyu_common" }
+puniyu_common = { version = "0.7.3", path = "../puniyu_common" }
 notify-debouncer-full = { version = "0.6.0", features = ["flume"] }
 
 [package.metadata.workspaces]

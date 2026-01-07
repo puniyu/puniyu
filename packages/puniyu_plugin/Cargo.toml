@@ -1,6 +1,6 @@
 [package]
 name = "puniyu_plugin"
-version = "0.7.1"
+version.workspace = true
 description = "puniyu 的插件模块"
 readme = "README.md"
 authors.workspace = true
