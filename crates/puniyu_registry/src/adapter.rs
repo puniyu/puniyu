@@ -9,9 +9,19 @@ use puniyu_common::{merge_config, read_config, write_config};
 use puniyu_config::{Config, ConfigRegistry};
 use puniyu_logger::warn;
 use puniyu_logger::{debug, error, owo_colors::OwoColorize};
-use puniyu_types::adapter::{Adapter, AdapterBuilder};
+use puniyu_types::adapter::{AdapterApi, AdapterBuilder};
 use std::future::Future;
 use tokio::fs;
+
+#[derive(Clone)]
+pub struct AdapterInfo {
+	/// 适配器名称
+	pub name: String,
+	/// 适配器版本
+	pub version: String,
+	/// 适配器 API
+	pub api: AdapterApi,
+}
 
 pub struct AdapterRegistry;
 
@@ -84,7 +94,7 @@ impl AdapterRegistry {
 		}
 
 		run_adapter_init(adapter_name.as_str(), adapter.init()).await?;
-		STORE.adapter().insert(Adapter {
+		STORE.adapter().insert(AdapterInfo {
 			name: adapter_name,
 			version: adapter_version,
 			api: adapter.api(),
@@ -105,10 +115,10 @@ impl AdapterRegistry {
 		Ok(())
 	}
 
-	pub fn get_adapter(name: &str) -> Option<Adapter> {
+	pub fn get(name: &str) -> Option<AdapterInfo> {
 		STORE.adapter().get(name)
 	}
-	pub fn get_all_adapters() -> Vec<Adapter> {
+	pub fn adapters() -> Vec<AdapterInfo> {
 		STORE.adapter().all().values().cloned().collect()
 	}
 }

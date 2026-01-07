@@ -1,4 +1,4 @@
-use puniyu_types::plugin::Plugin;
+use crate::plugin::PluginInfo;
 use std::{
 	collections::HashMap,
 	sync::{
@@ -10,10 +10,10 @@ use std::{
 static PLUGIN_INDEX: AtomicU64 = AtomicU64::new(0);
 
 #[derive(Debug, Clone)]
-pub(crate) struct PluginStore(pub(crate) Arc<RwLock<HashMap<u64, Plugin>>>);
+pub(crate) struct PluginStore(pub(crate) Arc<RwLock<HashMap<u64, PluginInfo>>>);
 
 impl PluginStore {
-	pub fn insert(&self, plugin: Plugin) {
+	pub fn insert(&self, plugin: PluginInfo) {
 		let mut plugins = self.0.write().unwrap();
 		let exists = plugins.values().any(|p| p.name == plugin.name);
 		if !exists {
@@ -22,19 +22,19 @@ impl PluginStore {
 		}
 	}
 
-	pub fn all(&self) -> HashMap<u64, Plugin> {
+	pub fn all(&self) -> HashMap<u64, PluginInfo> {
 		self.0.read().unwrap().clone()
 	}
 
-	pub fn get_plugin_with_index(&self, index: u64) -> Option<Plugin> {
+	pub fn get_plugin_with_index(&self, index: u64) -> Option<PluginInfo> {
 		self.0.read().unwrap().get(&index).cloned()
 	}
 
-	pub fn get_plugin_with_name(&self, name: &str) -> Option<Plugin> {
+	pub fn get_plugin_with_name(&self, name: &str) -> Option<PluginInfo> {
 		self.0.read().unwrap().values().find(|plugin| plugin.name == name).cloned()
 	}
 
-	pub fn remove(&self, index: u64) -> Option<Plugin> {
+	pub fn remove(&self, index: u64) -> Option<PluginInfo> {
 		self.0.write().unwrap().remove(&index)
 	}
 

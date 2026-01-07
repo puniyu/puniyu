@@ -118,6 +118,10 @@ pub fn adapter(_: TokenStream, item: TokenStream) -> TokenStream {
 				}
 			}
 
+			fn author(&self) -> Option<&str> {
+				::puniyu_adapter::macros::proc_macro::AdapterBuilder::author(&#struct_name)
+			}
+
 			fn api(&self) -> ::puniyu_adapter::macros::proc_macro::AdapterApi {
 				::puniyu_adapter::macros::proc_macro::AdapterBuilder::api(&#struct_name)
 			}

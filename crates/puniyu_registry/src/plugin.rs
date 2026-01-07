@@ -1,6 +1,8 @@
 mod error;
 pub use error::Error;
+mod common;
 mod version;
+
 pub use version::VERSION;
 
 use crate::command::CommandRegistry;
@@ -15,13 +17,29 @@ use puniyu_common::{merge_config, read_config, write_config};
 use puniyu_config::ConfigRegistry;
 use puniyu_library::{LibraryRegistry, libloading};
 use puniyu_logger::{SharedLogger, debug, error, owo_colors::OwoColorize, warn};
-use puniyu_types::plugin::{Plugin, PluginBuilder, PluginId, PluginType};
+use puniyu_types::plugin::PluginBuilder;
 use puniyu_types::version::Version;
 use std::sync::Arc;
 use tokio::fs;
 
-fn create_plugin_info(name: impl Into<String>, version: Version, author: Option<String>) -> Plugin {
-	Plugin { name: name.into(), version, author }
+pub use common::{PluginType, PluginId};
+
+#[derive(Debug, Clone)]
+pub struct PluginInfo {
+	/// 插件名称
+	pub name: String,
+	/// 插件版本
+	pub version: Version,
+	/// 插件作者
+	pub author: Option<String>,
+}
+
+fn create_plugin_info(
+	name: impl Into<String>,
+	version: Version,
+	author: Option<String>,
+) -> PluginInfo {
+	PluginInfo { name: name.into(), version, author }
 }
 
 #[derive(Debug, Default)]
@@ -292,7 +310,7 @@ impl PluginRegistry {
 	}
 
 	#[inline]
-	pub fn get_plugin(plugin: impl Into<PluginId>) -> Option<Plugin> {
+	pub fn get_plugin(plugin: impl Into<PluginId>) -> Option<PluginInfo> {
 		let plugin_id = plugin.into();
 		match plugin_id {
 			PluginId::Index(index) => STORE.plugin().get_plugin_with_index(index),
@@ -300,7 +318,7 @@ impl PluginRegistry {
 		}
 	}
 
-	pub fn get_all_plugins() -> Vec<Plugin> {
+	pub fn get_all_plugins() -> Vec<PluginInfo> {
 		STORE.plugin().all().into_values().collect()
 	}
 }

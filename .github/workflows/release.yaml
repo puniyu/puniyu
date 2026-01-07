@@ -45,7 +45,7 @@ jobs:
 
   release:
     needs: release-pr
-    if: ${{ needs.release-pr.outputs.prs_created == 'false' }}
+    if: ${{ needs.release-pr.outputs.prs_created == 'false' && github.ref == 'refs/heads/main' && github.event_name != 'pull_request_target'  }}
     runs-on: ubuntu-latest
     outputs:
       releases: ${{ steps.release-plz.outputs.releases  }}
@@ -128,7 +128,7 @@ jobs:
           echo "puniyu_tag=$puniyu_tag" >> $GITHUB_OUTPUT
           echo "puniyu_plugin_basic_tag=$puniyu_plugin_basic_tag" >> $GITHUB_OUTPUT
 
-          
+
 
       - name: 上传主程序 Release
         if: ${{ steps.get-tag.outputs.puniyu_tag }}

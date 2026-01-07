@@ -10,13 +10,17 @@ pub use puniyu_common::APP_NAME;
 use puniyu_common::path::{DATA_DIR, PLUGIN_DATA_DIR, PLUGIN_DIR, RESOURCE_DIR, WORKING_DIR};
 use puniyu_config::{init_config, start_config_watcher};
 use puniyu_event::init_event_bus;
-use puniyu_registry::{adapter::AdapterRegistry, plugin::PluginRegistry};
+use puniyu_registry::{
+	adapter::AdapterRegistry,
+	plugin::{PluginId, PluginRegistry},
+};
 use puniyu_types::adapter::AdapterBuilder;
-use puniyu_types::plugin::{PluginBuilder, PluginType};
+use puniyu_types::plugin::PluginBuilder;
 use std::env::current_dir;
 use std::path::{Path, PathBuf};
 use std::{env, env::consts::DLL_EXTENSION};
 use tokio::{fs, signal};
+use puniyu_registry::plugin::PluginType;
 
 pub struct AppBuilder {
 	app_name: String,
@@ -70,16 +74,14 @@ impl AppBuilder {
 		self.adapters.push(adapter);
 		self
 	}
-	
+
 	pub fn build(self) -> App {
-		App {
-			builder: self,
-		}
+		App { builder: self }
 	}
 }
 
 pub struct App {
-	builder: AppBuilder
+	builder: AppBuilder,
 }
 
 impl App {
@@ -185,7 +187,7 @@ async fn init_adapter(adapters: &[&'static dyn AdapterBuilder]) {
 		error!("适配器加载失败: {:?}", e);
 	});
 
-	let adapter_count = AdapterRegistry::get_all_adapters().len();
+	let adapter_count = AdapterRegistry::adapters().len();
 
 	debug!(
 		"{}: {} {}",

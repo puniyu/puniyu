@@ -22,6 +22,12 @@ pub mod plugin;
 pub mod cooldown;
 
 #[cfg(feature = "handler")]
-pub mod handler;
+mod handler;
+
 #[cfg(feature = "handler")]
 pub use handler::HandlerRegistry;
+
+#[cfg(feature = "hook")]
+mod hook;
+#[cfg(feature = "hook")]
+pub use hook::HookRegistry;

@@ -6,7 +6,6 @@ use std::{
 		atomic::{AtomicU64, Ordering},
 	},
 };
-
 static BOT_INDEX: AtomicU64 = AtomicU64::new(0);
 
 #[derive(Clone, Default)]

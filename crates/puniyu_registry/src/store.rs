@@ -13,16 +13,20 @@ mod plugin;
 #[cfg(feature = "server")]
 mod server;
 
+#[cfg(feature = "hook")]
+mod hook;
+
 #[cfg(feature = "command")]
 use crate::command::Command;
 #[cfg(feature = "adapter")]
-use puniyu_types::adapter::Adapter;
+use crate::adapter::AdapterInfo;
 #[cfg(feature = "bot")]
 use puniyu_types::bot::Bot;
 #[cfg(feature = "plugin")]
-use puniyu_types::plugin::Plugin;
+use crate::plugin::PluginInfo;
 #[cfg(feature = "server")]
 use puniyu_types::server::ServerType;
+#[cfg(feature = "hook")]
 use std::collections::BTreeMap;
 #[cfg(any(
 	feature = "adapter",
@@ -60,6 +64,8 @@ use plugin::PluginStore;
 use puniyu_types::handler::Handler;
 #[cfg(feature = "server")]
 use server::ServerStore;
+#[cfg(feature = "hook")]
+use puniyu_types::hook::HookBuilder;
 
 /// 全局 Store 实例
 #[allow(dead_code)]
@@ -69,19 +75,21 @@ pub(crate) static STORE: LazyLock<Store> = LazyLock::new(Store::default);
 #[allow(dead_code)]
 pub(crate) struct Store {
 	#[cfg(feature = "adapter")]
-	adapter: Arc<RwLock<HashMap<u64, Adapter>>>,
+	adapter: Arc<RwLock<HashMap<u64, AdapterInfo>>>,
 	#[cfg(feature = "bot")]
 	bot: Arc<RwLock<HashMap<u64, Bot>>>,
 	#[cfg(feature = "command")]
 	command: Arc<RwLock<HashMap<u64, Arc<Command>>>>,
 	#[cfg(feature = "plugin")]
-	plugin: Arc<RwLock<HashMap<u64, Plugin>>>,
+	plugin: Arc<RwLock<HashMap<u64, PluginInfo>>>,
 	#[cfg(feature = "server")]
 	server: Arc<RwLock<HashMap<String, ServerType>>>,
 	#[cfg(feature = "cooldown")]
 	cooldown: Arc<RwLock<HashMap<String, u64>>>,
 	#[cfg(feature = "handler")]
 	handler: Arc<RwLock<BTreeMap<u32, Arc<dyn Handler>>>>,
+	#[cfg(feature = "hook")]
+	hook: Arc<RwLock<HashMap<u64, Arc<dyn HookBuilder>>>>,
 }
 
 impl Store {
@@ -122,5 +130,10 @@ impl Store {
 	#[cfg(feature = "handler")]
 	pub(crate) fn handler(&self) -> HandlerStore {
 		HandlerStore(self.handler.clone())
+	}
+	
+	#[cfg(feature = "hook")]
+	pub(crate) fn hook(&self) -> hook::HookStore {
+		hook::HookStore(self.hook.clone())
 	}
 }
