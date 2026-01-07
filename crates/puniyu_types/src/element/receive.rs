@@ -166,14 +166,70 @@ pub enum Elements {
 impl Elements {
 	pub fn as_text(&self) -> Option<&str> {
 		match self {
-			Elements::Text(text_element) => Some(&text_element.text),
+			Elements::Text(element) => Some(&element.text),
 			_ => None,
 		}
 	}
 
 	pub fn as_at(&self) -> Option<&AtElement> {
 		match self {
-			Elements::At(at_element) => Some(at_element),
+			Elements::At(element) => Some(element),
+			_ => None,
+		}
+	}
+
+	pub fn as_reply(&self) -> Option<&ReplyElement> {
+		match self {
+			Elements::Reply(element) => Some(element),
+			_ => None,
+		}
+	}
+
+	pub fn as_face(&self) -> Option<&FaceElement> {
+		match self {
+			Elements::Face(element) => Some(element),
+			_ => None,
+		}
+	}
+
+	pub fn as_image(&self) -> Option<&ImageElement> {
+		match self {
+			Elements::Image(element) => Some(element),
+			_ => None,
+		}
+	}
+
+	pub fn as_file(&self) -> Option<&FileElement> {
+		match self {
+			Elements::File(element) => Some(element),
+			_ => None,
+		}
+	}
+
+	pub fn as_video(&self) -> Option<&VideoElement> {
+		match self {
+			Elements::Video(element) => Some(element),
+			_ => None,
+		}
+	}
+
+	pub fn as_record(&self) -> Option<&RecordElement> {
+		match self {
+			Elements::Record(element) => Some(element),
+			_ => None,
+		}
+	}
+
+	pub fn as_json(&self) -> Option<&JsonElement> {
+		match self {
+			Elements::Json(element) => Some(element),
+			_ => None,
+		}
+	}
+
+	pub fn as_xml(&self) -> Option<&XmlElement> {
+		match self {
+			Elements::Xml(element) => Some(element),
 			_ => None,
 		}
 	}
