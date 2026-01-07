@@ -15,8 +15,8 @@ puniyu_logger.workspace = true
 thiserror.workspace = true
 clap = { workspace = true, features = ["string", "error-context"] }
 
-puniyu_config = { version = "0.7.0", path = "../puniyu_config" }
-puniyu_registry = { version = "0.7.1", path = "../puniyu_registry", default-features = false, features = [
+puniyu_config = { version = "0.7.1", path = "../puniyu_config" }
+puniyu_registry = { version = "0.7.2", path = "../puniyu_registry", default-features = false, features = [
     "command",
     "cooldown",
     "bot"
