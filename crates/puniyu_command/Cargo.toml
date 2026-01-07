@@ -1,6 +1,6 @@
 [package]
 name = "puniyu_command"
-version = "0.7.4"
+version = "0.7.5"
 description = "puniyu的命令处理器"
 authors.workspace = true
 license.workspace = true
@@ -17,7 +17,7 @@ thiserror.workspace = true
 clap = { workspace = true, features = ["string", "error-context"] }
 
 puniyu_config = { version = "0.7.4", path = "../puniyu_config" }
-puniyu_registry = { version = "0.7.4", path = "../puniyu_registry", default-features = false, features = [
+puniyu_registry = { version = "0.7.5", path = "../puniyu_registry", default-features = false, features = [
     "command",
     "cooldown",
     "bot"

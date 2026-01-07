@@ -1,6 +1,6 @@
 [package]
 name = "puniyu_adapter"
-version = "0.7.4"
+version = "0.7.5"
 description = "puniyu 的适配器模块"
 readme = "README.md"
 authors.workspace = true
@@ -28,6 +28,6 @@ puniyu_types = { version = "0.7.4", path = "../../crates/puniyu_types", default-
   "event",
   "bot",
 ] }
-puniyu_registry = { version = "0.7.4", path = "../../crates/puniyu_registry", default-features = false, features = [
+puniyu_registry = { version = "0.7.5", path = "../../crates/puniyu_registry", default-features = false, features = [
   "adapter",
 ] }
