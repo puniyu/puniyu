@@ -1,6 +1,6 @@
 [package]
 name = "puniyu_registry"
-version = "0.7.1"
+version = "0.7.2"
 description = "puniyu 的注册中心模块"
 readme = "README.md"
 authors.workspace = true
@@ -25,8 +25,8 @@ convert_case = { workspace = true, optional = true }
 puniyu_logger = { workspace = true, optional = true }
 puniyu_common = { version = "0.7.0", path = "../puniyu_common", optional = true }
 puniyu_types = { version = "0.7.1", path = "../puniyu_types", default-features = false, optional = true }
-puniyu_library = { version = "0.5.2", path = "../puniyu_library", optional = true }
-puniyu_config = { version = "0.7.0", path = "../puniyu_config", optional = true }
+puniyu_library = { version = "0.5.3", path = "../puniyu_library", optional = true }
+puniyu_config = { version = "0.7.1", path = "../puniyu_config", optional = true }
 
 [dev-dependencies]
 tokio = { workspace = true, features = ["full"] }

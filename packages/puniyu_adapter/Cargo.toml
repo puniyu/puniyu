@@ -18,8 +18,8 @@ serde_json.workspace = true
 toml.workspace = true
 actix-web.workspace = true
 
-puniyu_config = { version = "0.7.0", path = "../../crates/puniyu_config" }
-puniyu_macros = { version = "0.7.0", path = "../../crates/puniyu_macros", features = [
+puniyu_config = { version = "0.7.1", path = "../../crates/puniyu_config" }
+puniyu_macros = { version = "0.7.1", path = "../../crates/puniyu_macros", features = [
   "adapter",
 ] }
 puniyu_common = { version = "0.7.0", path = "../../crates/puniyu_common" }
@@ -28,6 +28,6 @@ puniyu_types = { version = "0.7.1", path = "../../crates/puniyu_types", default-
   "event",
   "bot",
 ] }
-puniyu_registry = { version = "0.7.1", path = "../../crates/puniyu_registry", default-features = false, features = [
+puniyu_registry = { version = "0.7.2", path = "../../crates/puniyu_registry", default-features = false, features = [
   "adapter",
 ] }
