@@ -14,9 +14,9 @@ rust-version.workspace = true
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-puniyu_core = { version = "0.7.1", path = "../../packages/puniyu_core" }
-puniyu_plugin = { version = "0.7.1", path = "../../packages/puniyu_plugin" }
-puniyu_common = { version = "0.7.0", path = "../../crates/puniyu_common", features = ["system-info"] }
+puniyu_core = { version = "0.7.4", path = "../../packages/puniyu_core" }
+puniyu_plugin = { version = "0.7.4", path = "../../packages/puniyu_plugin" }
+puniyu_common = { version = "0.7.4", path = "../../crates/puniyu_common", features = ["system-info"] }
 
 [features]
 default = []
