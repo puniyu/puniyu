@@ -1,6 +1,10 @@
 [package]
 name = "puniyu_command"
+<<<<<<< Updated upstream
 version = "0.7.4"
+=======
+version = "0.7.6"
+>>>>>>> Stashed changes
 description = "puniyu的命令处理器"
 authors.workspace = true
 license.workspace = true
@@ -17,7 +21,11 @@ thiserror.workspace = true
 clap = { workspace = true, features = ["string", "error-context"] }
 
 puniyu_config = { version = "0.7.4", path = "../puniyu_config" }
+<<<<<<< Updated upstream
 puniyu_registry = { version = "0.7.4", path = "../puniyu_registry", default-features = false, features = [
+=======
+puniyu_registry = { version = "0.7.6", path = "../puniyu_registry", default-features = false, features = [
+>>>>>>> Stashed changes
     "command",
     "cooldown",
     "bot"

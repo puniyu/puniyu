@@ -1,6 +1,10 @@
 [package]
 name = "puniyu_adapter"
+<<<<<<< Updated upstream
 version = "0.7.4"
+=======
+version = "0.7.6"
+>>>>>>> Stashed changes
 description = "puniyu 的适配器模块"
 readme = "README.md"
 authors.workspace = true
@@ -28,6 +32,10 @@ puniyu_types = { version = "0.7.4", path = "../../crates/puniyu_types", default-
   "event",
   "bot",
 ] }
+<<<<<<< Updated upstream
 puniyu_registry = { version = "0.7.4", path = "../../crates/puniyu_registry", default-features = false, features = [
+=======
+puniyu_registry = { version = "0.7.6", path = "../../crates/puniyu_registry", default-features = false, features = [
+>>>>>>> Stashed changes
   "adapter",
 ] }

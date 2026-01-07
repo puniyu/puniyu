@@ -1,6 +1,10 @@
 [package]
 name = "puniyu_plugin"
+<<<<<<< Updated upstream
 version = "0.7.4"
+=======
+version = "0.7.6"
+>>>>>>> Stashed changes
 description = "puniyu 的插件模块"
 readme = "README.md"
 authors.workspace = true
@@ -27,7 +31,11 @@ puniyu_types = { version = "0.7.4", path = "../../crates/puniyu_types", default-
   "plugin",
   "event",
 ] }
+<<<<<<< Updated upstream
 puniyu_registry = { version = "0.7.4", path = "../../crates/puniyu_registry", default-features = false, features = [
+=======
+puniyu_registry = { version = "0.7.6", path = "../../crates/puniyu_registry", default-features = false, features = [
+>>>>>>> Stashed changes
   "plugin",
   "bot"
 ] }

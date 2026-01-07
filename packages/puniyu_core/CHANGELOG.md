@@ -1,4 +1,36 @@
 # 变更日志
+<<<<<<< Updated upstream
+=======
+## [0.7.6](https://github.com/puniyu/puniyu/compare/core-v0.7.5...core-v0.7.6) - 2026-01-07
+
+
+### ⛰️ 新功能
+
+
+- *(registry)* 重构适配器和插件的数据结构并添加钩子功能 (由 @shiwuliya 提供) (#111) - ([52eddd0](https://github.com/puniyu/puniyu/commit/52eddd05ae4e70c53f1afbbceb2103626df6c674))
+
+
+
+
+### 贡献者
+
+* @puniyu[bot]
+* @shiwuliya
+## [0.7.5](https://github.com/puniyu/puniyu/compare/core-v0.7.4...core-v0.7.5) - 2026-01-07
+
+
+### ⛰️ 新功能
+
+
+- *(registry)* 重构适配器和插件的数据结构并添加钩子功能 (由 @shiwuliya 提供) (#111) - ([52eddd0](https://github.com/puniyu/puniyu/commit/52eddd05ae4e70c53f1afbbceb2103626df6c674))
+
+
+
+
+### 贡献者
+
+* @shiwuliya
+>>>>>>> Stashed changes
 ## [0.7.4](https://github.com/puniyu/puniyu/compare/core-v0.7.3...core-v0.7.4) - 2026-01-07
 
 

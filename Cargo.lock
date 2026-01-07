@@ -1997,7 +1997,11 @@ dependencies = [
 
 [[package]]
 name = "puniyu_adapter"
+<<<<<<< Updated upstream
 version = "0.7.4"
+=======
+version = "0.7.6"
+>>>>>>> Stashed changes
 dependencies = [
  "actix-web",
  "async-trait",
@@ -2014,7 +2018,11 @@ dependencies = [
 
 [[package]]
 name = "puniyu_adapter_console"
+<<<<<<< Updated upstream
 version = "0.4.1"
+=======
+version = "0.4.3"
+>>>>>>> Stashed changes
 dependencies = [
  "async-trait",
  "puniyu_adapter",
@@ -2024,7 +2032,11 @@ dependencies = [
 
 [[package]]
 name = "puniyu_adapter_server"
+<<<<<<< Updated upstream
 version = "0.3.2"
+=======
+version = "0.3.4"
+>>>>>>> Stashed changes
 dependencies = [
  "actix-web",
  "actix-ws",
@@ -2044,7 +2056,11 @@ version = "0.2.4"
 
 [[package]]
 name = "puniyu_command"
+<<<<<<< Updated upstream
 version = "0.7.4"
+=======
+version = "0.7.6"
+>>>>>>> Stashed changes
 dependencies = [
  "async-trait",
  "clap",
@@ -2080,7 +2096,11 @@ dependencies = [
 
 [[package]]
 name = "puniyu_core"
+<<<<<<< Updated upstream
 version = "0.7.4"
+=======
+version = "0.7.6"
+>>>>>>> Stashed changes
 dependencies = [
  "async-trait",
  "bon",
@@ -2103,7 +2123,11 @@ dependencies = [
 
 [[package]]
 name = "puniyu_event"
+<<<<<<< Updated upstream
 version = "0.7.4"
+=======
+version = "0.7.6"
+>>>>>>> Stashed changes
 dependencies = [
  "puniyu_command",
  "puniyu_logger",
@@ -2151,7 +2175,11 @@ dependencies = [
 
 [[package]]
 name = "puniyu_plugin"
+<<<<<<< Updated upstream
 version = "0.7.4"
+=======
+version = "0.7.6"
+>>>>>>> Stashed changes
 dependencies = [
  "actix-web",
  "async-trait",
@@ -2168,7 +2196,11 @@ dependencies = [
 
 [[package]]
 name = "puniyu_plugin_basic"
+<<<<<<< Updated upstream
 version = "0.2.1"
+=======
+version = "0.2.3"
+>>>>>>> Stashed changes
 dependencies = [
  "puniyu_common",
  "puniyu_core",
@@ -2190,7 +2222,11 @@ dependencies = [
 
 [[package]]
 name = "puniyu_registry"
+<<<<<<< Updated upstream
 version = "0.7.4"
+=======
+version = "0.7.6"
+>>>>>>> Stashed changes
 dependencies = [
  "chrono",
  "chrono-tz",
@@ -2211,7 +2247,11 @@ dependencies = [
 
 [[package]]
 name = "puniyu_server"
+<<<<<<< Updated upstream
 version = "0.7.4"
+=======
+version = "0.7.6"
+>>>>>>> Stashed changes
 dependencies = [
  "actix-web",
  "bytes",

@@ -1,6 +1,10 @@
 [package]
 name = "puniyu_registry"
+<<<<<<< Updated upstream
 version = "0.7.4"
+=======
+version = "0.7.6"
+>>>>>>> Stashed changes
 description = "puniyu 的注册中心模块"
 readme = "README.md"
 authors.workspace = true

@@ -1,6 +1,10 @@
 [package]
 name = "puniyu_plugin_basic"
+<<<<<<< Updated upstream
 version = "0.2.1"
+=======
+version = "0.2.3"
+>>>>>>> Stashed changes
 description = "puniyu basic plugin"
 authors.workspace = true
 license.workspace = true
@@ -14,8 +18,13 @@ rust-version.workspace = true
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
+<<<<<<< Updated upstream
 puniyu_core = { version = "0.7.4", path = "../../packages/puniyu_core" }
 puniyu_plugin = { version = "0.7.4", path = "../../packages/puniyu_plugin" }
+=======
+puniyu_core = { version = "0.7.6", path = "../../packages/puniyu_core" }
+puniyu_plugin = { version = "0.7.6", path = "../../packages/puniyu_plugin" }
+>>>>>>> Stashed changes
 puniyu_common = { version = "0.7.4", path = "../../crates/puniyu_common", features = ["system-info"] }
 
 [features]
