@@ -28,7 +28,7 @@ impl AdapterStore {
 		adapters.values().find(|a| a.name == name).cloned()
 	}
 
-	pub fn get_all(&self) -> HashMap<u64, Adapter> {
+	pub fn all(&self) -> HashMap<u64, Adapter> {
 		self.0.read().unwrap().clone()
 	}
 

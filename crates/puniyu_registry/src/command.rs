@@ -63,10 +63,10 @@ impl CommandRegistry {
 	}
 
 	pub fn get_all() -> Vec<Arc<Command>> {
-		STORE.command().get_all()
+		STORE.command().all()
 	}
 	pub fn get_plugins(command_name: &str) -> Vec<String> {
-		let command_list = STORE.command().get_all();
+		let command_list = STORE.command().all();
 		command_list
 			.iter()
 			.filter(|command| command.builder.name() == command_name)

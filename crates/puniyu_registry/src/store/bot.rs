@@ -13,12 +13,13 @@ static BOT_INDEX: AtomicU64 = AtomicU64::new(0);
 pub(crate) struct BotStore(pub(crate) Arc<RwLock<HashMap<u64, Bot>>>);
 
 impl BotStore {
-	pub fn get_all(&self) -> Vec<Bot> {
-		self.0.read().unwrap().values().cloned().collect()
-	}
 
 	pub fn get_with_index(&self, index: u64) -> Option<Bot> {
 		self.0.read().unwrap().get(&index).cloned()
+	}
+
+	pub fn all(&self) -> Vec<Bot> {
+		self.0.read().unwrap().values().cloned().collect()
 	}
 
 	pub fn get_with_self_id(&self, self_id: &str) -> Option<Bot> {

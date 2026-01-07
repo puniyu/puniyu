@@ -3,6 +3,7 @@ use crate::{
 	logger::log_init,
 	logger::{OwoColorize, debug, error, info},
 };
+use bytes::Bytes;
 use convert_case::{Case, Casing};
 use figlet_rs::FIGfont;
 pub use puniyu_common::APP_NAME;
@@ -19,7 +20,7 @@ use tokio::{fs, signal};
 
 pub struct AppBuilder {
 	app_name: String,
-	app_logo: Vec<u8>,
+	app_logo: Bytes,
 	working_dir: PathBuf,
 	plugins: Vec<&'static dyn PluginBuilder>,
 	adapters: Vec<&'static dyn AdapterBuilder>,
@@ -29,8 +30,10 @@ impl Default for AppBuilder {
 	fn default() -> Self {
 		Self {
 			app_name: String::from("puniyu"),
-			app_logo: include_bytes!(concat!(env!("CARGO_MANIFEST_DIR"), "/assets/logo.png"))
-				.to_vec(),
+			app_logo: Bytes::from_static(include_bytes!(concat!(
+				env!("CARGO_MANIFEST_DIR"),
+				"/assets/logo.png"
+			))),
 			working_dir: current_dir().unwrap(),
 			plugins: Vec::new(),
 			adapters: Vec::new(),
@@ -43,13 +46,13 @@ impl AppBuilder {
 		Self::default()
 	}
 
-	pub fn with_name(mut self, name: &str) -> Self {
-		self.app_name = name.to_string();
+	pub fn with_name(mut self, name: impl Into<String>) -> Self {
+		self.app_name = name.into();
 		self
 	}
 
-	pub fn with_logo(mut self, logo: Vec<u8>) -> Self {
-		self.app_logo = logo;
+	pub fn with_logo(mut self, logo: impl Into<Bytes>) -> Self {
+		self.app_logo = logo.into();
 		self
 	}
 
@@ -67,24 +70,27 @@ impl AppBuilder {
 		self.adapters.push(adapter);
 		self
 	}
-
+	
 	pub fn build(self) -> App {
-		WORKING_DIR.get_or_init(|| self.working_dir.clone());
-		APP_NAME.get_or_init(|| self.app_name.clone());
-		App { app_logo: self.app_logo, plugins: self.plugins, adapters: self.adapters }
+		App {
+			builder: self,
+		}
 	}
 }
 
 pub struct App {
-	app_logo: Vec<u8>,
-	plugins: Vec<&'static dyn PluginBuilder>,
-	adapters: Vec<&'static dyn AdapterBuilder>,
+	builder: AppBuilder
 }
 
 impl App {
+	pub fn builder() -> AppBuilder {
+		AppBuilder::new()
+	}
 	pub async fn run(&self) {
 		use crate::common::format_duration;
 		use std::time::Duration;
+		WORKING_DIR.get_or_init(|| self.builder.working_dir.clone());
+		APP_NAME.get_or_init(|| self.builder.app_name.clone());
 		print_start_log();
 		init_config();
 		#[cfg(feature = "logger")]
@@ -93,7 +99,7 @@ impl App {
 		}
 		let start_time = std::time::Instant::now();
 		let app_name = APP_NAME.get().unwrap();
-		init_app(&self.plugins, &self.adapters).await;
+		init_app(&self.builder.plugins, &self.builder.adapters).await;
 		start_config_watcher();
 		let duration_str = format_duration(start_time.elapsed());
 		info!(
@@ -107,8 +113,8 @@ impl App {
 			use std::net::IpAddr;
 			let logo_path = RESOURCE_DIR.join("logo.png");
 			if !logo_path.exists() {
-				fs::write(&logo_path, &self.app_logo).await.expect("写入logo失败");
-				puniyu_server::LOGO.get_or_init(|| self.app_logo.clone());
+				fs::write(&logo_path, &self.builder.app_logo).await.expect("写入logo失败");
+				puniyu_server::LOGO.get_or_init(|| self.builder.app_logo.clone());
 			}
 			let config = Config::app();
 			let config = config.server();

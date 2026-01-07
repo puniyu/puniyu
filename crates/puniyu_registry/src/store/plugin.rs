@@ -22,7 +22,7 @@ impl PluginStore {
 		}
 	}
 
-	pub fn get_all_plugins(&self) -> HashMap<u64, Plugin> {
+	pub fn all(&self) -> HashMap<u64, Plugin> {
 		self.0.read().unwrap().clone()
 	}
 
@@ -38,7 +38,7 @@ impl PluginStore {
 		self.0.write().unwrap().remove(&index)
 	}
 
-	pub fn find_index_by_name(&self, name: &str) -> Option<u64> {
+	pub fn get_index(&self, name: &str) -> Option<u64> {
 		self.0.read().unwrap().iter().find(|(_, plugin)| plugin.name == name).map(|(idx, _)| *idx)
 	}
 }

@@ -16,6 +16,9 @@ impl CommandStore {
 		let id = COMMAND_ID.fetch_add(1, Ordering::Relaxed);
 		self.0.write().unwrap().insert(id, Arc::from(builder));
 	}
+	pub fn all(&self) -> Vec<Arc<Command>> {
+		self.0.read().unwrap().values().cloned().collect()
+	}
 
 	pub fn remove_with_id(&self, key: u64) {
 		self.0.write().unwrap().remove(&key);
@@ -47,9 +50,5 @@ impl CommandStore {
 			.values()
 			.find(|registry| registry.plugin_name == plugin_name && registry.builder.name() == name)
 			.cloned()
-	}
-
-	pub fn get_all(&self) -> Vec<Arc<Command>> {
-		self.0.read().unwrap().values().cloned().collect()
 	}
 }

@@ -1,11 +1,12 @@
-use puniyu_core::AppBuilder;
+use puniyu_core::App;
 
 #[tokio::main]
 async fn main() {
-	let app = AppBuilder::default()
+	App::builder()
 		.with_adapter(&puniyu_adapter_console::Adapter)
 		.with_plugin(&puniyu_plugin_basic::Plugin)
 		.with_adapter(&puniyu_adapter_server::Adapter)
-		.build();
-	app.run().await;
+		.build()
+		.run()
+		.await;
 }

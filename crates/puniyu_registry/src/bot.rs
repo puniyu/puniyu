@@ -7,7 +7,7 @@ pub struct BotRegistry;
 
 impl BotRegistry {
 	pub fn get_all() -> Vec<Bot> {
-		STORE.bot().get_all()
+		STORE.bot().all()
 	}
 
 	pub fn get_with_index(index: u64) -> Option<Bot> {

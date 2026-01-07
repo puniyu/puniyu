@@ -17,7 +17,7 @@ pub struct AdapterRegistry;
 
 impl AdapterRegistry {
 	pub async fn load_adapter(adapter: &'static dyn AdapterBuilder) -> Result<(), Error> {
-		let adapters = STORE.adapter().get_all();
+		let adapters = STORE.adapter().all();
 		let adapter_name = adapter.name().to_string();
 		let adapter_version = adapter.version().to_string();
 		if adapters.values().any(|a| a.name == adapter_name) {
@@ -109,7 +109,7 @@ impl AdapterRegistry {
 		STORE.adapter().get(name)
 	}
 	pub fn get_all_adapters() -> Vec<Adapter> {
-		STORE.adapter().get_all().values().cloned().collect()
+		STORE.adapter().all().values().cloned().collect()
 	}
 }
 

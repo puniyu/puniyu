@@ -51,7 +51,7 @@ impl PluginRegistry {
 					set_logger(&SharedLogger::new());
 					let setup_app_name: fn(name: String) = *lib.get(b"setup_app_name").unwrap();
 					setup_app_name(APP_NAME.get().unwrap().to_string());
-					let plugins = STORE.plugin().get_all_plugins();
+					let plugins = STORE.plugin().all();
 					let plugin_name = plugin_builder.name();
 					let plugin_version = plugin_builder.version().to_string();
 					debug!(
@@ -156,7 +156,7 @@ impl PluginRegistry {
 			}
 			// 静态插件
 			PluginType::Builder(plugin_builder) => {
-				let plugins = STORE.plugin().get_all_plugins();
+				let plugins = STORE.plugin().all();
 				let plugin_name = plugin_builder.name();
 				let plugin_version = plugin_builder.version().to_string();
 				if plugins.iter().any(|(_, plugin)| plugin.name == plugin_name) {
@@ -276,7 +276,7 @@ impl PluginRegistry {
 				}
 			}
 			PluginId::Name(name) => {
-				let index = STORE.plugin().find_index_by_name(name.as_str());
+				let index = STORE.plugin().get_index(name.as_str());
 				if let Some(idx) = index {
 					TaskRegistry::remove_task(name.as_str()).await;
 					CommandRegistry::remove_with_plugin_name(name.as_str());
@@ -301,7 +301,7 @@ impl PluginRegistry {
 	}
 
 	pub fn get_all_plugins() -> Vec<Plugin> {
-		STORE.plugin().get_all_plugins().into_values().collect()
+		STORE.plugin().all().into_values().collect()
 	}
 }
 

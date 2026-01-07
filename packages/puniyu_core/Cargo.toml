@@ -13,7 +13,7 @@ include = ["src", "Cargo.toml", "README.md", "build.rs", "assets"]
 
 [dependencies]
 figlet-rs = "0.1.5"
-
+bytes.workspace = true
 glob.workspace = true
 thiserror.workspace = true
 tokio.workspace = true
@@ -30,6 +30,7 @@ puniyu_event = { version = "0.7.4", path = "../../crates/puniyu_event" }
 puniyu_common = { version = "0.7.4", path = "../../crates/puniyu_common" }
 puniyu_types = { version = "0.7.4", path = "../../crates/puniyu_types" }
 puniyu_registry = { version = "0.7.4", path = "../../crates/puniyu_registry" }
+bon = "3.8.1"
 
 [features]
 default = ["server", "logger"]
