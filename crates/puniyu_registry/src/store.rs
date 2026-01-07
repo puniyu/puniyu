@@ -12,6 +12,7 @@ mod handler;
 mod plugin;
 #[cfg(feature = "server")]
 mod server;
+mod hook;
 
 #[cfg(feature = "hook")]
 mod hook;
