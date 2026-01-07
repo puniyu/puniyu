@@ -91,16 +91,11 @@ impl App {
 		{
 			log_init();
 		}
-		let start_time = std::time::Instant::now().elapsed();
+		let start_time = std::time::Instant::now();
 		let app_name = APP_NAME.get().unwrap();
 		init_app(&self.plugins, &self.adapters).await;
-		let logo_path = RESOURCE_DIR.join("logo.png");
-		if !logo_path.exists() {
-			fs::write(&logo_path, &self.app_logo).await.expect("写入logo失败");
-			puniyu_server::LOGO.get_or_init(|| self.app_logo.clone());
-		}
 		start_config_watcher();
-		let duration_str = format_duration(start_time);
+		let duration_str = format_duration(start_time.elapsed());
 		info!(
 			"{} 初始化完成，耗时: {}",
 			app_name.to_case(Case::Lower).fg_rgb::<64, 224, 208>(),
@@ -110,6 +105,11 @@ impl App {
 		{
 			use crate::config::Config;
 			use std::net::IpAddr;
+			let logo_path = RESOURCE_DIR.join("logo.png");
+			if !logo_path.exists() {
+				fs::write(&logo_path, &self.app_logo).await.expect("写入logo失败");
+				puniyu_server::LOGO.get_or_init(|| self.app_logo.clone());
+			}
 			let config = Config::app();
 			let config = config.server();
 			let host = IpAddr::V4(config.host().parse().unwrap());
