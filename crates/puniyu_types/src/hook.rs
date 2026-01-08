@@ -1,10 +1,15 @@
-use crate::event::EventType;
+use crate::event::{EventType, Event};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub enum HookType {
 	Event(EventType),
+	Status(StatusType)
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
+pub enum StatusType {
 	Start,
-	Stop,
+	Stop
 }
 
 impl Default for HookType {
@@ -20,5 +25,5 @@ pub trait HookBuilder: Send + Sync {
 
 	fn rank(&self) -> u32;
 
-	fn run(&self) -> Result<(), Box<dyn std::error::Error>>;
+	fn run(&self, event: Option<&Event>) -> Result<(), Box<dyn std::error::Error>>;
 }

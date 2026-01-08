@@ -18,6 +18,3 @@ serde_repr.workspace = true
 
 puniyu_common = { version = "0.7.4", path = "../puniyu_common" }
 notify-debouncer-full = { version = "0.6.0", features = ["flume"] }
-
-[package.metadata.workspaces]
-independent = true

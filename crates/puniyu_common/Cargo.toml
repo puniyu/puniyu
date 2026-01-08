@@ -16,7 +16,7 @@ doctest = false
 [dependencies]
 toml = { workspace = true }
 strum.workspace = true
-puniyu_system_info = { workspace = true, features = ["gpu"], optional = true }
+puniyu_system_info = { workspace = true, optional = true }
 
 serde.workspace = true
 thiserror.workspace = true
@@ -25,9 +25,5 @@ thiserror.workspace = true
 default = ["version"]
 version = []
 system-info = ["dep:puniyu_system_info"]
-
-[package.metadata.workspaces]
-independent = true
-
 
 

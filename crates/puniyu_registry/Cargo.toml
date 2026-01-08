@@ -86,6 +86,3 @@ cooldown = ["dep:chrono"]
 handler = ["puniyu_types/handler"]
 hook = ["puniyu_types/hook"]
 full = ["adapter", "bot", "server", "task", "command", "plugin", "handler", "hook"]
-
-[package.metadata.workspaces]
-independent = true

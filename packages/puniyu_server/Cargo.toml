@@ -37,5 +37,3 @@ puniyu_registry = { version = "0.7.4", path = "../../crates/puniyu_registry", de
 default = ["cli"]
 cli = ["dep:clap"]
 
-[package.metadata.workspaces]
-independent = true
