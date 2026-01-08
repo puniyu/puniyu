@@ -1,13 +1,16 @@
 use puniyu_types::handler::Handler;
-use std::collections::BTreeMap;
+use std::collections::HashMap;
 use std::sync::{Arc, RwLock};
+use std::sync::atomic::{AtomicU64, Ordering};
 
-pub(crate) struct HandlerStore(pub(crate) Arc<RwLock<BTreeMap<u32, Arc<dyn Handler>>>>);
+static HANDLER_INDEX: AtomicU64 = AtomicU64::new(0);
+pub(crate) struct HandlerStore(pub(crate) Arc<RwLock<HashMap<u64, Arc<dyn Handler>>>>);
 
 impl HandlerStore {
 	pub fn register(&self, handler: Arc<dyn Handler>) {
 		let mut handlers = self.0.write().unwrap();
-		handlers.insert(handler.rank(), handler);
+		let index = HANDLER_INDEX.fetch_add(1, Ordering::Relaxed);
+		handlers.insert(index, handler);
 	}
 
 	pub fn unregister(&self, name: &str) -> bool {

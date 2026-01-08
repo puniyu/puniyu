@@ -1,6 +1,7 @@
 mod tools;
 
 use puniyu_command::CommandHandler;
+use puniyu_hook::HookHandler;
 use puniyu_logger::owo_colors::OwoColorize;
 use puniyu_logger::warn;
 use puniyu_registry::HandlerRegistry;
@@ -91,6 +92,7 @@ impl EventBusTrait for EventBus {
 
 pub fn init_event_bus() {
 	HandlerRegistry::register(Arc::new(CommandHandler));
+	HandlerRegistry::register(Arc::new(HookHandler));
 	EVENT_BUS.get_or_init(|| {
 		let event_bus = EventBus::new();
 		Arc::new(event_bus) as Arc<dyn EventBusTrait>

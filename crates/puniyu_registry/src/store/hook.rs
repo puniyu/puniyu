@@ -27,10 +27,6 @@ impl HookStore {
 		self.0.read().unwrap().values().cloned().collect()
 	}
 
-	pub fn remove_with_id(&self, key: u64) {
-		self.0.write().unwrap().remove(&key);
-	}
-
 	pub fn remove_with_name(&self, name: &str) {
 		let mut map = self.0.write().unwrap();
 		if let Some(key) = map.iter().find(|(_, v)| v.name() == name).map(|(k, _)| *k) {

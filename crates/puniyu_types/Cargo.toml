@@ -63,7 +63,7 @@ handler = ["dep:async-trait", "event"]
 version = ["dep:serde"]
 config = ["dep:toml"]
 bus = ["dep:tokio", "dep:puniyu_logger", "event"]
-hook = ['event']
+hook = ["dep:async-trait", "event"]
 full = [
     "adapter",
     "event",

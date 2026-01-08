@@ -6,12 +6,14 @@ use puniyu_registry::HandlerRegistry;
 use puniyu_types::event::Event;
 
 pub(crate) async fn dispatch_event(event: Arc<Event>) {
-	let handlers = HandlerRegistry::handlers();
+	let mut handlers = HandlerRegistry::handlers();
+	handlers.sort_unstable_by_key(|a| a.rank());
 
 	for handler in handlers {
 		if handler.matches(&event)
-			&& let Err(e) = handler.handle(&event).await {
-				error!("[{}]: 处理器 {} 执行失败: {:?}", "Event".blue(), handler.name(), e);
-			}
+			&& let Err(e) = handler.handle(&event).await
+		{
+			error!("[{}]: 处理器 {} 执行失败: {:?}", "Event".blue(), handler.name(), e);
+		}
 	}
 }

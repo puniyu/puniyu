@@ -26,15 +26,15 @@ use puniyu_types::bot::Bot;
 use crate::plugin::PluginInfo;
 #[cfg(feature = "server")]
 use puniyu_types::server::ServerType;
-#[cfg(feature = "hook")]
-use std::collections::BTreeMap;
 #[cfg(any(
 	feature = "adapter",
 	feature = "bot",
 	feature = "command",
 	feature = "plugin",
 	feature = "server",
-	feature = "cooldown"
+	feature = "cooldown",
+	feature = "handler",
+	feature = "hook"
 ))]
 use std::collections::HashMap;
 use std::sync::LazyLock;
@@ -87,7 +87,7 @@ pub(crate) struct Store {
 	#[cfg(feature = "cooldown")]
 	cooldown: Arc<RwLock<HashMap<String, u64>>>,
 	#[cfg(feature = "handler")]
-	handler: Arc<RwLock<BTreeMap<u32, Arc<dyn Handler>>>>,
+	handler: Arc<RwLock<HashMap<u64, Arc<dyn Handler>>>>,
 	#[cfg(feature = "hook")]
 	hook: Arc<RwLock<HashMap<u64, Arc<dyn HookBuilder>>>>,
 }

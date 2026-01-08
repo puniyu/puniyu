@@ -2045,6 +2045,7 @@ name = "puniyu_event"
 version = "0.7.4"
 dependencies = [
  "puniyu_command",
+ "puniyu_hook",
  "puniyu_logger",
  "puniyu_registry",
  "puniyu_types",

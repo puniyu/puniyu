@@ -62,7 +62,7 @@ impl CommandRegistry {
 		STORE.command().get_with_plugin(plugin_name, name)
 	}
 
-	pub fn get_all() -> Vec<Arc<Command>> {
+	pub fn commands() -> Vec<Arc<Command>> {
 		STORE.command().all()
 	}
 	pub fn get_plugins(command_name: &str) -> Vec<String> {

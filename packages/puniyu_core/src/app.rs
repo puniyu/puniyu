@@ -10,17 +10,15 @@ pub use puniyu_common::APP_NAME;
 use puniyu_common::path::{DATA_DIR, PLUGIN_DATA_DIR, PLUGIN_DIR, RESOURCE_DIR, WORKING_DIR};
 use puniyu_config::{init_config, start_config_watcher};
 use puniyu_event::init_event_bus;
-use puniyu_registry::{
-	adapter::AdapterRegistry,
-	plugin::{PluginId, PluginRegistry},
-};
+use puniyu_registry::plugin::PluginType;
+use puniyu_registry::{HookRegistry, adapter::AdapterRegistry, plugin::PluginRegistry};
 use puniyu_types::adapter::AdapterBuilder;
+use puniyu_types::hook::{HookType, StatusType};
 use puniyu_types::plugin::PluginBuilder;
 use std::env::current_dir;
 use std::path::{Path, PathBuf};
 use std::{env, env::consts::DLL_EXTENSION};
 use tokio::{fs, signal};
-use puniyu_registry::plugin::PluginType;
 
 pub struct AppBuilder {
 	app_name: String,
@@ -104,11 +102,28 @@ impl App {
 		init_app(&self.builder.plugins, &self.builder.adapters).await;
 		start_config_watcher();
 		let duration_str = format_duration(start_time.elapsed());
+		debug!("开始执行hook钩子");
+		let mut hooks = HookRegistry::all()
+			.into_iter()
+			.filter(|x| match x.r#type() {
+				HookType::Status(status) => status == StatusType::Start,
+				_ => false,
+			})
+			.collect::<Vec<_>>();
+		hooks.sort_unstable_by_key(|a| a.rank());
+		for hook in hooks {
+			if let Err(e) = hook.run(None).await {
+				error!("启动hook钩子执行失败: {}", e);
+			}
+			HookRegistry::unregister(hook.name());
+		}
 		info!(
 			"{} 初始化完成，耗时: {}",
 			app_name.to_case(Case::Lower).fg_rgb::<64, 224, 208>(),
 			duration_str.fg_rgb::<255, 127, 80>()
 		);
+
+		init_event_bus();
 		#[cfg(feature = "server")]
 		{
 			use crate::config::Config;
@@ -144,7 +159,6 @@ async fn init_app(
 	if !RESOURCE_DIR.as_path().exists() {
 		fs::create_dir(RESOURCE_DIR.as_path()).await.unwrap();
 	}
-	init_event_bus();
 	init_plugin(plugins).await;
 	init_adapter(adapters).await;
 }
