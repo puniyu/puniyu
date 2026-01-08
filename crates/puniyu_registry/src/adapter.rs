@@ -65,7 +65,8 @@ impl AdapterRegistry {
 			fs::create_dir_all(&resource_dir)
 		);
 
-		if let Some(configs) = adapter.config() {
+		let configs = adapter.config();
+		if !configs.is_empty() {
 			for config in configs {
 				match read_config::<toml::Value>(&config_dir, config.name()) {
 					Ok(cfg) => {

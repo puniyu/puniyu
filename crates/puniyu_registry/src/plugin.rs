@@ -133,7 +133,8 @@ impl PluginRegistry {
 						let _ = fs::create_dir_all(&config_dir).await;
 					}
 
-					if let Some(configs) = plugin_builder.config() {
+					let configs = plugin_builder.config();
+					if !configs.is_empty() {
 						configs.iter().for_each(|config| {
 							let cfg = read_config::<toml::Value>(&config_dir, config.name());
 
@@ -234,8 +235,9 @@ impl PluginRegistry {
 				if !config_dir.exists() {
 					let _ = fs::create_dir_all(&config_dir).await;
 				}
+				let configs = plugin_builder.config();
 
-				if let Some(configs) = plugin_builder.config() {
+				if !configs.is_empty() {
 					configs.iter().for_each(|config| {
 						let cfg = read_config::<toml::Value>(&config_dir, config.name());
 

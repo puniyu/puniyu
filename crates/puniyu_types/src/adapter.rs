@@ -7,6 +7,7 @@ pub use api::*;
 mod info;
 pub use info::*;
 
+use crate::hook::HookBuilder;
 use crate::version::Version;
 use crate::{config::Config, server::ServerType};
 use async_trait::async_trait;
@@ -33,8 +34,13 @@ pub trait AdapterBuilder: Send + Sync {
 	fn api(&self) -> AdapterApi;
 
 	/// 配置文件
-	fn config(&self) -> Option<Vec<Box<dyn Config>>> {
-		None
+	fn config(&self) -> Vec<Box<dyn Config>> {
+		Vec::new()
+	}
+
+	/// 钩子列表
+	fn hooks(&self) -> Vec<Box<dyn HookBuilder>> {
+		Vec::new()
 	}
 
 	/// 路由管理

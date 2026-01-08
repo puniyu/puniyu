@@ -106,7 +106,7 @@ pub fn adapter(_: TokenStream, item: TokenStream) -> TokenStream {
 
 		#[::puniyu_adapter::macros::proc_macro::async_trait]
 		impl ::puniyu_adapter::macros::proc_macro::AdapterBuilder for #adapter_struct_name {
-			fn name(&self) -> &'static str {
+			fn name(&self) -> &str {
 				::puniyu_adapter::macros::proc_macro::AdapterBuilder::name(&#struct_name)
 			}
 
@@ -126,8 +126,16 @@ pub fn adapter(_: TokenStream, item: TokenStream) -> TokenStream {
 				::puniyu_adapter::macros::proc_macro::AdapterBuilder::api(&#struct_name)
 			}
 
-			fn config(&self) -> Option<Vec<Box<dyn ::puniyu_adapter::macros::proc_macro::Config>>> {
+			fn config(&self) -> Vec<Box<dyn ::puniyu_adapter::macros::proc_macro::Config>> {
 				::puniyu_adapter::macros::proc_macro::inventory::iter::<ConfigRegistry>
+					.into_iter()
+					.map(|registry| (registry.builder)())
+					.collect::<Vec<_>>()
+					.into()
+			}
+
+			fn hooks(&self) -> Vec<Box<dyn ::puniyu_adapter::macros::proc_macro::HookBuilder>> {
+				::puniyu_adapter::macros::proc_macro::inventory::iter::<HookRegistry>
 					.into_iter()
 					.map(|registry| (registry.builder)())
 					.collect::<Vec<_>>()
@@ -150,6 +158,14 @@ pub fn adapter(_: TokenStream, item: TokenStream) -> TokenStream {
 			builder: fn() -> Box<dyn ::puniyu_adapter::macros::proc_macro::Config>,
 		}
 		::puniyu_adapter::macros::proc_macro::inventory::collect!(ConfigRegistry);
+
+		/// 钩子注册注册表
+		pub(crate) struct HookRegistry {
+			adapter_name: &'static str,
+			/// 钩子构造器
+			builder: fn() -> Box<dyn ::puniyu_adapter::macros::proc_macro::HookBuilder>,
+		}
+		::puniyu_adapter::macros::proc_macro::inventory::collect!(HookRegistry);
 	};
 
 	TokenStream::from(expanded)
@@ -218,7 +234,7 @@ pub fn plugin_config(args: TokenStream, item: TokenStream) -> TokenStream {
 /// 3. 插件名称是否规范
 ///
 /// # 示例
-/// ## 最小化示例（使用默认初始化）
+/// ## 最小化示例
 /// ```rust, ignore
 /// use puniyu_plugin::plugin;
 ///
@@ -226,7 +242,7 @@ pub fn plugin_config(args: TokenStream, item: TokenStream) -> TokenStream {
 /// pub async fn hello() {}
 /// ```
 ///
-/// ## 完整示例（自定义初始化逻辑）
+/// ## 完整示例
 /// ```rust, ignore
 /// use puniyu_plugin::plugin;
 ///
@@ -359,18 +375,22 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
 					.collect()
 			}
 
-			fn config(&self) -> Option<Vec<Box<dyn ::puniyu_plugin::macros::proc_macro::Config>>> {
+			fn hooks(&self) -> Vec<Box<dyn ::puniyu_plugin::macros::proc_macro::HookBuilder>> {
 				let plugin_name = self.name();
-				let configs: Vec<_> = ::puniyu_plugin::macros::proc_macro::inventory::iter::<ConfigRegistry>
+				::puniyu_plugin::macros::proc_macro::inventory::iter::<HookRegistry>
+					.into_iter()
+					.filter(|hook| hook.plugin_name == plugin_name)
+					.map(|hook| (hook.builder)())
+					.collect()
+			}
+
+			fn config(&self) -> Vec<Box<dyn ::puniyu_plugin::macros::proc_macro::Config>> {
+				let plugin_name = self.name();
+				::puniyu_plugin::macros::proc_macro::inventory::iter::<ConfigRegistry>
 					.into_iter()
 					.filter(|config| config.plugin_name == plugin_name)
 					.map(|config| (config.builder)())
-					.collect();
-				if configs.is_empty() {
-					None
-				} else {
-					Some(configs)
-				}
+					.collect()
 			}
 
 			fn server(&self) -> Option<::puniyu_plugin::macros::proc_macro::ServerType> {
@@ -382,7 +402,7 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
 					.collect();
 
 				if !servers.is_empty() {
-					Some(::std::sync::Arc::new(move |cfg: &mut ::puniyu_plugin::macros::proc_macro::actix_web::web::ServiceConfig| {
+					Some(::std::sync::Arc::new(move |cfg: &mut ::puniyu_plugin::macros::proc_macro::ServiceConfig| {
 						servers.iter().for_each(|server| server(cfg));
 					}))
 				} else {
@@ -440,6 +460,14 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
 				builder: || -> Box<dyn ::puniyu_plugin::macros::proc_macro::PluginBuilder> { Box::new(#struct_name {}) },
 			}
 		}
+
+		/// 钩子注册注册表
+		pub(crate) struct HookRegistry {
+			plugin_name: &'static str,
+			/// 钩子构造器
+			builder: fn() -> Box<dyn ::puniyu_plugin::macros::proc_macro::HookBuilder>,
+		}
+		::puniyu_plugin::macros::proc_macro::inventory::collect!(HookRegistry);
 
 		#[cfg(feature = "cdylib")]
 		#[unsafe(no_mangle)]

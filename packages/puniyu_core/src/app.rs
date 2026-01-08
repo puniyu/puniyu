@@ -107,20 +107,7 @@ impl App {
 		start_config_watcher();
 		let duration_str = format_duration(start_time.elapsed());
 		debug!("开始执行hook钩子");
-		let mut hooks = HookRegistry::all()
-			.into_iter()
-			.filter(|x| match x.r#type() {
-				HookType::Status(status) => status == StatusType::Start,
-				_ => false,
-			})
-			.collect::<Vec<_>>();
-		hooks.sort_unstable_by_key(|a| a.rank());
-		for hook in hooks {
-			if let Err(e) = hook.run(None).await {
-				error!("启动hook钩子执行失败: {}", e);
-			}
-			HookRegistry::unregister(hook.name());
-		}
+		execute_hooks(StatusType::Start).await;
 		info!(
 			"{} 初始化完成，耗时: {}",
 			app_name.to_case(Case::Lower).fg_rgb::<64, 224, 208>(),
@@ -142,7 +129,17 @@ impl App {
 			let port = config.port();
 			puniyu_server::run_server_spawn(Some(host), Some(port));
 		}
-		signal::ctrl_c().await.unwrap();
+		match signal::ctrl_c().await {
+			Ok(()) => {
+				debug!("接收到中断信号，正在关闭...");
+			}
+			Err(_) => {
+				error!("信号处理出现错误，正在关闭...");
+			}
+		}
+		debug!("开始执行hook钩子");
+		execute_hooks(StatusType::Stop).await;
+
 		info!(
 			"{} 本次运行时间: {}",
 			app_name.to_case(Case::Lower).fg_rgb::<64, 224, 208>(),
@@ -228,4 +225,24 @@ fn print_start_log() {
 	println!("{} 启动中...", app_name.to_case(Case::Lower));
 	println!("版本: {}", VERSION);
 	println!("Github: {}", env!("CARGO_PKG_REPOSITORY"));
+}
+
+async fn execute_hooks(status_type: StatusType) {
+	let mut hooks = HookRegistry::all()
+		.into_iter()
+		.filter(|x| match x.r#type() {
+			HookType::Status(status) => status == status_type,
+			_ => false,
+		})
+		.collect::<Vec<_>>();
+	hooks.sort_unstable_by_key(|a| a.rank());
+	for hook in hooks {
+		if let Err(e) = hook.run(None).await {
+			match status_type {
+				StatusType::Start => error!("启动hook钩子执行失败: {}", e),
+				StatusType::Stop => error!("关闭hook钩子执行失败: {}", e),
+			}
+		}
+		HookRegistry::unregister(hook.name());
+	}
 }

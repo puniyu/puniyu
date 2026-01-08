@@ -4,11 +4,12 @@ use crate::server::ServerType;
 use crate::task::TaskBuilder;
 use crate::version::Version;
 use async_trait::async_trait;
+use crate::hook::HookBuilder;
 
 #[async_trait]
-pub trait PluginBuilder: Send + Sync + 'static {
+pub trait PluginBuilder: Send + Sync {
 	/// 插件名称
-	fn name(&self) -> &'static str;
+	fn name(&self) -> &str;
 	/// 插件版本
 	fn version(&self) -> Version;
 
@@ -16,12 +17,12 @@ pub trait PluginBuilder: Send + Sync + 'static {
 	fn abi_version(&self) -> Version;
 
 	/// 插件描述
-	fn description(&self) -> &'static str;
+	fn description(&self) -> &str;
 	/// 插件作者
-	fn author(&self) -> Option<&'static str>;
+	fn author(&self) -> Option<&str>;
 
 	/// 插件命令前缀
-	fn prefix(&self) -> Option<&'static str> {
+	fn prefix(&self) -> Option<&str> {
 		None
 	}
 
@@ -31,9 +32,12 @@ pub trait PluginBuilder: Send + Sync + 'static {
 	/// 命令列表
 	fn commands(&self) -> Vec<Box<dyn CommandBuilder>>;
 
+	/// 钩子列表
+	fn hooks(&self) -> Vec<Box<dyn HookBuilder>>;
+
 	/// 插件配置文件
-	fn config(&self) -> Option<Vec<Box<dyn Config>>> {
-		None
+	fn config(&self) -> Vec<Box<dyn Config>> {
+		Vec::new()
 	}
 
 	/// 路由管理
