@@ -74,6 +74,12 @@ impl AppBuilder {
 	}
 
 	pub fn build(self) -> App {
+		WORKING_DIR.get_or_init(|| self.working_dir.clone());
+		APP_NAME.get_or_init(|| self.app_name.clone());
+		#[cfg(feature = "server")]
+		{
+			puniyu_server::LOGO.get_or_init(|| self.app_logo.clone());
+		}
 		App { builder: self }
 	}
 }
@@ -89,8 +95,6 @@ impl App {
 	pub async fn run(&self) {
 		use crate::common::format_duration;
 		use std::time::Duration;
-		WORKING_DIR.get_or_init(|| self.builder.working_dir.clone());
-		APP_NAME.get_or_init(|| self.builder.app_name.clone());
 		print_start_log();
 		init_config();
 		#[cfg(feature = "logger")]
@@ -131,7 +135,6 @@ impl App {
 			let logo_path = RESOURCE_DIR.join("logo.png");
 			if !logo_path.exists() {
 				fs::write(&logo_path, &self.builder.app_logo).await.expect("写入logo失败");
-				puniyu_server::LOGO.get_or_init(|| self.builder.app_logo.clone());
 			}
 			let config = Config::app();
 			let config = config.server();
@@ -213,9 +216,15 @@ async fn init_adapter(adapters: &[&'static dyn AdapterBuilder]) {
 
 fn print_start_log() {
 	let app_name = APP_NAME.get().unwrap();
-	let standard_font = FIGfont::standard().unwrap();
-	let art_text = standard_font.convert(app_name.to_case(Case::Pascal).as_str()).unwrap();
-	println!("{}", art_text);
+	let app_name = app_name.to_case(Case::Pascal);
+	if let Ok(standard_font) = FIGfont::standard()
+		&& let Some(art_text) = standard_font.convert(app_name.as_str())
+	{
+		println!("{}", art_text);
+	} else {
+		println!("{}", app_name);
+	}
+
 	println!("{} 启动中...", app_name.to_case(Case::Lower));
 	println!("版本: {}", VERSION);
 	println!("Github: {}", env!("CARGO_PKG_REPOSITORY"));
