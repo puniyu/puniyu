@@ -7,6 +7,7 @@ pub use api::*;
 mod info;
 pub use info::*;
 
+use crate::hook::HookBuilder;
 use crate::version::Version;
 use crate::{config::Config, server::ServerType};
 use async_trait::async_trait;
@@ -14,21 +15,15 @@ use puniyu_logger::info;
 
 pub type Result<T> = std::result::Result<T, Error>;
 
-/// 适配器
-#[derive(Clone)]
-pub struct Adapter {
-	/// 适配器名称
-	pub name: String,
-	/// 适配器版本
-	pub version: String,
-	/// 适配器 API
-	pub api: AdapterApi,
-}
-
 #[async_trait]
-pub trait AdapterBuilder: Send + Sync + 'static {
+pub trait AdapterBuilder: Send + Sync {
 	/// 适配器名称
-	fn name(&self) -> &'static str;
+	fn name(&self) -> &str;
+
+	fn author(&self) -> Option<&str> {
+		let authors = env!("CARGO_PKG_AUTHORS");
+		if authors.is_empty() { None } else { Some(authors.split(';').next().unwrap_or(authors)) }
+	}
 
 	/// 适配器版本
 	fn version(&self) -> Version {
@@ -39,8 +34,13 @@ pub trait AdapterBuilder: Send + Sync + 'static {
 	fn api(&self) -> AdapterApi;
 
 	/// 配置文件
-	fn config(&self) -> Option<Vec<Box<dyn Config>>> {
-		None
+	fn config(&self) -> Vec<Box<dyn Config>> {
+		Vec::new()
+	}
+
+	/// 钩子列表
+	fn hooks(&self) -> Vec<Box<dyn HookBuilder>> {
+		Vec::new()
 	}
 
 	/// 路由管理

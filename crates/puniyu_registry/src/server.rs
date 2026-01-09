@@ -14,7 +14,7 @@ impl ServerRegistry {
 	}
 
 	pub fn get_all() -> Vec<ServerType> {
-		STORE.server().get_all()
+		STORE.server().all()
 	}
 
 	pub fn remove(name: &str) {

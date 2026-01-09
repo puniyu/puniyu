@@ -10,6 +10,7 @@ use puniyu_types::server::{
 };
 use std::net::IpAddr;
 use std::sync::LazyLock;
+use bytes::Bytes;
 
 fn get_host_from_env() -> IpAddr {
 	std::env::var("HTTP_HOST").ok().and_then(|s| s.parse().ok()).unwrap()
@@ -20,8 +21,8 @@ fn get_port_from_env() -> u16 {
 }
 
 async fn logo() -> HttpResponse {
-	static LOGO: LazyLock<Option<Vec<u8>>> =
-		LazyLock::new(|| std::fs::read(RESOURCE_DIR.join("logo.png")).ok());
+	static LOGO: LazyLock<Option<Bytes>> =
+		LazyLock::new(|| std::fs::read(RESOURCE_DIR.join("logo.png")).ok().map(Bytes::from));
 
 	let logo_data = crate::LOGO
 		.get()

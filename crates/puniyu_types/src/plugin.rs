@@ -1,16 +1,15 @@
 use crate::command::CommandBuilder;
 use crate::config::Config;
+use crate::hook::HookBuilder;
 use crate::server::ServerType;
 use crate::task::TaskBuilder;
 use crate::version::Version;
 use async_trait::async_trait;
-use std::fmt;
-use std::path::PathBuf;
 
 #[async_trait]
-pub trait PluginBuilder: Send + Sync + 'static {
+pub trait PluginBuilder: Send + Sync {
 	/// 插件名称
-	fn name(&self) -> &'static str;
+	fn name(&self) -> &str;
 	/// 插件版本
 	fn version(&self) -> Version;
 
@@ -18,24 +17,35 @@ pub trait PluginBuilder: Send + Sync + 'static {
 	fn abi_version(&self) -> Version;
 
 	/// 插件描述
-	fn description(&self) -> &'static str;
+	fn description(&self) -> &str;
 	/// 插件作者
-	fn author(&self) -> Option<&'static str>;
+	fn author(&self) -> Option<&str> {
+		None
+	}
 
 	/// 插件命令前缀
-	fn prefix(&self) -> Option<&'static str> {
+	fn prefix(&self) -> Option<&str> {
 		None
 	}
 
 	/// 任务列表
-	fn tasks(&self) -> Vec<Box<dyn TaskBuilder>>;
+	fn tasks(&self) -> Vec<Box<dyn TaskBuilder>> {
+		Vec::new()
+	}
 
 	/// 命令列表
-	fn commands(&self) -> Vec<Box<dyn CommandBuilder>>;
+	fn commands(&self) -> Vec<Box<dyn CommandBuilder>>{
+		Vec::new()
+	}
+
+	/// 钩子列表
+	fn hooks(&self) -> Vec<Box<dyn HookBuilder>> {
+		Vec::new()
+	}
 
 	/// 插件配置文件
-	fn config(&self) -> Option<Vec<Box<dyn Config>>> {
-		None
+	fn config(&self) -> Vec<Box<dyn Config>> {
+		Vec::new()
 	}
 
 	/// 路由管理
@@ -44,63 +54,4 @@ pub trait PluginBuilder: Send + Sync + 'static {
 	}
 	/// 插件初始化函数
 	async fn init(&self) -> Result<(), Box<dyn std::error::Error>>;
-}
-
-#[derive(Debug, Clone)]
-pub struct Plugin {
-	/// 插件名称
-	pub name: String,
-	/// 插件版本
-	pub version: Version,
-	/// 插件作者
-	pub author: Option<String>,
-}
-
-#[derive(Clone)]
-pub enum PluginType {
-	/// 基于文件路径加载的动态库插件
-	Path(PathBuf),
-	/// 静态链接的插件
-	Builder(&'static dyn PluginBuilder),
-}
-
-impl fmt::Debug for PluginType {
-	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-		match self {
-			PluginType::Path(path) => f.debug_struct("Path").field("path", path).finish(),
-			PluginType::Builder(_) => f.debug_struct("Builder").finish(),
-		}
-	}
-}
-impl From<PathBuf> for PluginType {
-	fn from(path: PathBuf) -> Self {
-		PluginType::Path(path)
-	}
-}
-
-impl From<&'static dyn PluginBuilder> for PluginType {
-	fn from(builder: &'static dyn PluginBuilder) -> Self {
-		PluginType::Builder(builder)
-	}
-}
-
-#[derive(Debug, Clone)]
-pub enum PluginId {
-	Index(u64),
-	Name(String),
-}
-impl From<u64> for PluginId {
-	fn from(value: u64) -> Self {
-		Self::Index(value)
-	}
-}
-impl From<String> for PluginId {
-	fn from(value: String) -> Self {
-		Self::Name(value)
-	}
-}
-impl From<&str> for PluginId {
-	fn from(value: &str) -> Self {
-		Self::Name(value.to_string())
-	}
 }

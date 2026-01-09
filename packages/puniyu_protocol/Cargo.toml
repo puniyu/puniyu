@@ -23,5 +23,3 @@ glob.workspace = true
 prost-build = "0.14.1"
 protoc-bin-vendored = "3.2.0"
 
-[package.metadata.workspaces]
-independent = true

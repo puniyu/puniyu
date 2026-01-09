@@ -170,6 +170,9 @@ name = "puniyu_server"
 name = "puniyu_event"
 
 [[package]]
+name = "puniyu_hook"
+
+[[package]]
 name = "puniyu_command"
 
 [[package]]

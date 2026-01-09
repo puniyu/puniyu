@@ -18,6 +18,25 @@ pub enum Event {
 	Request(Box<request::RequestEvent>),
 }
 
+impl From<Event> for EventType {
+	fn from(event: Event) -> Self {
+		match event {
+			Event::Message(_) => EventType::Message,
+			Event::Notion(_) => EventType::Notice,
+			Event::Request(_) => EventType::Request,
+		}
+	}
+}
+impl From<&Event> for EventType {
+	fn from(event: &Event) -> Self {
+		match event {
+			Event::Message(_) => EventType::Message,
+			Event::Notion(_) => EventType::Notice,
+			Event::Request(_) => EventType::Request,
+		}
+	}
+}
+
 #[cfg(feature = "event")]
 impl std::fmt::Debug for Event {
 	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -30,13 +49,32 @@ impl std::fmt::Debug for Event {
 }
 
 impl Event {
+
+	/// 获取事件类型
+	pub fn event_type(&self) -> EventType {
+		match self {
+			Event::Message(_) => EventType::Message,
+			Event::Notion(_) => EventType::Notice,
+			Event::Request(_) => EventType::Request,
+		}
+	}
 	/// 判断是否为消息事件
 	pub fn is_message(&self) -> bool {
 		matches!(self, Event::Message(..))
 	}
+
+	/// 判断是否为通知事件
+	pub fn is_notice(&self) -> bool {
+		matches!(self, Event::Notion(..))
+	}
+
+	/// 判断是否为请求事件
+	pub fn is_request(&self) -> bool {
+		matches!(self, Event::Request(..))
+	}
 }
 
-#[derive(Debug, Clone, EnumString, Display, IntoStaticStr)]
+#[derive(Debug, Clone, EnumString, Display, IntoStaticStr, PartialEq, Eq, PartialOrd, Ord)]
 pub enum EventType {
 	#[strum(serialize = "message")]
 	Message,
@@ -47,6 +85,7 @@ pub enum EventType {
 	#[strum(serialize = "unknown")]
 	Unknown,
 }
+
 
 pub trait EventBase: Send + Sync {
 	type ContactType;

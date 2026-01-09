@@ -45,3 +45,6 @@ pub mod config;
 
 #[cfg(feature = "bus")]
 pub mod bus;
+
+#[cfg(feature = "hook")]
+pub mod hook;

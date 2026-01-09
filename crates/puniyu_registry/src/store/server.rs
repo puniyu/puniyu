@@ -16,7 +16,7 @@ impl ServerStore {
 		self.0.read().unwrap().get(name).cloned()
 	}
 
-	pub fn get_all(&self) -> Vec<ServerType> {
+	pub fn all(&self) -> Vec<ServerType> {
 		self.0.read().unwrap().values().cloned().collect()
 	}
 

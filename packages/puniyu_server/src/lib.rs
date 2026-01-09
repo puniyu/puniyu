@@ -6,10 +6,11 @@ mod server;
 use actix_web::{HttpResponse, http::StatusCode};
 use serde::{Deserialize, Serialize};
 use std::sync::OnceLock;
+use bytes::Bytes;
 
 pub use server::{run_server_spawn, run_server_with_control};
 
-pub static LOGO: OnceLock<Vec<u8>> = OnceLock::new();
+pub static LOGO: OnceLock<Bytes> = OnceLock::new();
 
 #[derive(Serialize, Deserialize)]
 pub struct BaseResponse<T> {

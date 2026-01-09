@@ -6,8 +6,8 @@ pub use puniyu_types::bot::BotId;
 pub struct BotRegistry;
 
 impl BotRegistry {
-	pub fn get_all() -> Vec<Bot> {
-		STORE.bot().get_all()
+	pub fn all() -> Vec<Bot> {
+		STORE.bot().all()
 	}
 
 	pub fn get_with_index(index: u64) -> Option<Bot> {
@@ -153,5 +153,5 @@ pub fn get_bot(id: impl Into<BotId>) -> Option<Bot> {
 /// ```
 ///
 pub fn get_bot_count() -> u64 {
-	BotRegistry::get_all().len() as u64
+	BotRegistry::all().len() as u64
 }

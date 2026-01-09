@@ -31,60 +31,58 @@ puniyu_config = { version = "0.7.4", path = "../puniyu_config", optional = true 
 [dev-dependencies]
 tokio = { workspace = true, features = ["full"] }
 puniyu_types = { version = "0.7.4", path = "../puniyu_types", features = [
-  "handler",
-  "bot",
-  "event",
+    "handler",
+    "bot",
+    "event",
 ] }
 
 [features]
 default = ["full"]
 adapter = [
-  "dep:convert_case",
-  "dep:futures",
-  "dep:puniyu_common",
-  "dep:puniyu_config",
-  "dep:puniyu_logger",
-  "dep:toml",
-  "dep:thiserror",
-  "tokio/fs",
-  "tokio/macros",
-  "puniyu_types/adapter",
-  "puniyu_types/bot",
-  "bot",
-  "server",
+    "dep:convert_case",
+    "dep:futures",
+    "dep:puniyu_common",
+    "dep:puniyu_config",
+    "dep:puniyu_logger",
+    "dep:toml",
+    "dep:thiserror",
+    "tokio/fs",
+    "tokio/macros",
+    "puniyu_types/adapter",
+    "puniyu_types/bot",
+    "bot",
+    "server",
 ]
 bot = ["puniyu_types/bot", "dep:puniyu_logger"]
 server = ["puniyu_types/server"]
 task = [
-  "dep:tokio",
-  "dep:puniyu_logger",
-  "dep:tokio-cron-scheduler",
-  "dep:chrono-tz",
-  "dep:uuid",
-  "puniyu_types/task",
+    "dep:tokio",
+    "dep:puniyu_logger",
+    "dep:tokio-cron-scheduler",
+    "dep:chrono-tz",
+    "dep:uuid",
+    "puniyu_types/task",
 ]
 command = ["dep:itertools", "puniyu_types/command", "puniyu_types/server"]
 plugin = [
-  "dep:convert_case",
-  "dep:puniyu_common",
-  "dep:puniyu_config",
-  "dep:thiserror",
-  "dep:futures",
-  "dep:puniyu_library",
-  "dep:puniyu_logger",
-  "dep:toml",
-  "tokio/fs",
-  "puniyu_types/plugin",
-  "puniyu_types/server",
-  "puniyu_types/version",
-  "puniyu_types/bus",
-  "task",
-  "command",
-  "server",
+    "dep:convert_case",
+    "dep:puniyu_common",
+    "dep:puniyu_config",
+    "dep:thiserror",
+    "dep:futures",
+    "dep:puniyu_library",
+    "dep:puniyu_logger",
+    "dep:toml",
+    "tokio/fs",
+    "puniyu_types/plugin",
+    "puniyu_types/server",
+    "puniyu_types/version",
+    "puniyu_types/bus",
+    "task",
+    "command",
+    "server",
 ]
 cooldown = ["dep:chrono"]
 handler = ["puniyu_types/handler"]
-full = ["adapter", "bot", "server", "task", "command", "plugin", "handler"]
-
-[package.metadata.workspaces]
-independent = true
+hook = ["puniyu_types/hook"]
+full = ["adapter", "bot", "server", "task", "command", "plugin", "handler", "hook"]

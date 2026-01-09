@@ -14,6 +14,7 @@ pub mod proc_macro {
 	pub use puniyu_types::config::Config;
 	pub use puniyu_types::server::ServerType;
 	pub use puniyu_types::version::Version;
+	pub use puniyu_types::hook::HookBuilder;
 	pub use serde_json;
 	pub use toml;
 }

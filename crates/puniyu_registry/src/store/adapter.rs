@@ -1,5 +1,5 @@
 use crate::bot::BotRegistry;
-use puniyu_types::adapter::Adapter;
+use crate::adapter::AdapterInfo;
 use std::{
 	collections::HashMap,
 	sync::{
@@ -11,10 +11,10 @@ use std::{
 static ADAPTER_INDEX: AtomicU64 = AtomicU64::new(0);
 
 #[derive(Clone)]
-pub(crate) struct AdapterStore(pub(crate) Arc<RwLock<HashMap<u64, Adapter>>>);
+pub(crate) struct AdapterStore(pub(crate) Arc<RwLock<HashMap<u64, AdapterInfo>>>);
 
 impl AdapterStore {
-	pub fn insert(&self, adapter: Adapter) {
+	pub fn insert(&self, adapter: AdapterInfo) {
 		let mut adapters = self.0.write().unwrap();
 		let exists = adapters.values().any(|a| a.name == adapter.name);
 		if !exists {
@@ -23,12 +23,12 @@ impl AdapterStore {
 		}
 	}
 
-	pub fn get(&self, name: &str) -> Option<Adapter> {
+	pub fn get(&self, name: &str) -> Option<AdapterInfo> {
 		let adapters = self.0.read().unwrap();
 		adapters.values().find(|a| a.name == name).cloned()
 	}
 
-	pub fn get_all(&self) -> HashMap<u64, Adapter> {
+	pub fn all(&self) -> HashMap<u64, AdapterInfo> {
 		self.0.read().unwrap().clone()
 	}
 
@@ -41,7 +41,7 @@ impl AdapterStore {
 			.map(|(id, _)| *id)
 			.collect::<Vec<u64>>();
 
-		BotRegistry::get_all().into_iter().filter(|bot| bot.adapter.name == name).for_each(|bot| {
+		BotRegistry::all().into_iter().filter(|bot| bot.adapter.name == name).for_each(|bot| {
 			BotRegistry::unregister_with_id(bot.account.uin);
 		});
 		for id in ids {

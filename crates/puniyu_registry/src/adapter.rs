@@ -9,15 +9,25 @@ use puniyu_common::{merge_config, read_config, write_config};
 use puniyu_config::{Config, ConfigRegistry};
 use puniyu_logger::warn;
 use puniyu_logger::{debug, error, owo_colors::OwoColorize};
-use puniyu_types::adapter::{Adapter, AdapterBuilder};
+use puniyu_types::adapter::{AdapterApi, AdapterBuilder};
 use std::future::Future;
 use tokio::fs;
+
+#[derive(Clone)]
+pub struct AdapterInfo {
+	/// 适配器名称
+	pub name: String,
+	/// 适配器版本
+	pub version: String,
+	/// 适配器 API
+	pub api: AdapterApi,
+}
 
 pub struct AdapterRegistry;
 
 impl AdapterRegistry {
 	pub async fn load_adapter(adapter: &'static dyn AdapterBuilder) -> Result<(), Error> {
-		let adapters = STORE.adapter().get_all();
+		let adapters = STORE.adapter().all();
 		let adapter_name = adapter.name().to_string();
 		let adapter_version = adapter.version().to_string();
 		if adapters.values().any(|a| a.name == adapter_name) {
@@ -55,7 +65,8 @@ impl AdapterRegistry {
 			fs::create_dir_all(&resource_dir)
 		);
 
-		if let Some(configs) = adapter.config() {
+		let configs = adapter.config();
+		if !configs.is_empty() {
 			for config in configs {
 				match read_config::<toml::Value>(&config_dir, config.name()) {
 					Ok(cfg) => {
@@ -84,7 +95,7 @@ impl AdapterRegistry {
 		}
 
 		run_adapter_init(adapter_name.as_str(), adapter.init()).await?;
-		STORE.adapter().insert(Adapter {
+		STORE.adapter().insert(AdapterInfo {
 			name: adapter_name,
 			version: adapter_version,
 			api: adapter.api(),
@@ -105,11 +116,11 @@ impl AdapterRegistry {
 		Ok(())
 	}
 
-	pub fn get_adapter(name: &str) -> Option<Adapter> {
+	pub fn get(name: &str) -> Option<AdapterInfo> {
 		STORE.adapter().get(name)
 	}
-	pub fn get_all_adapters() -> Vec<Adapter> {
-		STORE.adapter().get_all().values().cloned().collect()
+	pub fn adapters() -> Vec<AdapterInfo> {
+		STORE.adapter().all().values().cloned().collect()
 	}
 }
 

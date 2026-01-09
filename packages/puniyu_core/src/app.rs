@@ -3,15 +3,18 @@ use crate::{
 	logger::log_init,
 	logger::{OwoColorize, debug, error, info},
 };
+use bytes::Bytes;
 use convert_case::{Case, Casing};
 use figlet_rs::FIGfont;
 pub use puniyu_common::APP_NAME;
 use puniyu_common::path::{DATA_DIR, PLUGIN_DATA_DIR, PLUGIN_DIR, RESOURCE_DIR, WORKING_DIR};
 use puniyu_config::{init_config, start_config_watcher};
 use puniyu_event::init_event_bus;
-use puniyu_registry::{adapter::AdapterRegistry, plugin::PluginRegistry};
+use puniyu_registry::plugin::PluginType;
+use puniyu_registry::{HookRegistry, adapter::AdapterRegistry, plugin::PluginRegistry};
 use puniyu_types::adapter::AdapterBuilder;
-use puniyu_types::plugin::{PluginBuilder, PluginType};
+use puniyu_types::hook::{HookType, StatusType};
+use puniyu_types::plugin::PluginBuilder;
 use std::env::current_dir;
 use std::path::{Path, PathBuf};
 use std::{env, env::consts::DLL_EXTENSION};
@@ -19,7 +22,7 @@ use tokio::{fs, signal};
 
 pub struct AppBuilder {
 	app_name: String,
-	app_logo: Vec<u8>,
+	app_logo: Bytes,
 	working_dir: PathBuf,
 	plugins: Vec<&'static dyn PluginBuilder>,
 	adapters: Vec<&'static dyn AdapterBuilder>,
@@ -29,8 +32,10 @@ impl Default for AppBuilder {
 	fn default() -> Self {
 		Self {
 			app_name: String::from("puniyu"),
-			app_logo: include_bytes!(concat!(env!("CARGO_MANIFEST_DIR"), "/assets/logo.png"))
-				.to_vec(),
+			app_logo: Bytes::from_static(include_bytes!(concat!(
+				env!("CARGO_MANIFEST_DIR"),
+				"/assets/logo.png"
+			))),
 			working_dir: current_dir().unwrap(),
 			plugins: Vec::new(),
 			adapters: Vec::new(),
@@ -43,13 +48,13 @@ impl AppBuilder {
 		Self::default()
 	}
 
-	pub fn with_name(mut self, name: &str) -> Self {
-		self.app_name = name.to_string();
+	pub fn with_name(mut self, name: impl Into<String>) -> Self {
+		self.app_name = name.into();
 		self
 	}
 
-	pub fn with_logo(mut self, logo: Vec<u8>) -> Self {
-		self.app_logo = logo;
+	pub fn with_logo(mut self, logo: impl Into<Bytes>) -> Self {
+		self.app_logo = logo.into();
 		self
 	}
 
@@ -71,17 +76,22 @@ impl AppBuilder {
 	pub fn build(self) -> App {
 		WORKING_DIR.get_or_init(|| self.working_dir.clone());
 		APP_NAME.get_or_init(|| self.app_name.clone());
-		App { app_logo: self.app_logo, plugins: self.plugins, adapters: self.adapters }
+		#[cfg(feature = "server")]
+		{
+			puniyu_server::LOGO.get_or_init(|| self.app_logo.clone());
+		}
+		App { builder: self }
 	}
 }
 
 pub struct App {
-	app_logo: Vec<u8>,
-	plugins: Vec<&'static dyn PluginBuilder>,
-	adapters: Vec<&'static dyn AdapterBuilder>,
+	builder: AppBuilder,
 }
 
 impl App {
+	pub fn builder() -> AppBuilder {
+		AppBuilder::new()
+	}
 	pub async fn run(&self) {
 		use crate::common::format_duration;
 		use std::time::Duration;
@@ -93,22 +103,25 @@ impl App {
 		}
 		let start_time = std::time::Instant::now();
 		let app_name = APP_NAME.get().unwrap();
-		init_app(&self.plugins, &self.adapters).await;
+		init_app(&self.builder.plugins, &self.builder.adapters).await;
 		start_config_watcher();
 		let duration_str = format_duration(start_time.elapsed());
+		debug!("开始执行hook钩子");
+		execute_hooks(StatusType::Start).await;
 		info!(
 			"{} 初始化完成，耗时: {}",
 			app_name.to_case(Case::Lower).fg_rgb::<64, 224, 208>(),
 			duration_str.fg_rgb::<255, 127, 80>()
 		);
+
+		init_event_bus();
 		#[cfg(feature = "server")]
 		{
 			use crate::config::Config;
 			use std::net::IpAddr;
 			let logo_path = RESOURCE_DIR.join("logo.png");
 			if !logo_path.exists() {
-				fs::write(&logo_path, &self.app_logo).await.expect("写入logo失败");
-				puniyu_server::LOGO.get_or_init(|| self.app_logo.clone());
+				fs::write(&logo_path, &self.builder.app_logo).await.expect("写入logo失败");
 			}
 			let config = Config::app();
 			let config = config.server();
@@ -116,7 +129,17 @@ impl App {
 			let port = config.port();
 			puniyu_server::run_server_spawn(Some(host), Some(port));
 		}
-		signal::ctrl_c().await.unwrap();
+		match signal::ctrl_c().await {
+			Ok(()) => {
+				debug!("接收到中断信号，正在关闭...");
+			}
+			Err(_) => {
+				error!("信号处理出现错误，正在关闭...");
+			}
+		}
+		debug!("开始执行hook钩子");
+		execute_hooks(StatusType::Stop).await;
+
 		info!(
 			"{} 本次运行时间: {}",
 			app_name.to_case(Case::Lower).fg_rgb::<64, 224, 208>(),
@@ -136,7 +159,6 @@ async fn init_app(
 	if !RESOURCE_DIR.as_path().exists() {
 		fs::create_dir(RESOURCE_DIR.as_path()).await.unwrap();
 	}
-	init_event_bus();
 	init_plugin(plugins).await;
 	init_adapter(adapters).await;
 }
@@ -179,7 +201,7 @@ async fn init_adapter(adapters: &[&'static dyn AdapterBuilder]) {
 		error!("适配器加载失败: {:?}", e);
 	});
 
-	let adapter_count = AdapterRegistry::get_all_adapters().len();
+	let adapter_count = AdapterRegistry::adapters().len();
 
 	debug!(
 		"{}: {} {}",
@@ -191,10 +213,36 @@ async fn init_adapter(adapters: &[&'static dyn AdapterBuilder]) {
 
 fn print_start_log() {
 	let app_name = APP_NAME.get().unwrap();
-	let standard_font = FIGfont::standard().unwrap();
-	let art_text = standard_font.convert(app_name.to_case(Case::Pascal).as_str()).unwrap();
-	println!("{}", art_text);
+	let app_name = app_name.to_case(Case::Pascal);
+	if let Ok(standard_font) = FIGfont::standard()
+		&& let Some(art_text) = standard_font.convert(app_name.as_str())
+	{
+		println!("{}", art_text);
+	} else {
+		println!("{}", app_name);
+	}
+
 	println!("{} 启动中...", app_name.to_case(Case::Lower));
 	println!("版本: {}", VERSION);
 	println!("Github: {}", env!("CARGO_PKG_REPOSITORY"));
+}
+
+async fn execute_hooks(status_type: StatusType) {
+	let mut hooks = HookRegistry::all()
+		.into_iter()
+		.filter(|x| match x.r#type() {
+			HookType::Status(status) => status == status_type,
+			_ => false,
+		})
+		.collect::<Vec<_>>();
+	hooks.sort_unstable_by_key(|a| a.rank());
+	for hook in hooks {
+		if let Err(e) = hook.run(None).await {
+			match status_type {
+				StatusType::Start => error!("启动hook钩子执行失败: {}", e),
+				StatusType::Stop => error!("关闭hook钩子执行失败: {}", e),
+			}
+		}
+		HookRegistry::unregister(hook.name());
+	}
 }
