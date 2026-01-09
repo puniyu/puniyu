@@ -1,10 +1,10 @@
 use crate::command::CommandBuilder;
 use crate::config::Config;
+use crate::hook::HookBuilder;
 use crate::server::ServerType;
 use crate::task::TaskBuilder;
 use crate::version::Version;
 use async_trait::async_trait;
-use crate::hook::HookBuilder;
 
 #[async_trait]
 pub trait PluginBuilder: Send + Sync {
@@ -19,7 +19,9 @@ pub trait PluginBuilder: Send + Sync {
 	/// 插件描述
 	fn description(&self) -> &str;
 	/// 插件作者
-	fn author(&self) -> Option<&str>;
+	fn author(&self) -> Option<&str> {
+		None
+	}
 
 	/// 插件命令前缀
 	fn prefix(&self) -> Option<&str> {
@@ -27,13 +29,19 @@ pub trait PluginBuilder: Send + Sync {
 	}
 
 	/// 任务列表
-	fn tasks(&self) -> Vec<Box<dyn TaskBuilder>>;
+	fn tasks(&self) -> Vec<Box<dyn TaskBuilder>> {
+		Vec::new()
+	}
 
 	/// 命令列表
-	fn commands(&self) -> Vec<Box<dyn CommandBuilder>>;
+	fn commands(&self) -> Vec<Box<dyn CommandBuilder>>{
+		Vec::new()
+	}
 
 	/// 钩子列表
-	fn hooks(&self) -> Vec<Box<dyn HookBuilder>>;
+	fn hooks(&self) -> Vec<Box<dyn HookBuilder>> {
+		Vec::new()
+	}
 
 	/// 插件配置文件
 	fn config(&self) -> Vec<Box<dyn Config>> {

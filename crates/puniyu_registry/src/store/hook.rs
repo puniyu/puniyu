@@ -19,8 +19,8 @@ impl HookStore {
 	}
 
 	pub fn get(&self, name: &str) -> Option<Arc<dyn HookBuilder>> {
-		let adapters = self.0.read().unwrap();
-		adapters.values().find(|a| a.name() == name).cloned()
+		let hooks = self.0.read().unwrap();
+		hooks.values().find(|a| a.name() == name).cloned()
 	}
 
 	pub fn all(&self) -> Vec<Arc<dyn HookBuilder>> {
