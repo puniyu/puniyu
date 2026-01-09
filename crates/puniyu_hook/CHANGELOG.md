@@ -1,0 +1,41 @@
+# 变更日志
+## [0.1.0](https://github.com/puniyu/puniyu/releases/tag/puniyu_hook-v0.1.0) - 2026-01-09
+
+
+### ⛰️ 新功能
+
+
+- *(app)* 添加hook钩子功能支持 (由 @wuliya336 提供) (#112) - ([301180c](https://github.com/puniyu/puniyu/commit/301180c589c2ca757a5bcc802f885b063a78c2af))
+- *(core)* 添加钩子处理器并重构系统信息模块 (由 @wuliya336 提供) (#112) - ([645befd](https://github.com/puniyu/puniyu/commit/645befdfe08ead1b1ed4d2fa78445374b15f46ef))
+
+
+
+### 🚜 重构
+
+
+- *(adapter)* 重构适配器模块结构和依赖关系 (由 @wuliya336 提供) - ([3c8e01f](https://github.com/puniyu/puniyu/commit/3c8e01f3bc7046220d06e4fe9c0a919a4f9d26f2))
+- *(core)* 重新组织模块导入顺序并清理无用导出 (由 @wuliya336 提供) - ([8da3556](https://github.com/puniyu/puniyu/commit/8da35564bb6e99777d30d5c48497e11358c51915))
+
+- 重构项目配置 (由 @wuliya336 提供) - ([883dfa4](https://github.com/puniyu/puniyu/commit/883dfa4fb525d7e5c27821026d727e3d8eda8600))
+
+
+### 📚 文档
+
+
+- *(readme)* 添加社区QQ群链接 (由 @wuliya336 提供) - ([60bf1e7](https://github.com/puniyu/puniyu/commit/60bf1e788718844583f6a2e6809b930b7d262775))
+
+- Update README.md (由 @allcontributors[bot] 提供) (#17) - ([52c8b9f](https://github.com/puniyu/puniyu/commit/52c8b9fcc37d46e92147e02fff0f2bf09b9eede2))
+
+
+### ⚙️ 杂项
+
+
+
+- 初始化仓库 (由 @wuliya336 提供) - ([51af186](https://github.com/puniyu/puniyu/commit/51af186b465079c274bb094dc3dc8b38ba959f15))
+
+
+
+### 贡献者
+
+* @wuliya336
+* @allcontributors[bot]

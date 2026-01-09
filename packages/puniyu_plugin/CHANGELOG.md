@@ -1,4 +1,18 @@
 # 变更日志
+## [0.7.5](https://github.com/puniyu/puniyu/compare/puniyu_plugin-v0.7.4...puniyu_plugin-v0.7.5) - 2026-01-09
+
+
+### ⛰️ 新功能
+
+
+- *(adapter)* 添加钩子支持并重构配置处理 (由 @wuliya336 提供) (#112) - ([86fa067](https://github.com/puniyu/puniyu/commit/86fa06709b525b70b2955a0cf6d459b2a0383b50))
+
+
+
+
+### 贡献者
+
+* @wuliya336
 ## [0.7.4](https://github.com/puniyu/puniyu/compare/puniyu_plugin-v0.7.3...puniyu_plugin-v0.7.4) - 2026-01-07
 
 

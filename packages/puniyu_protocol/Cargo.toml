@@ -1,6 +1,6 @@
 [package]
 name = "puniyu_protocol"
-version = "0.2.1"
+version = "0.2.2"
 description = "puniyu 协议库，用于数据交换"
 authors.workspace = true
 license.workspace = true
@@ -15,7 +15,7 @@ include = ["src", "protos", "Cargo.toml", "build.rs"]
 prost.workspace = true
 bytes.workspace = true
 chrono.workspace = true
-puniyu_types = { version = "0.7.4", path = "../../crates/puniyu_types" }
+puniyu_types = { version = "0.7.5", path = "../../crates/puniyu_types" }
 
 
 [build-dependencies]
