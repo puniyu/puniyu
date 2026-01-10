@@ -19,15 +19,15 @@ toml.workspace = true
 actix-web.workspace = true
 
 puniyu_config = { version = "0.7.4", path = "../../crates/puniyu_config" }
-puniyu_macros = { version = "0.7.4", path = "../../crates/puniyu_macros", features = [
-  "adapter",
+puniyu_macros = { version = "0.7.4", path = "../../crates/puniyu_macros", default-features = false, features = [
+    "adapter",
 ] }
 puniyu_common = { version = "0.7.4", path = "../../crates/puniyu_common" }
 puniyu_types = { version = "0.7.4", path = "../../crates/puniyu_types", default-features = false, features = [
-  "adapter",
-  "event",
-  "bot",
+    "adapter",
+    "event",
+    "bot",
 ] }
 puniyu_registry = { version = "0.7.4", path = "../../crates/puniyu_registry", default-features = false, features = [
-  "adapter",
+    "adapter",
 ] }

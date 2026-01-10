@@ -7,6 +7,4 @@ pub use crate::context::*;
 pub use crate::element::*;
 pub use crate::event::*;
 pub use crate::server::*;
-pub use crate::macros::{
-	command, config, contact_friend, contact_group, message, plugin, segment, server, task,
-};
+pub use crate::macros::*;

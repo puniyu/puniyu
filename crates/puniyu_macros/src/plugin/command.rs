@@ -1,140 +1,187 @@
-use super::arg::Arg;
-use syn::{Token, braced, bracketed, parse::Parse, parse::ParseStream, punctuated::Punctuated};
+use convert_case::{Case, Casing};
+use darling::ast::NestedMeta;
+use darling::util::PathList;
+use darling::{Error, FromMeta};
+use proc_macro::TokenStream;
+use quote::quote;
+use syn::Ident;
+use syn::{ItemFn, parse_macro_input};
 
-pub struct CommandArgs {
-	pub name: syn::LitStr,
-	pub rank: syn::LitInt,
-	pub desc: syn::LitStr,
-	pub args: Vec<Arg>,
-	pub alias: Vec<syn::LitStr>,
-	pub permission: syn::LitStr,
+#[derive(Debug, FromMeta, Default)]
+struct Arg {
+	pub name: String,
+	#[darling(rename = "type")]
+	pub r#type: Option<String>,
+	pub mode: Option<String>,
+	pub required: Option<bool>,
+	pub desc: Option<String>,
 }
 
-impl Default for CommandArgs {
-	fn default() -> Self {
-		Self {
-			name: syn::LitStr::new("", proc_macro2::Span::call_site()),
-			rank: syn::LitInt::new("500", proc_macro2::Span::call_site()),
-			desc: syn::LitStr::new("", proc_macro2::Span::call_site()),
-			args: Vec::new(),
-			alias: Vec::new(),
-			permission: syn::LitStr::new("all", proc_macro2::Span::call_site()),
+#[derive(Debug, FromMeta, Default)]
+struct CommandArgs {
+	pub name: String,
+	pub rank: Option<u8>,
+	pub desc: Option<String>,
+	pub alias: Option<PathList>,
+	pub permission: Option<String>,
+}
+pub fn command(args: TokenStream, item: TokenStream) -> TokenStream {
+	let attr_args = match NestedMeta::parse_meta_list(args.into()) {
+		Ok(v) => v,
+		Err(e) => return TokenStream::from(Error::from(e).write_errors()),
+	};
+	let item = parse_macro_input!(item as ItemFn);
+	let fn_name = &item.sig.ident;
+	let _fn_vis = &item.vis;
+	let _fn_sig = &item.sig;
+	let _fn_block = &item.block;
+
+	let struct_name_str = {
+		let fn_name_str = fn_name.to_string();
+		let pascal_case_name = fn_name_str.to_case(Case::Pascal);
+		format!("{}Command", pascal_case_name)
+	};
+
+	let args = match CommandArgs::from_list(&attr_args) {
+		Ok(v) => v,
+		Err(e) => return TokenStream::from(e.write_errors()),
+	};
+
+	let mut command_arg_list = Vec::<Arg>::new();
+
+	for attr in &item.attrs {
+		if attr.path().is_ident("arg") {
+			let meta_list: Vec<NestedMeta> = match attr.parse_args_with(
+				syn::punctuated::Punctuated::<NestedMeta, syn::Token![,]>::parse_terminated,
+			) {
+				Ok(punctuated) => punctuated.into_iter().collect(),
+				Err(e) => return TokenStream::from(Error::from(e).write_errors()),
+			};
+
+			match Arg::from_list(&meta_list) {
+				Ok(arg) => command_arg_list.push(arg),
+				Err(e) => return TokenStream::from(e.write_errors()),
+			}
 		}
 	}
-}
 
-impl Parse for CommandArgs {
-	fn parse(input: ParseStream) -> syn::Result<Self> {
-		if input.is_empty() {
-			return Err(syn::Error::new(input.span(), "呜~至少给人家一些参数嘛！杂鱼~"));
+	let command_name = &args.name;
+	let command_rank = match args.rank {
+		Some(rank) => quote! { #rank },
+		None => quote! { 500 },
+	};
+	let command_desc = match &args.desc {
+		Some(desc) => quote! { Some(#desc) },
+		None => quote! { None },
+	};
+	let command_permission = match &args.permission {
+		Some(perm) => quote! { #perm.parse().unwrap_or(::puniyu_plugin::private::Permission::All) },
+		None => quote! { ::puniyu_plugin::private::Permission::All },
+	};
+	let command_alias = match &args.alias {
+		Some(aliases) if !aliases.is_empty() => {
+			quote! { vec![#(#aliases),*] }
 		}
+		_ => quote! { Vec::new() },
+	};
+	let plugin_name = quote! { env!("CARGO_PKG_NAME") };
+	let struct_name = Ident::new(&struct_name_str, fn_name.span());
 
-		let mut cmd_args = CommandArgs::default();
+	let mut args_construction = Vec::new();
 
-		while !input.is_empty() {
-			let key: syn::Ident = input.parse()?;
-			input.parse::<Token![=]>()?;
+	for arg in &command_arg_list {
+		let arg_name = &arg.name;
+		let arg_type = arg.r#type.as_deref().unwrap_or("string");
+		let arg_mode = arg.mode.as_deref().unwrap_or("positional");
+		let arg_required = arg.required.unwrap_or(false);
 
-			match key.to_string().as_str() {
-				"name" => cmd_args.name = input.parse()?,
-				"desc" => cmd_args.desc = input.parse()?,
-				"rank" => cmd_args.rank = input.parse()?,
-				"args" => {
-					let content;
-					bracketed!(content in input);
-					cmd_args.args = parse_arg_list(&content)?;
-				}
-				"alias" => {
-					let content;
-					bracketed!(content in input);
-					cmd_args.alias = parse_alias(&content)?;
-				}
-				"permission" => cmd_args.permission = input.parse()?,
-				_ => {
-					return Err(syn::Error::new_spanned(
-						&key,
-						format!("呜哇~不支持的字段 '{}'！杂鱼~", key),
-					));
-				}
+		let constructor = match arg_type {
+			"string" => quote! { ::puniyu_plugin::private::Arg::string(#arg_name) },
+			"int" => quote! { ::puniyu_plugin::private::Arg::int(#arg_name) },
+			"float" => quote! { ::puniyu_plugin::private::Arg::float(#arg_name) },
+			"bool" => quote! { ::puniyu_plugin::private::Arg::bool(#arg_name) },
+			_ => {
+				return TokenStream::from(
+					Error::custom(format!(
+						"Unsupported argument type '{}'. Supported types: string, int, float, bool",
+						arg_type
+					))
+					.write_errors(),
+				);
+			}
+		};
+
+		let mode_method = match arg_mode {
+			"named" => quote! { .named() },
+			"positional" => quote! { .positional() },
+			_ => {
+				return TokenStream::from(
+					Error::custom(format!(
+						"Invalid arg mode '{}'. Must be 'positional' or 'named'",
+						arg_mode
+					))
+					.write_errors(),
+				);
+			}
+		};
+
+		let required_method = if arg_required {
+			quote! { .required() }
+		} else {
+			quote! { .optional() }
+		};
+
+		let desc_method = arg.desc.as_ref().map(|desc| quote! { .description(#desc) });
+
+		args_construction.push(quote! { #constructor #mode_method #required_method #desc_method });
+	}
+
+	let expanded = quote! {
+		#item
+
+		#[allow(non_camel_case_types)]
+		pub struct #struct_name;
+
+		#[::puniyu_plugin::private::async_trait]
+		impl ::puniyu_plugin::private::CommandBuilder for #struct_name {
+			fn name(&self) -> &'static str {
+				#command_name
 			}
 
-			if input.peek(Token![,]) {
-				input.parse::<Token![,]>()?;
+			fn description(&self) -> Option<&'static str> {
+				#command_desc
+			}
+
+			fn rank(&self) -> u64 {
+				#command_rank
+			}
+
+			fn args(&'_ self) -> Vec<::puniyu_plugin::private::Arg<'static>> {
+				vec![
+					#(#args_construction,)*
+				]
+			}
+
+			fn alias(&self) -> Vec<&'static str> {
+				#command_alias
+			}
+
+			fn permission(&self) -> ::puniyu_plugin::private::Permission {
+				#command_permission
+			}
+
+			async fn run(&self, bot: &::puniyu_plugin::private::BotContext, ev: &::puniyu_plugin::private::MessageContext) -> ::puniyu_plugin::private::HandlerResult {
+				#fn_name(bot, ev).await
 			}
 		}
 
-		if cmd_args.name.value().is_empty() {
-			return Err(syn::Error::new(input.span(), "呜哇~name都不给！杂鱼！"));
+		::puniyu_plugin::private::inventory::submit! {
+			crate::CommandRegistry {
+				plugin_name: #plugin_name,
+				builder: || -> Box<dyn ::puniyu_plugin::private::CommandBuilder> { Box::new(#struct_name {}) },
+			}
 		}
+	};
 
-		Ok(cmd_args)
-	}
-}
-
-fn parse_arg_list(input: ParseStream) -> syn::Result<Vec<Arg>> {
-	let mut args = Vec::new();
-	let mut seen_names = std::collections::HashSet::new();
-
-	while !input.is_empty() {
-		let arg = parse_arg_item(input)?;
-		let name = arg.name.value();
-
-		if !seen_names.insert(name.clone()) {
-			return Err(syn::Error::new_spanned(
-				&arg.name,
-				format!("呜哇~参数 '{}' 重复了！杂鱼~", name),
-			));
-		}
-
-		args.push(arg);
-
-		if input.peek(Token![,]) {
-			input.parse::<Token![,]>()?;
-		}
-	}
-
-	Ok(args)
-}
-
-fn parse_arg_item(input: ParseStream) -> syn::Result<Arg> {
-	let mut arg = Arg::default();
-
-	if input.peek(syn::LitStr) {
-		arg.name = input.parse()?;
-	} else if input.peek(syn::token::Paren) {
-		let content;
-		syn::parenthesized!(content in input);
-		let elems = Punctuated::<syn::Expr, Token![,]>::parse_terminated(&content)?;
-		arg.parse_from_tuple(&elems)?;
-	} else if input.peek(syn::token::Brace) {
-		let content;
-		braced!(content in input);
-		arg.parse_from_object(&content)?;
-	} else {
-		return Err(syn::Error::new(
-			input.span(),
-			"呜哇~参数格式错误！支持: \"name\", (元组), 或 { 对象 } 格式！杂鱼~",
-		));
-	}
-
-	if arg.name.value().is_empty() {
-		return Err(syn::Error::new(input.span(), "呜哇~参数必须指定 name！杂鱼~"));
-	}
-
-	Ok(arg)
-}
-
-fn parse_alias(input: ParseStream) -> syn::Result<Vec<syn::LitStr>> {
-	let mut alias = Vec::new();
-
-	while !input.is_empty() {
-		let item: syn::LitStr = input.parse()?;
-		alias.push(item);
-
-		if input.peek(Token![,]) {
-			input.parse::<Token![,]>()?;
-		}
-	}
-
-	Ok(alias)
+	TokenStream::from(expanded)
 }

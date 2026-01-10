@@ -17,7 +17,7 @@ concurrency:
 
 jobs:
   release-pr:
-    if: "!startsWith(github.head_ref, 'release')"
+    if: ${{ github.ref == 'refs/heads/main' && github.event_name == 'push' }}
     runs-on: ubuntu-latest
     outputs:
       prs_created: ${{ steps.release-plz.outputs.prs_created }}
@@ -47,7 +47,7 @@ jobs:
 
   release:
     needs: release-pr
-    if: ${{ needs.release-pr.outputs.prs_created == 'false' && github.ref == 'refs/heads/main' && github.event_name == 'push'  }}
+    if: ${{ needs.release-pr.outputs.prs_created == 'false'  }}
     runs-on: ubuntu-latest
     outputs:
       releases: ${{ steps.release-plz.outputs.releases  }}

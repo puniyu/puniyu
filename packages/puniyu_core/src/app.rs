@@ -129,22 +129,17 @@ impl App {
 			let port = config.port();
 			puniyu_server::run_server_spawn(Some(host), Some(port));
 		}
-		match signal::ctrl_c().await {
-			Ok(()) => {
-				debug!("接收到中断信号，正在关闭...");
-			}
-			Err(_) => {
-				error!("信号处理出现错误，正在关闭...");
-			}
-		}
-		debug!("开始执行hook钩子");
-		execute_hooks(StatusType::Stop).await;
 
-		info!(
-			"{} 本次运行时间: {}",
-			app_name.to_case(Case::Lower).fg_rgb::<64, 224, 208>(),
-			format_duration(Duration::from_secs(common::uptime())).fg_rgb::<255, 127, 80>()
-		);
+		if let Ok(()) = signal::ctrl_c().await {
+			debug!("接收到中断信号，正在关闭...");
+			debug!("开始执行hook钩子");
+			execute_hooks(StatusType::Stop).await;
+			info!(
+				"{} 本次运行时间: {}",
+				app_name.to_case(Case::Lower).fg_rgb::<64, 224, 208>(),
+				format_duration(Duration::from_secs(common::uptime())).fg_rgb::<255, 127, 80>()
+			);
+		}
 	}
 }
 

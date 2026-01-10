@@ -1,5 +1,5 @@
 mod registry;
-pub mod store;
+mod store;
 pub use registry::ConfigRegistry;
 mod app;
 mod bot;

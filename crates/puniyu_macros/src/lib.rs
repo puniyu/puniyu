@@ -1,230 +1,32 @@
-use proc_macro::TokenStream;
-use quote::quote;
 
-#[cfg(any(feature = "plugin", feature = "command"))]
-use syn::ItemFn;
-#[cfg(any(feature = "command", feature = "task"))]
-use syn::{Ident, parse_macro_input};
-
-#[cfg(any(feature = "plugin", feature = "command", feature = "task"))]
+mod adapter;
 mod plugin;
 
-#[cfg(any(feature = "plugin", feature = "command", feature = "task"))]
-use plugin::{CommandArgs, PluginArg, TaskArgs};
-
-#[cfg(any(feature = "adapter", feature = "plugin"))]
-fn parse_struct_input(item: TokenStream) -> syn::Result<syn::ItemStruct> {
-	syn::parse(item).map_err(|e| syn::Error::new(e.span(), "呜哇~这个宏只能用在结构体上！杂鱼~"))
-}
-
-#[cfg(any(feature = "adapter", feature = "plugin"))]
-fn parse_config_name(args: TokenStream, struct_name: &syn::Ident) -> syn::Result<String> {
-	use convert_case::{Case, Casing};
-	if args.is_empty() {
-		Ok(struct_name.to_string().to_case(Case::Lower))
-	} else {
-		syn::parse::<syn::LitStr>(args)
-			.map(|lit| lit.value())
-			.map_err(|e| syn::Error::new(e.span(), "呜哇~配置名称必须是字符串字面量！杂鱼~"))
-	}
+#[cfg(feature = "adapter")]
+#[proc_macro_attribute]
+pub fn adapter_config(
+	args: proc_macro::TokenStream,
+	item: proc_macro::TokenStream,
+) -> proc_macro::TokenStream {
+	adapter::config(args, item)
 }
 
 #[cfg(feature = "adapter")]
 #[proc_macro_attribute]
-pub fn adapter_config(args: TokenStream, item: TokenStream) -> TokenStream {
-	let input_struct = match parse_struct_input(item) {
-		Ok(s) => s,
-		Err(e) => return e.to_compile_error().into(),
-	};
-
-	let struct_name = &input_struct.ident;
-
-	let config_name = match parse_config_name(args, struct_name) {
-		Ok(name) => name,
-		Err(e) => return e.to_compile_error().into(),
-	};
-	let adapter_name = env!("CARGO_PKG_NAME");
-
-	let expanded = quote! {
-		#input_struct
-
-		impl ::puniyu_adapter::macros::proc_macro::Config for #struct_name {
-			fn name(&self) -> &'static str {
-				#config_name
-			}
-
-			fn config(&self) -> ::puniyu_adapter::macros::proc_macro::toml::Value {
-				let config_str = ::puniyu_adapter::macros::proc_macro::toml::to_string(&Self::default())
-					.expect("Failed to serialize config");
-				::puniyu_adapter::macros::proc_macro::toml::from_str(&config_str)
-					.expect("Failed to deserialize config")
-			}
-		}
-
-		impl #struct_name {
-			pub fn get() -> Self {
-				use ::puniyu_adapter::macros::proc_macro::AdapterBuilder;
-				let adapter_name = crate::Adapter.name().to_lowercase();
-				let path = ::puniyu_adapter::macros::proc_macro::ADAPTER_CONFIG_DIR.join(adapter_name).join(format!("{}.toml", #config_name));
-				::puniyu_adapter::macros::proc_macro::ConfigRegistry::get(&path)
-					.and_then(|cfg| cfg.try_into::<#struct_name>().ok())
-					.unwrap_or_default()
-			}
-		}
-
-		::puniyu_adapter::macros::proc_macro::inventory::submit! {
-			crate::ConfigRegistry {
-				adapter_name: #adapter_name,
-				builder: || -> Box<dyn ::puniyu_adapter::macros::proc_macro::Config> {
-					Box::new(#struct_name::default())
-				}
-			}
-		}
-	};
-
-	TokenStream::from(expanded)
-}
-
-#[cfg(feature = "adapter")]
-#[proc_macro_attribute]
-pub fn adapter(_: TokenStream, item: TokenStream) -> TokenStream {
-	let input_struct = match parse_struct_input(item) {
-		Ok(s) => s,
-		Err(e) => return e.to_compile_error().into(),
-	};
-
-	let struct_name = &input_struct.ident;
-	let adapter_struct_name = Ident::new("Adapter", proc_macro2::Span::call_site());
-	let version_major = quote! { env!("CARGO_PKG_VERSION_MAJOR").parse::<u16>().unwrap() };
-	let version_minor = quote! { env!("CARGO_PKG_VERSION_MINOR").parse::<u16>().unwrap() };
-	let version_patch = quote! { env!("CARGO_PKG_VERSION_PATCH").parse::<u16>().unwrap() };
-
-	let expanded = quote! {
-		#input_struct
-
-		pub struct #adapter_struct_name;
-
-		#[::puniyu_adapter::macros::proc_macro::async_trait]
-		impl ::puniyu_adapter::macros::proc_macro::AdapterBuilder for #adapter_struct_name {
-			fn name(&self) -> &str {
-				::puniyu_adapter::macros::proc_macro::AdapterBuilder::name(&#struct_name)
-			}
-
-			fn version(&self) -> ::puniyu_adapter::macros::proc_macro::Version {
-				::puniyu_adapter::macros::proc_macro::Version {
-					major: #version_major,
-					minor: #version_minor,
-					patch: #version_patch,
-				}
-			}
-
-			fn author(&self) -> Option<&str> {
-				::puniyu_adapter::macros::proc_macro::AdapterBuilder::author(&#struct_name)
-			}
-
-			fn api(&self) -> ::puniyu_adapter::macros::proc_macro::AdapterApi {
-				::puniyu_adapter::macros::proc_macro::AdapterBuilder::api(&#struct_name)
-			}
-
-			fn config(&self) -> Vec<Box<dyn ::puniyu_adapter::macros::proc_macro::Config>> {
-				::puniyu_adapter::macros::proc_macro::inventory::iter::<ConfigRegistry>
-					.into_iter()
-					.map(|registry| (registry.builder)())
-					.collect::<Vec<_>>()
-					.into()
-			}
-
-			fn hooks(&self) -> Vec<Box<dyn ::puniyu_adapter::macros::proc_macro::HookBuilder>> {
-				::puniyu_adapter::macros::proc_macro::inventory::iter::<HookRegistry>
-					.into_iter()
-					.map(|registry| (registry.builder)())
-					.collect::<Vec<_>>()
-					.into()
-			}
-
-			fn server(&self) -> Option<::puniyu_adapter::macros::proc_macro::ServerType> {
-				::puniyu_adapter::macros::proc_macro::AdapterBuilder::server(&#struct_name)
-			}
-
-			async fn init(&self) -> ::puniyu_adapter::macros::proc_macro::Result<()> {
-				::puniyu_adapter::macros::proc_macro::AdapterBuilder::init(&#struct_name).await
-			}
-		}
-
-		/// 配置注册表
-		pub(crate) struct ConfigRegistry {
-			adapter_name: &'static str,
-			/// 配置构造器
-			builder: fn() -> Box<dyn ::puniyu_adapter::macros::proc_macro::Config>,
-		}
-		::puniyu_adapter::macros::proc_macro::inventory::collect!(ConfigRegistry);
-
-		/// 钩子注册注册表
-		pub(crate) struct HookRegistry {
-			adapter_name: &'static str,
-			/// 钩子构造器
-			builder: fn() -> Box<dyn ::puniyu_adapter::macros::proc_macro::HookBuilder>,
-		}
-		::puniyu_adapter::macros::proc_macro::inventory::collect!(HookRegistry);
-	};
-
-	TokenStream::from(expanded)
+pub fn adapter(
+	_args: proc_macro::TokenStream,
+	item: proc_macro::TokenStream,
+) -> proc_macro::TokenStream {
+	adapter::adapter(item)
 }
 
 #[cfg(feature = "plugin")]
 #[proc_macro_attribute]
-pub fn plugin_config(args: TokenStream, item: TokenStream) -> TokenStream {
-	let input_struct = match parse_struct_input(item) {
-		Ok(s) => s,
-		Err(e) => return e.to_compile_error().into(),
-	};
-
-	let struct_name = &input_struct.ident;
-
-	let config_name = match parse_config_name(args, struct_name) {
-		Ok(name) => name,
-		Err(e) => return e.to_compile_error().into(),
-	};
-	let plugin_name = quote! { env!("CARGO_PKG_NAME") };
-
-	let expanded = quote! {
-		#input_struct
-
-		impl ::puniyu_plugin::macros::proc_macro::Config for #struct_name {
-			fn name(&self) -> &'static str {
-				#config_name
-			}
-
-			fn config(&self) -> ::puniyu_plugin::macros::proc_macro::toml::Value {
-				let config_str = ::puniyu_plugin::macros::proc_macro::toml::to_string(&Self::default())
-					.expect("Failed to serialize config");
-				::puniyu_plugin::macros::proc_macro::toml::from_str(&config_str)
-					.expect("Failed to deserialize config")
-			}
-		}
-
-		impl #struct_name {
-			pub fn get() -> Self {
-				use ::puniyu_plugin::macros::proc_macro::PluginBuilder;
-				let plugin_name = crate::Plugin.name().to_lowercase();
-				let path = ::puniyu_plugin::macros::proc_macro::PLUGIN_CONFIG_DIR.join(plugin_name).join(format!("{}.toml", #config_name));
-				::puniyu_plugin::macros::proc_macro::ConfigRegistry::get(&path)
-					.and_then(|cfg| cfg.try_into::<#struct_name>().ok())
-					.unwrap_or_default()
-			}
-		}
-
-		::puniyu_plugin::macros::proc_macro::inventory::submit! {
-			crate::ConfigRegistry {
-				plugin_name: #plugin_name,
-				builder: || -> Box<dyn ::puniyu_plugin::macros::proc_macro::Config> {
-					Box::new(#struct_name::default())
-				}
-			}
-		}
-	};
-
-	TokenStream::from(expanded)
+pub fn plugin_config(
+	args: proc_macro::TokenStream,
+	item: proc_macro::TokenStream,
+) -> proc_macro::TokenStream {
+	plugin::config(args, item)
 }
 
 /// 注册插件
@@ -254,242 +56,11 @@ pub fn plugin_config(args: TokenStream, item: TokenStream) -> TokenStream {
 /// ```
 #[cfg(feature = "plugin")]
 #[proc_macro_attribute]
-pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
-	let input_fn = if let Ok(fn_item) = syn::parse::<ItemFn>(item.clone()) {
-		fn_item
-	} else {
-		return syn::Error::new_spanned(
-			proc_macro2::TokenStream::from(item),
-			"呜哇~这个宏只能用在函数上，不能用在结构体！杂鱼~",
-		)
-		.to_compile_error()
-		.into();
-	};
-
-	let fn_sig = &input_fn.sig;
-
-	let fn_name = &input_fn.sig.ident;
-	let fn_vis = &input_fn.vis;
-	let fn_block = &input_fn.block;
-
-	let plugin_args = parse_macro_input!(args as PluginArg);
-	let plugin_desc = match &plugin_args.desc {
-		Some(desc) => quote! { #desc },
-		None => quote! { "这个人很懒，没有设置呢" },
-	};
-	let plugin_prefix = match &plugin_args.prefix {
-		Some(prefix) => quote! { Some(#prefix) },
-		None => quote! { None },
-	};
-
-	let is_async = fn_sig.asyncness.is_some();
-	if !is_async {
-		return syn::Error::new_spanned(fn_sig, "呜哇~杂鱼函数连async都不会用吗？杂鱼~")
-			.to_compile_error()
-			.into();
-	}
-
-	let plugin_name = quote! { env!("CARGO_PKG_NAME") };
-	let version_major = quote! { env!("CARGO_PKG_VERSION_MAJOR").parse::<u16>().unwrap() };
-	let version_minor = quote! { env!("CARGO_PKG_VERSION_MINOR").parse::<u16>().unwrap() };
-	let version_patch = quote! { env!("CARGO_PKG_VERSION_PATCH").parse::<u16>().unwrap() };
-	let version_string = quote! { env!("CARGO_PKG_VERSION") };
-	let plugin_author = quote! {
-		{
-			let authors = env!("CARGO_PKG_AUTHORS");
-			if authors.is_empty() { None } else { Some(authors) }
-		}
-	};
-
-	let struct_name = Ident::new("Plugin", fn_name.span());
-
-	let init_call = if fn_block.stmts.is_empty() {
-		quote! {
-			async {
-				puniyu_plugin::logger::info!(
-					"{} v{} 初始化完成",
-					#plugin_name,
-					#version_string,
-				);
-				Ok(())
-			}
-		}
-	} else {
-		quote! {
-			async {
-				#fn_name().await
-			}
-		}
-	};
-
-	let expanded = quote! {
-		pub struct #struct_name;
-
-		#fn_vis #fn_sig #fn_block
-
-		#[::puniyu_plugin::macros::proc_macro::async_trait]
-		impl ::puniyu_plugin::macros::proc_macro::PluginBuilder for #struct_name {
-			fn name(&self) -> &'static str {
-				#plugin_name
-			}
-
-			fn version(&self) -> ::puniyu_plugin::macros::proc_macro::Version {
-				::puniyu_plugin::macros::proc_macro::Version {
-					major: #version_major,
-					minor: #version_minor,
-					patch: #version_patch,
-				}
-			}
-
-			fn author(&self) -> Option<&'static str> {
-				#plugin_author
-			}
-
-			fn abi_version(&self) -> ::puniyu_plugin::macros::proc_macro::Version {
-				::puniyu_plugin::macros::proc_macro::ABI_VERSION
-			}
-
-			fn description(&self) -> &'static str {
-				#plugin_desc
-			}
-
-			fn prefix(&self) -> Option<&'static str> {
-				#plugin_prefix
-			}
-
-			fn tasks(&self) -> Vec<Box<dyn ::puniyu_plugin::macros::proc_macro::TaskBuilder>> {
-				let plugin_name = self.name();
-				::puniyu_plugin::macros::proc_macro::inventory::iter::<TaskRegistry>
-					.into_iter()
-					.filter(|task| task.plugin_name == plugin_name)
-					.map(|task| (task.builder)())
-					.collect()
-			}
-
-			fn commands(&self) -> Vec<Box<dyn ::puniyu_plugin::macros::proc_macro::CommandBuilder>> {
-				let plugin_name = self.name();
-				::puniyu_plugin::macros::proc_macro::inventory::iter::<CommandRegistry>
-					.into_iter()
-					.filter(|command| command.plugin_name == plugin_name)
-					.map(|command| (command.builder)())
-					.collect()
-			}
-
-			fn hooks(&self) -> Vec<Box<dyn ::puniyu_plugin::macros::proc_macro::HookBuilder>> {
-				let plugin_name = self.name();
-				::puniyu_plugin::macros::proc_macro::inventory::iter::<HookRegistry>
-					.into_iter()
-					.filter(|hook| hook.plugin_name == plugin_name)
-					.map(|hook| (hook.builder)())
-					.collect()
-			}
-
-			fn config(&self) -> Vec<Box<dyn ::puniyu_plugin::macros::proc_macro::Config>> {
-				let plugin_name = self.name();
-				::puniyu_plugin::macros::proc_macro::inventory::iter::<ConfigRegistry>
-					.into_iter()
-					.filter(|config| config.plugin_name == plugin_name)
-					.map(|config| (config.builder)())
-					.collect()
-			}
-
-			fn server(&self) -> Option<::puniyu_plugin::macros::proc_macro::ServerType> {
-				let plugin_name = self.name();
-				let servers: Vec<_> = ::puniyu_plugin::macros::proc_macro::inventory::iter::<ServerRegistry>
-					.into_iter()
-					.filter(|server| server.plugin_name == plugin_name)
-					.map(|server| (server.builder)())
-					.collect();
-
-				if !servers.is_empty() {
-					Some(::std::sync::Arc::new(move |cfg: &mut ::puniyu_plugin::macros::proc_macro::ServiceConfig| {
-						servers.iter().for_each(|server| server(cfg));
-					}))
-				} else {
-					None
-				}
-			}
-
-			async fn init(&self) -> ::std::result::Result<(), Box<dyn std::error::Error>> {
-				#init_call.await
-			}
-		}
-
-		/// 插件注册表
-		pub(crate) struct PluginRegistry {
-			/// 插件构造器
-			builder: fn() -> Box<dyn ::puniyu_plugin::macros::proc_macro::PluginBuilder>,
-		}
-		::puniyu_plugin::macros::proc_macro::inventory::collect!(PluginRegistry);
-
-		/// 定时计划注册表
-		pub(crate) struct TaskRegistry {
-			/// 插件名称
-			plugin_name: &'static str,
-			/// 任务构造器
-			builder: fn() -> Box<dyn ::puniyu_plugin::macros::proc_macro::TaskBuilder>,
-		}
-		::puniyu_plugin::macros::proc_macro::inventory::collect!(TaskRegistry);
-
-		pub(crate) struct CommandRegistry {
-			plugin_name: &'static str,
-			/// 命令构造器
-			builder: fn() -> Box<dyn ::puniyu_plugin::macros::proc_macro::CommandBuilder>,
-		}
-		::puniyu_plugin::macros::proc_macro::inventory::collect!(CommandRegistry);
-
-		/// 配置注册表
-		pub(crate) struct ConfigRegistry {
-			plugin_name: &'static str,
-			/// 配置构造器
-			builder: fn() -> Box<dyn ::puniyu_plugin::macros::proc_macro::Config>,
-		}
-		::puniyu_plugin::macros::proc_macro::inventory::collect!(ConfigRegistry);
-
-		/// 服务器注册表
-		pub(crate) struct ServerRegistry {
-			/// 插件名称
-			plugin_name: &'static str,
-			/// 服务器配置构造器
-			builder: fn() -> ::puniyu_plugin::macros::proc_macro::ServerType,
-		}
-		::puniyu_plugin::macros::proc_macro::inventory::collect!(ServerRegistry);
-
-		::puniyu_plugin::macros::proc_macro::inventory::submit! {
-			PluginRegistry {
-				builder: || -> Box<dyn ::puniyu_plugin::macros::proc_macro::PluginBuilder> { Box::new(#struct_name {}) },
-			}
-		}
-
-		/// 钩子注册注册表
-		pub(crate) struct HookRegistry {
-			plugin_name: &'static str,
-			/// 钩子构造器
-			builder: fn() -> Box<dyn ::puniyu_plugin::macros::proc_macro::HookBuilder>,
-		}
-		::puniyu_plugin::macros::proc_macro::inventory::collect!(HookRegistry);
-
-		#[cfg(feature = "cdylib")]
-		#[unsafe(no_mangle)]
-		pub unsafe extern "C" fn plugin_info() -> *mut dyn ::puniyu_plugin::macros::proc_macro::PluginBuilder {
-			Box::into_raw(Box::new(#struct_name {}))
-		}
-
-		#[cfg(feature = "cdylib")]
-		#[unsafe(no_mangle)]
-		pub unsafe extern "C" fn setup_logger(logger: &::puniyu_plugin::logger::SharedLogger) {
-			::puniyu_plugin::logger::setup_shared_logger(logger);
-		}
-
-		#[cfg(feature = "cdylib")]
-		#[unsafe(no_mangle)]
-		pub unsafe extern "C" fn setup_app_name(name: String) {
-			::puniyu_plugin::common::APP_NAME.get_or_init(|| name);
-		}
-
-	};
-
-	TokenStream::from(expanded)
+pub fn plugin(
+	args: proc_macro::TokenStream,
+	item: proc_macro::TokenStream,
+) -> proc_macro::TokenStream {
+	plugin::plugin(args, item)
 }
 
 /// 命令宏
@@ -501,10 +72,9 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
 /// | 参数 | 类型 | 必需 | 默认值 | 说明 |
 /// |------|------|:----:|--------|------|
 /// | `name` | `&str` | ✓ | - | 命令名称 |
-/// | `desc` | `&str` | | `""` | 命令描述 |
+/// | `desc` | `&str` | | `None` | 命令描述 |
 /// | `rank` | `u64` | | `500` | 优先级，数值越小优先级越高 |
 /// | `alias` | `[&str]` | | `[]` | 命令别名列表 |
-/// | `args` | `[Arg]` | | `[]` | 命令参数列表 |
 /// | `permission` | `&str` | | `"all"` | 权限等级：`"all"` 所有人，`"master"` 仅主人 |
 ///
 /// # 命令别名
@@ -515,36 +85,38 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
 /// #[command(name = "help", alias = ["h", "?"])]
 /// async fn help(bot: &BotContext, ev: &MessageContext) -> HandlerResult {
 ///     // !help、!h、!? 都可以触发此命令
-///     HandlerAction::done()
+///     Ok(().into())
 /// }
 /// ```
 ///
 /// # 命令参数
 ///
-/// 支持三种格式定义参数：
-///
-/// ## 1. 简单格式
-///
-/// 只指定参数名称，默认为可选的字符串类型位置参数：
+/// 使用 `#[arg]` 属性宏定义命令参数，可以在同一个函数上使用多个 `#[arg]` 属性：
 ///
 /// ```rust,ignore
-/// args = ["message", "count"]
-/// // 调用：!echo hello 3
-/// // message = "hello", count = "3"
+/// #[command(name = "echo", desc = "回显消息")]
+/// #[arg(name = "message", type = "string", required = true, desc = "要回显的消息")]
+/// #[arg(name = "count", type = "int", mode = "named", desc = "重复次数")]
+/// async fn echo(bot: &BotContext, ev: &MessageContext) -> HandlerResult {
+///     let msg = ev.arg("message").and_then(|v| v.as_str()).unwrap_or("");
+///     let count = ev.arg("count").and_then(|v| v.as_int()).unwrap_or(1);
+///     
+///     for _ in 0..count {
+///         bot.reply(message!(segment!(text, msg))).await?;
+///     }
+///     Ok(().into())
+/// }
 /// ```
 ///
-/// ## 2. 元组格式
+/// ## `#[arg]` 参数说明
 ///
-/// ```rust,ignore
-/// // (name, type, required, default, desc, mode)
-/// args = [("count", "int", false, 1, "重复次数", "named")]
-/// ```
-///
-/// ## 3. 对象格式
-///
-/// ```rust,ignore
-/// args = [{ name = "count", arg_type = "int", mode = "named", default = 1 }]
-/// ```
+/// | 参数 | 类型 | 必需 | 默认值 | 说明 |
+/// |------|------|:----:|--------|------|
+/// | `name` | `&str` | ✓ | - | 参数名称 |
+/// | `type` | `&str` | | `"string"` | 参数类型 |
+/// | `mode` | `&str` | | `"positional"` | 参数模式 |
+/// | `required` | `bool` | | `false` | 是否必需 |
+/// | `desc` | `&str` | | `None` | 参数描述 |
 ///
 /// ### 参数类型
 ///
@@ -567,23 +139,24 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
 /// ## 基础示例
 ///
 /// ```rust,ignore
-/// #[command(name = "echo", desc = "回显消息", args = ["message"])]
+/// #[command(name = "echo", desc = "回显消息")]
+/// #[arg(name = "message")]
 /// async fn echo(bot: &BotContext, ev: &MessageContext) -> HandlerResult {
 ///     // 调用：!echo hello
 ///     let msg = ev.arg("message").and_then(|v| v.as_str()).unwrap_or("");
-///     bot.reply(msg.into()).await?;
-///     HandlerAction::done()
+///     bot.reply(message!(segment!(text, msg))).await?;
+///     Ok(().into())
 /// }
 /// ```
 ///
-/// ## 带别名的命令
+/// ## 无参数命令
 ///
 /// ```rust,ignore
 /// #[command(name = "ping", alias = ["p"], desc = "测试延迟")]
 /// async fn ping(bot: &BotContext, ev: &MessageContext) -> HandlerResult {
 ///     // !ping 或 !p 都可以触发
-///     bot.reply("pong!".into()).await?;
-///     HandlerAction::done()
+///     bot.reply(message!(segment!(text, "pong!"))).await?;
+///     Ok(().into())
 /// }
 /// ```
 ///
@@ -592,162 +165,73 @@ pub fn plugin(args: TokenStream, item: TokenStream) -> TokenStream {
 /// 使用 `permission` 限制命令的使用权限，权限不足时会自动提示：
 ///
 /// ```rust,ignore
-/// #[command(name = "help", desc = "帮助", permission = "master")]
+/// #[command(name = "reload", desc = "重载配置", permission = "master")]
 /// async fn reload(bot: &BotContext, ev: &MessageContext) -> HandlerResult {
 ///     // 仅主人可执行此命令，其他用户会收到"权限不足"提示
-///     bot.reply("help".into()).await?;
-///     HandlerAction::done()
+///     bot.reply(message!(segment!(text, "配置已重载"))).await?;
+///     Ok(().into())
 /// }
 /// ```
 ///
-/// ## 混合参数类型
+/// ## 多参数示例
 ///
 /// ```rust,ignore
-/// #[command(
-///     name = "repeat",
-///     alias = ["r"],
-///     desc = "重复消息",
-///     args = [
-///         "message",  // 位置参数
-///         { name = "count", arg_type = "int", mode = "named", default = 1 },
-///     ]
-/// )]
+/// #[command(name = "repeat", alias = ["r"], desc = "重复消息")]
+/// #[arg(name = "message", required = true, desc = "要重复的消息")]
+/// #[arg(name = "count", type = "int", mode = "named", desc = "重复次数")]
 /// async fn repeat(bot: &BotContext, ev: &MessageContext) -> HandlerResult {
 ///     // 调用：!repeat hello --count 3
 ///     let message = ev.arg("message").and_then(|v| v.as_str()).unwrap_or("");
 ///     let count = ev.arg("count").and_then(|v| v.as_int()).unwrap_or(1);
+///     
 ///     for _ in 0..count {
-///         bot.reply(message.into()).await?;
+///         bot.reply(message!(segment!(text, message))).await?;
 ///     }
-///     HandlerAction::done()
+///     Ok(().into())
+/// }
+/// ```
+///
+/// ## 混合参数模式
+///
+/// ```rust,ignore
+/// #[command(name = "calc", desc = "计算器")]
+/// #[arg(name = "a", type = "int", required = true, desc = "第一个数")]
+/// #[arg(name = "b", type = "int", required = true, desc = "第二个数")]
+/// #[arg(name = "op", mode = "named", desc = "运算符")]
+/// async fn calc(bot: &BotContext, ev: &MessageContext) -> HandlerResult {
+///     // 调用：!calc 10 20 --op add
+///     let a = ev.arg("a").and_then(|v| v.as_int()).unwrap_or(0);
+///     let b = ev.arg("b").and_then(|v| v.as_int()).unwrap_or(0);
+///     let op = ev.arg("op").and_then(|v| v.as_str()).unwrap_or("add");
+///     
+///     let result = match op {
+///         "add" => a + b,
+///         "sub" => a - b,
+///         "mul" => a * b,
+///         "div" => a / b,
+///         _ => 0,
+///     };
+///     
+///     bot.reply(message!(segment!(text, format!("结果: {}", result)))).await?;
+///     Ok(().into())
 /// }
 /// ```
 #[cfg(feature = "command")]
 #[proc_macro_attribute]
-pub fn command(args: TokenStream, item: TokenStream) -> TokenStream {
-	use convert_case::{Case, Casing};
-	let args = parse_macro_input!(args as CommandArgs);
-	let input_fn = parse_macro_input!(item as ItemFn);
-	let fn_name = &input_fn.sig.ident;
-	let fn_vis = &input_fn.vis;
-	let fn_sig = &input_fn.sig;
-	let fn_block = &input_fn.block;
+pub fn command(
+	args: proc_macro::TokenStream,
+	item: proc_macro::TokenStream,
+) -> proc_macro::TokenStream {
+	plugin::command(args, item)
+}
 
-	let is_async = input_fn.sig.asyncness.is_some();
-	if !is_async {
-		return syn::Error::new_spanned(&input_fn.sig, "呜哇~杂鱼函数连async都不会用吗？杂鱼~")
-			.to_compile_error()
-			.into();
-	}
-
-	if input_fn.sig.inputs.len() != 2 {
-		return syn::Error::new_spanned(
-			&input_fn.sig.inputs,
-			"呜哇~命令函数必须有两个参数：&BotContext, &MessageContext！杂鱼~",
-		)
-		.to_compile_error()
-		.into();
-	}
-
-	let mut params = input_fn.sig.inputs.iter();
-
-	if let Some(syn::FnArg::Typed(pat_type)) = params.next() {
-		let ty = &*pat_type.ty;
-		let ty_str = quote!(#ty).to_string();
-		if !ty_str.contains("BotContext") {
-			return syn::Error::new_spanned(ty, "呜哇~第一个参数必须是 &BotContext 类型！杂鱼~")
-				.to_compile_error()
-				.into();
-		}
-	}
-	if let Some(syn::FnArg::Typed(pat_type)) = params.next() {
-		let ty = &*pat_type.ty;
-		let ty_str = quote!(#ty).to_string();
-		if !ty_str.contains("MessageContext") {
-			return syn::Error::new_spanned(
-				ty,
-				"呜哇~第二个参数必须是 &MessageContext 类型！杂鱼~",
-			)
-			.to_compile_error()
-			.into();
-		}
-	}
-
-	let struct_name_str = {
-		let fn_name_str = fn_name.to_string();
-		let pascal_case_name = fn_name_str.to_case(Case::Pascal);
-		format!("{}Command", pascal_case_name)
-	};
-
-	let command_name = &args.name;
-	let command_rank = &args.rank;
-	let command_desc = &args.desc;
-	let command_permission = &args.permission;
-	let command_alias = if args.alias.is_empty() {
-		quote! { None }
-	} else {
-		let aliases = &args.alias;
-		quote! { Some(vec![#(#aliases),*]) }
-	};
-	let mut arg_defs: Vec<proc_macro2::TokenStream> = Vec::new();
-
-	for arg_def in &args.args {
-		arg_defs.push(arg_def.to_tokens());
-	}
-
-	let plugin_name = quote! { env!("CARGO_PKG_NAME") };
-
-	let struct_name = Ident::new(&struct_name_str, fn_name.span());
-
-	let expanded = quote! {
-		pub struct #struct_name;
-
-		#fn_vis #fn_sig #fn_block
-
-		#[::puniyu_plugin::macros::proc_macro::async_trait]
-		impl ::puniyu_plugin::macros::proc_macro::CommandBuilder for #struct_name {
-			fn name(&self) -> &'static str {
-				#command_name
-			}
-
-			fn description(&self) -> Option<&'static str> {
-				if #command_desc.is_empty() {
-					None
-				} else {
-					Some(#command_desc)
-				}
-			}
-
-			fn args(&self) -> Vec<::puniyu_plugin::macros::proc_macro::Arg> {
-				vec![#(#arg_defs),*]
-			}
-
-			fn rank(&self) -> u64 {
-				#command_rank.to_string().parse().unwrap_or(100)
-			}
-
-			fn alias(&self) -> Option<Vec<&'static str>> {
-				#command_alias
-			}
-
-			fn permission(&self) -> ::puniyu_plugin::event::Permission {
-				#command_permission.parse().unwrap_or_default()
-			}
-
-			async fn run(&self, bot: &::puniyu_plugin::macros::proc_macro::BotContext, ev: &::puniyu_plugin::macros::proc_macro::MessageContext) -> ::puniyu_plugin::macros::proc_macro::HandlerResult {
-				#fn_name(bot, ev).await
-			}
-		}
-
-		::puniyu_plugin::macros::proc_macro::inventory::submit! {
-			crate::CommandRegistry {
-				plugin_name: #plugin_name,
-				builder: || -> Box<dyn ::puniyu_plugin::macros::proc_macro::CommandBuilder> { Box::new(#struct_name {}) },
-			}
-		}
-	};
-
-	TokenStream::from(expanded)
+#[cfg(feature = "command")]
+#[proc_macro_attribute]
+pub fn arg(
+	_args: proc_macro::TokenStream,
+	item: proc_macro::TokenStream,
+) -> proc_macro::TokenStream {
+	item
 }
 
 /// 定时任务宏
@@ -833,82 +317,11 @@ pub fn command(args: TokenStream, item: TokenStream) -> TokenStream {
 /// ```
 #[cfg(feature = "task")]
 #[proc_macro_attribute]
-pub fn task(args: TokenStream, item: TokenStream) -> TokenStream {
-	use convert_case::{Case, Casing};
-	use croner::Cron;
-	use std::str::FromStr;
-	let args = parse_macro_input!(args as TaskArgs);
-	let input_fn = parse_macro_input!(item as ItemFn);
-	let fn_name = &input_fn.sig.ident;
-	let fn_vis = &input_fn.vis;
-	let fn_sig = &input_fn.sig;
-	let fn_block = &input_fn.block;
-
-	let is_async = input_fn.sig.asyncness.is_some();
-	if !is_async {
-		return syn::Error::new_spanned(&input_fn.sig, "呜哇~杂鱼函数连async都不会用吗？杂鱼~")
-			.to_compile_error()
-			.into();
-	}
-
-	if !input_fn.sig.inputs.is_empty() {
-		return syn::Error::new_spanned(
-			&input_fn.sig.inputs,
-			"呜哇~杂鱼函数居然还想带参数？不行不行！杂鱼~",
-		)
-		.to_compile_error()
-		.into();
-	}
-
-	let cron_value = args.cron.value();
-	if Cron::from_str(&cron_value).is_err() {
-		return syn::Error::new_spanned(&args.cron, "呜哇~cron表达式都不会写吗？杂鱼~")
-			.to_compile_error()
-			.into();
-	}
-
-	let plugin_name = quote! { env!("CARGO_PKG_NAME") };
-
-	let cron_expr = &args.cron;
-
-	let task_name =
-		if args.name.value().is_empty() { fn_name.to_string() } else { args.name.value() };
-	let struct_name_str = {
-		let fn_name_str = fn_name.to_string();
-		let pascal_case_name = fn_name_str.to_case(Case::Pascal);
-		format!("{}Task", pascal_case_name)
-	};
-	let struct_name = Ident::new(&struct_name_str, fn_name.span());
-
-	let expanded = quote! {
-		pub struct #struct_name;
-
-		#fn_vis #fn_sig #fn_block
-
-		#[::puniyu_plugin::macros::proc_macro::async_trait]
-		impl ::puniyu_plugin::macros::proc_macro::TaskBuilder for #struct_name {
-			fn name(&self) -> &'static str {
-				#task_name
-			}
-
-			fn cron(&self) -> &'static str {
-				#cron_expr
-			}
-
-			async fn run(&self) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
-				#fn_name().await
-			}
-		}
-
-		::puniyu_plugin::macros::proc_macro::inventory::submit! {
-			crate::TaskRegistry  {
-				plugin_name: #plugin_name,
-				builder: || -> Box<dyn ::puniyu_plugin::macros::proc_macro::TaskBuilder> { Box::new(#struct_name {}) },
-			}
-		}
-	};
-
-	TokenStream::from(expanded)
+pub fn task(
+	args: proc_macro::TokenStream,
+	item: proc_macro::TokenStream,
+) -> proc_macro::TokenStream {
+	plugin::task(args, item)
 }
 
 /// 注册服务路由
@@ -928,44 +341,9 @@ pub fn task(args: TokenStream, item: TokenStream) -> TokenStream {
 /// ```
 #[cfg(feature = "plugin")]
 #[proc_macro_attribute]
-pub fn server(_args: TokenStream, item: TokenStream) -> TokenStream {
-	let input_fn = if let Ok(fn_item) = syn::parse::<ItemFn>(item.clone()) {
-		fn_item
-	} else {
-		return syn::Error::new_spanned(
-			proc_macro2::TokenStream::from(item),
-			"呜哇~这个宏只能用在函数上！杂鱼~",
-		)
-		.to_compile_error()
-		.into();
-	};
-
-	let fn_name = &input_fn.sig.ident;
-	let fn_vis = &input_fn.vis;
-	let fn_sig = &input_fn.sig;
-	let fn_block = &input_fn.block;
-
-	if input_fn.sig.inputs.len() != 1 {
-		return syn::Error::new_spanned(
-			&input_fn.sig,
-			"呜哇~函数必须接收一个参数 &mut ServiceConfig！杂鱼~",
-		)
-		.to_compile_error()
-		.into();
-	}
-
-	let plugin_name = quote! { env!("CARGO_PKG_NAME") };
-
-	let expanded = quote! {
-		#fn_vis #fn_sig #fn_block
-
-		::puniyu_plugin::macros::proc_macro::inventory::submit! {
-			crate::ServerRegistry {
-				plugin_name: #plugin_name,
-				builder: || -> ::puniyu_plugin::macros::proc_macro::ServerType { ::std::sync::Arc::new(#fn_name) },
-			}
-		}
-	};
-
-	TokenStream::from(expanded)
+pub fn server(
+	_args: proc_macro::TokenStream,
+	item: proc_macro::TokenStream,
+) -> proc_macro::TokenStream {
+	plugin::server(item)
 }

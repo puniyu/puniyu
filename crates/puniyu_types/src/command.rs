@@ -35,15 +35,15 @@ pub type HandlerResult = Result<HandlerAction, Box<dyn std::error::Error + Send 
 
 /// 命令
 #[derive(Debug, Clone)]
-pub struct Command {
-	pub name: &'static str,
-	pub description: Option<&'static str>,
-	pub args: Vec<Arg>,
+pub struct Command<'c> {
+	pub name: &'c str,
+	pub description: Option<&'c str>,
+	pub args: Vec<Arg<'c>>,
 	pub rank: u64,
 	/// 自定义前缀，None 表示使用全局前缀
 	pub prefix: Option<String>,
 	/// 命令别名
-	pub alias: Option<Vec<&'static str>>,
+	pub alias: Vec<&'c str>,
 	/// 权限等级
 	pub permission: Permission,
 }
@@ -54,17 +54,23 @@ pub trait CommandBuilder: Send + Sync + 'static {
 	fn name(&self) -> &'static str;
 
 	/// 描述
-	fn description(&self) -> Option<&'static str>;
+	fn description(&self) -> Option<&'static str> {
+		None
+	}
 
 	/// 参数列表
-	fn args(&self) -> Vec<Arg>;
+	fn args(&'_ self) -> Vec<Arg<'static>> {
+		Vec::new()
+	}
 
 	/// 优先级
-	fn rank(&self) -> u64;
+	fn rank(&self) -> u64 {
+		500
+	}
 
 	/// 命令别名
-	fn alias(&self) -> Option<Vec<&'static str>> {
-		None
+	fn alias(&self) -> Vec<&'static str> {
+		Vec::new()
 	}
 
 	/// 权限等级
