@@ -24,9 +24,10 @@ darling = "0.23.0"
 
 [features]
 default = ["plugin"]
-adapter = ["config"]
-plugin = ["task", "command", "server", "config"]
+adapter = ["config", "hook"]
+plugin = ["task", "command", "server", "config", "hook"]
 command = []
 task = []
 server = []
 config = []
+hook = []

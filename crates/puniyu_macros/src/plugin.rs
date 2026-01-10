@@ -13,9 +13,12 @@ mod config;
 pub use config::config;
 #[cfg(feature = "server")]
 mod server;
-
 #[cfg(feature = "server")]
 pub use server::server;
+#[cfg(feature = "hook")]
+mod hook;
+#[cfg(feature = "hook")]
+pub use hook::hook;
 
 #[cfg(feature = "plugin")]
 #[derive(Debug, Default, darling::FromMeta)]

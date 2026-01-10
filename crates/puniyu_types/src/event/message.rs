@@ -1,4 +1,5 @@
 use super::EventBase;
+use super::inner::{deserialize_bot, serialize_bot};
 use crate::bot::Bot;
 use crate::contact::{FriendContact, GroupContact, Scene};
 use crate::element::receive::Elements;
@@ -10,14 +11,27 @@ use serde::{Deserialize, Serialize};
 use std::fmt;
 use std::sync::Arc;
 use strum::{Display, EnumString, IntoStaticStr};
-use super::inner::{deserialize_bot, serialize_bot};
-
-#[derive(Debug, Clone, EnumString, Display, IntoStaticStr)]
+#[derive(
+	Debug,
+	Clone,
+	EnumString,
+	Display,
+	IntoStaticStr,
+	Deserialize,
+	Serialize,
+	PartialEq,
+	Eq,
+	PartialOrd,
+	Ord,
+)]
 pub enum MessageSubType {
+	/// 好友消息
 	#[strum(serialize = "friend")]
 	Friend,
+	/// 群消息
 	#[strum(serialize = "group")]
 	Group,
+	/// 频道消息
 	#[strum(serialize = "guild")]
 	Guild,
 }

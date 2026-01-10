@@ -14,7 +14,19 @@ use crate::sender::{FriendSender, GroupSender};
 use strum::{Display, EnumString, IntoStaticStr};
 use crate::event::inner::{deserialize_bot, serialize_bot};
 
-#[derive(Debug, Clone, EnumString, Display, IntoStaticStr, Deserialize, Serialize)]
+#[derive(
+    Debug,
+    Clone,
+    EnumString,
+    Display,
+    IntoStaticStr,
+    Deserialize,
+    Serialize,
+    PartialEq,
+    Eq,
+    PartialOrd,
+    Ord,
+)]
 pub enum RequestSubEvent {
 	/// 好友申请
 	#[strum(serialize = "privateApply")]

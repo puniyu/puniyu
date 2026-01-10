@@ -58,13 +58,13 @@ sender = ["dep:serde", "dep:strum"]
 element = ["dep:serde", "dep:strum", "dep:serde_json", "dep:bytes"]
 server = ["dep:actix-web", "dep:flume"]
 task = ["dep:async-trait"]
-command = ["dep:async-trait", "context", "event"]
+command = ["dep:async-trait", "context", "event", "handler"]
 plugin = ["dep:async-trait", "version", "task", "command", "server", "config"]
 handler = ["dep:async-trait", "event"]
 version = ["dep:serde"]
 config = ["dep:toml"]
 bus = ["dep:tokio", "dep:puniyu_logger", "event"]
-hook = ["dep:async-trait", "event"]
+hook = ["dep:async-trait", "dep:serde", "dep:strum", "handler"]
 full = [
     "adapter",
     "event",

@@ -225,19 +225,22 @@ fn print_start_log() {
 async fn execute_hooks(status_type: StatusType) {
 	let mut hooks = HookRegistry::all()
 		.into_iter()
-		.filter(|x| match x.r#type() {
+		.filter(|x| match x.builder.r#type() {
 			HookType::Status(status) => status == status_type,
 			_ => false,
 		})
 		.collect::<Vec<_>>();
-	hooks.sort_unstable_by_key(|a| a.rank());
+	hooks.sort_unstable_by_key(|a| a.builder.rank());
+
+	info!("钩子数量: {}", hooks.len());
+
 	for hook in hooks {
-		if let Err(e) = hook.run(None).await {
+		if let Err(e) = hook.builder.run(None).await {
 			match status_type {
 				StatusType::Start => error!("启动hook钩子执行失败: {}", e),
 				StatusType::Stop => error!("关闭hook钩子执行失败: {}", e),
 			}
 		}
-		HookRegistry::unregister(hook.name());
+		HookRegistry::unregister(hook.index);
 	}
 }

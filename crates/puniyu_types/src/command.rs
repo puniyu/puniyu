@@ -3,6 +3,7 @@ pub use arg::*;
 
 use crate::context::{BotContext, MessageContext};
 use crate::event::Permission;
+use crate::handler::HandlerResult;
 use async_trait::async_trait;
 
 /// 命令处理动作
@@ -15,10 +16,10 @@ pub enum HandlerAction {
 }
 
 impl HandlerAction {
-	pub const fn done() -> HandlerResult {
+	pub const fn done() -> HandlerResult<HandlerAction> {
 		Ok(HandlerAction::Done)
 	}
-	pub const fn r#continue() -> HandlerResult {
+	pub const fn r#continue() -> HandlerResult<HandlerAction> {
 		Ok(HandlerAction::Continue)
 	}
 }
@@ -28,10 +29,6 @@ impl From<()> for HandlerAction {
 		HandlerAction::Done
 	}
 }
-
-/// 命令处理结果
-pub type HandlerResult = Result<HandlerAction, Box<dyn std::error::Error + Send + Sync>>;
-
 
 /// 命令
 #[derive(Debug, Clone)]
@@ -79,5 +76,5 @@ pub trait CommandBuilder: Send + Sync + 'static {
 	}
 
 	/// 执行的函数
-	async fn run(&self, bot: &BotContext, ev: &MessageContext) -> HandlerResult;
+	async fn run(&self, bot: &BotContext, ev: &MessageContext) -> HandlerResult<HandlerAction>;
 }

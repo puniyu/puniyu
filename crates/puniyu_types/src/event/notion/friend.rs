@@ -98,7 +98,7 @@ macro_rules! impl_notion_event {
             type SenderType = FriendSender;
             fn bot(&self) -> &Bot { &self.bot }
             fn time(&self) -> u64 { self.time }
-            fn event(&self) -> &str { EventType::Notice.into() }
+            fn event(&self) -> &str { EventType::Notion.into() }
             fn event_id(&self) -> &str { &self.event_id }
             fn sub_event(&self) -> &str { $sub_event.into() }
             fn self_id(&self) -> &str { &self.self_id }

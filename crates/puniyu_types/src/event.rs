@@ -22,7 +22,7 @@ impl From<Event> for EventType {
 	fn from(event: Event) -> Self {
 		match event {
 			Event::Message(_) => EventType::Message,
-			Event::Notion(_) => EventType::Notice,
+			Event::Notion(_) => EventType::Notion,
 			Event::Request(_) => EventType::Request,
 		}
 	}
@@ -31,7 +31,7 @@ impl From<&Event> for EventType {
 	fn from(event: &Event) -> Self {
 		match event {
 			Event::Message(_) => EventType::Message,
-			Event::Notion(_) => EventType::Notice,
+			Event::Notion(_) => EventType::Notion,
 			Event::Request(_) => EventType::Request,
 		}
 	}
@@ -54,7 +54,7 @@ impl Event {
 	pub fn event_type(&self) -> EventType {
 		match self {
 			Event::Message(_) => EventType::Message,
-			Event::Notion(_) => EventType::Notice,
+			Event::Notion(_) => EventType::Notion,
 			Event::Request(_) => EventType::Request,
 		}
 	}
@@ -78,8 +78,8 @@ impl Event {
 pub enum EventType {
 	#[strum(serialize = "message")]
 	Message,
-	#[strum(serialize = "notice")]
-	Notice,
+	#[strum(serialize = "notion")]
+	Notion,
 	#[strum(serialize = "request")]
 	Request,
 	#[strum(serialize = "unknown")]

@@ -1,14 +1,84 @@
-
 mod adapter;
 mod plugin;
 
-#[cfg(feature = "adapter")]
+#[cfg(feature = "config")]
 #[proc_macro_attribute]
 pub fn adapter_config(
 	args: proc_macro::TokenStream,
 	item: proc_macro::TokenStream,
 ) -> proc_macro::TokenStream {
 	adapter::config(args, item)
+}
+
+/// 适配器钩子宏
+///
+/// 用于在适配器中定义钩子函数，在特定事件或状态变化时自动执行。
+///
+/// # 参数
+///
+/// | 参数 | 类型 | 必需 | 默认值 | 说明 |
+/// |------|------|:----:|--------|------|
+/// | `name` | `&str` | | 函数名 | 钩子名称 |
+/// | `type` | `&str` | | `"event"` | 钩子类型 |
+/// | `rank` | `u64` | | `500` | 优先级，数值越小优先级越高 |
+///
+/// # 钩子类型
+///
+/// 钩子类型使用 `category` 或 `category.subtype` 格式：
+///
+/// ## Event 类型
+/// - `"event"` - 所有事件（默认）
+/// - `"event.message"` - 消息事件
+/// - `"event.notion"` - 通知事件
+/// - `"event.request"` - 请求事件
+/// - `"event.all"` - 所有事件
+///
+/// ## Status 类型
+/// - `"status"` - 状态变化（默认为 start）
+/// - `"status.start"` - 启动状态
+/// - `"status.stop"` - 停止状态
+///
+/// # 编译时验证
+///
+/// 此宏会在编译时验证钩子类型字符串，如果提供了无效的类型，将产生编译错误。
+///
+/// # 示例
+///
+/// ## 基础示例
+/// ```rust,ignore
+///
+/// #[hook(type = "status.start")]
+/// async fn on_start(_ev: Option<&Event>) -> HookResult {
+///     println!("Adapter started!");
+///     Ok(())
+/// }
+/// ```
+///
+/// ## 消息事件钩子
+/// ```rust,ignore
+/// #[hook(type = "event.message", rank = 100)]
+/// async fn on_message(ev: Option<&Event>) -> HookResult {
+///     if let Some(event) = ev {
+///         println!("Received message: {:?}", event);
+///     }
+///     Ok(())
+/// }
+/// ```
+///
+/// ## 自定义名称
+/// ```rust,ignore
+/// #[hook(name = "my_hook", type = "event.all")]
+/// async fn custom_hook(_ev: Option<&Event>) -> HookResult{
+///     Ok(())
+/// }
+/// ```
+#[cfg(feature = "hook")]
+#[proc_macro_attribute]
+pub fn adapter_hook(
+	args: proc_macro::TokenStream,
+	item: proc_macro::TokenStream,
+) -> proc_macro::TokenStream {
+	adapter::hook(args, item)
 }
 
 #[cfg(feature = "adapter")]
@@ -20,7 +90,7 @@ pub fn adapter(
 	adapter::adapter(item)
 }
 
-#[cfg(feature = "plugin")]
+#[cfg(feature = "config")]
 #[proc_macro_attribute]
 pub fn plugin_config(
 	args: proc_macro::TokenStream,
@@ -339,11 +409,94 @@ pub fn task(
 ///     );
 /// }
 /// ```
-#[cfg(feature = "plugin")]
+#[cfg(feature = "server")]
 #[proc_macro_attribute]
 pub fn server(
 	_args: proc_macro::TokenStream,
 	item: proc_macro::TokenStream,
 ) -> proc_macro::TokenStream {
 	plugin::server(item)
+}
+
+/// 插件钩子宏
+///
+/// 用于在插件中定义钩子函数，在特定事件或状态变化时自动执行。
+///
+/// # 参数
+///
+/// | 参数 | 类型 | 必需 | 默认值 | 说明 |
+/// |------|------|:----:|--------|------|
+/// | `name` | `&str` | | 函数名 | 钩子名称 |
+/// | `type` | `&str` | | `"event"` | 钩子类型 |
+/// | `rank` | `u64` | | `500` | 优先级，数值越小优先级越高 |
+///
+/// # 钩子类型
+///
+/// 钩子类型使用 `category` 或 `category.subtype` 格式：
+///
+/// ## Event 类型
+/// - `"event"` - 所有事件（默认）
+/// - `"event.message"` - 消息事件
+/// - `"event.notion"` - 通知事件
+/// - `"event.request"` - 请求事件
+/// - `"event.all"` - 所有事件
+///
+/// ## Status 类型
+/// - `"status"` - 状态变化（默认为 start）
+/// - `"status.start"` - 启动状态
+/// - `"status.stop"` - 停止状态
+///
+/// # 编译时验证
+///
+/// 此宏会在编译时验证钩子类型字符串，如果提供了无效的类型，将产生编译错误。
+///
+/// # 示例
+///
+/// ## 基础示例
+/// ```rust,ignore
+/// use puniyu_plugin::macros::hook;
+/// use puniyu_plugin::event::Event;
+///
+/// #[hook(type = "status.start")]
+/// async fn on_start(_ev: Option<&Event>) -> HookResult{
+///     println!("Plugin started!");
+///     Ok(())
+/// }
+/// ```
+///
+/// ## 消息事件钩子
+/// ```rust,ignore
+/// #[hook(type = "event.message", rank = 100)]
+/// async fn on_message(ev: Option<&Event>) -> HookResult {
+///     if let Some(event) = ev {
+///         println!("Received message: {:?}", event);
+///     }
+///     Ok(())
+/// }
+/// ```
+///
+/// ## 自定义名称和优先级
+/// ```rust,ignore
+/// #[hook(name = "message_logger", type = "event.message", rank = 50)]
+/// async fn log_messages(ev: Option<&Event>) -> HookResult {
+///     // 高优先级消息日志记录
+///     Ok(())
+/// }
+/// ```
+///
+/// ## 请求事件钩子
+/// ```rust,ignore
+/// #[hook(type = "event.request")]
+/// async fn handle_request(ev: Option<&Event>) -> HookResult {
+///     println!("Handling request event");
+///     Ok(())
+/// }
+/// ```
+#[cfg(feature = "hook")]
+#[proc_macro_attribute]
+pub fn plugin_hook(
+	args: proc_macro::TokenStream,
+	item: proc_macro::TokenStream,
+) -> proc_macro::TokenStream {
+	plugin::hook(args, item)
 }

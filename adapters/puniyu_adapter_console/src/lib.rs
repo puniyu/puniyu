@@ -3,15 +3,15 @@ mod common;
 
 use crate::common::make_random_id;
 use async_trait::async_trait;
+use puniyu_adapter::adapter::*;
+use puniyu_adapter::bot::*;
+use puniyu_adapter::element::receive::*;
 use puniyu_adapter::logger::info;
+use puniyu_adapter::macros::*;
+use puniyu_adapter::sender::*;
 use puniyu_core::APP_NAME;
 use std::env;
 use std::sync::Arc;
-use puniyu_adapter::bot::*;
-use puniyu_adapter::adapter::*;
-use puniyu_adapter::sender::*;
-use puniyu_adapter::macros::*;
-use puniyu_adapter::element::receive::*;
 
 #[adapter]
 struct Console;
@@ -193,3 +193,4 @@ impl AdapterBuilder for Console {
 		Ok(())
 	}
 }
+
