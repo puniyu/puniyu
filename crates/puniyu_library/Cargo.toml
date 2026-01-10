@@ -1,6 +1,6 @@
 [package]
 name = "puniyu_library"
-version = "0.5.4"
+version = "0.5.5"
 description = "puniyu 的共享动态库模块"
 readme = "README.md"
 authors.workspace = true
