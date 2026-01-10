@@ -27,15 +27,15 @@ impl Handler for HookHandler {
 		let all = HookRegistry::all();
 		let mut hooks = all
 			.into_iter()
-			.filter(|x| match x.r#type() {
-				HookType::Event(event_type) => event_type == event.event_type(),
+			.filter(|x| match x.builder.r#type() {
+				HookType::Event(event_type) => event_type == event.event_type().into(),
 				_ => false,
 			})
 			.collect::<Vec<_>>();
 
-		hooks.sort_unstable_by_key(|a| a.rank());
+		hooks.sort_unstable_by_key(|a| a.builder.rank());
 		for hook in hooks {
-			if let Err(e) = hook.run(Some(event)).await {
+			if let Err(e) = hook.builder.run(Some(event)).await {
 				error!("Hook处理器执行失败: {}", e);
 			}
 		}

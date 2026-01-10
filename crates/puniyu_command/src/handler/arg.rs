@@ -2,11 +2,11 @@ use clap::builder::ValueParser;
 use puniyu_types::command::{Arg, ArgMode, ArgType, ArgValue};
 use std::collections::HashMap;
 
-struct ClapArg<'a>(&'a Arg);
+struct ClapArg<'a>(&'a Arg<'a>);
 
 impl From<ClapArg<'_>> for clap::Arg {
 	fn from(ClapArg(arg): ClapArg<'_>) -> Self {
-		let mut clap_arg = clap::Arg::new(arg.name);
+		let mut clap_arg = clap::Arg::new(arg.name.to_string());
 
 		clap_arg = match arg.arg_type {
 			ArgType::String => clap_arg.value_parser(ValueParser::string()),
@@ -20,18 +20,8 @@ impl From<ClapArg<'_>> for clap::Arg {
 
 		clap_arg = match arg.mode {
 			ArgMode::Positional => clap_arg.required(arg.required),
-			ArgMode::Named => clap_arg.long(arg.name).required(arg.required),
+			ArgMode::Named => clap_arg.long(arg.name.to_string()).required(arg.required),
 		};
-
-		if let Some(ref default) = arg.default {
-			clap_arg = clap_arg.default_value(match default {
-				ArgValue::String(s) => s.clone(),
-				ArgValue::Int(i) => i.to_string(),
-				ArgValue::Float(f) => f.to_string(),
-				ArgValue::Bool(b) => b.to_string(),
-			});
-		}
-
 		clap_arg
 	}
 }

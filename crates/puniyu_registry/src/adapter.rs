@@ -7,11 +7,13 @@ pub use error::Error;
 use puniyu_common::path::{ADAPTER_CONFIG_DIR, ADAPTER_DATA_DIR, ADAPTER_RESOURCE_DIR};
 use puniyu_common::{merge_config, read_config, write_config};
 use puniyu_config::{Config, ConfigRegistry};
-use puniyu_logger::warn;
+use puniyu_logger::{info, warn};
 use puniyu_logger::{debug, error, owo_colors::OwoColorize};
 use puniyu_types::adapter::{AdapterApi, AdapterBuilder};
 use std::future::Future;
+use std::sync::Arc;
 use tokio::fs;
+use crate::hook::HookRegistry;
 
 #[derive(Clone)]
 pub struct AdapterInfo {
@@ -93,6 +95,9 @@ impl AdapterRegistry {
 		if let Some(server) = adapter.server() {
 			ServerRegistry::insert(adapter_name.clone(), server);
 		}
+		adapter.hooks().into_iter().for_each(|hook| {
+			HookRegistry::register(Arc::from(hook));
+		});
 
 		run_adapter_init(adapter_name.as_str(), adapter.init()).await?;
 		STORE.adapter().insert(AdapterInfo {

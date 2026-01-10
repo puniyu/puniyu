@@ -17,7 +17,7 @@ pub trait PluginBuilder: Send + Sync {
 	fn abi_version(&self) -> Version;
 
 	/// 插件描述
-	fn description(&self) -> &str;
+	fn description(&self) -> Option<&str>;
 	/// 插件作者
 	fn author(&self) -> Option<&str> {
 		None

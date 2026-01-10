@@ -1,8 +1,8 @@
 mod friend;
 
-use std::sync::Arc;
 pub use friend::*;
 use serde::{Deserialize, Serialize};
+use std::sync::Arc;
 mod group;
 pub use group::*;
 
@@ -10,7 +10,19 @@ use super::EventBase;
 use crate::bot::Bot;
 use strum::{Display, EnumString, IntoStaticStr};
 
-#[derive(Debug, Clone, EnumString, Display, IntoStaticStr, Deserialize, Serialize)]
+#[derive(
+	Debug,
+	Clone,
+	EnumString,
+	Display,
+	IntoStaticStr,
+	Deserialize,
+	Serialize,
+	PartialEq,
+	Eq,
+	PartialOrd,
+	Ord,
+)]
 pub enum NotionSubEvent {
 	#[strum(serialize = "receiveLike")]
 	/// 收到点赞

@@ -31,52 +31,49 @@ pub enum ArgMode {
 }
 
 #[derive(Debug, Clone)]
-pub struct Arg {
+pub struct Arg<'a> {
 	/// 参数名
-	pub name: &'static str,
+	pub name: &'a str,
 	/// 参数类型
 	pub arg_type: ArgType,
 	/// 参数模式
 	pub mode: ArgMode,
 	/// 是否必须
 	pub required: bool,
-	/// 默认值
-	pub default: Option<ArgValue>,
 	/// 描述
-	pub description: Option<&'static str>,
+	pub description: Option<&'a str>,
 }
 
-impl Default for Arg {
+impl<'a> Default for Arg<'a> {
 	fn default() -> Self {
 		Self {
 			name: "",
 			arg_type: ArgType::String,
 			mode: ArgMode::Positional,
 			required: false,
-			default: None,
 			description: None,
 		}
 	}
 }
 
-impl Arg {
-	pub fn new(name: &'static str) -> Self {
+impl<'a> Arg<'a> {
+	pub fn new(name: &'a str) -> Self {
 		Self { name, ..Default::default() }
 	}
 
-	pub fn string(name: &'static str) -> Self {
+	pub fn string(name: &'a str) -> Self {
 		Self::new(name).with_type(ArgType::String)
 	}
 
-	pub fn int(name: &'static str) -> Self {
+	pub fn int(name: &'a str) -> Self {
 		Self::new(name).with_type(ArgType::Int)
 	}
 
-	pub fn float(name: &'static str) -> Self {
+	pub fn float(name: &'a str) -> Self {
 		Self::new(name).with_type(ArgType::Float)
 	}
 
-	pub fn bool(name: &'static str) -> Self {
+	pub fn bool(name: &'a str) -> Self {
 		Self::new(name).with_type(ArgType::Bool)
 	}
 
@@ -95,12 +92,7 @@ impl Arg {
 		self
 	}
 
-	pub fn default_value(mut self, value: ArgValue) -> Self {
-		self.default = Some(value);
-		self
-	}
-
-	pub fn description(mut self, desc: &'static str) -> Self {
+	pub fn description(mut self, desc: &'a str) -> Self {
 		self.description = Some(desc);
 		self
 	}

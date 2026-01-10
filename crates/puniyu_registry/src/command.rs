@@ -13,7 +13,7 @@ pub struct Command {
 	pub builder: Arc<dyn CommandBuilder>,
 }
 
-impl From<Command> for puniyu_types::command::Command {
+impl<'a> From<Command> for puniyu_types::command::Command<'a> {
 	fn from(cmd: Command) -> Self {
 		Self {
 			name: cmd.builder.name(),
@@ -26,7 +26,6 @@ impl From<Command> for puniyu_types::command::Command {
 		}
 	}
 }
-
 pub struct CommandRegistry;
 
 impl CommandRegistry {

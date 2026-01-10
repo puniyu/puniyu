@@ -1,6 +1,6 @@
 use toml::Value;
 
-pub trait Config: Send + Sync {
+pub trait Config: Send + Sync + 'static {
 	/// 配置文件名称
 	fn name(&self) -> &'static str;
 

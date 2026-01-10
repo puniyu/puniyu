@@ -2,6 +2,7 @@ use puniyu_types::hook::HookBuilder;
 use std::collections::HashMap;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Arc, RwLock};
+use crate::hook::HookInfo;
 
 static HOOK_INDEX: AtomicU64 = AtomicU64::new(0);
 
@@ -18,13 +19,26 @@ impl HookStore {
 		}
 	}
 
-	pub fn get(&self, name: &str) -> Option<Arc<dyn HookBuilder>> {
+	pub fn get(&self, name: &str) -> Option<HookInfo> {
 		let hooks = self.0.read().unwrap();
-		hooks.values().find(|a| a.name() == name).cloned()
+		hooks
+			.iter()
+			.find(|(_, hook)| hook.name() == name)
+			.map(|(id, hook)| HookInfo {
+				index: *id,
+				builder: hook.clone(),
+			})
 	}
 
-	pub fn all(&self) -> Vec<Arc<dyn HookBuilder>> {
-		self.0.read().unwrap().values().cloned().collect()
+	pub fn all(&self) -> Vec<HookInfo> {
+		let hooks = self.0.read().unwrap();
+		hooks
+			.iter()
+			.map(|(id, hook)| HookInfo {
+				index: *id,
+				builder: hook.clone(),
+			})
+			.collect()
 	}
 
 	pub fn remove_with_name(&self, name: &str) {
@@ -32,5 +46,10 @@ impl HookStore {
 		if let Some(key) = map.iter().find(|(_, v)| v.name() == name).map(|(k, _)| *k) {
 			map.remove(&key);
 		}
+	}
+	
+	pub fn remove_with_index(&self, index: u64) {
+		let mut map = self.0.write().unwrap();
+		map.remove(&index);
 	}
 }

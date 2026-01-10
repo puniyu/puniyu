@@ -1,81 +1,94 @@
-use syn::{Token, parse::Parse, parse::ParseStream, punctuated::Punctuated};
+use convert_case::{Case, Casing};
+use croner::Cron;
+use darling::ast::NestedMeta;
+use darling::{Error, FromMeta};
+use proc_macro::TokenStream;
+use proc_macro2::Ident;
+use quote::quote;
+use std::str::FromStr;
+use syn::{parse_macro_input, ItemFn};
 
-pub struct TaskArgs {
-	pub name: syn::LitStr,
-	pub cron: syn::LitStr,
+#[derive(Debug, Default, FromMeta)]
+struct TaskArgs {
+	#[darling(default)]
+	pub name: String,
+	pub cron: String,
 }
 
-impl Default for TaskArgs {
-	fn default() -> Self {
-		Self {
-			cron: syn::LitStr::new("", proc_macro2::Span::call_site()),
-			name: syn::LitStr::new("", proc_macro2::Span::call_site()),
-		}
+pub fn task(args: TokenStream, item: TokenStream) -> TokenStream {
+	let attr_args = match NestedMeta::parse_meta_list(args.into()) {
+		Ok(v) => v,
+		Err(e) => return TokenStream::from(Error::from(e).write_errors()),
+	};
+
+	let item = parse_macro_input!(item as ItemFn);
+	let fn_name = &item.sig.ident;
+
+	if item.sig.asyncness.is_none() {
+		return syn::Error::new_spanned(&item.sig, "function must be async")
+			.to_compile_error()
+			.into();
 	}
-}
-
-impl TaskArgs {
-	fn set_cron(args: &mut Self, value: syn::LitStr) -> syn::Result<()> {
-		args.cron = value;
-		Ok(())
+	if !item.sig.inputs.is_empty() {
+		return syn::Error::new_spanned(
+            &item.sig.inputs,
+            "Task function should not have parameters",
+		)
+		.to_compile_error()
+		.into();
 	}
 
-	fn set_name(args: &mut Self, value: syn::LitStr) -> syn::Result<()> {
-		args.name = value;
-		Ok(())
+	let args = match TaskArgs::from_list(&attr_args) {
+		Ok(v) => v,
+		Err(e) => return TokenStream::from(e.write_errors()),
+	};
+
+	let cron_expr = &args.cron;
+	if Cron::from_str(cron_expr).is_err() {
+		return syn::Error::new_spanned(cron_expr, "Invalid cron expression format")
+			.to_compile_error()
+			.into();
 	}
-}
 
-impl Parse for TaskArgs {
-	fn parse(input: ParseStream) -> syn::Result<Self> {
-		if input.is_empty() {
-			return Err(syn::Error::new(input.span(), "呜~至少给人家一个cron表达式嘛！杂鱼~"));
-		}
+	let plugin_name = quote! { env!("CARGO_PKG_NAME") };
+	let task_name = if args.name.is_empty() { fn_name.to_string() } else { args.name.clone() };
+	let struct_name_str = {
+		let fn_name_str = fn_name.to_string();
+		let pascal_case_name = fn_name_str.to_case(Case::Pascal);
+		format!("{}Task", pascal_case_name)
+	};
+	let struct_name = Ident::new(&struct_name_str, fn_name.span());
 
-		let fields = Punctuated::<syn::MetaNameValue, Token![,]>::parse_terminated(input)?;
-		let mut args = TaskArgs::default();
+	let expanded = quote! {
+		#item
 
-		for field in fields {
-			let key = field
-				.path
-				.get_ident()
-				.ok_or_else(|| syn::Error::new_spanned(&field.path, "呜哇~不支持的字段名！杂鱼~"))?
-				.to_string();
+		#[allow(non_camel_case_types)]
+		struct #struct_name;
 
-			match key.as_str() {
-				"cron" => {
-					if let syn::Expr::Lit(syn::ExprLit { lit: syn::Lit::Str(lit_str), .. }) =
-						&field.value
-					{
-						TaskArgs::set_cron(&mut args, lit_str.clone())?;
-					} else {
-						return Err(syn::Error::new_spanned(
-							&field.value,
-							"呜哇~cron 必须是字符串！杂鱼~",
-						));
-					}
-				}
-				"name" => {
-					if let syn::Expr::Lit(syn::ExprLit { lit: syn::Lit::Str(lit_str), .. }) =
-						&field.value
-					{
-						TaskArgs::set_name(&mut args, lit_str.clone())?;
-					} else {
-						return Err(syn::Error::new_spanned(
-							&field.value,
-							"呜哇~name 必须是字符串！杂鱼~",
-						));
-					}
-				}
-				_ => {
-					return Err(syn::Error::new_spanned(
-						&field.path,
-						format!("呜哇~不支持的字段 '{}'！杂鱼~", key),
-					));
-				}
+		#[::puniyu_plugin::private::async_trait]
+		impl ::puniyu_plugin::private::TaskBuilder for #struct_name {
+			fn name(&self) -> &str {
+				#task_name
+			}
+
+			fn cron(&self) -> &str {
+				#cron_expr
+			}
+
+			async fn run(&self) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+				#fn_name().await
 			}
 		}
 
-		Ok(args)
-	}
+		::puniyu_plugin::private::inventory::submit! {
+			crate::TaskRegistry {
+				plugin_name: #plugin_name,
+				builder: || -> Box<dyn ::puniyu_plugin::private::TaskBuilder> {
+					Box::new(#struct_name {})
+				},
+			}
+		}
+	};
+
+	expanded.into()
 }

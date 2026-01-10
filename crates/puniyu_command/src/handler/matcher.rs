@@ -82,8 +82,7 @@ impl<'c> CommandMatcher<'c> {
 		CommandRegistry::get_with_name(command_name)
 			.map(|cmd| {
 				let name_match = command_name == cmd.builder.name();
-				let alias_match =
-					matches!(cmd.builder.alias(), Some(aliases) if aliases.contains(&command_name));
+				let alias_match = cmd.builder.alias().contains(&command_name);
 				cooldown::set_cooldown(event);
 				name_match || alias_match
 			})
