@@ -1971,7 +1971,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_adapter"
-version = "0.7.4"
+version = "0.7.5"
 dependencies = [
  "async-trait",
  "inventory",
@@ -1986,7 +1986,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_adapter_console"
-version = "0.4.1"
+version = "0.4.2"
 dependencies = [
  "async-trait",
  "puniyu_adapter",
@@ -1997,7 +1997,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_adapter_server"
-version = "0.3.2"
+version = "0.3.3"
 dependencies = [
  "actix-web",
  "actix-ws",
@@ -2013,11 +2013,11 @@ dependencies = [
 
 [[package]]
 name = "puniyu_build"
-version = "0.2.4"
+version = "0.2.5"
 
 [[package]]
 name = "puniyu_command"
-version = "0.7.4"
+version = "0.7.5"
 dependencies = [
  "async-trait",
  "clap",
@@ -2030,7 +2030,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_common"
-version = "0.7.4"
+version = "0.7.5"
 dependencies = [
  "puniyu_system_info",
  "serde",
@@ -2041,7 +2041,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_config"
-version = "0.7.4"
+version = "0.7.5"
 dependencies = [
  "notify-debouncer-full",
  "puniyu_common",
@@ -2053,7 +2053,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_core"
-version = "0.7.4"
+version = "0.7.5"
 dependencies = [
  "async-trait",
  "bytes",
@@ -2075,7 +2075,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_event"
-version = "0.7.4"
+version = "0.7.5"
 dependencies = [
  "puniyu_command",
  "puniyu_hook",
@@ -2097,7 +2097,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_library"
-version = "0.5.4"
+version = "0.5.5"
 dependencies = [
  "libloading 0.9.0",
  "thiserror 2.0.17",
@@ -2123,7 +2123,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_macros"
-version = "0.7.4"
+version = "0.7.5"
 dependencies = [
  "convert_case",
  "croner",
@@ -2135,7 +2135,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_plugin"
-version = "0.7.4"
+version = "0.7.5"
 dependencies = [
  "actix-web",
  "async-trait",
@@ -2152,7 +2152,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_plugin_basic"
-version = "0.2.1"
+version = "0.2.2"
 dependencies = [
  "puniyu_common",
  "puniyu_core",
@@ -2161,7 +2161,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_protocol"
-version = "0.2.1"
+version = "0.2.2"
 dependencies = [
  "bytes",
  "chrono",
@@ -2174,7 +2174,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_registry"
-version = "0.7.4"
+version = "0.7.5"
 dependencies = [
  "chrono",
  "chrono-tz",
@@ -2195,7 +2195,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_server"
-version = "0.7.4"
+version = "0.7.5"
 dependencies = [
  "actix-web",
  "bytes",
@@ -2232,7 +2232,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_types"
-version = "0.7.4"
+version = "0.7.5"
 dependencies = [
  "actix-web",
  "async-trait",
