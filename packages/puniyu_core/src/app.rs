@@ -17,7 +17,7 @@ use puniyu_types::hook::{HookType, StatusType};
 use puniyu_types::plugin::PluginBuilder;
 use std::env::current_dir;
 use std::path::{Path, PathBuf};
-use std::{env, env::consts::DLL_EXTENSION};
+use std::{env, env::consts::DLL_EXTENSION, io};
 use tokio::{fs, signal};
 
 pub struct AppBuilder {
@@ -92,7 +92,7 @@ impl App {
 	pub fn builder() -> AppBuilder {
 		AppBuilder::new()
 	}
-	pub async fn run(&self) {
+	pub async fn run(&self) -> io::Result<()>{
 		use crate::common::format_duration;
 		use std::time::Duration;
 		print_start_log();
@@ -130,16 +130,16 @@ impl App {
 			puniyu_server::run_server_spawn(Some(host), Some(port));
 		}
 
-		if let Ok(()) = signal::ctrl_c().await {
-			debug!("接收到中断信号，正在关闭...");
-			debug!("开始执行hook钩子");
-			execute_hooks(StatusType::Stop).await;
-			info!(
+		signal::ctrl_c().await?;
+		debug!("接收到中断信号，正在关闭...");
+		debug!("开始执行hook钩子");
+		execute_hooks(StatusType::Stop).await;
+		info!(
 				"{} 本次运行时间: {}",
 				app_name.to_case(Case::Lower).fg_rgb::<64, 224, 208>(),
 				format_duration(Duration::from_secs(common::uptime())).fg_rgb::<255, 127, 80>()
 			);
-		}
+		Ok(())
 	}
 }
 
@@ -225,19 +225,22 @@ fn print_start_log() {
 async fn execute_hooks(status_type: StatusType) {
 	let mut hooks = HookRegistry::all()
 		.into_iter()
-		.filter(|x| match x.r#type() {
+		.filter(|x| match x.builder.r#type() {
 			HookType::Status(status) => status == status_type,
 			_ => false,
 		})
 		.collect::<Vec<_>>();
-	hooks.sort_unstable_by_key(|a| a.rank());
+	hooks.sort_unstable_by_key(|a| a.builder.rank());
+
+	info!("钩子数量: {}", hooks.len());
+
 	for hook in hooks {
-		if let Err(e) = hook.run(None).await {
+		if let Err(e) = hook.builder.run(None).await {
 			match status_type {
 				StatusType::Start => error!("启动hook钩子执行失败: {}", e),
 				StatusType::Stop => error!("关闭hook钩子执行失败: {}", e),
 			}
 		}
-		HookRegistry::unregister(hook.name());
+		HookRegistry::unregister(hook.index);
 	}
 }

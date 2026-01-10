@@ -6,3 +6,4 @@ pub use crate::event::*;
 pub use crate::macros::*;
 pub use crate::sender::*;
 pub use crate::server::*;
+pub use crate::handler::*;

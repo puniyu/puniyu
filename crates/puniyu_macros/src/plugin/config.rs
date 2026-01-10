@@ -53,7 +53,7 @@ pub fn config(args: TokenStream, item: TokenStream) -> TokenStream {
 		impl #struct_name {
 			pub fn get() -> Self {
 				use ::puniyu_plugin::private::PluginBuilder;
-				let plugin_name = crate::Plugin.name().to_lowercase();
+				let plugin_name = crate::Plugin {}.name().to_lowercase();
 				let path = ::puniyu_plugin::private::PLUGIN_CONFIG_DIR.join(plugin_name).join(format!("{}.toml", #config_name));
 				::puniyu_plugin::private::ConfigRegistry::get(&path)
 					.and_then(|cfg| cfg.try_into::<#struct_name>().ok())

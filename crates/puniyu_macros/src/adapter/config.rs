@@ -53,7 +53,7 @@ pub fn config(args: TokenStream, item: TokenStream) -> TokenStream {
 		impl #struct_name {
 			pub fn get() -> Self {
 				use ::puniyu_adapter::private::AdapterBuilder;
-				let adapter_name = crate::Adapter.name().to_lowercase();
+				let adapter_name = crate::Adapter {}.name().to_lowercase();
 				let path = ::puniyu_adapter::private::ADAPTER_CONFIG_DIR.join(adapter_name).join(format!("{}.toml", #config_name));
 				::puniyu_adapter::private::ConfigRegistry::get(&path)
 					.and_then(|cfg| cfg.try_into::<#struct_name>().ok())

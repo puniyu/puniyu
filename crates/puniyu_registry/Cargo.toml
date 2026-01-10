@@ -52,6 +52,7 @@ adapter = [
     "puniyu_types/bot",
     "bot",
     "server",
+    "hook"
 ]
 bot = ["puniyu_types/bot", "dep:puniyu_logger"]
 server = ["puniyu_types/server"]

@@ -20,7 +20,7 @@ struct Arg {
 #[derive(Debug, FromMeta, Default)]
 struct CommandArgs {
 	pub name: String,
-	pub rank: Option<u8>,
+	pub rank: Option<u32>,
 	pub desc: Option<String>,
 	pub alias: Option<PathList>,
 	pub permission: Option<String>,
@@ -32,9 +32,6 @@ pub fn command(args: TokenStream, item: TokenStream) -> TokenStream {
 	};
 	let item = parse_macro_input!(item as ItemFn);
 	let fn_name = &item.sig.ident;
-	let _fn_vis = &item.vis;
-	let _fn_sig = &item.sig;
-	let _fn_block = &item.block;
 
 	let struct_name_str = {
 		let fn_name_str = fn_name.to_string();
@@ -140,7 +137,7 @@ pub fn command(args: TokenStream, item: TokenStream) -> TokenStream {
 		#item
 
 		#[allow(non_camel_case_types)]
-		pub struct #struct_name;
+		struct #struct_name;
 
 		#[::puniyu_plugin::private::async_trait]
 		impl ::puniyu_plugin::private::CommandBuilder for #struct_name {
@@ -152,7 +149,7 @@ pub fn command(args: TokenStream, item: TokenStream) -> TokenStream {
 				#command_desc
 			}
 
-			fn rank(&self) -> u64 {
+			fn rank(&self) -> u32 {
 				#command_rank
 			}
 
@@ -170,7 +167,7 @@ pub fn command(args: TokenStream, item: TokenStream) -> TokenStream {
 				#command_permission
 			}
 
-			async fn run(&self, bot: &::puniyu_plugin::private::BotContext, ev: &::puniyu_plugin::private::MessageContext) -> ::puniyu_plugin::private::HandlerResult {
+			async fn run(&self, bot: &::puniyu_plugin::private::BotContext, ev: &::puniyu_plugin::private::MessageContext) -> ::puniyu_plugin::private::HandlerResult<::puniyu_plugin::private::HandlerAction> {
 				#fn_name(bot, ev).await
 			}
 		}

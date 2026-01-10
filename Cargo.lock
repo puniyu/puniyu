@@ -1973,7 +1973,6 @@ dependencies = [
 name = "puniyu_adapter"
 version = "0.7.4"
 dependencies = [
- "actix-web",
  "async-trait",
  "inventory",
  "puniyu_common",
@@ -1982,7 +1981,6 @@ dependencies = [
  "puniyu_macros",
  "puniyu_registry",
  "puniyu_types",
- "serde_json",
  "toml",
 ]
 
@@ -1994,6 +1992,7 @@ dependencies = [
  "puniyu_adapter",
  "puniyu_core",
  "rand",
+ "thiserror 2.0.17",
 ]
 
 [[package]]

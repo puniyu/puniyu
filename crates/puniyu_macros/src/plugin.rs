@@ -13,9 +13,12 @@ mod config;
 pub use config::config;
 #[cfg(feature = "server")]
 mod server;
-
 #[cfg(feature = "server")]
 pub use server::server;
+#[cfg(feature = "hook")]
+mod hook;
+#[cfg(feature = "hook")]
+pub use hook::hook;
 
 #[cfg(feature = "plugin")]
 #[derive(Debug, Default, darling::FromMeta)]
@@ -53,7 +56,7 @@ pub fn plugin(
 		Err(e) => return proc_macro::TokenStream::from(e.write_errors()),
 	};
 	let plugin_desc = match args.desc {
-		Some(desc) => quote! { #desc },
+		Some(desc) => quote! { Some(#desc) },
 		None => quote! { None },
 	};
 	let plugin_prefix = match &args.prefix {
