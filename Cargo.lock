@@ -1989,7 +1989,7 @@ checksum = "95067976aca6421a523e491fce939a3e65249bac4b977adee0ee9771568e8aa3"
 
 [[package]]
 name = "puniyu"
-version = "0.7.6"
+version = "0.7.7"
 dependencies = [
  "puniyu_adapter_console",
  "puniyu_adapter_server",
