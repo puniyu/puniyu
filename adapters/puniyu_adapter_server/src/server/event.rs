@@ -32,8 +32,8 @@ fn create_message_api(
 }
 
 fn create_adapter_bot(
-	adapter: &Arc<AdapterInfo>,
-	account: &Arc<AccountInfo>,
+	adapter: Arc<AdapterInfo>,
+	account: Arc<AccountInfo>,
 	message_api: Arc<api::ServerMessageApi>,
 ) -> Arc<Bot> {
 	let group_api = Arc::new(api::ServerGroupApi);
@@ -41,9 +41,9 @@ fn create_adapter_bot(
 	let account_api = Arc::new(api::ServerAccountApi);
 
 	Arc::new(Bot {
-		adapter: (**adapter).clone(),
+		adapter: (*adapter).clone(),
 		api: AdapterApi::new(group_api, friend_api, account_api, message_api),
-		account: (**account).clone(),
+		account: (*account).clone(),
 	})
 }
 
@@ -61,6 +61,8 @@ fn handel_message_event(message: MessageEventReceive, session: &Arc<Mutex<Sessio
 				let message_id: Arc<str> = Arc::from(message.message_id.as_str());
 				let contact = message.contact.unwrap_or_default();
 				let sender = message.sender.unwrap_or_default();
+				let elements: Vec<_> =
+					message.elements.into_iter().map(|element| element.into()).collect();
 
 				let event = crate::bot::Event {
 					event_id: Arc::clone(&event_id),
@@ -70,11 +72,12 @@ fn handel_message_event(message: MessageEventReceive, session: &Arc<Mutex<Sessio
 					sender: sender.clone().into(),
 					time,
 					message_id: Arc::clone(&message_id),
+					elements: elements.clone(),
 				};
 
 				let message_api =
 					create_message_api(Arc::clone(&adapter), Arc::clone(&account), session, event);
-				let bot = create_adapter_bot(&adapter, &account, message_api);
+				let bot = create_adapter_bot(adapter, account, message_api);
 
 				create_message_event!(Friend,
 					{
@@ -86,7 +89,7 @@ fn handel_message_event(message: MessageEventReceive, session: &Arc<Mutex<Sessio
 						sender: sender.into(),
 						time: time,
 						message_id: message_id.to_string(),
-						elements: message.elements.into_iter().map(|element| element.into()).collect(),
+						elements: elements,
 					}
 				)
 			}
@@ -101,6 +104,8 @@ fn handel_message_event(message: MessageEventReceive, session: &Arc<Mutex<Sessio
 				let message_id: Arc<str> = Arc::from(message.message_id.as_str());
 				let contact = message.contact.unwrap_or_default();
 				let sender = message.sender.unwrap_or_default();
+				let elements: Vec<_> =
+					message.elements.into_iter().map(|element| element.into()).collect();
 
 				let event = crate::bot::Event {
 					event_id: Arc::clone(&event_id),
@@ -110,11 +115,12 @@ fn handel_message_event(message: MessageEventReceive, session: &Arc<Mutex<Sessio
 					sender: sender.clone().into(),
 					time,
 					message_id: Arc::clone(&message_id),
+					elements: elements.clone(),
 				};
 
 				let message_api =
 					create_message_api(Arc::clone(&adapter), Arc::clone(&account), session, event);
-				let bot = create_adapter_bot(&adapter, &account, message_api);
+				let bot = create_adapter_bot(adapter, account, message_api);
 
 				create_message_event!(Group,
 					{
@@ -126,7 +132,7 @@ fn handel_message_event(message: MessageEventReceive, session: &Arc<Mutex<Sessio
 						sender: sender.into(),
 						time: time,
 						message_id: message_id.to_string(),
-						elements: message.elements.into_iter().map(|element| element.into()).collect(),
+						elements: elements,
 					}
 				)
 			}

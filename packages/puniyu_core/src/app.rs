@@ -104,9 +104,9 @@ impl App {
 		let start_time = std::time::Instant::now();
 		let app_name = APP_NAME.get().unwrap();
 		init_app(&self.builder.plugins, &self.builder.adapters).await;
+		info!("钩子数量: {}", HookRegistry::all().len());
 		start_config_watcher();
 		let duration_str = format_duration(start_time.elapsed());
-		debug!("开始执行hook钩子");
 		execute_hooks(StatusType::Start).await;
 		info!(
 			"{} 初始化完成，耗时: {}",
@@ -132,7 +132,6 @@ impl App {
 
 		signal::ctrl_c().await?;
 		debug!("接收到中断信号，正在关闭...");
-		debug!("开始执行hook钩子");
 		execute_hooks(StatusType::Stop).await;
 		info!(
 				"{} 本次运行时间: {}",
@@ -231,8 +230,6 @@ async fn execute_hooks(status_type: StatusType) {
 		})
 		.collect::<Vec<_>>();
 	hooks.sort_unstable_by_key(|a| a.builder.rank());
-
-	info!("钩子数量: {}", hooks.len());
 
 	for hook in hooks {
 		if let Err(e) = hook.builder.run(None).await {

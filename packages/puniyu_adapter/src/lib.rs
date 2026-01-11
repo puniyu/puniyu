@@ -28,6 +28,7 @@ pub mod private {
 		HookBuilder, HookEventType, HookMessageType, HookNotionType, HookRequestType,
 		HookType, StatusType,
 	};
+	pub use puniyu_types::handler::HandlerResult;
 	pub use puniyu_types::server::ServerType;
 	pub use puniyu_types::version::Version;
 	pub use toml;

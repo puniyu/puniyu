@@ -19,4 +19,5 @@ pub struct Event {
 	pub sender: SenderType,
 	pub time: u64,
 	pub message_id: Arc<str>,
+	pub elements: Vec<receive::Elements>,
 }
