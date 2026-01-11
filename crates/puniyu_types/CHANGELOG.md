@@ -1,4 +1,18 @@
 # 变更日志
+## [0.7.6](https://github.com/puniyu/puniyu/compare/puniyu_types-v0.7.5...puniyu_types-v0.7.6) - 2026-01-11
+
+
+### 🐛 Bug 修复
+
+
+- *(context)* 更新回复方法为泛型参数 (由 @wuliya336 提供) - ([fc41520](https://github.com/puniyu/puniyu/commit/fc41520a57b357ba1516cae99490a082afbbd9bb))
+
+
+
+
+### 贡献者
+
+* @wuliya336
 ## [0.7.5](https://github.com/puniyu/puniyu/compare/puniyu_types-v0.7.4...puniyu_types-v0.7.5) - 2026-01-11
 
 

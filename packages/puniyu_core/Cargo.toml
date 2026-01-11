@@ -1,6 +1,6 @@
 [package]
 name = "puniyu_core"
-version = "0.7.6"
+version = "0.7.7"
 description = "puniyu 的核心模块，包含基础设施和通用功能"
 readme = "README.md"
 authors.workspace = true
@@ -23,12 +23,12 @@ convert_case.workspace = true
 puniyu_system_info.workspace = true
 
 puniyu_logger = { workspace = true, optional = true }
-puniyu_server = { version = "0.7.6", path = "../puniyu_server", optional = true, default-features = false }
+puniyu_server = { version = "0.7.7", path = "../puniyu_server", optional = true, default-features = false }
 puniyu_config = { version = "0.7.5", path = "../../crates/puniyu_config" }
-puniyu_event = { version = "0.7.6", path = "../../crates/puniyu_event" }
+puniyu_event = { version = "0.7.7", path = "../../crates/puniyu_event" }
 puniyu_common = { version = "0.7.5", path = "../../crates/puniyu_common" }
-puniyu_types = { version = "0.7.5", path = "../../crates/puniyu_types" }
-puniyu_registry = { version = "0.7.7", path = "../../crates/puniyu_registry" }
+puniyu_types = { version = "0.7.6", path = "../../crates/puniyu_types" }
+puniyu_registry = { version = "0.7.8", path = "../../crates/puniyu_registry" }
 
 [features]
 default = ["server", "logger"]

@@ -1,6 +1,6 @@
 [package]
 name = "puniyu_adapter"
-version = "0.7.6"
+version = "0.7.7"
 description = "puniyu 的适配器模块"
 readme = "README.md"
 authors.workspace = true
@@ -21,13 +21,13 @@ puniyu_macros = { version = "0.7.5", path = "../../crates/puniyu_macros", defaul
     "adapter",
 ] }
 puniyu_common = { version = "0.7.5", path = "../../crates/puniyu_common" }
-puniyu_types = { version = "0.7.5", path = "../../crates/puniyu_types", default-features = false, features = [
+puniyu_types = { version = "0.7.6", path = "../../crates/puniyu_types", default-features = false, features = [
     "adapter",
     "event",
     "bot",
     "handler",
     "hook"
 ] }
-puniyu_registry = { version = "0.7.7", path = "../../crates/puniyu_registry", default-features = false, features = [
+puniyu_registry = { version = "0.7.8", path = "../../crates/puniyu_registry", default-features = false, features = [
     "adapter",
 ] }
