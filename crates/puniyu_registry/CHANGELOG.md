@@ -1,4 +1,18 @@
 # 变更日志
+## [0.7.7](https://github.com/puniyu/puniyu/compare/puniyu_registry-v0.7.6...puniyu_registry-v0.7.7) - 2026-01-11
+
+
+### 🐛 Bug 修复
+
+
+- *(store)* 修改注册表特性缺少依赖 (由 @wuliya336 提供) - ([c12b516](https://github.com/puniyu/puniyu/commit/c12b51681e798c2db4c2724b2910981e9e7c07ce))
+
+
+
+
+### 贡献者
+
+* @wuliya336
 ## [0.7.6](https://github.com/puniyu/puniyu/compare/puniyu_registry-v0.7.5...puniyu_registry-v0.7.6) - 2026-01-11
 
 

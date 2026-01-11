@@ -28,7 +28,7 @@ puniyu_config = { version = "0.7.5", path = "../../crates/puniyu_config" }
 puniyu_event = { version = "0.7.6", path = "../../crates/puniyu_event" }
 puniyu_common = { version = "0.7.5", path = "../../crates/puniyu_common" }
 puniyu_types = { version = "0.7.5", path = "../../crates/puniyu_types" }
-puniyu_registry = { version = "0.7.6", path = "../../crates/puniyu_registry" }
+puniyu_registry = { version = "0.7.7", path = "../../crates/puniyu_registry" }
 
 [features]
 default = ["server", "logger"]
