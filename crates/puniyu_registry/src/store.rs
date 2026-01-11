@@ -44,7 +44,9 @@ use std::sync::LazyLock;
 	feature = "command",
 	feature = "plugin",
 	feature = "server",
-	feature = "cooldown"
+	feature = "cooldown",
+	feature = "handler",
+	feature = "hook"
 ))]
 use std::sync::{Arc, RwLock};
 
