@@ -10,8 +10,7 @@ use syn::{parse_macro_input, ItemFn};
 
 #[derive(Debug, Default, FromMeta)]
 struct TaskArgs {
-	#[darling(default)]
-	pub name: String,
+	pub name: Option<String>,
 	pub cron: String,
 }
 
@@ -51,7 +50,14 @@ pub fn task(args: TokenStream, item: TokenStream) -> TokenStream {
 	}
 
 	let plugin_name = quote! { env!("CARGO_PKG_NAME") };
-	let task_name = if args.name.is_empty() { fn_name.to_string() } else { args.name.clone() };
+	let task_name = match args.name {
+		Some(name) => quote! { #name },
+		None => {
+			use convert_case::{Case, Casing};
+			let name = fn_name.to_string().to_case(Case::Lower);
+			quote! { #name }
+		}
+	};
 	let struct_name_str = {
 		let fn_name_str = fn_name.to_string();
 		let pascal_case_name = fn_name_str.to_case(Case::Pascal);

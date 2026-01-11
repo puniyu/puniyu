@@ -1,10 +1,9 @@
 use convert_case::{Case, Casing};
 use darling::ast::NestedMeta;
-use darling::util::PathList;
 use darling::{Error, FromMeta};
 use proc_macro::TokenStream;
 use quote::quote;
-use syn::Ident;
+use syn::{Ident, LitStr};
 use syn::{ItemFn, parse_macro_input};
 
 #[derive(Debug, FromMeta, Default)]
@@ -22,7 +21,7 @@ struct CommandArgs {
 	pub name: String,
 	pub rank: Option<u32>,
 	pub desc: Option<String>,
-	pub alias: Option<PathList>,
+	pub alias: Option<Vec<LitStr>>,
 	pub permission: Option<String>,
 }
 pub fn command(args: TokenStream, item: TokenStream) -> TokenStream {

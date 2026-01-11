@@ -6,7 +6,6 @@ use syn::{parse_macro_input, ItemStruct};
 
 #[derive(Debug, FromMeta)]
 struct ConfigArgs {
-	#[darling(default)]
 	name: Option<String>,
 }
 
