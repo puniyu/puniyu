@@ -2,6 +2,7 @@
 allow_dirty = true
 changelog_update = true
 dependencies_update = false
+release = true
 git_release_enable = false
 git_release_body = """
 {{ changelog }}
@@ -165,6 +166,7 @@ version_group = "puniyu"
 
 [[package]]
 name = "puniyu_server"
+version_group = "puniyu"
 
 [[package]]
 name = "puniyu_event"

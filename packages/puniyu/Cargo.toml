@@ -8,14 +8,13 @@ homepage.workspace = true
 repository.workspace = true
 edition.workspace = true
 rust-version.workspace = true
-publish = false
 
 [dependencies]
 tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
-puniyu_core = { path = "../puniyu_core" }
-puniyu_adapter_console = { path = "../../adapters/puniyu_adapter_console" }
-puniyu_adapter_server = { path = "../../adapters/puniyu_adapter_server" }
-puniyu_plugin_basic = { path = "../../plugins/puniyu_plugin_basic" }
+puniyu_core = { version = "0.7.6", path = "../puniyu_core" }
+puniyu_adapter_console = { version = "0.4.3", path = "../../adapters/puniyu_adapter_console" }
+puniyu_adapter_server = { version = "0.3.4", path = "../../adapters/puniyu_adapter_server" }
+puniyu_plugin_basic = { version = "0.2.3", path = "../../plugins/puniyu_plugin_basic" }
 
 [[bin]]
 name = "puniyu"

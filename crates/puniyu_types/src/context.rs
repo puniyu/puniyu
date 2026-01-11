@@ -26,8 +26,8 @@ impl MessageContext {
 		&self.bot
 	}
 
-	pub async fn reply(&self, message: Message) -> crate::adapter::Result<types::SendMsgType> {
-		self.bot.api().send_msg(self.contact().clone(), message).await
+	pub async fn reply(&self, message: impl Into<Message>) -> crate::adapter::Result<types::SendMsgType> {
+		self.bot.api().send_msg(self.contact().clone(), message.into()).await
 	}
 
 	pub fn as_friend(&self) -> Option<&FriendMessage> {
