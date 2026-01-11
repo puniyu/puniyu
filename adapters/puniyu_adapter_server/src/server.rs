@@ -7,7 +7,6 @@ use std::sync::Arc;
 
 mod connection;
 mod event;
-mod hook;
 mod store;
 pub use connection::ConnectionManager;
 
