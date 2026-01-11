@@ -25,12 +25,15 @@ pub async fn ws_handler(
 				actix_ws::Message::Binary(binary) => {
 					let event = EventReceive::decode(binary);
 					if let Ok(event) = event {
-						return event::handle_event(event, &session)
+						return event::handle_event(event, &session);
 					}
 					error!("解析Bot {} 事件失败", bot_name);
 				}
 				actix_ws::Message::Close(reason) => {
-					info!("[Bot {}] 断开连接: {:?}", bot_name, reason);
+					match reason {
+						Some(r) => info!("[Bot {}] 断开连接: {:?}", bot_name, r),
+						None => info!("[Bot {}] 断开连接", bot_name),
+					}
 					break;
 				}
 				_ => {}

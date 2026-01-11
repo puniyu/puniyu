@@ -82,6 +82,7 @@ plugin = [
     "task",
     "command",
     "server",
+    "hook"
 ]
 cooldown = ["dep:chrono"]
 handler = ["puniyu_types/handler"]

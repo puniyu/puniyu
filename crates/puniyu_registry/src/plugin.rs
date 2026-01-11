@@ -6,6 +6,7 @@ mod version;
 pub use version::VERSION;
 
 use crate::command::CommandRegistry;
+use crate::hook::HookRegistry;
 use crate::server::ServerRegistry;
 use crate::store::STORE;
 use crate::task::TaskRegistry;
@@ -22,7 +23,7 @@ use puniyu_types::version::Version;
 use std::sync::Arc;
 use tokio::fs;
 
-pub use common::{PluginType, PluginId};
+pub use common::{PluginId, PluginType};
 
 #[derive(Debug, Clone)]
 pub struct PluginInfo {
@@ -113,6 +114,8 @@ impl PluginRegistry {
 					commands.into_iter().for_each(|command| {
 						CommandRegistry::insert(plugin_name, prefix, Arc::from(command));
 					});
+					let hooks = plugin_builder.hooks();
+					hooks.into_iter().for_each(|hook| HookRegistry::register(Arc::from(hook)));
 
 					join_all(tasks).await;
 
@@ -134,39 +137,8 @@ impl PluginRegistry {
 					}
 
 					let configs = plugin_builder.config();
-					if !configs.is_empty() {
-						configs.iter().for_each(|config| {
-							let cfg = read_config::<toml::Value>(&config_dir, config.name());
 
-							match cfg {
-								Ok(cfg) => {
-									merge_config(
-										&config_dir,
-										config.name(),
-										&config.config(),
-										&cfg,
-									)
-									.expect("合并插件配置文件失败");
-									let cfg =
-										read_config::<toml::Value>(&config_dir, config.name())
-											.unwrap();
-									let path = config_dir.join(format!("{}.toml", config.name()));
-									ConfigRegistry::register(path.as_path(), cfg);
-								}
-								Err(_) => {
-									debug!(
-										"[{}:{}] 配置文件 {} 不存在，正在创建默认配置",
-										"plugin".fg_rgb::<175, 238, 238>(),
-										plugin_name.fg_rgb::<240, 128, 128>(),
-										config.name()
-									);
-									write_config(&config_dir, config.name(), &config.config())
-										.expect("创建默认配置文件失败");
-								}
-							}
-						});
-					}
-
+					create_plugin_config(plugin_name, &configs).await;
 					create_data_dir(plugin_name).await;
 					create_resource_dir(plugin_name).await;
 					run_plugin_init(plugin_name, plugin_builder.init()).await?;
@@ -219,6 +191,8 @@ impl PluginRegistry {
 				commands.into_iter().for_each(|command| {
 					CommandRegistry::insert(plugin_name, prefix, Arc::from(command));
 				});
+				let hooks = plugin_builder.hooks();
+				hooks.into_iter().for_each(|hook| HookRegistry::register(Arc::from(hook)));
 
 				let plugin_info = create_plugin_info(
 					plugin_name,
@@ -237,33 +211,7 @@ impl PluginRegistry {
 				}
 				let configs = plugin_builder.config();
 
-				if !configs.is_empty() {
-					configs.iter().for_each(|config| {
-						let cfg = read_config::<toml::Value>(&config_dir, config.name());
-
-						match cfg {
-							Ok(cfg) => {
-								merge_config(&config_dir, config.name(), &config.config(), &cfg)
-									.expect("合并插件配置文件失败");
-								let cfg =
-									read_config::<toml::Value>(&config_dir, config.name()).unwrap();
-								let path = config_dir.join(format!("{}.toml", config.name()));
-								ConfigRegistry::register(path.as_path(), cfg);
-							}
-							Err(_) => {
-								debug!(
-									"[{}:{}] 配置文件 {} 不存在，正在创建默认配置",
-									"plugin".fg_rgb::<175, 238, 238>(),
-									plugin_name.fg_rgb::<240, 128, 128>(),
-									config.name()
-								);
-								write_config(&config_dir, config.name(), &config.config())
-									.expect("创建默认配置文件失败");
-							}
-						}
-					});
-				}
-
+				create_plugin_config(plugin_name, &configs).await;
 				create_data_dir(plugin_name).await;
 				create_resource_dir(plugin_name).await;
 				run_plugin_init(plugin_name, plugin_builder.init()).await?;
@@ -349,7 +297,42 @@ where
 		}
 	}
 }
+async fn create_plugin_config(
+	plugin_name: &str,
+	configs: &[Box<dyn puniyu_types::config::Config>],
+) {
+	let config_dir = PLUGIN_CONFIG_DIR.as_path().join(plugin_name.to_case(Case::Snake));
 
+	if !config_dir.exists() {
+		let _ = fs::create_dir_all(&config_dir).await;
+	}
+
+	if !configs.is_empty() {
+		for config in configs {
+			let cfg = read_config::<toml::Value>(&config_dir, config.name());
+
+			match cfg {
+				Ok(cfg) => {
+					merge_config(&config_dir, config.name(), &config.config(), &cfg)
+						.expect("合并插件配置文件失败");
+					let cfg = read_config::<toml::Value>(&config_dir, config.name()).unwrap();
+					let path = config_dir.join(format!("{}.toml", config.name()));
+					ConfigRegistry::register(path.as_path(), cfg);
+				}
+				Err(_) => {
+					debug!(
+						"[{}:{}] 配置文件 {} 不存在，正在创建默认配置",
+						"plugin".fg_rgb::<175, 238, 238>(),
+						plugin_name.fg_rgb::<240, 128, 128>(),
+						config.name()
+					);
+					write_config(&config_dir, config.name(), &config.config())
+						.expect("创建默认配置文件失败");
+				}
+			}
+		}
+	}
+}
 async fn create_data_dir(name: &str) {
 	let data_dir = PLUGIN_DATA_DIR.as_path().join(name.to_case(Case::Snake));
 	if !data_dir.exists() {
