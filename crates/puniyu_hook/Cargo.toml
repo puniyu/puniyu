@@ -18,6 +18,6 @@ puniyu_types = { version = "0.7.5", path = "../puniyu_types", default-features =
     "event",
     "server"
 ] }
-puniyu_registry = { version = "0.7.5", path = "../puniyu_registry", default-features = false, features = [
+puniyu_registry = { version = "0.7.6", path = "../puniyu_registry", default-features = false, features = [
     "hook",
 ] }
