@@ -30,7 +30,63 @@ pub fn command(args: TokenStream, item: TokenStream) -> TokenStream {
 		Err(e) => return TokenStream::from(Error::from(e).write_errors()),
 	};
 	let item = parse_macro_input!(item as ItemFn);
-	let fn_name = &item.sig.ident;
+	let fn_sig = &item.sig;
+	let fn_name = &fn_sig.ident;
+	let fn_inputs = &fn_sig.inputs;
+
+	if fn_inputs.len() != 1 {
+		return syn::Error::new_spanned(
+			fn_sig,
+			format!(
+				"function `{}` must have exactly 1 parameters, found {}",
+				fn_name,
+				fn_inputs.len()
+			),
+		)
+		.to_compile_error()
+		.into();
+	}
+
+	// 检查参数类型是否为 &MessageContext
+	let first_param = fn_inputs.first().unwrap();
+	if let syn::FnArg::Typed(pat_type) = first_param {
+		let ty = &*pat_type.ty;
+		let is_valid_type = match ty {
+			syn::Type::Reference(type_ref) => {
+				if let syn::Type::Path(type_path) = &*type_ref.elem {
+					type_path
+						.path
+						.segments
+						.last()
+						.map(|seg| seg.ident == "MessageContext")
+						.unwrap_or(false)
+				} else {
+					false
+				}
+			}
+			_ => false,
+		};
+
+		if !is_valid_type {
+			return syn::Error::new_spanned(
+				pat_type,
+				format!(
+					"function `{}` parameter must be of type `&MessageContext`, found `{}`",
+					fn_name,
+					quote::quote! { #ty }
+				),
+			)
+			.to_compile_error()
+			.into();
+		}
+	} else {
+		return syn::Error::new_spanned(
+			first_param,
+			format!("function `{}` parameter must be a typed parameter", fn_name),
+		)
+		.to_compile_error()
+		.into();
+	}
 
 	let struct_name_str = {
 		let fn_name_str = fn_name.to_string();
@@ -166,8 +222,8 @@ pub fn command(args: TokenStream, item: TokenStream) -> TokenStream {
 				#command_permission
 			}
 
-			async fn run(&self, bot: &::puniyu_plugin::private::BotContext, ev: &::puniyu_plugin::private::MessageContext) -> ::puniyu_plugin::private::HandlerResult<::puniyu_plugin::private::HandlerAction> {
-				#fn_name(bot, ev).await
+			async fn run(&self, ctx: &::puniyu_plugin::private::MessageContext) -> ::puniyu_plugin::private::HandlerResult<::puniyu_plugin::private::HandlerAction> {
+				#fn_name(ctx).await
 			}
 		}
 

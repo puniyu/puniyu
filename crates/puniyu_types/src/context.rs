@@ -1,42 +1,33 @@
-use crate::adapter::{AdapterApi, Result, types};
-use crate::bot::Bot;
+mod bot;
+use crate::adapter::{types, MessageApi};
 use crate::command::ArgValue;
 use crate::contact::ContactType;
-use crate::element::{Message, receive::Elements};
-use crate::event::EventBase;
+use crate::element::{receive::Elements, Message};
 use crate::event::message::{FriendMessage, GroupMessage, MessageEvent};
+use crate::event::EventBase;
 use crate::sender::SenderType;
+pub use bot::BotContext;
 use bytes::Bytes;
 use std::collections::HashMap;
 use std::sync::Arc;
 
-#[derive(Clone)]
-pub struct BotContext {
-	bot: Arc<Bot>,
-	contact: Arc<ContactType>,
-}
-
-impl BotContext {
-	pub fn new(bot: Arc<Bot>, contact: ContactType) -> Self {
-		Self { bot, contact: Arc::new(contact) }
-	}
-	pub fn api(&self) -> &AdapterApi {
-		&self.bot.api
-	}
-	pub async fn reply(&self, message: Message) -> Result<types::SendMsgType> {
-		self.bot.send_msg(self.contact.as_ref().clone(), message).await
-	}
-}
-
 #[derive(Debug, Clone)]
 pub struct MessageContext {
+	bot: BotContext,
 	event: Arc<MessageEvent>,
 	args: HashMap<String, ArgValue>,
 }
 
 impl MessageContext {
-	pub fn new(event: MessageEvent, args: HashMap<String, ArgValue>) -> Self {
-		Self { event: Arc::new(event), args }
+	pub fn new(bot: BotContext, event: MessageEvent, args: HashMap<String, ArgValue>) -> Self {
+		Self { bot, event: Arc::new(event), args }
+	}
+	pub fn bot(&self) -> &BotContext {
+		&self.bot
+	}
+
+	pub async fn reply(&self, message: Message) -> crate::adapter::Result<types::SendMsgType> {
+		self.bot.api().send_msg(self.contact().clone(), message).await
 	}
 
 	pub fn as_friend(&self) -> Option<&FriendMessage> {

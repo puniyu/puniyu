@@ -1,5 +1,7 @@
 use async_trait::async_trait;
 
+use crate::handler::HandlerResult;
+
 #[derive(Debug, Clone)]
 pub enum TaskId {
 	Index(u64),
@@ -64,5 +66,5 @@ pub trait TaskBuilder: Send + Sync + 'static {
 	fn cron(&self) -> &'static str;
 
 	/// 执行任务
-	async fn run(&self) -> Result<(), Box<dyn std::error::Error + Send + Sync>>;
+	async fn run(&self) -> HandlerResult;
 }

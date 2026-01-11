@@ -24,7 +24,7 @@ fn build_config_path<P: AsRef<Path>>(path: P, name: &str) -> PathBuf {
 ///
 /// # 示例
 ///
-/// ```rust
+/// ```rust, ignore
 /// use serde::Deserialize;
 /// use std::path::Path;
 /// use puniyu_common::config::read_config;

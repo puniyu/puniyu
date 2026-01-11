@@ -1,10 +1,10 @@
 use super::EventBase;
 use super::inner::{deserialize_bot, serialize_bot};
 use crate::bot::Bot;
-use crate::contact::{FriendContact, GroupContact, Scene};
+use crate::contact::{ContactType, FriendContact, GroupContact, Scene};
 use crate::element::receive::Elements;
 use crate::event::EventType;
-use crate::sender::{FriendSender, GroupSender, Role};
+use crate::sender::{FriendSender, GroupSender, Role, SenderType};
 use bytes::Bytes;
 use puniyu_config::Config;
 use serde::{Deserialize, Serialize};
@@ -124,6 +124,20 @@ impl MessageEvent {
 		match self {
 			MessageEvent::Friend(msg) => msg.message_id(),
 			MessageEvent::Group(msg) => msg.message_id(),
+		}
+	}
+
+	pub fn contact(&self) -> ContactType {
+		match self {
+			MessageEvent::Friend(msg) => ContactType::Friend(msg.contact()),
+			MessageEvent::Group(msg) => ContactType::Group(msg.contact()),
+		}
+	}
+	
+	pub fn sender(&self) -> SenderType {
+		match self {
+			MessageEvent::Friend(msg) => SenderType::Friend(msg.sender()),
+			MessageEvent::Group(msg) => SenderType::Group(msg.sender()),
 		}
 	}
 

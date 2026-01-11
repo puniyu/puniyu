@@ -81,7 +81,7 @@ pub fn task(args: TokenStream, item: TokenStream) -> TokenStream {
 				#cron_expr
 			}
 
-			async fn run(&self) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+			async fn run(&self) -> ::puniyu_plugin::private::HandlerResult {
 				#fn_name().await
 			}
 		}

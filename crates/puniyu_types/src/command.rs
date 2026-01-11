@@ -1,7 +1,7 @@
 mod arg;
 pub use arg::*;
 
-use crate::context::{BotContext, MessageContext};
+use crate::context::MessageContext;
 use crate::event::Permission;
 use crate::handler::HandlerResult;
 use async_trait::async_trait;
@@ -76,5 +76,5 @@ pub trait CommandBuilder: Send + Sync + 'static {
 	}
 
 	/// 执行的函数
-	async fn run(&self, bot: &BotContext, ev: &MessageContext) -> HandlerResult<HandlerAction>;
+	async fn run(&self, ctx: &MessageContext) -> HandlerResult<HandlerAction>;
 }

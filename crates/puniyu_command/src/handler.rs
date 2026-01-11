@@ -8,10 +8,11 @@ use puniyu_config::Config;
 use puniyu_logger::info;
 use puniyu_logger::owo_colors::OwoColorize;
 use puniyu_registry::command::{Command, CommandRegistry};
+use puniyu_types::adapter::MessageApi;
 use puniyu_types::command::HandlerAction;
 use puniyu_types::context::{BotContext, MessageContext};
 use puniyu_types::event::message::MessageEvent;
-use puniyu_types::event::{Event, EventBase, Permission};
+use puniyu_types::event::{Event, Permission};
 use puniyu_types::handler::{Handler, HandlerResult};
 use std::sync::Arc;
 
@@ -80,7 +81,7 @@ impl CommandHandler {
 		let original_text = Self::get_text(event);
 		let text = tools::strip_bot_alias(original_text.as_str(), aliases.as_ref());
 		let input_text = text.strip_prefix(global_prefix).unwrap_or(text.as_str());
-		input_text.split_whitespace().next().unwrap_or("").trim().to_string()
+		input_text.split_whitespace().next().unwrap_or_default().trim().to_string()
 	}
 
 	fn get_args(event: &MessageEvent) -> Vec<String> {
@@ -114,42 +115,29 @@ impl CommandHandler {
 			return;
 		};
 
-		let bot_ctx = match event {
-			MessageEvent::Friend(msg) => {
-				let bot = event.bot();
-				BotContext::new(Arc::new(bot.clone()), msg.contact().into())
-			}
-			MessageEvent::Group(msg) => {
-				let bot = event.bot();
-				BotContext::new(Arc::new(bot.clone()), msg.contact().into())
-			}
-		};
+		let bot_ctx = { BotContext::new(Arc::new(event.bot().clone())) };
 		let permission = command.builder.permission();
 		if permission == Permission::Master && !event.is_master() {
-			let _ = bot_ctx.reply("呜喵～这是只有主人才能用的命令哦!".into()).await;
+			let _ = bot_ctx
+				.api()
+				.send_msg(event.contact(), "呜喵～这是只有主人才能用的命令哦!".into())
+				.await;
 			return;
 		}
 		let builder_args = command.builder.args();
-
 		let parsed_args = match ArgParser::parse(command.builder.name(), &args, &builder_args) {
 			Ok(args) => args,
 			Err(e) => {
-				let _ = bot_ctx.reply(e.into()).await;
+				let _ = bot_ctx.api().send_msg(event.contact(), e.into()).await;
 				return;
 			}
 		};
-		let message_ctx = match event {
-			MessageEvent::Friend(msg) => {
-				MessageContext::new(MessageEvent::Friend(msg.clone()), parsed_args)
-			}
-			MessageEvent::Group(msg) => {
-				MessageContext::new(MessageEvent::Group(msg.clone()), parsed_args)
-			}
-		};
-		Self::execute_command(&bot_ctx, &message_ctx, command.builder.name()).await;
+		let message_ctx = MessageContext::new(bot_ctx, event.clone(), parsed_args);
+
+		Self::execute_command(&message_ctx, command.builder.name()).await;
 	}
 
-	async fn execute_command(bot: &BotContext, event: &MessageContext, command_name: &str) {
+	async fn execute_command(ctx: &MessageContext, command_name: &str) {
 		let commands =
 			Self::get_commands().into_iter().filter(|cmd| cmd.builder.name() == command_name);
 
@@ -158,7 +146,7 @@ impl CommandHandler {
 			let start_time = std::time::Instant::now();
 			info!("[{}] 开始执行", format!("command:{}:{}", plugin_name, command_name).yellow());
 
-			let result = command.builder.run(bot, event).await;
+			let result = command.builder.run(ctx).await;
 
 			info!(
 				"[{}] 执行完毕, 耗时{}ms",
