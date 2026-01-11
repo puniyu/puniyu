@@ -28,6 +28,6 @@ puniyu_types = { version = "0.7.5", path = "../../crates/puniyu_types", default-
     "handler",
     "hook"
 ] }
-puniyu_registry = { version = "0.7.6", path = "../../crates/puniyu_registry", default-features = false, features = [
+puniyu_registry = { version = "0.7.7", path = "../../crates/puniyu_registry", default-features = false, features = [
     "adapter",
 ] }

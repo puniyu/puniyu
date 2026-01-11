@@ -2047,7 +2047,7 @@ version = "0.2.5"
 
 [[package]]
 name = "puniyu_command"
-version = "0.7.6"
+version = "0.7.7"
 dependencies = [
  "async-trait",
  "clap",
@@ -2205,7 +2205,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_registry"
-version = "0.7.6"
+version = "0.7.7"
 dependencies = [
  "chrono",
  "chrono-tz",
