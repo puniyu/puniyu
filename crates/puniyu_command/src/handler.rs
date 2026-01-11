@@ -1,33 +1,116 @@
 mod arg;
-mod matcher;
 
+use crate::{config, cooldown, message, tools};
 use arg::ArgParser;
 use async_trait::async_trait;
-use matcher::CommandMatcher;
+use itertools::Itertools;
+use puniyu_config::Config;
 use puniyu_logger::info;
 use puniyu_logger::owo_colors::OwoColorize;
-use puniyu_registry::command::CommandRegistry;
+use puniyu_registry::command::{Command, CommandRegistry};
 use puniyu_types::command::HandlerAction;
 use puniyu_types::context::{BotContext, MessageContext};
 use puniyu_types::event::message::MessageEvent;
 use puniyu_types::event::{Event, EventBase, Permission};
-use puniyu_types::handler::{Handler, HandlerResult, Matcher};
+use puniyu_types::handler::{Handler, HandlerResult};
 use std::sync::Arc;
 
 #[derive(Default)]
 pub struct CommandHandler;
 
 impl CommandHandler {
-	fn command_name(&self, event: &MessageEvent) -> String {
-		let matcher = CommandMatcher::new(event);
-		matcher.command_name()
+	fn get_text(event: &MessageEvent) -> String {
+		event.elements().iter().filter_map(|e| e.as_text()).collect::<Vec<_>>().join(" ")
+	}
+
+	fn get_commands() -> Vec<Arc<Command>> {
+		CommandRegistry::commands().into_iter().sorted_by_key(|cmd| cmd.builder.rank()).collect()
+	}
+
+	fn matches_command(event: &MessageEvent) -> bool {
+		if !tools::check_perm(event) {
+			return false;
+		}
+
+		if cooldown::is_cooling_down(event) {
+			return false;
+		}
+
+		message::log(event);
+
+		let original_text = Self::get_text(event);
+		if original_text.is_empty() {
+			return false;
+		}
+
+		let bot_id = event.self_id();
+		let aliases = config::get_bot_alias(bot_id);
+		let mode = config::get_bot_reactive_mode(bot_id);
+
+		let text = tools::strip_bot_alias(original_text.as_str(), aliases.as_ref());
+		let has_alias = original_text != text;
+
+		if !tools::check_mode(event, &mode, has_alias) {
+			return false;
+		}
+
+		let config = Config::app();
+		let global_prefix = config.prefix();
+		let input_text = text.strip_prefix(global_prefix).unwrap_or(&text);
+		let command_name = input_text.split_whitespace().next().unwrap_or("").trim();
+		if command_name.is_empty() {
+			return false;
+		}
+
+		let commands = Self::get_commands();
+		if commands.iter().any(|cmd| {
+			cmd.builder.name() == command_name || cmd.builder.alias().contains(&command_name)
+		}) {
+			cooldown::set_cooldown(event);
+			true
+		} else {
+			false
+		}
+	}
+
+	fn get_command_name(event: &MessageEvent) -> String {
+		let config = Config::app();
+		let global_prefix = config.prefix();
+		let aliases = config::get_bot_alias(event.self_id());
+		let original_text = Self::get_text(event);
+		let text = tools::strip_bot_alias(original_text.as_str(), aliases.as_ref());
+		let input_text = text.strip_prefix(global_prefix).unwrap_or(text.as_str());
+		input_text.split_whitespace().next().unwrap_or("").trim().to_string()
+	}
+
+	fn get_args(event: &MessageEvent) -> Vec<String> {
+		let aliases = config::get_bot_alias(event.self_id());
+		let original_text = Self::get_text(event);
+		let text = tools::strip_bot_alias(original_text.as_str(), aliases.as_ref());
+		let config = Config::app();
+		let global_prefix = config.prefix();
+
+		let input_text = if global_prefix.is_empty() {
+			text.as_str()
+		} else {
+			text.strip_prefix(global_prefix).unwrap_or(&text)
+		};
+
+		let mut parts = input_text.splitn(2, char::is_whitespace);
+		parts.next();
+		let args_str = parts.next().unwrap_or("");
+		args_str.split_whitespace().map(String::from).collect()
 	}
 
 	async fn handle_command(&self, event: &MessageEvent) {
-		let command = CommandMatcher::new(event);
-		let command_name = self.command_name(event);
-		let args = command.args();
-		let Some(command) = CommandRegistry::get_with_name(&command_name) else {
+		let input_name = Self::get_command_name(event);
+		let args = Self::get_args(event);
+
+		let commands = CommandRegistry::commands();
+		let Some(command) = commands.iter().find(|cmd| {
+			cmd.builder.name() == input_name.as_str()
+				|| cmd.builder.alias().contains(&input_name.as_str())
+		}) else {
 			return;
 		};
 
@@ -48,7 +131,7 @@ impl CommandHandler {
 		}
 		let builder_args = command.builder.args();
 
-		let parsed_args = match ArgParser::parse(&command_name, &args, &builder_args) {
+		let parsed_args = match ArgParser::parse(command.builder.name(), &args, &builder_args) {
 			Ok(args) => args,
 			Err(e) => {
 				let _ = bot_ctx.reply(e.into()).await;
@@ -63,24 +146,23 @@ impl CommandHandler {
 				MessageContext::new(MessageEvent::Group(msg.clone()), parsed_args)
 			}
 		};
-		Self::execute_command(&bot_ctx, &message_ctx, &command_name).await;
+		Self::execute_command(&bot_ctx, &message_ctx, command.builder.name()).await;
 	}
 
 	async fn execute_command(bot: &BotContext, event: &MessageContext, command_name: &str) {
-		let plugins = CommandRegistry::get_plugins(command_name);
-		for name in plugins {
-			let Some(command) = CommandRegistry::get_with_plugin(&name, command_name) else {
-				continue;
-			};
+		let commands =
+			Self::get_commands().into_iter().filter(|cmd| cmd.builder.name() == command_name);
 
+		for command in commands {
+			let plugin_name = &command.plugin_name;
 			let start_time = std::time::Instant::now();
-			info!("[{}] 开始执行", format!("command:{}:{}", &name, command_name).yellow());
+			info!("[{}] 开始执行", format!("command:{}:{}", plugin_name, command_name).yellow());
 
 			let result = command.builder.run(bot, event).await;
 
 			info!(
 				"[{}] 执行完毕, 耗时{}ms",
-				format!("command:{}:{}", &name, command_name).yellow(),
+				format!("command:{}:{}", plugin_name, command_name).yellow(),
 				start_time.elapsed().as_millis()
 			);
 
@@ -92,26 +174,22 @@ impl CommandHandler {
 	}
 }
 
-impl Matcher for CommandHandler {
-	fn matches(&self, event: &Event) -> bool {
-		if let Event::Message(message) = event {
-			let command = CommandMatcher::new(message);
-			command.matcher()
-		} else {
-			false
-		}
-	}
-}
-
 #[async_trait]
 impl Handler for CommandHandler {
 	fn name(&self) -> &str {
 		"command"
 	}
+
 	async fn handle(&self, event: &Event) -> HandlerResult {
-		if let Event::Message(message_event) = &event {
-			self.handle_command(message_event.as_ref()).await;
+		let Event::Message(message_event) = event else {
+			return Ok(());
+		};
+
+		if !Self::matches_command(message_event) {
+			return Ok(());
 		}
+
+		self.handle_command(message_event.as_ref()).await;
 		Ok(())
 	}
 }

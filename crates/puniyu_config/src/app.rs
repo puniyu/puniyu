@@ -9,14 +9,14 @@ use friend::FriendConfig;
 use group::GroupConfig;
 use logger::LoggerConfig;
 use puniyu_common::path::CONFIG_DIR;
-use puniyu_common::toml;
+use puniyu_common::config;
 use serde::{Deserialize, Serialize};
 use server::ServerConfig;
 use std::sync::{Arc, LazyLock, RwLock};
 
 pub(crate) static APP_CONFIG: LazyLock<Arc<RwLock<AppConfig>>> = LazyLock::new(|| {
 	Arc::new(RwLock::new(
-		toml::read_config::<AppConfig>(CONFIG_DIR.as_path(), "app").unwrap_or_default(),
+        config::read_config::<AppConfig>(CONFIG_DIR.as_path(), "app").unwrap_or_default(),
 	))
 });
 

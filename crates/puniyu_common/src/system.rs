@@ -1,6 +1,5 @@
 use puniyu_system_info::ProcessInfo;
 
-
 #[derive(Debug, Clone)]
 /// 应用程序状态信息
 pub struct SystemInfo {
@@ -12,7 +11,7 @@ pub struct SystemInfo {
 	pub memory_usage: Option<f32>,
 	/// 已用内存(单位: MB)
 	pub used_memory: f64,
-	/// 运行时间
+	/// 运行时间(单位: 秒)
 	pub run_time: u64,
 }
 

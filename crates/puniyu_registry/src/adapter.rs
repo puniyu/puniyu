@@ -7,7 +7,7 @@ pub use error::Error;
 use puniyu_common::path::{ADAPTER_CONFIG_DIR, ADAPTER_DATA_DIR, ADAPTER_RESOURCE_DIR};
 use puniyu_common::{merge_config, read_config, write_config};
 use puniyu_config::{Config, ConfigRegistry};
-use puniyu_logger::{info, warn};
+use puniyu_logger::warn;
 use puniyu_logger::{debug, error, owo_colors::OwoColorize};
 use puniyu_types::adapter::{AdapterApi, AdapterBuilder};
 use std::future::Future;

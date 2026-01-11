@@ -8,7 +8,7 @@ use option::FriendOption;
 
 pub(crate) static FRIEND_CONFIG: LazyLock<Arc<RwLock<FriendConfig>>> = LazyLock::new(|| {
 	Arc::new(RwLock::new(
-		puniyu_common::toml::read_config(CONFIG_DIR.as_path(), "friend").unwrap_or_default(),
+        puniyu_common::config::read_config(CONFIG_DIR.as_path(), "friend").unwrap_or_default(),
 	))
 });
 

@@ -2,16 +2,10 @@ use async_trait::async_trait;
 use puniyu_logger::error;
 use puniyu_registry::HookRegistry;
 use puniyu_types::event::Event;
-use puniyu_types::handler::{Handler, HandlerResult, Matcher};
+use puniyu_types::handler::{Handler, HandlerResult};
 use puniyu_types::hook::HookType;
 
 pub struct HookHandler;
-
-impl Matcher for HookHandler {
-	fn matches(&self, _event: &Event) -> bool {
-		true
-	}
-}
 
 #[async_trait]
 impl Handler for HookHandler {

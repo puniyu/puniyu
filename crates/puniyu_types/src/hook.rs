@@ -133,7 +133,7 @@ pub trait HookBuilder: Send + Sync + 'static {
 
 	fn r#type(&self) -> HookType;
 
-	fn rank(&self) -> u64;
+	fn rank(&self) -> u32;
 
 	async fn run(
 		&self,

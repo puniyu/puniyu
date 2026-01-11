@@ -11,7 +11,7 @@ struct HookArg {
 	name: Option<String>,
 	#[darling(rename = "type")]
 	r#type: Option<String>,
-	rank: Option<u64>,
+	rank: Option<u32>,
 }
 
 pub fn hook(args: TokenStream, item: TokenStream) -> TokenStream {
@@ -146,7 +146,7 @@ pub fn hook(args: TokenStream, item: TokenStream) -> TokenStream {
 				#hook_type
 			}
 
-			fn rank(&self) -> u64 {
+			fn rank(&self) -> u32 {
 				#hook_rank
 			}
 

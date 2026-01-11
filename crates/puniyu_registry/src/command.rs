@@ -1,5 +1,4 @@
 use crate::store::STORE;
-use itertools::Itertools;
 use puniyu_types::command::CommandBuilder;
 use std::sync::Arc;
 
@@ -64,13 +63,6 @@ impl CommandRegistry {
 	pub fn commands() -> Vec<Arc<Command>> {
 		STORE.command().all()
 	}
-	pub fn get_plugins(command_name: &str) -> Vec<String> {
-		let command_list = STORE.command().all();
-		command_list
-			.iter()
-			.filter(|command| command.builder.name() == command_name)
-			.sorted_by_key(|command| command.builder.rank())
-			.map(|command| command.plugin_name.to_string())
-			.collect()
-	}
+
+
 }

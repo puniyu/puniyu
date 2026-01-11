@@ -41,6 +41,7 @@ impl HookStore {
 			.collect()
 	}
 
+	#[allow(dead_code)]
 	pub fn remove_with_name(&self, name: &str) {
 		let mut map = self.0.write().unwrap();
 		if let Some(key) = map.iter().find(|(_, v)| v.name() == name).map(|(k, _)| *k) {

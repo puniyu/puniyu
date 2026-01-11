@@ -2,7 +2,7 @@ mod option;
 
 use option::BotOption;
 use puniyu_common::path::CONFIG_DIR;
-use puniyu_common::toml;
+use puniyu_common::config;
 use serde::{Deserialize, Serialize};
 use std::{
 	collections::HashMap,
@@ -10,7 +10,7 @@ use std::{
 };
 
 pub(crate) static BOT_CONFIG: LazyLock<Arc<RwLock<BotConfig>>> = LazyLock::new(|| {
-	Arc::new(RwLock::new(toml::read_config(CONFIG_DIR.as_path(), "bot").unwrap_or_default()))
+	Arc::new(RwLock::new(config::read_config(CONFIG_DIR.as_path(), "bot").unwrap_or_default()))
 });
 
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]

@@ -7,7 +7,7 @@ pub static WORKING_DIR: OnceLock<PathBuf> = OnceLock::new();
 /// 应用根目录
 ///
 /// ## 示例
-/// ```
+/// ```rust
 /// use puniyu_common::path::BASE_DIR;
 /// let base_dir = BASE_DIR.as_path();
 /// ```
@@ -34,7 +34,7 @@ pub static APP_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
 /// # 示例
 ///
 /// ```rust
-/// use puniyu_types::common::LOG_DIR;
+/// use puniyu_common::path::LOG_DIR;
 /// let log_dir = LOG_DIR.as_path();
 /// ```
 pub static LOG_DIR: LazyLock<PathBuf> = LazyLock::new(|| {

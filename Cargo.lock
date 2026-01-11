@@ -2030,6 +2030,7 @@ version = "0.7.4"
 dependencies = [
  "async-trait",
  "clap",
+ "itertools",
  "puniyu_config",
  "puniyu_logger",
  "puniyu_registry",
@@ -2189,7 +2190,6 @@ dependencies = [
  "chrono-tz",
  "convert_case",
  "futures",
- "itertools",
  "puniyu_common",
  "puniyu_config",
  "puniyu_library",

@@ -1,14 +1,11 @@
-mod matcher;
-
 use crate::event::Event;
 use async_trait::async_trait;
-pub use matcher::Matcher;
 
 pub type HandlerResult<T = ()> = Result<T, Box<dyn std::error::Error + Send + Sync>>;
 
 /// 事件处理器
 #[async_trait]
-pub trait Handler: Matcher {
+pub trait Handler: Send + Sync + 'static {
 	/// 处理器名称
 	fn name(&self) -> &str;
 
