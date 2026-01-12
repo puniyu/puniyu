@@ -3,7 +3,7 @@ use puniyu_core::APP_NAME;
 use puniyu_core::VERSION;
 use puniyu_plugin::prelude::*;
 #[command(name = "state")]
-async fn state(ctx: &MessageContext) -> HandlerResult<HandlerAction> {
+async fn state(ctx: &MessageContext) -> HandlerResult<CommandAction> {
 	let status = SystemInfo::new();
 	let days = status.run_time / 86400;
 	let hours = (status.run_time % 86400) / 3600;
@@ -25,5 +25,5 @@ async fn state(ctx: &MessageContext) -> HandlerResult<HandlerAction> {
 		seconds
 	);
 	ctx.reply(message!(segment!(text, info_text))).await?;
-	Ok(HandlerAction::Done)
+	Ok(CommandAction::Done)
 }

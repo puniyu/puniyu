@@ -21,6 +21,7 @@ impl ConnectionManager {
 		CONNECTION_STORE.get(bot_name)
 	}
 
+	#[allow(dead_code)]
 	pub fn get_all() -> Vec<(String, Arc<Mutex<Session>>)> {
 		CONNECTION_STORE.get_all()
 	}

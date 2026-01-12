@@ -25,6 +25,7 @@ pub struct AdapterApi {
 }
 
 impl Default for AdapterApi {
+    #[inline]
 	fn default() -> Self {
 		Self {
 			group_api: Arc::new(inner::DefaultGroupApi),

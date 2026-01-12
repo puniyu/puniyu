@@ -8,25 +8,25 @@ use async_trait::async_trait;
 
 /// 命令处理动作
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum HandlerAction {
+pub enum CommandAction {
 	/// 处理完成，停止传播
 	Done,
 	/// 继续传播给其他处理器
 	Continue,
 }
 
-impl HandlerAction {
-	pub const fn done() -> HandlerResult<HandlerAction> {
-		Ok(HandlerAction::Done)
+impl CommandAction {
+	pub const fn done() -> HandlerResult<CommandAction> {
+		Ok(CommandAction::Done)
 	}
-	pub const fn r#continue() -> HandlerResult<HandlerAction> {
-		Ok(HandlerAction::Continue)
+	pub const fn r#continue() -> HandlerResult<CommandAction> {
+		Ok(CommandAction::Continue)
 	}
 }
 
-impl From<()> for HandlerAction {
+impl From<()> for CommandAction {
 	fn from(_: ()) -> Self {
-		HandlerAction::Done
+		CommandAction::Done
 	}
 }
 
@@ -76,5 +76,5 @@ pub trait CommandBuilder: Send + Sync + 'static {
 	}
 
 	/// 执行的函数
-	async fn run(&self, ctx: &MessageContext) -> HandlerResult<HandlerAction>;
+	async fn run(&self, ctx: &MessageContext) -> HandlerResult<CommandAction>;
 }

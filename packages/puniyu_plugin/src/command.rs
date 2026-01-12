@@ -1,1 +1,1 @@
-pub use puniyu_types::command::HandlerAction;
+pub use puniyu_types::command::CommandAction;

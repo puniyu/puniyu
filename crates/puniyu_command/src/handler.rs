@@ -9,7 +9,7 @@ use puniyu_logger::info;
 use puniyu_logger::owo_colors::OwoColorize;
 use puniyu_registry::command::{Command, CommandRegistry};
 use puniyu_types::adapter::MessageApi;
-use puniyu_types::command::HandlerAction;
+use puniyu_types::command::CommandAction;
 use puniyu_types::context::{BotContext, MessageContext};
 use puniyu_types::event::message::MessageEvent;
 use puniyu_types::event::{Event, Permission};
@@ -155,8 +155,8 @@ impl CommandHandler {
 			);
 
 			match result {
-				Ok(HandlerAction::Done) => break,
-				Ok(HandlerAction::Continue) | Err(_) => continue,
+				Ok(CommandAction::Done) => break,
+				Ok(CommandAction::Continue) | Err(_) => continue,
 			}
 		}
 	}

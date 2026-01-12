@@ -81,7 +81,7 @@ impl MessageApi for ServerMessageApi {
 				} else {
 					return Err(Error::Other(crate::error::Error::Event.to_string()));
 				};
-				let bot_info = Self::create_bot_info(&*bot.adapter, &*bot.account);
+				let bot_info = Self::create_bot_info(&bot.adapter, &bot.account);
 				MessageEvent::FriendMessage(FriendMessage {
 					friend_message_bot: Some(bot_info),
 					event_id: event.event_id.to_string(),
@@ -101,7 +101,7 @@ impl MessageApi for ServerMessageApi {
 				} else {
 					return Err(Error::Other(crate::error::Error::Event.to_string()));
 				};
-				let bot_info = Self::create_bot_info(&*bot.adapter, &*bot.account);
+				let bot_info = Self::create_bot_info(&bot.adapter, &bot.account);
 				MessageEvent::GroupMessage(GroupMessage {
 					group_message_bot: Some(bot_info),
 					event_id: event.event_id.to_string(),

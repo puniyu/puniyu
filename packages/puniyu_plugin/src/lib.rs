@@ -26,7 +26,7 @@ pub mod private {
 	pub use puniyu_registry::plugin::VERSION as ABI_VERSION;
 	pub use puniyu_types::command::CommandBuilder;
 	pub use puniyu_types::command::{
-		Arg, ArgMode, ArgType, ArgValue, HandlerAction,
+        Arg, ArgMode, ArgType, ArgValue, CommandAction,
 	};
 	pub use puniyu_types::handler::HandlerResult;
 	pub use puniyu_types::config::Config;

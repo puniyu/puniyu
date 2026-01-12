@@ -222,7 +222,7 @@ pub fn command(args: TokenStream, item: TokenStream) -> TokenStream {
 				#command_permission
 			}
 
-			async fn run(&self, ctx: &::puniyu_plugin::private::MessageContext) -> ::puniyu_plugin::private::HandlerResult<::puniyu_plugin::private::HandlerAction> {
+			async fn run(&self, ctx: &::puniyu_plugin::private::MessageContext) -> ::puniyu_plugin::private::HandlerResult<::puniyu_plugin::private::CommandAction> {
 				#fn_name(ctx).await
 			}
 		}
