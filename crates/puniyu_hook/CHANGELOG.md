@@ -1,4 +1,13 @@
 # 变更日志
+## [0.1.2](https://github.com/puniyu/puniyu/compare/puniyu_hook-v0.1.1...puniyu_hook-v0.1.2) - 2026-01-12
+
+
+### ⚙️ 杂项
+
+
+
+- Updated the following local packages: puniyu_types, puniyu_registry - ([0000000](https://github.com/puniyu/puniyu/commit/0000000))
+
 ## [0.1.1](https://github.com/puniyu/puniyu/compare/puniyu_hook-v0.1.0...puniyu_hook-v0.1.1) - 2026-01-11
 
 

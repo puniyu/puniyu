@@ -1,6 +1,6 @@
 [package]
 name = "puniyu_plugin_basic"
-version = "0.2.4"
+version = "0.2.5"
 description = "puniyu basic plugin"
 authors.workspace = true
 license.workspace = true
@@ -14,8 +14,8 @@ rust-version.workspace = true
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-puniyu_core = { version = "0.7.7", path = "../../packages/puniyu_core" }
-puniyu_plugin = { version = "0.7.7", path = "../../packages/puniyu_plugin" }
+puniyu_core = { version = "0.7.8", path = "../../packages/puniyu_core" }
+puniyu_plugin = { version = "0.7.8", path = "../../packages/puniyu_plugin" }
 puniyu_common = { version = "0.7.5", path = "../../crates/puniyu_common", features = ["system-info"] }
 
 [features]

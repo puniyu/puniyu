@@ -1,4 +1,18 @@
 # 变更日志
+## [0.7.9](https://github.com/puniyu/puniyu/compare/puniyu_command-v0.7.8...puniyu_command-v0.7.9) - 2026-01-12
+
+
+### 🚜 重构
+
+
+- *(api)* 移除不必要的解引用操作 (由 @wuliya336 提供) - ([7cbd05f](https://github.com/puniyu/puniyu/commit/7cbd05fed5ae6c5a146b0b1cc60528d6a3eb91d9))
+
+
+
+
+### 贡献者
+
+* @wuliya336
 ## [0.7.8](https://github.com/puniyu/puniyu/compare/puniyu_command-v0.7.7...puniyu_command-v0.7.8) - 2026-01-11
 
 

@@ -1,4 +1,18 @@
 # 变更日志
+## [0.2.5](https://github.com/puniyu/puniyu/compare/plugin-basic-v0.2.4...plugin-basic-v0.2.5) - 2026-01-12
+
+
+### 🚜 重构
+
+
+- *(api)* 移除不必要的解引用操作 (由 @wuliya336 提供) - ([7cbd05f](https://github.com/puniyu/puniyu/commit/7cbd05fed5ae6c5a146b0b1cc60528d6a3eb91d9))
+
+
+
+
+### 贡献者
+
+* @wuliya336
 ## [0.2.4](https://github.com/puniyu/puniyu/compare/plugin-basic-v0.2.3...plugin-basic-v0.2.4) - 2026-01-11
 
 
