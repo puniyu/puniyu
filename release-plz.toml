@@ -6,12 +6,6 @@ release = true
 git_release_enable = false
 git_release_body = """
 {{ changelog }}
-{% if remote.contributors %}
-### 贡献者
-{% for contributor in remote.contributors %}
-* @{{ contributor.username }}
-{% endfor %}
-{% endif %}
 """
 git_tag_enable = false
 pr_branch_prefix = "release-"
