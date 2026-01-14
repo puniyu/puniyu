@@ -1,4 +1,12 @@
 # 变更日志
+
+## [0.7.9](https://github.com/puniyu/puniyu/compare/puniyu_server-v0.7.8...puniyu_server-v0.7.9)
+
+### ⚙️ 杂项
+
+
+- Updated the following local packages: puniyu_common, puniyu_types, puniyu_registry - ([0000000](https://github.com/puniyu/puniyu/commit/0000000))
+
 ## [0.7.7](https://github.com/puniyu/puniyu/compare/puniyu_server-v0.7.6...puniyu_server-v0.7.7) - 2026-01-11
 
 
