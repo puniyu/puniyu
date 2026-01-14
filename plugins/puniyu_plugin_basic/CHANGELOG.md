@@ -1,4 +1,12 @@
 # 变更日志
+
+## [0.2.6](https://github.com/puniyu/puniyu/compare/plugin-basic-v0.2.5...plugin-basic-v0.2.6)
+
+### ⚙️ 杂项
+
+
+- *(workspace)* 移除release-please配置文件并优化Cargo.toml结构 - ([db957c3](https://github.com/puniyu/puniyu/commit/db957c3939f38d30da5cc8807aed0e154fe23a52))
+
 ## [0.2.5](https://github.com/puniyu/puniyu/compare/plugin-basic-v0.2.4...plugin-basic-v0.2.5) - 2026-01-12
 
 

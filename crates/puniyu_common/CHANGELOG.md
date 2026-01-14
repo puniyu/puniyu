@@ -1,4 +1,12 @@
 # 变更日志
+
+## [0.7.6](https://github.com/puniyu/puniyu/compare/puniyu_common-v0.7.5...puniyu_common-v0.7.6)
+
+### ⚙️ 杂项
+
+
+- *(workspace)* 移除release-please配置文件并优化Cargo.toml结构 - ([db957c3](https://github.com/puniyu/puniyu/commit/db957c3939f38d30da5cc8807aed0e154fe23a52))
+
 ## [0.7.5](https://github.com/puniyu/puniyu/compare/puniyu_common-v0.7.4...puniyu_common-v0.7.5) - 2026-01-11
 
 

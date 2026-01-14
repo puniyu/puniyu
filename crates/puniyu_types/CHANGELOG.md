@@ -1,4 +1,12 @@
 # 变更日志
+
+## [0.7.8](https://github.com/puniyu/puniyu/compare/puniyu_types-v0.7.7...puniyu_types-v0.7.8)
+
+### 🚜 重构
+
+
+- *(plugin)* 统一插件初始化返回类型为HandlerResult - ([31c1e58](https://github.com/puniyu/puniyu/commit/31c1e584885121f6464e761d7008ce1548460a57))
+
 ## [0.7.7](https://github.com/puniyu/puniyu/compare/puniyu_types-v0.7.6...puniyu_types-v0.7.7) - 2026-01-12
 
 
