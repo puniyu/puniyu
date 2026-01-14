@@ -1,10 +1,5 @@
 [workspace]
-members = [
-    "crates/*",
-    "packages/*",
-    "adapters/*",
-    "plugins/*",
-]
+members = ["crates/*", "packages/*", "adapters/*", "plugins/*"]
 resolver = "2"
 
 [workspace.package]
@@ -21,7 +16,7 @@ chrono = { version = "0.4.42", features = ["serde"] }
 tokio = { version = "1.47.1" }
 serde = { version = "1.0", features = ["derive"] }
 serde_repr = { version = "0.1" }
-serde_json = { version = "1.0"}
+serde_json = { version = "1.0" }
 glob = { version = "0.3.3" }
 toml = { version = "0.9.5" }
 itertools = { version = "0.14.0" }
@@ -34,7 +29,10 @@ convert_case = { version = "0.10.0" }
 clap = { version = "4.5", default-features = false, features = ["std"] }
 actix-web = { version = "4.11.0" }
 flume = { version = "0.11" }
-reqwest = { version = "0.13.0", default-features = false, features = ["json", "rustls"] }
+reqwest = { version = "0.13.0", default-features = false, features = [
+    "json",
+    "rustls",
+] }
 derive_builder = { version = "0.20.2" }
 bytes = { version = "1.11.0", features = ["serde"] }
 prost = { version = "0.14.1" }
@@ -42,10 +40,13 @@ prost = { version = "0.14.1" }
 puniyu_logger = { version = "0.6.4" }
 puniyu_system_info = { version = "1.5.2" }
 
+puniyu_adapter = { version = "0.7.8", path = "./packages/puniyu_adapter" }
+puniyu_core = { version = "0.7.8", path = "./packages/puniyu_core" }
+puniyu_plugin = { version = "0.7.8", path = "./packages/puniyu_plugin" }
+
 [profile.release]
 lto = "thin"
 incremental = false
 
 [profile.dev]
 incremental = true
-

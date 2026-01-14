@@ -10,9 +10,6 @@ repository.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 
-[lib]
-
-
 [dependencies]
 toml = { workspace = true }
 strum.workspace = true
@@ -25,5 +22,3 @@ thiserror.workspace = true
 default = ["version"]
 version = []
 system-info = ["dep:puniyu_system_info"]
-
-
