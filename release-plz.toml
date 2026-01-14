@@ -57,46 +57,40 @@ header = """# 变更日志
 """
 
 body = """
-{%- macro print_commit(commit) -%}
+
+{% macro print_commit(commit) -%}
     - {% if commit.scope %}*({{ commit.scope }})* {% endif %}\
       {% if commit.breaking %}[**breaking**] {% endif %}\
-      {{ commit.message | upper_first }}{{ self::username(commit=commit) }}{{ self::pr(commit=commit) }} - \
-      ([{{ commit.id | truncate(length=7, end="") }}]({{ remote.link }}/commit/{{ commit.id }}))
-{%- endmacro -%}
+      {{ commit.message | upper_first }} - \
+      ([{{ commit.id | truncate(length=7, end="") }}]({{ remote.link }}/commit/{{ commit.id }}))\
+{% endmacro -%}
 
-{%- macro username(commit) -%}
-    {% if commit.remote.username %} (由 @{{ commit.remote.username }} 提供){% endif -%}
-{%- endmacro -%}
-
-{%- macro pr(commit) -%}
-    {% if commit.remote.pr_number %} (#{{ commit.remote.pr_number }}){% endif -%}
-{%- endmacro -%}
-
-## [{{ version }}]\
-{% if release_link %}({{ release_link }}){% endif %} - {{ timestamp | date(format="%Y-%m-%d") }}
+{% if version %}\
+    {% if previous.version %}\
+        ## [{{ version }}]({{ release_link }})
+    {% else %}\
+        ## [{{ version }}]
+    {% endif %}\
+{% endif %}\
 
 {% for group, commits in commits
 | filter(attribute="merge_commit", value=false)
+| unique(attribute="message")
 | group_by(attribute="group") %}
-### {{ group | striptags | trim | upper_first }}
+    ### {{ group | striptags | trim | upper_first }}
 
-{% for commit in commits | unique(attribute="message") | filter(attribute="scope") | sort(attribute="scope") %}
-{{ self::print_commit(commit=commit) }}
-{%- endfor %}
-{% for commit in commits | unique(attribute="message") %}
-{%- if not commit.scope %}
-{{ self::print_commit(commit=commit) }}
-{%- endif %}
-{%- endfor %}
-
-{% endfor %}
-{%- if remote.contributors %}
-
-### 贡献者
-{% for contributor in remote.contributors %}
-* @{{ contributor.username }}
-{%- endfor %}
-{% endif %}
+    {% for commit in commits
+    | filter(attribute="scope")
+    | sort(attribute="scope") %}
+        {{ self::print_commit(commit=commit) }}
+    {%- endfor -%}
+    {% raw %}\n{% endraw %}\
+    {%- for commit in commits %}
+        {%- if not commit.scope -%}
+            {{ self::print_commit(commit=commit) }}
+        {% endif -%}
+    {% endfor -%}
+{% endfor %}\n
 """
 
 commit_parsers = [

@@ -24,6 +24,7 @@ use std::sync::Arc;
 use tokio::fs;
 
 pub use common::{PluginId, PluginType};
+use puniyu_types::handler::HandlerResult;
 
 #[derive(Debug, Clone)]
 pub struct PluginInfo {
@@ -275,7 +276,7 @@ impl PluginRegistry {
 
 async fn run_plugin_init<F>(name: &str, init_fn: F) -> Result<(), Error>
 where
-	F: Future<Output = Result<(), Box<dyn std::error::Error>>>,
+	F: Future<Output = HandlerResult>,
 {
 	match init_fn.await {
 		Ok(()) => {

@@ -1,5 +1,6 @@
 use crate::command::CommandBuilder;
 use crate::config::Config;
+use crate::handler::HandlerResult;
 use crate::hook::HookBuilder;
 use crate::server::ServerType;
 use crate::task::TaskBuilder;
@@ -34,7 +35,7 @@ pub trait PluginBuilder: Send + Sync {
 	}
 
 	/// 命令列表
-	fn commands(&self) -> Vec<Box<dyn CommandBuilder>>{
+	fn commands(&self) -> Vec<Box<dyn CommandBuilder>> {
 		Vec::new()
 	}
 
@@ -53,5 +54,5 @@ pub trait PluginBuilder: Send + Sync {
 		None
 	}
 	/// 插件初始化函数
-	async fn init(&self) -> Result<(), Box<dyn std::error::Error>>;
+	async fn init(&self) -> HandlerResult;
 }

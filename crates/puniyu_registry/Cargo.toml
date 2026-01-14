@@ -78,6 +78,7 @@ plugin = [
     "puniyu_types/server",
     "puniyu_types/version",
     "puniyu_types/bus",
+    "puniyu_types/handler",
     "task",
     "command",
     "server",

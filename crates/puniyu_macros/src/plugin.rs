@@ -187,7 +187,7 @@ pub fn plugin(
 				}
 			}
 
-			async fn init(&self) -> ::std::result::Result<(), Box<dyn std::error::Error>> {
+			async fn init(&self) -> ::puniyu_plugin::private::HandlerResult {
 				#init_call.await
 			}
 		}
