@@ -2191,6 +2191,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "puniyu_plugin_webui"
+version = "0.1.0"
+dependencies = [
+ "puniyu_core",
+ "puniyu_plugin",
+]
+
+[[package]]
 name = "puniyu_protocol"
 version = "0.2.4"
 dependencies = [
