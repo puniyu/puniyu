@@ -775,6 +775,9 @@ name = "fastrand"
 version = "2.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "37909eebbb50d72f9059c3b6d82c0463f2ff062c9e95845c43a6c9c0355411be"
+dependencies = [
+ "getrandom 0.2.16",
+]
 
 [[package]]
 name = "figlet-rs"
@@ -822,6 +825,18 @@ dependencies = [
  "futures-core",
  "futures-sink",
  "nanorand",
+ "spin",
+]
+
+[[package]]
+name = "flume"
+version = "0.12.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5e139bc46ca777eb5efaf62df0ab8cc5fd400866427e56c68b22e414e53bd3be"
+dependencies = [
+ "fastrand",
+ "futures-core",
+ "futures-sink",
  "spin",
 ]
 
@@ -1607,7 +1622,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4d3d07927151ff8575b7087f245456e549fea62edf0ec4e565a5ee50c8402bc3"
 dependencies = [
  "bitflags 2.10.0",
- "flume",
+ "flume 0.11.1",
  "fsevent-sys",
  "inotify",
  "kqueue",
@@ -1621,12 +1636,12 @@ dependencies = [
 
 [[package]]
 name = "notify-debouncer-full"
-version = "0.6.0"
+version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "375bd3a138be7bfeff3480e4a623df4cbfb55b79df617c055cd810ba466fa078"
+checksum = "c02b49179cfebc9932238d04d6079912d26de0379328872846118a0fa0dbb302"
 dependencies = [
  "file-id",
- "flume",
+ "flume 0.12.0",
  "log",
  "notify",
  "notify-types",
@@ -1865,9 +1880,9 @@ dependencies = [
 
 [[package]]
 name = "proc-macro2"
-version = "1.0.105"
+version = "1.0.106"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "535d180e0ecab6268a3e718bb9fd44db66bbbc256257165fc699dadf70d16fe7"
+checksum = "8fd00f0bb2e90d81d1044c2b32617f68fcb9fa3bb7640c23e9c748e53fb30934"
 dependencies = [
  "unicode-ident",
 ]
@@ -2230,7 +2245,7 @@ dependencies = [
  "actix-web",
  "bytes",
  "clap",
- "flume",
+ "flume 0.11.1",
  "futures-util",
  "puniyu_common",
  "puniyu_logger",
@@ -2269,7 +2284,7 @@ dependencies = [
  "bytes",
  "chrono",
  "derive_builder",
- "flume",
+ "flume 0.11.1",
  "puniyu_config",
  "puniyu_logger",
  "reqwest",
@@ -2339,9 +2354,9 @@ dependencies = [
 
 [[package]]
 name = "quote"
-version = "1.0.43"
+version = "1.0.44"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dc74d9a594b72ae6656596548f56f667211f8a97b3d4c3d467150794690dc40a"
+checksum = "21b2ebcf727b7760c461f091f9f0f539b77b8e87f2fd88131e7f1b433b3cece4"
 dependencies = [
  "proc-macro2",
 ]
