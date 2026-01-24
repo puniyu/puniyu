@@ -1,4 +1,12 @@
 # 变更日志
+
+## [0.2.5](https://github.com/puniyu/puniyu/compare/puniyu_protocol-v0.2.4...puniyu_protocol-v0.2.5)
+
+### ⚙️ 杂项
+
+
+- Updated the following local packages: puniyu_types - ([0000000](https://github.com/puniyu/puniyu/commit/0000000))
+
 ## [0.2.4](https://github.com/puniyu/puniyu/compare/puniyu_protocol-v0.2.3...puniyu_protocol-v0.2.4) - 2026-01-12
 
 

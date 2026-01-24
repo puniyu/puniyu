@@ -1,4 +1,12 @@
 # 变更日志
+
+## [0.3.7](https://github.com/puniyu/puniyu/compare/puniyu_adapter_server-v0.3.6...puniyu_adapter_server-v0.3.7)
+
+### ⚙️ 杂项
+
+
+- *(workspace)* 移除release-please配置文件并优化Cargo.toml结构 - ([db957c3](https://github.com/puniyu/puniyu/commit/db957c3939f38d30da5cc8807aed0e154fe23a52))
+
 ## [0.3.6](https://github.com/puniyu/puniyu/compare/puniyu_adapter_server-v0.3.5...puniyu_adapter_server-v0.3.6) - 2026-01-12
 
 

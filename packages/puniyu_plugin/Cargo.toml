@@ -1,6 +1,6 @@
 [package]
 name = "puniyu_plugin"
-version = "0.7.8"
+version = "0.7.9"
 description = "puniyu 的插件模块"
 readme = "README.md"
 authors.workspace = true
@@ -18,16 +18,16 @@ inventory.workspace = true
 puniyu_logger.workspace = true
 actix-web.workspace = true
 
-puniyu_config = { version = "0.7.5", path = "../../crates/puniyu_config" }
-puniyu_common = { version = "0.7.5", path = "../../crates/puniyu_common" }
-puniyu_macros = { version = "0.7.6", path = "../../crates/puniyu_macros", default-features = false, features = [
+puniyu_config = { version = "0.7.6", path = "../../crates/puniyu_config" }
+puniyu_common = { version = "0.7.6", path = "../../crates/puniyu_common" }
+puniyu_macros = { version = "0.7.7", path = "../../crates/puniyu_macros", default-features = false, features = [
     "plugin",
 ] }
-puniyu_types = { version = "0.7.7", path = "../../crates/puniyu_types", default-features = false, features = [
+puniyu_types = { version = "0.7.8", path = "../../crates/puniyu_types", default-features = false, features = [
     "plugin",
     "event",
 ] }
-puniyu_registry = { version = "0.7.9", path = "../../crates/puniyu_registry", default-features = false, features = [
+puniyu_registry = { version = "0.7.10", path = "../../crates/puniyu_registry", default-features = false, features = [
     "plugin",
     "bot"
 ] }
