@@ -17,13 +17,13 @@ impl ServerMessageApi {
 	fn create_bot_info(
 		adapter: &AdapterInfo,
 		account: &AccountInfo,
-	) -> puniyu_protocol::bot::BotInfo {
-		use puniyu_protocol::bot::BotInfo;
+	) -> puniyu_probuff::bot::BotInfo {
+		use puniyu_probuff::bot::BotInfo;
 		BotInfo { adapter: Some(adapter.clone().into()), account: Some(account.clone().into()) }
 	}
 
-	fn create_friend_sender(sender: &FriendSender) -> puniyu_protocol::sender::FriendSender {
-		use puniyu_protocol::sender::{FriendSender, Sex};
+	fn create_friend_sender(sender: &FriendSender) -> puniyu_probuff::sender::FriendSender {
+		use puniyu_probuff::sender::{FriendSender, Sex};
 		FriendSender {
 			user_id: sender.user_id.to_string(),
 			nick: sender.nick.clone(),
@@ -32,8 +32,8 @@ impl ServerMessageApi {
 		}
 	}
 
-	fn create_group_sender(sender: &GroupSender) -> puniyu_protocol::sender::GroupSender {
-		use puniyu_protocol::sender::{GroupSender, Role, Sex};
+	fn create_group_sender(sender: &GroupSender) -> puniyu_probuff::sender::GroupSender {
+		use puniyu_probuff::sender::{GroupSender, Role, Sex};
 		GroupSender {
 			user_id: sender.user_id.to_string(),
 			nick: sender.nick.clone(),
@@ -46,8 +46,8 @@ impl ServerMessageApi {
 		}
 	}
 
-	fn build_contact(contact: &ContactType) -> puniyu_protocol::contact::Contact {
-		use puniyu_protocol::contact::{Contact, SceneType};
+	fn build_contact(contact: &ContactType) -> puniyu_probuff::contact::Contact {
+		use puniyu_probuff::contact::{Contact, SceneType};
 		Contact {
 			scene: SceneType::from(contact.scene()).into(),
 			peer: String::from(contact.peer()),
@@ -63,10 +63,10 @@ impl MessageApi for ServerMessageApi {
 		contact: ContactType,
 		_message: puniyu_adapter::prelude::Message,
 	) -> Result<SendMsgType> {
-		use puniyu_protocol::event::message::{
+		use puniyu_probuff::event::message::{
 			MessageEventReceive, message_event_receive::MessageEvent,
 		};
-		use puniyu_protocol::event::{EventReceive, event_receive};
+		use puniyu_probuff::event::{EventReceive, event_receive};
 
 		let bot = self.get_bot()?;
 		let event = &bot.event;
@@ -75,7 +75,7 @@ impl MessageApi for ServerMessageApi {
 
 		let message = match contact.scene() {
 			Scene::Friend => {
-				use puniyu_protocol::event::message::receive::FriendMessage;
+				use puniyu_probuff::event::message::receive::FriendMessage;
 				let sender_type = if let SenderType::Friend(sender) = &event.sender {
 					Self::create_friend_sender(sender)
 				} else {
@@ -95,7 +95,7 @@ impl MessageApi for ServerMessageApi {
 				})
 			}
 			Scene::Group => {
-				use puniyu_protocol::event::message::receive::GroupMessage;
+				use puniyu_probuff::event::message::receive::GroupMessage;
 				let sender_type = if let SenderType::Group(sender) = &event.sender {
 					Self::create_group_sender(sender)
 				} else {

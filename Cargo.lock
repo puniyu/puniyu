@@ -2085,7 +2085,7 @@ dependencies = [
  "prost",
  "puniyu_adapter",
  "puniyu_core",
- "puniyu_protocol",
+ "puniyu_probuff",
  "thiserror 2.0.18",
  "tokio",
 ]
@@ -2245,7 +2245,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "puniyu_protocol"
+name = "puniyu_probuff"
 version = "0.2.4"
 dependencies = [
  "bytes",
