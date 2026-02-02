@@ -2,13 +2,14 @@ mod error;
 pub use error::Error;
 mod common;
 mod version;
+mod store;
+use store::PluginStore;
 
 pub use version::VERSION;
 
 use crate::command::CommandRegistry;
 use crate::hook::HookRegistry;
 use crate::server::ServerRegistry;
-use crate::store::STORE;
 use crate::task::TaskRegistry;
 use convert_case::{Case, Casing};
 use futures::future::join_all;
@@ -20,11 +21,13 @@ use puniyu_library::{LibraryRegistry, libloading};
 use puniyu_logger::{SharedLogger, debug, error, owo_colors::OwoColorize, warn};
 use puniyu_types::plugin::PluginBuilder;
 use puniyu_types::version::Version;
-use std::sync::Arc;
+use std::sync::{Arc, LazyLock};
 use tokio::fs;
 
 pub use common::{PluginId, PluginType};
 use puniyu_types::handler::HandlerResult;
+
+static STORE: LazyLock<PluginStore> = LazyLock::new(PluginStore::new);
 
 #[derive(Debug, Clone)]
 pub struct PluginInfo {
@@ -71,7 +74,7 @@ impl PluginRegistry {
 					set_logger(&SharedLogger::new());
 					let setup_app_name: fn(name: String) = *lib.get(b"setup_app_name").unwrap();
 					setup_app_name(APP_NAME.get().unwrap().to_string());
-					let plugins = STORE.plugin().all();
+					let plugins = STORE.all();
 					let plugin_name = plugin_builder.name();
 					let plugin_version = plugin_builder.version().to_string();
 					debug!(
@@ -143,12 +146,12 @@ impl PluginRegistry {
 					create_data_dir(plugin_name).await;
 					create_resource_dir(plugin_name).await;
 					run_plugin_init(plugin_name, plugin_builder.init()).await?;
-					STORE.plugin().insert(plugin_info);
+					STORE.insert(plugin_info);
 				}
 			}
 			// 静态插件
 			PluginType::Builder(plugin_builder) => {
-				let plugins = STORE.plugin().all();
+				let plugins = STORE.all();
 				let plugin_name = plugin_builder.name();
 				let plugin_version = plugin_builder.version().to_string();
 				if plugins.iter().any(|(_, plugin)| plugin.name == plugin_name) {
@@ -216,7 +219,7 @@ impl PluginRegistry {
 				create_data_dir(plugin_name).await;
 				create_resource_dir(plugin_name).await;
 				run_plugin_init(plugin_name, plugin_builder.init()).await?;
-				STORE.plugin().insert(plugin_info);
+				STORE.insert(plugin_info);
 			}
 		}
 		Ok(())
@@ -233,7 +236,7 @@ impl PluginRegistry {
 		let plugin_id = plugin.into();
 		let result = match plugin_id {
 			PluginId::Index(index) => {
-				let plugin_name = STORE.plugin().remove(index).map(|p| p.name);
+				let plugin_name = STORE.remove(index).map(|p| p.name);
 				if let Some(name) = plugin_name {
 					TaskRegistry::remove_task(name.as_str()).await;
 					CommandRegistry::remove_with_plugin_name(name.as_str());
@@ -245,13 +248,13 @@ impl PluginRegistry {
 				}
 			}
 			PluginId::Name(name) => {
-				let index = STORE.plugin().get_index(name.as_str());
+				let index = STORE.get_index(name.as_str());
 				if let Some(idx) = index {
 					TaskRegistry::remove_task(name.as_str()).await;
 					CommandRegistry::remove_with_plugin_name(name.as_str());
 					ServerRegistry::remove(name.as_str());
 					let _ = puniyu_types::server::restart_server();
-					STORE.plugin().remove(idx).is_some()
+					STORE.remove(idx).is_some()
 				} else {
 					false
 				}
@@ -264,13 +267,13 @@ impl PluginRegistry {
 	pub fn get_plugin(plugin: impl Into<PluginId>) -> Option<PluginInfo> {
 		let plugin_id = plugin.into();
 		match plugin_id {
-			PluginId::Index(index) => STORE.plugin().get_plugin_with_index(index),
-			PluginId::Name(name) => STORE.plugin().get_plugin_with_name(name.as_str()),
+			PluginId::Index(index) => STORE.get_plugin_with_index(index),
+			PluginId::Name(name) => STORE.get_plugin_with_name(name.as_str()),
 		}
 	}
 
 	pub fn get_all_plugins() -> Vec<PluginInfo> {
-		STORE.plugin().all().into_values().collect()
+		STORE.all().into_values().collect()
 	}
 }
 

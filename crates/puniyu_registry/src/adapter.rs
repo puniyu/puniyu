@@ -1,7 +1,8 @@
 mod error;
+mod store;
+use store::AdapterStore;
 
 use crate::server::ServerRegistry;
-use crate::store::STORE;
 use convert_case::{Case, Casing};
 pub use error::Error;
 use puniyu_common::path::{ADAPTER_CONFIG_DIR, ADAPTER_DATA_DIR, ADAPTER_RESOURCE_DIR};
@@ -11,9 +12,11 @@ use puniyu_logger::warn;
 use puniyu_logger::{debug, error, owo_colors::OwoColorize};
 use puniyu_types::adapter::{AdapterApi, AdapterBuilder};
 use std::future::Future;
-use std::sync::Arc;
+use std::sync::{Arc, LazyLock};
 use tokio::fs;
 use crate::hook::HookRegistry;
+
+static STORE: LazyLock<AdapterStore> = LazyLock::new(AdapterStore::new);
 
 #[derive(Clone)]
 pub struct AdapterInfo {
@@ -29,7 +32,7 @@ pub struct AdapterRegistry;
 
 impl AdapterRegistry {
 	pub async fn load_adapter(adapter: &'static dyn AdapterBuilder) -> Result<(), Error> {
-		let adapters = STORE.adapter().all();
+		let adapters = STORE.all();
 		let adapter_name = adapter.name().to_string();
 		let adapter_version = adapter.version().to_string();
 		if adapters.values().any(|a| a.name == adapter_name) {
@@ -100,7 +103,7 @@ impl AdapterRegistry {
 		});
 
 		run_adapter_init(adapter_name.as_str(), adapter.init()).await?;
-		STORE.adapter().insert(AdapterInfo {
+		STORE.insert(AdapterInfo {
 			name: adapter_name,
 			version: adapter_version,
 			api: adapter.api(),
@@ -117,15 +120,15 @@ impl AdapterRegistry {
 
 	/// 卸载一个适配器，包括适配器中的Bot实例
 	pub fn unload_adapter(name: &str) -> Result<(), Error> {
-		STORE.adapter().remove(name);
+		STORE.remove(name);
 		Ok(())
 	}
 
 	pub fn get(name: &str) -> Option<AdapterInfo> {
-		STORE.adapter().get(name)
+		STORE.get(name)
 	}
 	pub fn adapters() -> Vec<AdapterInfo> {
-		STORE.adapter().all().values().cloned().collect()
+		STORE.all().values().cloned().collect()
 	}
 }
 

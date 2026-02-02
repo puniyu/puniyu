@@ -1,27 +1,32 @@
-use crate::store::STORE;
+mod store;
+use store::BotStore;
+
+use std::sync::LazyLock;
 use puniyu_logger::{info, owo_colors::OwoColorize, warn};
 pub use puniyu_types::bot::Bot;
 pub use puniyu_types::bot::BotId;
+
+static STORE: LazyLock<BotStore> = LazyLock::new(BotStore::new);
 
 pub struct BotRegistry;
 
 impl BotRegistry {
 	pub fn all() -> Vec<Bot> {
-		STORE.bot().all()
+		STORE.all()
 	}
 
 	pub fn get_with_index(index: u64) -> Option<Bot> {
-		STORE.bot().get_with_index(index)
+		STORE.get_with_index(index)
 	}
 
 	pub fn get_with_self_id(self_id: &str) -> Option<Bot> {
-		STORE.bot().get_with_self_id(self_id)
+		STORE.get_with_self_id(self_id)
 	}
 
 	pub fn register(bot: Bot) -> u64 {
 		let self_id = bot.account.uin.clone();
 		let adapter = bot.adapter.clone();
-		let index = STORE.bot().insert(bot);
+		let index = STORE.insert(bot);
 		info!(
 			"[{}] [{}] 注册成功",
 			format!("Bot: {}", self_id).fg_rgb::<221, 160, 221>(),
@@ -31,7 +36,7 @@ impl BotRegistry {
 	}
 
 	pub fn unregister_with_index(index: u64) -> bool {
-		if let Some(bot) = STORE.bot().remove_with_index(index) {
+		if let Some(bot) = STORE.remove_with_index(index) {
 			info!(
 				"[Bot: index-{}][adapter:{} v{}] 卸载成功",
 				bot.account.uin, bot.adapter.name, bot.adapter.version
@@ -44,14 +49,14 @@ impl BotRegistry {
 
 	pub fn unregister_with_id(id: impl Into<String>) -> bool {
 		let bot_id = id.into();
-		if let Some(bot) = STORE.bot().remove_with_self_id(bot_id.as_str()) {
+		if let Some(bot) = STORE.remove_with_self_id(bot_id.as_str()) {
 			info!(
 				"[Bot: {}][adapter:{} v{}] 卸载成功",
 				bot.account.uin, bot.adapter.name, bot.adapter.version
 			);
 			return true;
 		}
-		warn!("[Bot: id-{}] 卸载失败未找到指定的Bot", bot_id);
+		warn!("[Bot: {}] 卸载失败未找到指定的Bot", bot_id);
 		false
 	}
 }
