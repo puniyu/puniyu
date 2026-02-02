@@ -18,6 +18,12 @@ puniyu_core.workspace = true
 puniyu_plugin.workspace = true
 puniyu_common = { version = "0.7.5", path = "../../crates/puniyu_common", features = ["system-info"] }
 
+[build-dependencies]
+puniyu_build = { version = "0.2.5", path = "../../packages/puniyu_build" }
+
 [features]
 default = []
 cdylib = []
+
+[package.metadata.puniyu]
+plugin = true
