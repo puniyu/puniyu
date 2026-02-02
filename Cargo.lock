@@ -480,15 +480,6 @@ dependencies = [
 
 [[package]]
 name = "convert_case"
-version = "0.10.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "633458d4ef8c78b72454de2d54fd6ab2e60f9e02be22f3c6104cdc8a4e0fceb9"
-dependencies = [
- "unicode-segmentation",
-]
-
-[[package]]
-name = "convert_case"
 version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "affbf0190ed2caf063e3def54ff444b449371d55c58e513a95ab98eca50adb49"
@@ -2112,7 +2103,7 @@ version = "0.7.8"
 dependencies = [
  "async-trait",
  "bytes",
- "convert_case 0.11.0",
+ "convert_case",
  "figlet-rs",
  "glob",
  "inventory",
@@ -2160,13 +2151,13 @@ dependencies = [
 
 [[package]]
 name = "puniyu_logger"
-version = "0.6.4"
+version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5651260d72ab30d2ad2bab39ae1e26319238707d026b37ab9c46ef32d2111fb4"
+checksum = "8ec8998c8a780994fe9544785e68930163c99ee1554a85f8d8a07a7b9f1fbcc6"
 dependencies = [
  "chrono",
  "chrono-tz",
- "convert_case 0.10.0",
+ "convert_case",
  "owo-colors",
  "strip-ansi-escapes",
  "tracing",
@@ -2180,7 +2171,7 @@ dependencies = [
 name = "puniyu_macros"
 version = "0.7.6"
 dependencies = [
- "convert_case 0.11.0",
+ "convert_case",
  "croner",
  "darling 0.23.0",
  "proc-macro2",
@@ -2233,7 +2224,7 @@ version = "0.7.9"
 dependencies = [
  "chrono",
  "chrono-tz",
- "convert_case 0.11.0",
+ "convert_case",
  "futures",
  "puniyu_common",
  "puniyu_config",
