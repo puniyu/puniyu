@@ -20,7 +20,7 @@
 
 
 
-- Updated the following local packages: puniyu_adapter, puniyu_core, puniyu_protocol - ([0000000](https://github.com/puniyu/puniyu/commit/0000000))
+- Updated the following local packages: puniyu_adapter, puniyu_core, puniyu_probuff - ([0000000](https://github.com/puniyu/puniyu/commit/0000000))
 
 ## [0.3.4](https://github.com/puniyu/puniyu/compare/puniyu_adapter_server-v0.3.3...puniyu_adapter_server-v0.3.4) - 2026-01-11
 

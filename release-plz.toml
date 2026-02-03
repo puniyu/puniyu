@@ -169,7 +169,7 @@ name = "puniyu_command"
 name = "puniyu_registry"
 
 [[package]]
-name = "puniyu_protocol"
+name = "puniyu_probuff"
 
 [[package]]
 name = "puniyu_types"

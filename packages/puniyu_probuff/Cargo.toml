@@ -1,5 +1,5 @@
 [package]
-name = "puniyu_protocol"
+name = "puniyu_probuff"
 version = "0.2.4"
 description = "puniyu 协议库，用于数据交换"
 authors.workspace = true

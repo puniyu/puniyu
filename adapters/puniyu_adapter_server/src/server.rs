@@ -2,7 +2,7 @@ use actix_web::{Error, HttpRequest, HttpResponse, web};
 use futures_util::StreamExt;
 use prost::Message;
 use puniyu_adapter::logger::{error, info};
-use puniyu_protocol::event::EventReceive;
+use puniyu_probuff::event::EventReceive;
 use std::sync::Arc;
 
 mod connection;
