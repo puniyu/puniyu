@@ -9,4 +9,4 @@ pub mod message {
 	pub use puniyu_types::event::message::{FriendMessage, GroupMessage, MessageEvent};
 }
 
-pub use puniyu_types::event::{Event, EventType, EventBase};
+pub use puniyu_types::event::{Event, EventBase, EventType};

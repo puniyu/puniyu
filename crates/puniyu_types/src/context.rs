@@ -1,10 +1,10 @@
 mod bot;
-use crate::adapter::{types, MessageApi};
+use crate::adapter::{MessageApi, types};
 use crate::command::ArgValue;
 use crate::contact::ContactType;
-use crate::element::{receive::Elements, Message};
-use crate::event::message::{FriendMessage, GroupMessage, MessageEvent};
+use crate::element::{Message, receive::Elements};
 use crate::event::EventBase;
+use crate::event::message::{FriendMessage, GroupMessage, MessageEvent};
 use crate::sender::SenderType;
 pub use bot::BotContext;
 use bytes::Bytes;
@@ -26,7 +26,10 @@ impl MessageContext {
 		&self.bot
 	}
 
-	pub async fn reply(&self, message: impl Into<Message>) -> crate::adapter::Result<types::SendMsgType> {
+	pub async fn reply(
+		&self,
+		message: impl Into<Message>,
+	) -> crate::adapter::Result<types::SendMsgType> {
 		self.bot.api().send_msg(self.contact().clone(), message.into()).await
 	}
 

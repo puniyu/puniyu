@@ -9,7 +9,7 @@ use toml::{Value, from_str, to_string_pretty};
 /// 构建配置文件的完整路径
 fn build_config_path<P: AsRef<Path>>(path: P, name: &str) -> PathBuf {
 	if name.ends_with(".toml") {
-		return path.as_ref().join(name)
+		return path.as_ref().join(name);
 	}
 	path.as_ref().join(format!("{}.toml", name))
 }

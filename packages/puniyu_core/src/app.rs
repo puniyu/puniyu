@@ -92,7 +92,7 @@ impl App {
 	pub fn builder() -> AppBuilder {
 		AppBuilder::new()
 	}
-	pub async fn run(&self) -> io::Result<()>{
+	pub async fn run(&self) -> io::Result<()> {
 		use crate::common::format_duration;
 		use std::time::Duration;
 		print_start_log();
@@ -134,10 +134,10 @@ impl App {
 		debug!("接收到中断信号，正在关闭...");
 		execute_hooks(StatusType::Stop).await;
 		info!(
-				"{} 本次运行时间: {}",
-				app_name.to_case(Case::Lower).fg_rgb::<64, 224, 208>(),
-				format_duration(Duration::from_secs(common::uptime())).fg_rgb::<255, 127, 80>()
-			);
+			"{} 本次运行时间: {}",
+			app_name.to_case(Case::Lower).fg_rgb::<64, 224, 208>(),
+			format_duration(Duration::from_secs(common::uptime())).fg_rgb::<255, 127, 80>()
+		);
 		Ok(())
 	}
 }

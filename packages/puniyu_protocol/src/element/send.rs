@@ -69,9 +69,7 @@ impl From<element::Element> for puniyu_element::Elements {
 
 impl From<puniyu_element::Elements> for Elements {
 	fn from(element: puniyu_element::Elements) -> Self {
-		Self {
-			element: vec![element.into()],
-		}
+		Self { element: vec![element.into()] }
 	}
 }
 
@@ -83,9 +81,7 @@ impl From<Elements> for puniyu_element::Elements {
 
 impl From<puniyu_element::Elements> for Element {
 	fn from(element: puniyu_element::Elements) -> Self {
-		Self {
-			element: Some(element.into()),
-		}
+		Self { element: Some(element.into()) }
 	}
 }
 
@@ -94,4 +90,3 @@ impl From<Element> for puniyu_element::Elements {
 		element.element.unwrap().into()
 	}
 }
-

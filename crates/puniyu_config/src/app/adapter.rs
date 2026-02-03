@@ -5,7 +5,7 @@ pub struct AdapterConfig {
 	#[serde(default = "default_adapter")]
 	console: bool,
 	#[serde(default = "default_adapter")]
-	server: bool
+	server: bool,
 }
 
 impl AdapterConfig {

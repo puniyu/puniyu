@@ -1,8 +1,8 @@
+mod inner;
 pub mod message;
 pub mod notion;
 mod permission;
 pub mod request;
-mod inner;
 
 pub use permission::Permission;
 
@@ -49,7 +49,6 @@ impl std::fmt::Debug for Event {
 }
 
 impl Event {
-
 	/// 获取事件类型
 	pub fn event_type(&self) -> EventType {
 		match self {
@@ -85,7 +84,6 @@ pub enum EventType {
 	#[strum(serialize = "unknown")]
 	Unknown,
 }
-
 
 pub trait EventBase: Send + Sync {
 	type ContactType;

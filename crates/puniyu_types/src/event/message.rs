@@ -133,7 +133,7 @@ impl MessageEvent {
 			MessageEvent::Group(msg) => ContactType::Group(msg.contact()),
 		}
 	}
-	
+
 	pub fn sender(&self) -> SenderType {
 		match self {
 			MessageEvent::Friend(msg) => SenderType::Friend(msg.sender()),

@@ -1,8 +1,8 @@
 mod error;
 pub use error::Error;
 mod common;
-mod version;
 mod store;
+mod version;
 use store::PluginStore;
 
 pub use version::VERSION;
@@ -116,7 +116,11 @@ impl PluginRegistry {
 					let prefix = plugin_builder.prefix();
 					let commands = plugin_builder.commands();
 					commands.into_iter().for_each(|command| {
-						CommandRegistry::insert(plugin_name, prefix, Arc::from(command));
+						CommandRegistry::insert(
+							plugin_name,
+							prefix.map(|s| s.to_string()),
+							Arc::from(command),
+						);
 					});
 					let hooks = plugin_builder.hooks();
 					hooks.into_iter().for_each(|hook| HookRegistry::register(Arc::from(hook)));
@@ -193,7 +197,11 @@ impl PluginRegistry {
 				let prefix = plugin_builder.prefix();
 				let commands = plugin_builder.commands();
 				commands.into_iter().for_each(|command| {
-					CommandRegistry::insert(plugin_name, prefix, Arc::from(command));
+					CommandRegistry::insert(
+						plugin_name,
+						prefix.map(|s| s.to_string()),
+						Arc::from(command),
+					);
 				});
 				let hooks = plugin_builder.hooks();
 				hooks.into_iter().for_each(|hook| HookRegistry::register(Arc::from(hook)));

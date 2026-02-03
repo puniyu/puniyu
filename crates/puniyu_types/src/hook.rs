@@ -9,10 +9,10 @@ pub use request::HookRequestType;
 
 use crate::event::Event;
 use crate::event::EventType;
+use crate::handler::HandlerResult;
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 use strum::{Display, IntoStaticStr};
-use crate::handler::HandlerResult;
 
 #[derive(
 	Debug, Clone, Display, IntoStaticStr, Deserialize, Serialize, PartialEq, Eq, PartialOrd, Ord,
@@ -99,7 +99,7 @@ pub enum HookEventType {
 	Notion,
 	Request,
 	#[default]
-	All
+	All,
 }
 
 impl From<EventType> for HookEventType {
@@ -135,8 +135,5 @@ pub trait HookBuilder: Send + Sync + 'static {
 
 	fn rank(&self) -> u32;
 
-	async fn run(
-		&self,
-		event: Option<&Event>,
-	) -> HandlerResult;
+	async fn run(&self, event: Option<&Event>) -> HandlerResult;
 }

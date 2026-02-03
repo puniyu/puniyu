@@ -6,7 +6,7 @@ use proc_macro::TokenStream;
 use proc_macro2::Ident;
 use quote::quote;
 use std::str::FromStr;
-use syn::{parse_macro_input, ItemFn};
+use syn::{ItemFn, parse_macro_input};
 
 #[derive(Debug, Default, FromMeta)]
 struct TaskArgs {
@@ -30,8 +30,8 @@ pub fn task(args: TokenStream, item: TokenStream) -> TokenStream {
 	}
 	if !item.sig.inputs.is_empty() {
 		return syn::Error::new_spanned(
-            &item.sig.inputs,
-            "Task function should not have parameters",
+			&item.sig.inputs,
+			"Task function should not have parameters",
 		)
 		.to_compile_error()
 		.into();

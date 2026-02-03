@@ -1,5 +1,5 @@
-mod types;
 mod store;
+mod types;
 use store::CooldownStore;
 
 use std::sync::LazyLock;

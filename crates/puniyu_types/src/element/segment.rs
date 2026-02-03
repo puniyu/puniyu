@@ -84,4 +84,3 @@ macro_rules! segment {
         compile_error!(concat!("Invalid segment! pattern: ", stringify!($($t)*)));
     };
 }
-

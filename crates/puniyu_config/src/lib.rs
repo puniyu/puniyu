@@ -18,8 +18,8 @@ use notify_debouncer_full::{DebounceEventResult, new_debouncer, notify};
 use puniyu_common::Error;
 use puniyu_common::path::LOG_DIR;
 use puniyu_common::{
-    path::CONFIG_DIR,
-    config::{merge_config, read_config},
+	config::{merge_config, read_config},
+	path::CONFIG_DIR,
 };
 use puniyu_logger::{debug, error, info};
 use serde::{Deserialize, Serialize, de::DeserializeOwned};

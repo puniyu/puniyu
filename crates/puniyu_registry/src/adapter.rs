@@ -2,6 +2,7 @@ mod error;
 mod store;
 use store::AdapterStore;
 
+use crate::hook::HookRegistry;
 use crate::server::ServerRegistry;
 use convert_case::{Case, Casing};
 pub use error::Error;
@@ -14,7 +15,6 @@ use puniyu_types::adapter::{AdapterApi, AdapterBuilder};
 use std::future::Future;
 use std::sync::{Arc, LazyLock};
 use tokio::fs;
-use crate::hook::HookRegistry;
 
 static STORE: LazyLock<AdapterStore> = LazyLock::new(AdapterStore::new);
 

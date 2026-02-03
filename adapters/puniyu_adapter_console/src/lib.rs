@@ -84,7 +84,7 @@ impl AdapterBuilder for Console {
 
 				let elements: Vec<Elements> = match content.split_once(':') {
 					Some(("at", target_id)) if !target_id.is_empty() => {
-						vec![Elements::At(AtElement { target_id: target_id.to_string()})]
+						vec![Elements::At(AtElement { target_id: target_id.to_string() })]
 					}
 					Some(("text", text_content)) => {
 						vec![Elements::Text(TextElement { text: text_content.to_string() })]
@@ -193,4 +193,3 @@ impl AdapterBuilder for Console {
 		Ok(())
 	}
 }
-

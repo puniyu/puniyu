@@ -25,7 +25,10 @@ impl_from_element!(AtElement, puniyu_element::AtElement { target_id });
 impl_from_element!(ReplyElement, puniyu_element::ReplyElement { message_id });
 impl_from_element!(FaceElement, puniyu_element::FaceElement { id });
 impl_from_element!(ImageElement, puniyu_element::ImageElement { file, summary, width, height });
-impl_from_element!(FileElement, puniyu_element::FileElement { file, file_id, file_size, file_name });
+impl_from_element!(
+	FileElement,
+	puniyu_element::FileElement { file, file_id, file_size, file_name }
+);
 impl_from_element!(VideoElement, puniyu_element::VideoElement { file, file_name });
 impl_from_element!(RecordElement, puniyu_element::RecordElement { file });
 impl_from_element!(JsonElement, puniyu_element::JsonElement { data });
@@ -67,9 +70,7 @@ impl From<element::Element> for puniyu_element::Elements {
 
 impl From<puniyu_element::Elements> for Elements {
 	fn from(element: puniyu_element::Elements) -> Self {
-		Self {
-			element: vec![element.into()],
-		}
+		Self { element: vec![element.into()] }
 	}
 }
 
@@ -81,9 +82,7 @@ impl From<Elements> for puniyu_element::Elements {
 
 impl From<puniyu_element::Elements> for Element {
 	fn from(element: puniyu_element::Elements) -> Self {
-		Self {
-			element: Some(element.into()),
-		}
+		Self { element: Some(element.into()) }
 	}
 }
 

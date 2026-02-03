@@ -1,8 +1,8 @@
 mod store;
 
+use puniyu_types::server::ServerType;
 use std::sync::LazyLock;
 use store::ServerStore;
-use puniyu_types::server::ServerType;
 
 static STORE: LazyLock<ServerStore> = LazyLock::new(ServerStore::new);
 #[derive(Debug, Default)]

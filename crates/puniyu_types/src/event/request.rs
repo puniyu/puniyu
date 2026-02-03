@@ -1,8 +1,8 @@
 mod friend;
 
-use std::sync::Arc;
 pub use friend::*;
 use serde::{Deserialize, Serialize};
+use std::sync::Arc;
 mod group;
 pub use group::*;
 
@@ -10,22 +10,22 @@ use super::EventBase;
 use crate::bot::Bot;
 use crate::contact::{FriendContact, GroupContact, Scene};
 use crate::event::EventType;
+use crate::event::inner::{deserialize_bot, serialize_bot};
 use crate::sender::{FriendSender, GroupSender};
 use strum::{Display, EnumString, IntoStaticStr};
-use crate::event::inner::{deserialize_bot, serialize_bot};
 
 #[derive(
-    Debug,
-    Clone,
-    EnumString,
-    Display,
-    IntoStaticStr,
-    Deserialize,
-    Serialize,
-    PartialEq,
-    Eq,
-    PartialOrd,
-    Ord,
+	Debug,
+	Clone,
+	EnumString,
+	Display,
+	IntoStaticStr,
+	Deserialize,
+	Serialize,
+	PartialEq,
+	Eq,
+	PartialOrd,
+	Ord,
 )]
 pub enum RequestSubEvent {
 	/// 好友申请

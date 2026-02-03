@@ -84,7 +84,12 @@ pub trait GroupApi: Send + Sync {
 	/// `target_id` - 目标ID
 	/// `duration` - 禁言时长
 	///
-	async fn set_group_mute(&self, _group_id: &str, _target_id: &str, _duration: Duration) -> Result<()> {
+	async fn set_group_mute(
+		&self,
+		_group_id: &str,
+		_target_id: &str,
+		_duration: Duration,
+	) -> Result<()> {
 		Err(Error::NotImpl)
 	}
 	/// 群全体禁言
@@ -127,7 +132,11 @@ pub trait GroupApi: Send + Sync {
 	/// `group_id` - 群ID
 	/// `action` - 设置或拒绝加群申请
 	///
-	async fn set_group_invited_join(&self, _group_id: &str, _action: SetGroupApplyType) -> Result<()> {
+	async fn set_group_invited_join(
+		&self,
+		_group_id: &str,
+		_action: SetGroupApplyType,
+	) -> Result<()> {
 		Err(Error::NotImpl)
 	}
 }

@@ -9,12 +9,12 @@ pub use message::*;
 mod inner;
 
 use super::{Error, Result, types::*};
-use std::sync::Arc;
-use std::time::Duration;
-use async_trait::async_trait;
-use bytes::Bytes;
 use crate::contact::ContactType;
 use crate::element::Message;
+use async_trait::async_trait;
+use bytes::Bytes;
+use std::sync::Arc;
+use std::time::Duration;
 
 #[derive(Clone)]
 pub struct AdapterApi {
@@ -25,7 +25,7 @@ pub struct AdapterApi {
 }
 
 impl Default for AdapterApi {
-    #[inline]
+	#[inline]
 	fn default() -> Self {
 		Self {
 			group_api: Arc::new(inner::DefaultGroupApi),
@@ -66,53 +66,50 @@ macro_rules! impl_api{
 }
 
 impl_api!(
-    AdapterApi,
-    group_api,
-    GroupApi,
-    get_group_avatar(group_id: &str, size: Option<AvatarSize>) -> Result<Avatar>,
-    get_group_info(group_id: &str) -> Result<GroupInfo>,
-    get_group_list() -> Result<Vec<GroupInfo>>,
-    get_group_member_list(group_id: &str) -> Result<Vec<UserInfo>>,
-    get_group_mute_list(group_id: &str) -> Result<Vec<GroupMuteInfo>>,
-    set_group_name(group_id: &str, name: &str) -> Result<()>,
-    set_kick_group_member(
-        group_id: &str,
-        target_id: &str,
-        reject_add_request: Option<bool>,
-        reason: Option<&str>
-    ) -> Result<()>,
-    set_group_mute(group_id: &str, target_id: &str, duration: Duration) -> Result<()>,
-    set_group_all_mute(group_id: &str, action: MuteType) -> Result<()>,
-    set_group_admin(group_id: &str, target_id: &str, action: SetAdminType) -> Result<()>,
-    set_group_quit(group_id: &str) -> Result<()>,
-    set_group_invited_join(group_id: &str, action: SetGroupApplyType) -> Result<()>
+	AdapterApi,
+	group_api,
+	GroupApi,
+	get_group_avatar(group_id: &str, size: Option<AvatarSize>) -> Result<Avatar>,
+	get_group_info(group_id: &str) -> Result<GroupInfo>,
+	get_group_list() -> Result<Vec<GroupInfo>>,
+	get_group_member_list(group_id: &str) -> Result<Vec<UserInfo>>,
+	get_group_mute_list(group_id: &str) -> Result<Vec<GroupMuteInfo>>,
+	set_group_name(group_id: &str, name: &str) -> Result<()>,
+	set_kick_group_member(
+		group_id: &str,
+		target_id: &str,
+		reject_add_request: Option<bool>,
+		reason: Option<&str>
+	) -> Result<()>,
+	set_group_mute(group_id: &str, target_id: &str, duration: Duration) -> Result<()>,
+	set_group_all_mute(group_id: &str, action: MuteType) -> Result<()>,
+	set_group_admin(group_id: &str, target_id: &str, action: SetAdminType) -> Result<()>,
+	set_group_quit(group_id: &str) -> Result<()>,
+	set_group_invited_join(group_id: &str, action: SetGroupApplyType) -> Result<()>
 );
 
 impl_api!(
-    AdapterApi,
-    friend_api,
-    FriendApi,
-    get_user_avatar(target_id: &str, size: Option<AvatarSize>) -> Result<Avatar>,
-    get_friend_list() -> Result<Vec<UserInfo>>,
-    set_friend_apply(action: SetFriendApplyType) -> Result<()>
+	AdapterApi,
+	friend_api,
+	FriendApi,
+	get_user_avatar(target_id: &str, size: Option<AvatarSize>) -> Result<Avatar>,
+	get_friend_list() -> Result<Vec<UserInfo>>,
+	set_friend_apply(action: SetFriendApplyType) -> Result<()>
 );
-
 
 impl_api!(
-    AdapterApi,
-    account_api,
-    AccountApi,
-    set_avatar(avatar: Bytes) -> Result<bool>
+	AdapterApi,
+	account_api,
+	AccountApi,
+	set_avatar(avatar: Bytes) -> Result<bool>
 );
-
 
 impl_api!(
-    AdapterApi,
-    message_api,
-    MessageApi,
-    send_msg(contact: ContactType, message: Message) -> Result<SendMsgType>,
-    recall_msg(message_id: &str) -> Result<()>,
-    get_msg(message_id: &str) -> Result<MessageType>,
-    get_history_msg(contact: ContactType, message: MessageType, count: u8) -> Result<Vec<MessageInfo>>
+	AdapterApi,
+	message_api,
+	MessageApi,
+	send_msg(contact: ContactType, message: Message) -> Result<SendMsgType>,
+	recall_msg(message_id: &str) -> Result<()>,
+	get_msg(message_id: &str) -> Result<MessageType>,
+	get_history_msg(contact: ContactType, message: MessageType, count: u8) -> Result<Vec<MessageInfo>>
 );
-

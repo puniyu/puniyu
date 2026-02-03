@@ -1,7 +1,7 @@
-use std::sync::Arc;
 use puniyu_types::event::message as puniyu_message;
 use puniyu_types::event::message::MessageBuilder;
 use puniyu_types::event::{EventBase, message::MessageBase};
+use std::sync::Arc;
 
 include!(concat!(env!("OUT_DIR"), "/puniyu.event.message.receive.rs"));
 

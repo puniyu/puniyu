@@ -1,10 +1,10 @@
 mod store;
 use store::BotStore;
 
-use std::sync::LazyLock;
 use puniyu_logger::{info, owo_colors::OwoColorize, warn};
 pub use puniyu_types::bot::Bot;
 pub use puniyu_types::bot::BotId;
+use std::sync::LazyLock;
 
 static STORE: LazyLock<BotStore> = LazyLock::new(BotStore::new);
 

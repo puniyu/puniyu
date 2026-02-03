@@ -1,7 +1,7 @@
 mod store;
-use store::CommandStore;
 use puniyu_types::command::CommandBuilder;
 use std::sync::{Arc, LazyLock};
+use store::CommandStore;
 static STORE: LazyLock<CommandStore> = LazyLock::new(CommandStore::new);
 #[derive(Clone)]
 pub struct Command {
@@ -29,12 +29,13 @@ impl<'a> From<Command> for puniyu_types::command::Command<'a> {
 pub struct CommandRegistry;
 
 impl CommandRegistry {
-	pub fn insert(plugin_name: &str, prefix: Option<&str>, builder: Arc<dyn CommandBuilder>) {
-		let command = Command {
-			plugin_name: plugin_name.to_string(),
-			prefix: prefix.map(|s| s.to_string()),
-			builder,
-		};
+	pub fn insert(
+		plugin_name: &str,
+		prefix: impl Into<Option<String>>,
+		builder: Arc<dyn CommandBuilder>,
+	) {
+		let command =
+			Command { plugin_name: plugin_name.to_string(), prefix: prefix.into(), builder };
 		STORE.insert(command);
 	}
 
@@ -64,6 +65,4 @@ impl CommandRegistry {
 	pub fn commands() -> Vec<Arc<Command>> {
 		STORE.all()
 	}
-
-
 }

@@ -124,8 +124,10 @@ impl From<AdapterInfo> for puniyu_adapter::AdapterInfo {
 		let platform = AdapterPlatform::try_from(adapter.platform).unwrap_or_default();
 		let standard = AdapterStandard::try_from(adapter.standard).unwrap_or_default();
 		let protocol = AdapterProtocol::try_from(adapter.protocol).unwrap_or_default();
-		let communication = AdapterCommunication::try_from(adapter.communication).unwrap_or_default();
-		let connect_time = DateTime::from_timestamp_secs(adapter.connect_time as i64).unwrap_or(Utc::now());
+		let communication =
+			AdapterCommunication::try_from(adapter.communication).unwrap_or_default();
+		let connect_time =
+			DateTime::from_timestamp_secs(adapter.connect_time as i64).unwrap_or(Utc::now());
 
 		Self {
 			name: adapter.name,

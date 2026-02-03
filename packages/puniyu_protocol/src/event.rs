@@ -40,4 +40,3 @@ impl From<EventReceive> for puniyu_event::Event {
 		event.into()
 	}
 }
-
