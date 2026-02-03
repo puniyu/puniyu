@@ -27,11 +27,11 @@ impl FromStr for Version {
 	type Err = std::convert::Infallible;
 
 	fn from_str(s: &str) -> Result<Self, Self::Err> {
-		let parts= s.split('.').collect::<Vec<_>>();
+		let parts = s.split('.').collect::<Vec<_>>();
 		if parts.len() != 3 {
 			return Ok(Version::default());
 		}
-		
+
 		Ok(Version {
 			major: parts[0].parse().unwrap_or_default(),
 			minor: parts[1].parse().unwrap_or_default(),

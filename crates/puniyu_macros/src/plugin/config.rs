@@ -1,8 +1,8 @@
-use proc_macro::TokenStream;
 use darling::ast::NestedMeta;
 use darling::{Error, FromMeta};
+use proc_macro::TokenStream;
 use quote::quote;
-use syn::{parse_macro_input, ItemStruct};
+use syn::{ItemStruct, parse_macro_input};
 
 #[derive(Debug, FromMeta)]
 struct ConfigArgs {
@@ -15,7 +15,7 @@ pub fn config(args: TokenStream, item: TokenStream) -> TokenStream {
 		Err(e) => return TokenStream::from(Error::from(e).write_errors()),
 	};
 	let item = parse_macro_input!(item as ItemStruct);
-    let struct_name = &item.ident;
+	let struct_name = &item.ident;
 
 	let args = match ConfigArgs::from_list(&attr_args) {
 		Ok(v) => v,
@@ -31,9 +31,9 @@ pub fn config(args: TokenStream, item: TokenStream) -> TokenStream {
 		}
 	};
 
-    let plugin_name = quote! { env!("CARGO_PKG_NAME") };
+	let plugin_name = quote! { env!("CARGO_PKG_NAME") };
 
-    let expanded = quote! {
+	let expanded = quote! {
 		#item
 
 		impl ::puniyu_plugin::private::Config for #struct_name {
@@ -70,5 +70,5 @@ pub fn config(args: TokenStream, item: TokenStream) -> TokenStream {
 		}
 	};
 
-    expanded.into()
+	expanded.into()
 }

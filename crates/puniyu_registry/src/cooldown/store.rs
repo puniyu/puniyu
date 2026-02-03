@@ -6,9 +6,13 @@ use std::{
 	time::Duration,
 };
 
+#[derive(Default)]
 pub(crate) struct CooldownStore(pub(crate) Arc<RwLock<HashMap<String, u64>>>);
 
 impl CooldownStore {
+	pub fn new() -> Self {
+		Self::default()
+	}
 	fn now() -> u64 {
 		Utc::now().timestamp_millis() as u64
 	}

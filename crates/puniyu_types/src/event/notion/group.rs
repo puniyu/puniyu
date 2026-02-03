@@ -5,10 +5,10 @@ pub use types::*;
 use super::{NotionBase, NotionBuilder, NotionSubEvent};
 use crate::bot::Bot;
 use crate::contact::{GroupContact, Scene};
+use crate::event::inner::{deserialize_bot, serialize_bot};
 use crate::event::{EventBase, EventType};
 use crate::sender::GroupSender;
 use serde::{Deserialize, Serialize};
-use crate::event::inner::{deserialize_bot, serialize_bot};
 
 macro_rules! impl_notion_event {
     (

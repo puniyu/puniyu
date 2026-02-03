@@ -1,8 +1,8 @@
 mod option;
 
 use option::GroupOption;
-use puniyu_common::path::CONFIG_DIR;
 use puniyu_common::config;
+use puniyu_common::path::CONFIG_DIR;
 use serde::{Deserialize, Serialize};
 use std::{
 	collections::HashMap,

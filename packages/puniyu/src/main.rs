@@ -1,8 +1,8 @@
-use std::io;
 use puniyu_core::App;
+use std::io;
 
 #[tokio::main]
-async fn main() -> io::Result<()>{
+async fn main() -> io::Result<()> {
 	App::builder()
 		.with_adapter(&puniyu_adapter_console::Adapter)
 		.with_plugin(&puniyu_plugin_basic::Plugin)

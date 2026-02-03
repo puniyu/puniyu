@@ -4,9 +4,9 @@ mod middleware;
 mod server;
 
 use actix_web::{HttpResponse, http::StatusCode};
+use bytes::Bytes;
 use serde::{Deserialize, Serialize};
 use std::sync::OnceLock;
-use bytes::Bytes;
 
 pub use server::{run_server_spawn, run_server_with_control};
 

@@ -4,10 +4,13 @@ use std::{
 	sync::{Arc, RwLock},
 };
 
-#[derive(Clone)]
+#[derive(Clone, Default)]
 pub(crate) struct ServerStore(pub(crate) Arc<RwLock<HashMap<String, ServerType>>>);
 
 impl ServerStore {
+	pub fn new() -> Self {
+		Self::default()
+	}
 	pub fn insert(&self, name: impl Into<String>, server: ServerType) {
 		self.0.write().unwrap().insert(name.into(), server);
 	}

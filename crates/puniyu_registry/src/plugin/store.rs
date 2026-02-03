@@ -9,10 +9,13 @@ use std::{
 
 static PLUGIN_INDEX: AtomicU64 = AtomicU64::new(0);
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub(crate) struct PluginStore(pub(crate) Arc<RwLock<HashMap<u64, PluginInfo>>>);
 
 impl PluginStore {
+	pub fn new() -> Self {
+		Self::default()
+	}
 	pub fn insert(&self, plugin: PluginInfo) {
 		let mut plugins = self.0.write().unwrap();
 		let exists = plugins.values().any(|p| p.name == plugin.name);

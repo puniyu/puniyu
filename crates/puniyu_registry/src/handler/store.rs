@@ -1,12 +1,17 @@
 use puniyu_types::handler::Handler;
 use std::collections::HashMap;
-use std::sync::{Arc, RwLock};
 use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::{Arc, RwLock};
 
 static HANDLER_INDEX: AtomicU64 = AtomicU64::new(0);
+
+#[derive(Default)]
 pub(crate) struct HandlerStore(pub(crate) Arc<RwLock<HashMap<u64, Arc<dyn Handler>>>>);
 
 impl HandlerStore {
+	pub fn new() -> Self {
+		Self::default()
+	}
 	pub fn register(&self, handler: Arc<dyn Handler>) {
 		let mut handlers = self.0.write().unwrap();
 		let index = HANDLER_INDEX.fetch_add(1, Ordering::Relaxed);

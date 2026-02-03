@@ -108,7 +108,7 @@ impl ArgParser {
 	fn get_value(matches: &clap::ArgMatches, arg_def: &Arg) -> Option<ArgValue> {
 		match arg_def.arg_type {
 			ArgType::String => {
-				matches.get_one::<String>(arg_def.name).map(|s| ArgValue::String(s.clone()))
+				matches.get_one::<String>(arg_def.name).map(|s| ArgValue::String(s.to_string()))
 			}
 			ArgType::Int => matches.get_one::<i64>(arg_def.name).map(|i| ArgValue::Int(*i)),
 			ArgType::Float => matches.get_one::<f64>(arg_def.name).map(|f| ArgValue::Float(*f)),

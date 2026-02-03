@@ -74,4 +74,3 @@ impl From<ContactType> for Contact {
 		}
 	}
 }
-

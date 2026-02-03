@@ -6,5 +6,3 @@ mod group;
 pub use group::*;
 mod friend;
 pub use friend::*;
-
-

@@ -9,9 +9,13 @@ use std::{
 
 static COMMAND_ID: AtomicU64 = AtomicU64::new(0);
 
-pub(crate) struct CommandStore(pub(crate) Arc<RwLock<HashMap<u64, Arc<Command>>>>);
+#[derive(Default)]
+pub(crate) struct CommandStore(Arc<RwLock<HashMap<u64, Arc<Command>>>>);
 
 impl CommandStore {
+	pub fn new() -> Self {
+		Self::default()
+	}
 	pub fn insert(&self, builder: Command) {
 		let id = COMMAND_ID.fetch_add(1, Ordering::Relaxed);
 		self.0.write().unwrap().insert(id, Arc::from(builder));

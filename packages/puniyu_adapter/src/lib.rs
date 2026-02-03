@@ -24,11 +24,11 @@ pub mod private {
 		AdapterApi, AdapterBuilder, FriendApi, GroupApi, MessageApi, Result,
 	};
 	pub use puniyu_types::config::Config;
-	pub use puniyu_types::hook::{
-		HookBuilder, HookEventType, HookMessageType, HookNotionType, HookRequestType,
-		HookType, StatusType,
-	};
 	pub use puniyu_types::handler::HandlerResult;
+	pub use puniyu_types::hook::{
+		HookBuilder, HookEventType, HookMessageType, HookNotionType, HookRequestType, HookType,
+		StatusType,
+	};
 	pub use puniyu_types::server::ServerType;
 	pub use puniyu_types::version::Version;
 	pub use toml;

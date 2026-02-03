@@ -4,14 +4,14 @@ use std::sync::Arc;
 
 #[derive(Debug, Clone)]
 pub struct BotContext {
-    bot: Arc<Bot>,
+	bot: Arc<Bot>,
 }
 
 impl BotContext {
-    pub fn new(bot: Arc<Bot>) -> Self {
-        Self { bot }
-    }
-    pub fn api(&self) -> &AdapterApi {
-        &self.bot.api
-    }
+	pub fn new(bot: Arc<Bot>) -> Self {
+		Self { bot }
+	}
+	pub fn api(&self) -> &AdapterApi {
+		&self.bot.api
+	}
 }

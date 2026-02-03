@@ -7,7 +7,6 @@ mod hook;
 #[cfg(feature = "hook")]
 pub use hook::hook;
 
-
 #[cfg(feature = "adapter")]
 pub fn adapter(item: proc_macro::TokenStream) -> proc_macro::TokenStream {
 	use proc_macro2::Ident;

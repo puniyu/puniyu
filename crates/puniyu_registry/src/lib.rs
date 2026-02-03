@@ -1,5 +1,3 @@
-mod store;
-
 #[cfg(feature = "bot")]
 pub mod bot;
 

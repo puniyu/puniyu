@@ -1,5 +1,5 @@
-use crate::bot::BotRegistry;
 use crate::adapter::AdapterInfo;
+use crate::bot::BotRegistry;
 use std::{
 	collections::HashMap,
 	sync::{
@@ -10,10 +10,13 @@ use std::{
 
 static ADAPTER_INDEX: AtomicU64 = AtomicU64::new(0);
 
-#[derive(Clone)]
+#[derive(Clone, Default)]
 pub(crate) struct AdapterStore(pub(crate) Arc<RwLock<HashMap<u64, AdapterInfo>>>);
 
 impl AdapterStore {
+	pub fn new() -> Self {
+		Self::default()
+	}
 	pub fn insert(&self, adapter: AdapterInfo) {
 		let mut adapters = self.0.write().unwrap();
 		let exists = adapters.values().any(|a| a.name == adapter.name);
@@ -35,17 +38,9 @@ impl AdapterStore {
 	pub fn remove(&self, name: &str) {
 		let mut adapters = self.0.write().unwrap();
 
-		let ids = adapters
-			.iter()
-			.filter(|(_, adapter)| adapter.name == name)
-			.map(|(id, _)| *id)
-			.collect::<Vec<u64>>();
-
 		BotRegistry::all().into_iter().filter(|bot| bot.adapter.name == name).for_each(|bot| {
 			BotRegistry::unregister_with_id(bot.account.uin);
 		});
-		for id in ids {
-			adapters.remove(&id);
-		}
+		adapters.retain(|_, adapter| adapter.name != name);
 	}
 }

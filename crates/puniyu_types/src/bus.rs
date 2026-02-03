@@ -6,7 +6,6 @@ use tokio::sync::mpsc;
 pub type EventSender = mpsc::Sender<Arc<Event>>;
 pub type EventReceiver = mpsc::Receiver<Arc<Event>>;
 
-
 pub trait EventBus: Send + Sync {
 	fn run(&self) -> tokio::task::JoinHandle<()>;
 

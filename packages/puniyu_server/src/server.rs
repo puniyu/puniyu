@@ -2,6 +2,7 @@ use crate::BaseResponse;
 use crate::{api, info, middleware};
 use actix_web::middleware::{NormalizePath, TrailingSlash};
 use actix_web::{App, HttpResponse, HttpServer, http::StatusCode, web};
+use bytes::Bytes;
 use puniyu_common::APP_NAME;
 use puniyu_common::path::RESOURCE_DIR;
 use puniyu_registry::server::ServerRegistry;
@@ -10,7 +11,6 @@ use puniyu_types::server::{
 };
 use std::net::IpAddr;
 use std::sync::LazyLock;
-use bytes::Bytes;
 
 fn get_host_from_env() -> IpAddr {
 	std::env::var("HTTP_HOST").ok().and_then(|s| s.parse().ok()).unwrap()
