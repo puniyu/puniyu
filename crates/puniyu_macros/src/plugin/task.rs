@@ -72,7 +72,7 @@ pub fn task(args: TokenStream, item: TokenStream) -> TokenStream {
 		struct #struct_name;
 
 		#[::puniyu_plugin::private::async_trait]
-		impl ::puniyu_plugin::private::TaskBuilder for #struct_name {
+		impl ::puniyu_plugin::private::Task for #struct_name {
 			fn name(&self) -> &str {
 				#task_name
 			}
@@ -89,7 +89,7 @@ pub fn task(args: TokenStream, item: TokenStream) -> TokenStream {
 		::puniyu_plugin::private::inventory::submit! {
 			crate::TaskRegistry {
 				plugin_name: #plugin_name,
-				builder: || -> Box<dyn ::puniyu_plugin::private::TaskBuilder> {
+				builder: || -> Box<dyn ::puniyu_plugin::private::Task> {
 					Box::new(#struct_name {})
 				},
 			}

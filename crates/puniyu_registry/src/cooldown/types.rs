@@ -1,15 +1,15 @@
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub enum CooldownScope<'a> {
+pub enum CooldownScope<'c> {
 	/// 全局冷却
 	Global,
 	/// 机器人级别冷却
-	Bot { bot_id: &'a str },
+	Bot { bot_id: &'c str },
 	/// 好友级别冷却
-	Friend { bot_id: &'a str, user_id: &'a str },
+	Friend { bot_id: &'c str, user_id: &'c str },
 	/// 群组级别冷却
-	Group { bot_id: &'a str, group_id: &'a str },
+	Group { bot_id: &'c str, group_id: &'c str },
 	/// 群成员级别冷却
-	GroupMember { bot_id: &'a str, group_id: &'a str, user_id: &'a str },
+	GroupMember { bot_id: &'c str, group_id: &'c str, user_id: &'c str },
 }
 
 impl CooldownScope<'_> {

@@ -1,52 +1,17 @@
 mod arg;
 pub use arg::*;
+mod action;
+pub use action::CommandAction;
 
 use crate::context::MessageContext;
 use crate::event::Permission;
 use crate::handler::HandlerResult;
 use async_trait::async_trait;
 
-/// 命令处理动作
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum CommandAction {
-	/// 处理完成，停止传播
-	Done,
-	/// 继续传播给其他处理器
-	Continue,
-}
 
-impl CommandAction {
-	pub const fn done() -> HandlerResult<CommandAction> {
-		Ok(CommandAction::Done)
-	}
-	pub const fn r#continue() -> HandlerResult<CommandAction> {
-		Ok(CommandAction::Continue)
-	}
-}
-
-impl From<()> for CommandAction {
-	fn from(_: ()) -> Self {
-		CommandAction::Done
-	}
-}
-
-/// 命令
-#[derive(Debug, Clone)]
-pub struct Command<'c> {
-	pub name: &'c str,
-	pub description: Option<&'c str>,
-	pub args: Vec<Arg<'c>>,
-	pub rank: u32,
-	/// 自定义前缀，None 表示使用全局前缀
-	pub prefix: Option<String>,
-	/// 命令别名
-	pub alias: Vec<&'c str>,
-	/// 权限等级
-	pub permission: Permission,
-}
 
 #[async_trait]
-pub trait CommandBuilder: Send + Sync + 'static {
+pub trait Command: Send + Sync + 'static {
 	/// 命令名称
 	fn name(&self) -> &'static str;
 

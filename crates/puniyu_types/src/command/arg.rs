@@ -9,13 +9,22 @@ pub enum ArgType {
 	Bool,
 }
 
-impl ArgType {
-	pub const fn type_name(&self) -> &'static str {
-		match self {
-			ArgType::String => "字符串",
-			ArgType::Int => "整数",
-			ArgType::Float => "浮点数",
-			ArgType::Bool => "布尔值",
+/// 参数名称
+pub struct ArgName(pub &'static str);
+
+impl fmt::Display for ArgName {
+	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+		write!(f, "{}", self.0)
+	}
+}
+
+impl From<ArgType> for ArgName {
+	fn from(arg_type: ArgType) -> Self {
+		match arg_type {
+			ArgType::String => ArgName("字符串"),
+			ArgType::Int => ArgName("整数"),
+			ArgType::Float => ArgName("浮点数"),
+			ArgType::Bool => ArgName("布尔值"),
 		}
 	}
 }

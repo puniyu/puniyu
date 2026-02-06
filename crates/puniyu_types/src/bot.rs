@@ -1,73 +1,45 @@
 use crate::account::AccountInfo;
-use crate::adapter::{AdapterApi, AdapterInfo, MessageApi, Result, SendMsgType};
-use crate::contact::ContactType;
-use crate::element;
-use serde::{Deserialize, Serialize};
+use crate::adapter::{AdapterApi, AdapterInfo, Plugin};
+use std::fmt::{Debug, Formatter};
+use std::sync::Arc;
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub enum BotId {
-	Index(u64),
-	SelfId(String),
-}
-
-impl From<u64> for BotId {
-	fn from(index: u64) -> Self {
-		Self::Index(index)
-	}
-}
-
-impl From<&str> for BotId {
-	fn from(self_id: &str) -> Self {
-		Self::SelfId(self_id.to_string())
-	}
-}
-
-impl From<String> for BotId {
-	fn from(self_id: String) -> Self {
-		Self::SelfId(self_id)
-	}
-}
-
-#[derive(Clone, Default, Serialize, Deserialize)]
+#[derive(Clone)]
 pub struct Bot {
 	/// 适配器信息
-	pub adapter: AdapterInfo,
-	/// 适配器API
-	#[serde(skip)]
-	pub api: AdapterApi,
+	adapter: Arc<dyn Plugin>,
 	/// 账户信息
-	pub account: AccountInfo,
+	account: AccountInfo,
+}
+
+impl Debug for Bot {
+	fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+		f.debug_tuple("Bot").field(&self.adapter.info()).field(&self.account).finish()
+	}
+}
+impl PartialEq for Bot {
+	fn eq(&self, other: &Self) -> bool {
+		self.adapter.info() == other.adapter.info()
+	}
 }
 
 impl Eq for Bot {}
 
-impl std::fmt::Debug for Bot {
-	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-		f.debug_struct("Bot")
-			.field("adapter", &self.adapter)
-			.field("account", &self.account)
-			.finish_non_exhaustive()
-	}
-}
-
-impl PartialEq for Bot {
-	fn eq(&self, other: &Self) -> bool {
-		self.adapter == other.adapter && self.account == other.account
-	}
-}
-
 impl Bot {
-	/// 发送消息
-	///
-	/// ## 参数
-	/// `_contact` - 联系人
-	/// `_message` - 消息元素
-	///
-	pub async fn send_msg(
-		&self,
-		contact: ContactType,
-		message: element::Message,
-	) -> Result<SendMsgType> {
-		self.api.send_msg(contact, message).await
+	pub fn new<A: Plugin + 'static>(adapter: A, account: AccountInfo) -> Self {
+		Self { adapter: Arc::from(adapter), account }
+	}
+	/// 适配器信息
+	pub fn adapter(&self) -> AdapterInfo {
+		self.adapter.info()
+	}
+
+	/// 适配器Api
+	pub fn api(&self) -> AdapterApi {
+		self.adapter.api()
+	}
+
+	/// Bot自身账号信息
+	pub fn account(&self) -> AccountInfo {
+		self.account.clone()
 	}
 }

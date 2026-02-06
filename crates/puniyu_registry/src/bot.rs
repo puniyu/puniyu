@@ -1,63 +1,112 @@
 mod store;
+mod types;
+
 use store::BotStore;
 
+use crate::{Error, Result};
 use puniyu_logger::{info, owo_colors::OwoColorize, warn};
 pub use puniyu_types::bot::Bot;
-pub use puniyu_types::bot::BotId;
 use std::sync::LazyLock;
+use puniyu_types::adapter::Plugin;
+use types::BotId;
 
 static STORE: LazyLock<BotStore> = LazyLock::new(BotStore::new);
 
 pub struct BotRegistry;
 
-impl BotRegistry {
-	pub fn all() -> Vec<Bot> {
-		STORE.all()
-	}
-
-	pub fn get_with_index(index: u64) -> Option<Bot> {
-		STORE.get_with_index(index)
-	}
-
-	pub fn get_with_self_id(self_id: &str) -> Option<Bot> {
-		STORE.get_with_self_id(self_id)
-	}
-
-	pub fn register(bot: Bot) -> u64 {
-		let self_id = bot.account.uin.clone();
-		let adapter = bot.adapter.clone();
+impl<B: Plugin> BotRegistry {
+	pub fn register(bot: Bot) -> Result<u64> {
+		let self_id = bot.account().uin.clone();
+		let adapter_name = bot.adapter().name.clone();
 		let index = STORE.insert(bot);
 		info!(
 			"[{}] [{}] 注册成功",
 			format!("Bot: {}", self_id).fg_rgb::<221, 160, 221>(),
-			format!("adapter:{}", adapter.name).fg_rgb::<255, 182, 193>()
+			format!("adapter:{}", adapter_name).fg_rgb::<255, 182, 193>()
 		);
 		index
 	}
-
-	pub fn unregister_with_index(index: u64) -> bool {
-		if let Some(bot) = STORE.remove_with_index(index) {
-			info!(
-				"[Bot: index-{}][adapter:{} v{}] 卸载成功",
-				bot.account.uin, bot.adapter.name, bot.adapter.version
-			);
-			return true;
+	pub fn unregister<B>(bot_id: B) -> Result<()>
+	where
+		B: Into<BotId>,
+	{
+		let bot_id = bot_id.into();
+		match bot_id {
+			BotId::Index(id) => Self::unregister_with_index(id),
+			BotId::SelfId(id) => Self::unregister_with_bot_id(id),
 		}
-		warn!("[Bot: index-{}] 卸载失败未找到指定的Bot", index);
-		false
 	}
 
-	pub fn unregister_with_id(id: impl Into<String>) -> bool {
-		let bot_id = id.into();
-		if let Some(bot) = STORE.remove_with_self_id(bot_id.as_str()) {
+	pub fn unregister_with_index(index: u64) -> Result<()> {
+		let raw = STORE.raw();
+		let mut map = raw.write().expect("Failed to acquire lock");
+		if let Some(bot) = map.remove(&index) {
+			let self_id = bot.account().uin;
+			let adapter_info = bot.adapter();
+			let adapter_name = adapter_info.name;
+			let adapter_version = adapter_info.version;
+
 			info!(
-				"[Bot: {}][adapter:{} v{}] 卸载成功",
-				bot.account.uin, bot.adapter.name, bot.adapter.version
+				"[Bot: index-{}][adapter:{} v{}] 卸载成功",
+				self_id, adapter_name, adapter_version
 			);
-			return true;
+			Ok(())
+		} else {
+			Err(Error::NotFound("Bot".to_string()))
 		}
-		warn!("[Bot: {}] 卸载失败未找到指定的Bot", bot_id);
-		false
+	}
+
+	pub fn unregister_with_bot_id(bot_id: &str) -> Result<()> {
+		let raw = STORE.raw();
+		let mut map = raw.write().expect("Failed to acquire lock");
+		let indices = map
+			.iter()
+			.filter_map(|(k, v)| if v.account().uin == bot_id { Some(*k) } else { None })
+			.collect::<Vec<u64>>();
+		if indices.is_empty() {
+			warn!("[Bot: {}] 卸载失败未找到指定的Bot", bot_id);
+			return Err(Error::NotFound("Bot".to_string()));
+		}
+		indices.into_iter().for_each(|idx| {
+			if let Some(bot) = map.remove(&idx) {
+				let self_id = bot.account().uin;
+				let adapter_info = bot.adapter();
+				let adapter_name = adapter_info.name;
+				let adapter_version = adapter_info.version;
+				info!(
+					"[Bot: {}][adapter:{} v{}] 卸载成功",
+					self_id, adapter_name, adapter_version
+				);
+			}
+		});
+
+		Ok(())
+	}
+
+	pub fn get<T>(bot_id: T) -> Vec<Bot>
+	where
+		T: Into<BotId>
+	{
+		let bot_id = bot_id.into();
+		match bot_id {
+			BotId::Index(index) => Self::get_with_index(index).into_iter().collect(),
+			BotId::SelfId(self_id) => Self::get_with_bot_id(self_id),
+		}
+	}
+	pub fn get_with_index(index: u64) -> Option<Bot> {
+		let raw = STORE.raw();
+		let map = raw.read().expect("Failed to acquire lock");
+		map.get(&index).cloned()
+	}
+
+	pub fn get_with_bot_id(self_id: &str) -> Vec<Bot> {
+		let raw = STORE.raw();
+		let map = raw.read().expect("Failed to acquire lock");
+		map.values().filter(|bot| bot.account().uin == self_id).cloned().collect()
+	}
+
+	pub fn all() -> Vec<Bot> {
+		STORE.all()
 	}
 }
 
@@ -82,12 +131,12 @@ impl BotRegistry {
 #[cfg(feature = "bot")]
 #[macro_export]
 macro_rules! register_bot {
-	($adapter:expr, $account:expr, $api:expr) => {
-		let bot = $crate::bot::Bot { adapter: $adapter, api: $api, account: $account };
+	($adapter:expr, $account:expr) => {
+		let bot = $crate::bot::Bot::new($adapter, $account)
 		$crate::bot::BotRegistry::register(bot)
 	};
-	(adapter: $adapter:expr, account: $account:expr, api: $api:expr) => {
-		let bot = $crate::bot::Bot { adapter: $adapter, api: $api, account: $account };
+	(adapter: $adapter:expr, account: $account:expr) => {
+		let bot = $crate::bot::Bot::new($adapter, $account)
 		$crate::bot::BotRegistry::register(bot)
 	};
 }
@@ -111,13 +160,16 @@ macro_rules! register_bot {
 #[macro_export]
 macro_rules! unregister_bot {
 	($id:expr) => {
-		BotRegistry::unregister_with_id($id)
+		match $id {
+			id if id.is::<u64>() => BotRegistry::unregister_with_index(id),
+			_ => BotRegistry::unregister_with_bot_id($id.to_string()),
+		}
 	};
 	(index: $index:expr) => {
 		BotRegistry::unregister_with_index($index)
 	};
 	(id: $id:expr) => {
-		BotRegistry::unregister_with_id($id)
+		BotRegistry::unregister_with_bot_id($id)
 	};
 }
 
@@ -142,7 +194,11 @@ pub fn get_bot(id: impl Into<BotId>) -> Option<Bot> {
 	let bot_id: BotId = id.into();
 	match bot_id {
 		BotId::Index(index) => BotRegistry::get_with_index(index),
-		BotId::SelfId(id) => BotRegistry::get_with_self_id(id.as_str()),
+		BotId::SelfId(self_id) => {
+			let raw = STORE.raw();
+			let map = raw.read().expect("Failed to acquire lock");
+			map.values().find(|v| v.account().uin == self_id).cloned()
+		}
 	}
 }
 

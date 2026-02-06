@@ -1,14 +1,14 @@
-use crate::command::CommandBuilder;
+use crate::command::Command;
 use crate::config::Config;
 use crate::handler::HandlerResult;
-use crate::hook::HookBuilder;
-use crate::server::ServerType;
+use crate::hook::Hook;
+use crate::server::ServerFunction;
 use crate::task::TaskBuilder;
 use crate::version::Version;
 use async_trait::async_trait;
 
 #[async_trait]
-pub trait PluginBuilder: Send + Sync {
+pub trait Plugin: Send + Sync {
 	/// 插件名称
 	fn name(&self) -> &str;
 	/// 插件版本
@@ -35,12 +35,12 @@ pub trait PluginBuilder: Send + Sync {
 	}
 
 	/// 命令列表
-	fn commands(&self) -> Vec<Box<dyn CommandBuilder>> {
+	fn commands(&self) -> Vec<Box<dyn Command>> {
 		Vec::new()
 	}
 
 	/// 钩子列表
-	fn hooks(&self) -> Vec<Box<dyn HookBuilder>> {
+	fn hooks(&self) -> Vec<Box<dyn Hook>> {
 		Vec::new()
 	}
 
@@ -50,7 +50,7 @@ pub trait PluginBuilder: Send + Sync {
 	}
 
 	/// 路由管理
-	fn server(&self) -> Option<ServerType> {
+	fn server(&self) -> Option<ServerFunction> {
 		None
 	}
 	/// 插件初始化函数

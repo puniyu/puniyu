@@ -128,7 +128,7 @@ impl FromStr for HookEventType {
 }
 
 #[async_trait]
-pub trait HookBuilder: Send + Sync + 'static {
+pub trait Hook: Send + Sync + 'static {
 	fn name(&self) -> &'static str;
 
 	fn r#type(&self) -> HookType;

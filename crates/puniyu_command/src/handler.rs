@@ -25,7 +25,7 @@ impl CommandHandler {
 	}
 
 	fn get_commands() -> Vec<Arc<Command>> {
-		CommandRegistry::commands().into_iter().sorted_by_key(|cmd| cmd.builder.rank()).collect()
+		CommandRegistry::all().into_iter().sorted_by_key(|cmd| cmd.builder.rank()).collect()
 	}
 
 	fn matches_command(event: &MessageEvent) -> bool {
@@ -107,7 +107,7 @@ impl CommandHandler {
 		let input_name = Self::get_command_name(event);
 		let args = Self::get_args(event);
 
-		let commands = CommandRegistry::commands();
+		let commands = CommandRegistry::all();
 		let Some(command) = commands.iter().find(|cmd| {
 			cmd.builder.name() == input_name.as_str()
 				|| cmd.builder.alias().contains(&input_name.as_str())

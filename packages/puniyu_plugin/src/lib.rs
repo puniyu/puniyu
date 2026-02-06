@@ -1,6 +1,6 @@
 pub mod adapter;
 pub mod bot;
-mod command;
+pub mod command;
 pub mod common;
 pub mod contact;
 pub mod context;
@@ -10,6 +10,7 @@ pub mod handler;
 pub mod macros;
 pub mod prelude;
 pub mod server;
+pub mod version;
 
 pub use puniyu_logger as logger;
 pub use puniyu_types::version::Version;
@@ -23,17 +24,17 @@ pub mod private {
 	pub use inventory;
 	pub use puniyu_config::ConfigRegistry;
 	pub use puniyu_registry::command::CommandRegistry;
-	pub use puniyu_registry::plugin::VERSION as ABI_VERSION;
-	pub use puniyu_types::command::CommandBuilder;
+	pub use crate::Version as ABI_VERSION;
+	pub use puniyu_types::command::Command;
 	pub use puniyu_types::command::{Arg, ArgMode, ArgType, ArgValue, CommandAction};
 	pub use puniyu_types::config::Config;
 	pub use puniyu_types::event::Permission;
 	pub use puniyu_types::handler::HandlerResult;
 	pub use puniyu_types::hook::{
-		HookBuilder, HookEventType, HookMessageType, HookNotionType, HookRequestType, HookType,
-		StatusType,
+        Hook, HookEventType, HookMessageType, HookNotionType, HookRequestType, HookType,
+        StatusType,
 	};
-	pub use puniyu_types::plugin::PluginBuilder;
+	pub use puniyu_types::plugin::Plugin;
 	pub use puniyu_types::task::TaskBuilder;
 	pub use puniyu_types::version::Version;
 	pub use toml;

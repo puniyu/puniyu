@@ -2,28 +2,6 @@ use async_trait::async_trait;
 
 use crate::handler::HandlerResult;
 
-#[derive(Debug, Clone)]
-pub enum TaskId {
-	Index(u64),
-	Name(String),
-}
-
-impl From<u64> for TaskId {
-	fn from(value: u64) -> Self {
-		Self::Index(value)
-	}
-}
-impl From<String> for TaskId {
-	fn from(value: String) -> Self {
-		Self::Name(value)
-	}
-}
-
-impl From<&str> for TaskId {
-	fn from(value: &str) -> Self {
-		Self::Name(value.to_string())
-	}
-}
 
 pub struct Task {
 	/// 任务名称

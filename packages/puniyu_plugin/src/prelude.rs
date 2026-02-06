@@ -9,3 +9,4 @@ pub use crate::event::*;
 pub use crate::handler::*;
 pub use crate::macros::*;
 pub use crate::server::*;
+pub use crate::version::*;

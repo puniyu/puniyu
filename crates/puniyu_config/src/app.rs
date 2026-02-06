@@ -4,14 +4,14 @@ mod group;
 mod logger;
 mod server;
 
-use adapter::AdapterConfig;
-use friend::FriendConfig;
-use group::GroupConfig;
-use logger::LoggerConfig;
+pub use adapter::AdapterConfig;
+pub use friend::FriendConfig;
+pub use group::GroupConfig;
+pub use logger::LoggerConfig;
+pub use server::ServerConfig;
 use puniyu_common::config;
 use puniyu_common::path::CONFIG_DIR;
 use serde::{Deserialize, Serialize};
-use server::ServerConfig;
 use std::sync::{Arc, LazyLock, RwLock};
 
 pub(crate) static APP_CONFIG: LazyLock<Arc<RwLock<AppConfig>>> = LazyLock::new(|| {
@@ -56,7 +56,7 @@ pub struct AppConfig {
 impl Default for AppConfig {
 	#[inline]
 	fn default() -> Self {
-		AppConfig {
+		Self {
 			logger: LoggerConfig::default(),
 			server: ServerConfig::default(),
 			adapter: AdapterConfig::default(),

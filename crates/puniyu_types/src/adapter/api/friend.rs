@@ -9,7 +9,7 @@ pub trait FriendApi: Send + Sync {
 	/// `target_id` - 目标ID
 	/// `size` - 头像尺寸
 	///
-	async fn get_user_avatar(&self, _target_id: &str, _size: Option<AvatarSize>) -> Result<Avatar> {
+	async fn get_user_avatar(&self, target_id: &str, size: Option<AvatarSize>) -> Result<Avatar> {
 		Err(Error::NotImpl)
 	}
 
@@ -23,7 +23,7 @@ pub trait FriendApi: Send + Sync {
 	/// ## 参数
 	/// `action` - 设置或拒绝好友申请
 	///
-	async fn set_friend_apply(&self, _action: SetFriendApplyType) -> Result<()> {
+	async fn set_friend_apply(&self, action: SetFriendApplyType) -> Result<()> {
 		Err(Error::NotImpl)
 	}
 }

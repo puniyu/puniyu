@@ -1,4 +1,5 @@
 use crate::BaseResponse;
+use crate::config::get_config;
 use crate::{api, info, middleware};
 use actix_web::middleware::{NormalizePath, TrailingSlash};
 use actix_web::{App, HttpResponse, HttpServer, http::StatusCode, web};
@@ -6,19 +7,9 @@ use bytes::Bytes;
 use puniyu_common::APP_NAME;
 use puniyu_common::path::RESOURCE_DIR;
 use puniyu_registry::server::ServerRegistry;
-use puniyu_types::server::{
-	SERVER_COMMAND_TX, ServerCommand, get_server_config, save_server_config,
-};
+use puniyu_types::server::{SERVER_COMMAND_TX, ServerCommand};
 use std::net::IpAddr;
 use std::sync::LazyLock;
-
-fn get_host_from_env() -> IpAddr {
-	std::env::var("HTTP_HOST").ok().and_then(|s| s.parse().ok()).unwrap()
-}
-
-fn get_port_from_env() -> u16 {
-	std::env::var("HTTP_PORT").ok().and_then(|s| s.parse().ok()).unwrap()
-}
 
 async fn logo() -> HttpResponse {
 	static LOGO: LazyLock<Option<Bytes>> =
@@ -40,23 +31,12 @@ async fn logo() -> HttpResponse {
 	}
 }
 
-pub async fn run_server_with_control(
-	host: Option<IpAddr>,
-	port: Option<u16>,
-) -> std::io::Result<()> {
+pub async fn run_server_with_control(host: IpAddr, port: u16) -> std::io::Result<()> {
 	let (tx, rx) = flume::bounded::<ServerCommand>(16);
 	let _ = SERVER_COMMAND_TX.set(tx);
-	let init_host = host.unwrap_or_else(get_host_from_env);
-	let init_port = port.unwrap_or_else(get_port_from_env);
-	save_server_config(init_host, init_port);
 
 	loop {
-		let config = get_server_config();
-		let host = config.as_ref().map(|c| c.host).unwrap_or_else(get_host_from_env);
-		let port = config.as_ref().map(|c| c.port).unwrap_or_else(get_port_from_env);
-		let addr = format!("{}:{}", host, port);
-
-		info!("服务器在 {} 运行", addr);
+		info!("服务器在 {} 运行", format!("{}:{}", host, port));
 
 		let server = HttpServer::new(|| {
 			let app = App::new()
@@ -76,7 +56,7 @@ pub async fn run_server_with_control(
 				.into_iter()
 				.fold(app, |app, service_cfg| app.configure(|cfg| service_cfg(cfg)))
 		})
-		.bind(&addr)?;
+		.bind((host, port))?;
 
 		let running_server = server.run();
 		let handle = running_server.handle();
@@ -98,7 +78,6 @@ pub async fn run_server_with_control(
 					Ok(ServerCommand::Restart) => {
 						info!("收到重启命令，正在重启服务器...");
 						handle.stop(true).await;
-						save_server_config(get_host_from_env(), get_port_from_env());
 						continue;
 					}
 					Err(_) => {
@@ -111,6 +90,6 @@ pub async fn run_server_with_control(
 	}
 }
 
-pub fn run_server_spawn(host: Option<IpAddr>, port: Option<u16>) {
+pub fn run_server_spawn(host: IpAddr, port: u16) {
 	tokio::spawn(async move { run_server_with_control(host, port).await });
 }

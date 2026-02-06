@@ -1,5 +1,5 @@
-use crate::hook::HookInfo;
-use puniyu_types::hook::HookBuilder;
+use super::HookInfo;
+use crate::{Error, Result, SourceType};
 use std::collections::HashMap;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Arc, RwLock};
@@ -7,44 +7,33 @@ use std::sync::{Arc, RwLock};
 static HOOK_INDEX: AtomicU64 = AtomicU64::new(0);
 
 #[derive(Clone, Default)]
-pub(crate) struct HookStore(pub(crate) Arc<RwLock<HashMap<u64, Arc<dyn HookBuilder>>>>);
+pub(crate) struct HookStore(Arc<RwLock<HashMap<u64, HookInfo>>>);
 
 impl HookStore {
 	pub fn new() -> Self {
 		Self::default()
 	}
-	pub fn insert(&self, hook: Arc<dyn HookBuilder>) {
-		let mut hooks = self.0.write().unwrap();
-		let exists = hooks.values().any(|a| a.name() == hook.name());
-		if !exists {
-			let id = HOOK_INDEX.fetch_add(1, Ordering::Relaxed);
-			hooks.insert(id, hook);
+	pub fn insert(&self, hook: HookInfo) -> Result<u64> {
+		let mut map = self.0.write().expect("Failed to acquire lock");
+		if map.values().any(|v| v == &hook) {
+			return Err(Error::Exists("Hook".to_string()));
 		}
+		let index = HOOK_INDEX.fetch_add(1, Ordering::Relaxed);
+		map.insert(index, hook);
+		Ok(index)
 	}
 
-	pub fn get(&self, name: &str) -> Option<HookInfo> {
-		let hooks = self.0.read().unwrap();
-		hooks
-			.iter()
-			.find(|(_, hook)| hook.name() == name)
-			.map(|(id, hook)| HookInfo { index: *id, builder: hook.clone() })
+	pub fn get(&self, source: SourceType) -> Option<HookInfo> {
+		let map = &self.0.read().expect("Failed to acquire lock");
+		map.values().find(|h| h.source == source).cloned()
 	}
 
 	pub fn all(&self) -> Vec<HookInfo> {
-		let hooks = self.0.read().unwrap();
-		hooks.iter().map(|(id, hook)| HookInfo { index: *id, builder: hook.clone() }).collect()
+		let map = &self.0.read().expect("Failed to acquire lock");
+		map.values().cloned().collect()
 	}
 
-	#[allow(dead_code)]
-	pub fn remove_with_name(&self, name: &str) {
-		let mut map = self.0.write().unwrap();
-		if let Some(key) = map.iter().find(|(_, v)| v.name() == name).map(|(k, _)| *k) {
-			map.remove(&key);
-		}
-	}
-
-	pub fn remove_with_index(&self, index: u64) {
-		let mut map = self.0.write().unwrap();
-		map.remove(&index);
+	pub(crate) fn raw(&self) -> Arc<RwLock<HashMap<u64, HookInfo>>> {
+		self.0.clone()
 	}
 }

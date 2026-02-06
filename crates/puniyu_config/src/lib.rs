@@ -1,11 +1,11 @@
 mod registry;
 mod store;
 pub use registry::ConfigRegistry;
-mod app;
-mod bot;
+pub mod app;
+pub mod bot;
 mod common;
-mod friend;
-mod group;
+pub mod friend;
+pub mod group;
 pub use common::ReactiveMode;
 
 use crate::{

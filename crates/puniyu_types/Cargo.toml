@@ -47,7 +47,8 @@ adapter = [
     "sender",
     "element",
     "config",
-    "hook"
+    "hook",
+    "handler"
 ]
 event = ["dep:strum", "dep:puniyu_config", "dep:bytes", "bot", "element", "sender", "contact"]
 context = ["dep:bytes", "adapter", "bot", "element", "event", "contact", "sender"]

@@ -71,7 +71,7 @@ pub fn server(item: TokenStream) -> TokenStream {
 		::puniyu_plugin::private::inventory::submit! {
 			crate::ServerRegistry {
 				plugin_name: #plugin_name,
-				builder: || -> ::puniyu_plugin::private::ServerType { ::std::sync::Arc::new(#fn_name) },
+				builder: || -> ::puniyu_plugin::private::ServerFunction { ::std::sync::Arc::new(#fn_name) },
 			}
 		}
 	};

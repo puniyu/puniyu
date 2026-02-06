@@ -17,7 +17,7 @@ use std::sync::Arc;
 struct Console;
 
 #[async_trait]
-impl AdapterBuilder for Console {
+impl Adapter for Console {
 	fn name(&self) -> &'static str {
 		env!("CARGO_PKG_NAME")
 	}

@@ -126,9 +126,11 @@ pub enum AdapterCommunication {
 #[builder(setter(into))]
 /// 适配器信息
 pub struct AdapterInfo {
-	/// 适配器名称 如lagrange-onebot
+	/// 适配器名称 如puniyu_adapter_onebot
 	#[builder(default)]
 	pub name: String,
+	/// 适配器作者
+	pub author: Option<String>,
 	/// 适配器版本
 	#[builder(default)]
 	pub version: Version,
@@ -162,7 +164,7 @@ pub struct AdapterInfo {
 
 impl Default for AdapterInfo {
 	fn default() -> Self {
-		AdapterInfoBuilder::default().build().unwrap()
+		AdapterInfoBuilder::default().build().expect("Failed to build AdapterInfo")
 	}
 }
 
@@ -196,9 +198,9 @@ macro_rules! adapter_info {
 		$(
 			builder.$key($value);
 		)*
-		builder.build().unwrap()
+		builder.build().expect("Failed to build AdapterInfo")
 	}};
 	() => {
-		$crate::adapter::AdapterInfoBuilder::default().build().unwrap()
+		$crate::adapter::AdapterInfoBuilder::default().build().expect("Failed to build AdapterInfo")
 	};
 }

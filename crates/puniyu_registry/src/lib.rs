@@ -20,12 +20,13 @@ pub mod plugin;
 pub mod cooldown;
 
 #[cfg(feature = "handler")]
-mod handler;
-
-#[cfg(feature = "handler")]
-pub use handler::HandlerRegistry;
+pub mod handler;
 
 #[cfg(feature = "hook")]
-mod hook;
-#[cfg(feature = "hook")]
-pub use hook::HookRegistry;
+pub mod hook;
+
+mod error;
+pub use error::Error;
+mod types;
+pub use types::*;
+pub type Result<T> = std::result::Result<T, Error>;

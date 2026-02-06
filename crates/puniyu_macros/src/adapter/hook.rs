@@ -218,7 +218,7 @@ pub fn hook(args: TokenStream, item: TokenStream) -> TokenStream {
 		struct #struct_name;
 
 		#[::puniyu_adapter::private::async_trait]
-		impl ::puniyu_adapter::private::HookBuilder for #struct_name {
+		impl ::puniyu_adapter::private::Hook for #struct_name {
 			fn name(&self) -> &'static str {
 				#hook_name
 			}
@@ -242,7 +242,7 @@ pub fn hook(args: TokenStream, item: TokenStream) -> TokenStream {
 		::puniyu_adapter::private::inventory::submit! {
 			crate::HookRegistry {
 				adapter_name: #adapter_name,
-				builder: || -> Box<dyn ::puniyu_adapter::private::HookBuilder> {
+				builder: || -> Box<dyn ::puniyu_adapter::private::Hook> {
 					Box::new(#struct_name {})
 				}
 			}

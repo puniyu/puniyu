@@ -8,21 +8,21 @@ use syn::{ItemFn, parse_macro_input};
 
 #[derive(Debug, FromMeta, Default)]
 struct Arg {
-	pub name: String,
+	name: String,
 	#[darling(rename = "type")]
-	pub r#type: Option<String>,
-	pub mode: Option<String>,
-	pub required: Option<bool>,
-	pub desc: Option<String>,
+	r#type: Option<String>,
+	mode: Option<String>,
+	required: Option<bool>,
+	desc: Option<String>,
 }
 
 #[derive(Debug, FromMeta, Default)]
 struct CommandArgs {
-	pub name: String,
-	pub rank: Option<u32>,
-	pub desc: Option<String>,
-	pub alias: Option<Vec<LitStr>>,
-	pub permission: Option<String>,
+	name: String,
+	rank: Option<u32>,
+	desc: Option<String>,
+	alias: Option<Vec<LitStr>>,
+	permission: Option<String>,
 }
 pub fn command(args: TokenStream, item: TokenStream) -> TokenStream {
 	let attr_args = match NestedMeta::parse_meta_list(args.into()) {
@@ -195,7 +195,7 @@ pub fn command(args: TokenStream, item: TokenStream) -> TokenStream {
 		struct #struct_name;
 
 		#[::puniyu_plugin::private::async_trait]
-		impl ::puniyu_plugin::private::CommandBuilder for #struct_name {
+		impl ::puniyu_plugin::private::Command for #struct_name {
 			fn name(&self) -> &'static str {
 				#command_name
 			}
@@ -230,7 +230,7 @@ pub fn command(args: TokenStream, item: TokenStream) -> TokenStream {
 		::puniyu_plugin::private::inventory::submit! {
 			crate::CommandRegistry {
 				plugin_name: #plugin_name,
-				builder: || -> Box<dyn ::puniyu_plugin::private::CommandBuilder> { Box::new(#struct_name {}) },
+				builder: || -> Box<dyn ::puniyu_plugin::private::Command> { Box::new(#struct_name {}) },
 			}
 		}
 	};

@@ -9,7 +9,7 @@ pub trait AccountApi: Send + Sync {
 	/// ## 参数
 	/// `avatar` - 头像二进制数据
 	///
-	async fn set_avatar(&self, _avatar: Bytes) -> Result<bool> {
+	async fn set_avatar(&self, avatar: Bytes) -> Result<bool> {
 		Err(Error::NotImpl)
 	}
 }

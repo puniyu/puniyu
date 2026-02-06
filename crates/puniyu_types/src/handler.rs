@@ -7,7 +7,7 @@ pub type HandlerResult<T = ()> = Result<T, Box<dyn std::error::Error + Send + Sy
 #[async_trait]
 pub trait Handler: Send + Sync + 'static {
 	/// 处理器名称
-	fn name(&self) -> &str;
+	fn name(&self) -> &'static str;
 
 	/// 优先级
 	fn rank(&self) -> u32 {

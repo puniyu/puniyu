@@ -24,7 +24,7 @@ pub struct GroupConfig {
 impl GroupConfig {
 	/// 根据群组配置, 包括全局和所有群组的配置
 	pub fn get() -> Self {
-		GROUP_CONFIG.read().unwrap().clone()
+		GROUP_CONFIG.read().expect("Failed to read group config").clone()
 	}
 
 	/// 获取全局群组配置

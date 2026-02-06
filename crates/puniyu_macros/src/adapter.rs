@@ -37,9 +37,9 @@ pub fn adapter(item: proc_macro::TokenStream) -> proc_macro::TokenStream {
 		pub struct #struct_name;
 
 		#[::puniyu_adapter::private::async_trait]
-		impl ::puniyu_adapter::private::AdapterBuilder for #struct_name {
+		impl ::puniyu_adapter::private::Adapter for #struct_name {
 			fn name(&self) -> &str {
-				::puniyu_adapter::private::AdapterBuilder::name(&#fn_name)
+				#adapter_name
 			}
 
 			fn version(&self) -> ::puniyu_adapter::private::Version {
@@ -55,7 +55,7 @@ pub fn adapter(item: proc_macro::TokenStream) -> proc_macro::TokenStream {
 			}
 
 			fn api(&self) -> ::puniyu_adapter::private::AdapterApi {
-				::puniyu_adapter::private::AdapterBuilder::api(&#fn_name)
+				::puniyu_adapter::private::Adapter::api(&#fn_name)
 			}
 
 			fn config(&self) -> Vec<Box<dyn ::puniyu_adapter::private::Config>> {
@@ -66,7 +66,7 @@ pub fn adapter(item: proc_macro::TokenStream) -> proc_macro::TokenStream {
 					.collect()
 			}
 
-			fn hooks(&self) -> Vec<Box<dyn ::puniyu_adapter::private::HookBuilder>> {
+			fn hooks(&self) -> Vec<Box<dyn ::puniyu_adapter::private::Hook>> {
 				::puniyu_adapter::private::inventory::iter::<crate::HookRegistry>
 					.into_iter()
 					.filter(|registry| registry.adapter_name == #adapter_name)
@@ -74,7 +74,7 @@ pub fn adapter(item: proc_macro::TokenStream) -> proc_macro::TokenStream {
 					.collect()
 			}
 
-			fn server(&self) -> Option<::puniyu_adapter::private::ServerType> {
+			fn server(&self) -> Option<::puniyu_adapter::private::ServerFunction> {
 				::puniyu_adapter::private::AdapterBuilder::server(&#fn_name)
 			}
 
@@ -95,7 +95,7 @@ pub fn adapter(item: proc_macro::TokenStream) -> proc_macro::TokenStream {
 		pub(crate) struct HookRegistry {
 			adapter_name: &'static str,
 			/// 钩子构造器
-			builder: fn() -> Box<dyn ::puniyu_adapter::private::HookBuilder>,
+			builder: fn() -> Box<dyn ::puniyu_adapter::private::Hook>,
 		}
 		::puniyu_adapter::private::inventory::collect!(HookRegistry);
 	};

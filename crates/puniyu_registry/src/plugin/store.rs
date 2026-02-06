@@ -1,4 +1,5 @@
-use crate::plugin::PluginInfo;
+use crate::{Error, Result};
+use puniyu_types::plugin::Plugin;
 use std::{
 	collections::HashMap,
 	sync::{
@@ -10,38 +11,28 @@ use std::{
 static PLUGIN_INDEX: AtomicU64 = AtomicU64::new(0);
 
 #[derive(Debug, Clone, Default)]
-pub(crate) struct PluginStore(pub(crate) Arc<RwLock<HashMap<u64, PluginInfo>>>);
+pub(crate) struct PluginStore(Arc<RwLock<HashMap<u64, Arc<dyn Plugin>>>>);
 
 impl PluginStore {
 	pub fn new() -> Self {
 		Self::default()
 	}
-	pub fn insert(&self, plugin: PluginInfo) {
-		let mut plugins = self.0.write().unwrap();
-		let exists = plugins.values().any(|p| p.name == plugin.name);
-		if !exists {
-			let index = PLUGIN_INDEX.fetch_add(1, Ordering::Relaxed);
-			plugins.insert(index, plugin);
+	pub fn insert(&self, plugin: Arc<dyn Plugin>) -> Result<u64> {
+		let index = PLUGIN_INDEX.fetch_add(1, Ordering::SeqCst);
+		let mut map = self.0.write().expect("Failed to acquire lock");
+		if map.values().any(|v| v == &plugin) {
+			return Err(Error::Exists("Plugin".to_string()));
 		}
+		map.insert(index, plugin);
+		Ok(index)
 	}
 
-	pub fn all(&self) -> HashMap<u64, PluginInfo> {
-		self.0.read().unwrap().clone()
+	pub fn all(&self) -> Vec<Arc<dyn Plugin>> {
+		let map = self.0.read().expect("Failed to acquire lock");
+		map.values().cloned().collect()
 	}
 
-	pub fn get_plugin_with_index(&self, index: u64) -> Option<PluginInfo> {
-		self.0.read().unwrap().get(&index).cloned()
-	}
-
-	pub fn get_plugin_with_name(&self, name: &str) -> Option<PluginInfo> {
-		self.0.read().unwrap().values().find(|plugin| plugin.name == name).cloned()
-	}
-
-	pub fn remove(&self, index: u64) -> Option<PluginInfo> {
-		self.0.write().unwrap().remove(&index)
-	}
-
-	pub fn get_index(&self, name: &str) -> Option<u64> {
-		self.0.read().unwrap().iter().find(|(_, plugin)| plugin.name == name).map(|(idx, _)| *idx)
+	pub fn raw(&self) -> Arc<RwLock<HashMap<u64, Arc<dyn Plugin>>>> {
+		self.0.clone()
 	}
 }

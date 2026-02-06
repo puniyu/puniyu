@@ -1,5 +1,4 @@
-use super::{AccountApi, FriendApi, MessageApi};
-use crate::adapter::GroupApi;
+use super::{AccountApi, FriendApi, MessageApi, GroupApi};
 
 pub(crate) struct DefaultGroupApi;
 
@@ -14,5 +13,6 @@ pub(crate) struct DefaultAccountApi;
 impl AccountApi for DefaultAccountApi {}
 
 pub(crate) struct DefaultMessageApi;
+
 
 impl MessageApi for DefaultMessageApi {}

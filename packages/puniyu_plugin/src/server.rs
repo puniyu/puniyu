@@ -1,1 +1,1 @@
-pub use puniyu_types::server::ServerType;
+pub use puniyu_types::server::ServerFunction;

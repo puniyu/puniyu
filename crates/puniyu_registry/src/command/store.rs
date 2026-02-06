@@ -1,4 +1,5 @@
-use crate::command::Command;
+use super::types::CommandInfo;
+use crate::{Error, Result};
 use std::{
 	collections::HashMap,
 	sync::{
@@ -10,49 +11,26 @@ use std::{
 static COMMAND_ID: AtomicU64 = AtomicU64::new(0);
 
 #[derive(Default)]
-pub(crate) struct CommandStore(Arc<RwLock<HashMap<u64, Arc<Command>>>>);
+pub(crate) struct CommandStore<'c>(Arc<RwLock<HashMap<u64, CommandInfo<'c>>>>);
 
-impl CommandStore {
+impl<'c> CommandStore<'c> {
 	pub fn new() -> Self {
 		Self::default()
 	}
-	pub fn insert(&self, builder: Command) {
-		let id = COMMAND_ID.fetch_add(1, Ordering::Relaxed);
-		self.0.write().unwrap().insert(id, Arc::from(builder));
-	}
-	pub fn all(&self) -> Vec<Arc<Command>> {
-		self.0.read().unwrap().values().cloned().collect()
-	}
-
-	pub fn remove_with_id(&self, key: u64) {
-		self.0.write().unwrap().remove(&key);
-	}
-
-	pub fn remove_with_name(&self, name: &str) {
-		let mut map = self.0.write().unwrap();
-		if let Some(key) = map.iter().find(|(_, v)| v.builder.name() == name).map(|(k, _)| *k) {
-			map.remove(&key);
+	pub fn insert(&self, command: CommandInfo<'c>) -> Result<u64> {
+		let index = COMMAND_ID.fetch_add(1, Ordering::Relaxed);
+		let mut map = self.0.write().expect("Failed to acquire lock");
+		if map.values().any(|v| v.plugin_id == command.plugin_id && v.name == command.name) {
+			return Err(Error::Exists("Command".to_string()));
 		}
+		map.insert(index, command).ok_or(Error::Exists("Command".to_string()))?;
+		Ok(index)
 	}
-
-	pub fn remove_with_plugin_name(&self, plugin_name: &str) {
-		self.0.write().unwrap().retain(|_, registry| registry.plugin_name != plugin_name);
+	pub fn all(&self) -> Vec<CommandInfo<'c>> {
+		let map = self.0.read().expect("Failed to acquire lock");
+		map.values().cloned().collect()
 	}
-
-	pub fn get_with_id(&self, key: u64) -> Option<Arc<Command>> {
-		self.0.read().unwrap().get(&key).cloned()
-	}
-
-	pub fn get_with_name(&self, name: &str) -> Option<Arc<Command>> {
-		self.0.read().unwrap().values().find(|registry| registry.builder.name() == name).cloned()
-	}
-
-	pub fn get_with_plugin(&self, plugin_name: &str, name: &str) -> Option<Arc<Command>> {
-		self.0
-			.read()
-			.unwrap()
-			.values()
-			.find(|registry| registry.plugin_name == plugin_name && registry.builder.name() == name)
-			.cloned()
+	pub(crate) fn raw(&self) -> Arc<RwLock<HashMap<u64, CommandInfo<'c>>>> {
+		self.0.clone()
 	}
 }

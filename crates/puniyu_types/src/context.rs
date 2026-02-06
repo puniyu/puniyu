@@ -11,7 +11,7 @@ use bytes::Bytes;
 use std::collections::HashMap;
 use std::sync::Arc;
 
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub struct MessageContext {
 	bot: BotContext,
 	event: Arc<MessageEvent>,

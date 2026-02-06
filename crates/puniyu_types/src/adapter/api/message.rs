@@ -13,8 +13,8 @@ pub trait MessageApi: Send + Sync {
 	///
 	async fn send_msg(
 		&self,
-		_contact: ContactType,
-		_message: element::Message,
+		contact: ContactType,
+		message: element::Message,
 	) -> Result<SendMsgType> {
 		Err(Error::NotImpl)
 	}

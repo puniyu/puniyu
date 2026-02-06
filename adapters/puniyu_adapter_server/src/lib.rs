@@ -16,7 +16,7 @@ use std::sync::Arc;
 struct Server;
 
 #[async_trait]
-impl AdapterBuilder for Server {
+impl Adapter for Server {
 	fn name(&self) -> &'static str {
 		env!("CARGO_PKG_NAME")
 	}
@@ -29,7 +29,7 @@ impl AdapterBuilder for Server {
 		AdapterApi::new(group_api, friend_api, account_api, message_api)
 	}
 
-	fn server(&self) -> Option<ServerType> {
+	fn server(&self) -> Option<ServerFunction> {
 		let server = |cfg: &mut ServiceConfig| {
 			cfg.service(web::scope("/api/bot").configure(|cfg: &mut ServiceConfig| {
 				cfg.route("/{bot_app}", web::get().to(ws_handler));

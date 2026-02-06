@@ -2287,6 +2287,7 @@ dependencies = [
  "flume 0.11.1",
  "futures-util",
  "puniyu_common",
+ "puniyu_config",
  "puniyu_logger",
  "puniyu_registry",
  "puniyu_types",

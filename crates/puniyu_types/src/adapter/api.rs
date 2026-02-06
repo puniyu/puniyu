@@ -1,3 +1,5 @@
+#![allow(unused_variables)]
+
 mod group;
 pub use group::*;
 mod friend;
@@ -8,13 +10,14 @@ mod message;
 pub use message::*;
 mod inner;
 
-use super::{Error, Result, types::*};
+use super::{Error, types::*};
 use crate::contact::ContactType;
 use crate::element::Message;
 use async_trait::async_trait;
 use bytes::Bytes;
 use std::sync::Arc;
 use std::time::Duration;
+use super::Result;
 
 #[derive(Clone)]
 pub struct AdapterApi {

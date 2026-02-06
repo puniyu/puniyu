@@ -105,7 +105,7 @@ pub fn plugin(
 		#fn_vis #fn_sig #fn_block
 
 		#[::puniyu_plugin::private::async_trait]
-		impl ::puniyu_plugin::private::PluginBuilder for #struct_name {
+		impl ::puniyu_plugin::private::Plugin for #struct_name {
 			fn name(&self) -> &str {
 				#plugin_name
 			}
@@ -134,7 +134,7 @@ pub fn plugin(
 				#plugin_prefix
 			}
 
-			fn tasks(&self) -> Vec<Box<dyn ::puniyu_plugin::private::TaskBuilder>> {
+			fn tasks(&self) -> Vec<Box<dyn ::puniyu_plugin::private::Task>> {
 				let plugin_name = self.name();
 				::puniyu_plugin::private::inventory::iter::<TaskRegistry>
 					.into_iter()
@@ -143,7 +143,7 @@ pub fn plugin(
 					.collect()
 			}
 
-			fn commands(&self) -> Vec<Box<dyn ::puniyu_plugin::private::CommandBuilder>> {
+			fn commands(&self) -> Vec<Box<dyn ::puniyu_plugin::private::Command>> {
 				let plugin_name = self.name();
 				::puniyu_plugin::private::inventory::iter::<CommandRegistry>
 					.into_iter()
@@ -152,7 +152,7 @@ pub fn plugin(
 					.collect()
 			}
 
-			fn hooks(&self) -> Vec<Box<dyn ::puniyu_plugin::private::HookBuilder>> {
+			fn hooks(&self) -> Vec<Box<dyn ::puniyu_plugin::private::Hook>> {
 				let plugin_name = self.name();
 				::puniyu_plugin::private::inventory::iter::<HookRegistry>
 					.into_iter()
@@ -170,7 +170,7 @@ pub fn plugin(
 					.collect()
 			}
 
-			fn server(&self) -> Option<::puniyu_plugin::private::ServerType> {
+			fn server(&self) -> Option<::puniyu_plugin::private::ServerFunction> {
 				let plugin_name = self.name();
 				let servers: Vec<_> = ::puniyu_plugin::private::inventory::iter::<ServerRegistry>
 					.into_iter()
@@ -195,7 +195,7 @@ pub fn plugin(
 		/// 插件注册表
 		pub(crate) struct PluginRegistry {
 			/// 插件构造器
-			builder: fn() -> Box<dyn ::puniyu_plugin::private::PluginBuilder>,
+			builder: fn() -> Box<dyn ::puniyu_plugin::private::Plugin>,
 		}
 		::puniyu_plugin::private::inventory::collect!(PluginRegistry);
 
@@ -204,14 +204,14 @@ pub fn plugin(
 			/// 插件名称
 			plugin_name: &'static str,
 			/// 任务构造器
-			builder: fn() -> Box<dyn ::puniyu_plugin::private::TaskBuilder>,
+			builder: fn() -> Box<dyn ::puniyu_plugin::private::Task>,
 		}
 		::puniyu_plugin::private::inventory::collect!(TaskRegistry);
 
 		pub(crate) struct CommandRegistry {
 			plugin_name: &'static str,
 			/// 命令构造器
-			builder: fn() -> Box<dyn ::puniyu_plugin::private::CommandBuilder>,
+			builder: fn() -> Box<dyn ::puniyu_plugin::private::Command>,
 		}
 		::puniyu_plugin::private::inventory::collect!(CommandRegistry);
 
@@ -228,13 +228,13 @@ pub fn plugin(
 			/// 插件名称
 			plugin_name: &'static str,
 			/// 服务器配置构造器
-			builder: fn() -> ::puniyu_plugin::private::ServerType,
+			builder: fn() -> ::puniyu_plugin::private::ServerFunction,
 		}
 		::puniyu_plugin::private::inventory::collect!(ServerRegistry);
 
 		::puniyu_plugin::private::inventory::submit! {
 			crate::PluginRegistry {
-				builder: || -> Box<dyn ::puniyu_plugin::private::PluginBuilder> { Box::new(#struct_name {}) },
+				builder: || -> Box<dyn ::puniyu_plugin::private::Plugin> { Box::new(#struct_name {}) },
 			}
 		}
 
@@ -242,13 +242,13 @@ pub fn plugin(
 		pub(crate) struct HookRegistry {
 			plugin_name: &'static str,
 			/// 钩子构造器
-			builder: fn() -> Box<dyn ::puniyu_plugin::private::HookBuilder>,
+			builder: fn() -> Box<dyn ::puniyu_plugin::private::Hook>,
 		}
 		::puniyu_plugin::private::inventory::collect!(HookRegistry);
 
 		#[cfg(feature = "cdylib")]
 		#[unsafe(no_mangle)]
-		pub unsafe extern "C" fn plugin_info() -> *mut dyn ::puniyu_plugin::private::PluginBuilder {
+		pub unsafe extern "C" fn plugin_info() -> *mut dyn ::puniyu_plugin::private::Plugin {
 			Box::into_raw(Box::new(#struct_name {}))
 		}
 

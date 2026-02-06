@@ -2,6 +2,7 @@ mod api;
 mod logger;
 mod middleware;
 mod server;
+mod config;
 
 use actix_web::{HttpResponse, http::StatusCode};
 use bytes::Bytes;

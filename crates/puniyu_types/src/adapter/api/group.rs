@@ -13,7 +13,7 @@ pub trait GroupApi: Send + Sync {
 	/// `group_id` - 目标群Id
 	/// `size` - 头像尺寸
 	///
-	async fn get_group_avatar(&self, _group_id: &str, _size: Option<AvatarSize>) -> Result<Avatar> {
+	async fn get_group_avatar(&self, group_id: &str, size: Option<AvatarSize>) -> Result<Avatar> {
 		Err(Error::NotImpl)
 	}
 
@@ -22,7 +22,7 @@ pub trait GroupApi: Send + Sync {
 	/// ## 参数
 	/// `group_id` - 群ID
 	///
-	async fn get_group_info(&self, _group_id: &str) -> Result<GroupInfo> {
+	async fn get_group_info(&self, group_id: &str) -> Result<GroupInfo> {
 		Err(Error::NotImpl)
 	}
 
@@ -36,7 +36,7 @@ pub trait GroupApi: Send + Sync {
 	/// ## 参数
 	/// `group_id` - 群ID
 	///
-	async fn get_group_member_list(&self, _group_id: &str) -> Result<Vec<UserInfo>> {
+	async fn get_group_member_list(&self, group_id: &str) -> Result<Vec<UserInfo>> {
 		Err(Error::NotImpl)
 	}
 
@@ -45,7 +45,7 @@ pub trait GroupApi: Send + Sync {
 	/// ## 参数
 	/// `group_id` - 群ID
 	///
-	async fn get_group_mute_list(&self, _group_id: &str) -> Result<Vec<GroupMuteInfo>> {
+	async fn get_group_mute_list(&self, group_id: &str) -> Result<Vec<GroupMuteInfo>> {
 		Err(Error::NotImpl)
 	}
 
@@ -55,7 +55,7 @@ pub trait GroupApi: Send + Sync {
 	/// `group_id` - 群ID
 	/// `name` - 群名称
 	///
-	async fn set_group_name(&self, _group_id: &str, _name: &str) -> Result<()> {
+	async fn set_group_name(&self, group_id: &str, name: &str) -> Result<()> {
 		Err(Error::NotImpl)
 	}
 
@@ -69,10 +69,10 @@ pub trait GroupApi: Send + Sync {
 	///
 	async fn set_kick_group_member(
 		&self,
-		_group_id: &str,
-		_target_id: &str,
-		_reject_add_request: Option<bool>,
-		_reason: Option<&str>,
+		group_id: &str,
+		target_id: &str,
+		reject_add_request: Option<bool>,
+		reason: Option<&str>,
 	) -> Result<()> {
 		Err(Error::NotImpl)
 	}
@@ -86,9 +86,9 @@ pub trait GroupApi: Send + Sync {
 	///
 	async fn set_group_mute(
 		&self,
-		_group_id: &str,
-		_target_id: &str,
-		_duration: Duration,
+		group_id: &str,
+		target_id: &str,
+		duration: Duration,
 	) -> Result<()> {
 		Err(Error::NotImpl)
 	}
@@ -97,7 +97,7 @@ pub trait GroupApi: Send + Sync {
 	/// ## 参数
 	/// `group_id` - 群ID
 	/// `action` - 设置或取消全体禁言
-	async fn set_group_all_mute(&self, _group_id: &str, _action: MuteType) -> Result<()> {
+	async fn set_group_all_mute(&self, group_id: &str, action: MuteType) -> Result<()> {
 		Err(Error::NotImpl)
 	}
 
@@ -110,9 +110,9 @@ pub trait GroupApi: Send + Sync {
 	///
 	async fn set_group_admin(
 		&self,
-		_group_id: &str,
-		_target_id: &str,
-		_action: SetAdminType,
+		group_id: &str,
+		target_id: &str,
+		action: SetAdminType,
 	) -> Result<()> {
 		Err(Error::NotImpl)
 	}
@@ -122,7 +122,7 @@ pub trait GroupApi: Send + Sync {
 	/// ## 参数
 	/// `group_id` - 群ID
 	///
-	async fn set_group_quit(&self, _group_id: &str) -> Result<()> {
+	async fn set_group_quit(&self, group_id: &str) -> Result<()> {
 		Err(Error::NotImpl)
 	}
 
@@ -134,8 +134,8 @@ pub trait GroupApi: Send + Sync {
 	///
 	async fn set_group_invited_join(
 		&self,
-		_group_id: &str,
-		_action: SetGroupApplyType,
+		group_id: &str,
+		action: SetGroupApplyType,
 	) -> Result<()> {
 		Err(Error::NotImpl)
 	}
