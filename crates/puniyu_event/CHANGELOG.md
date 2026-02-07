@@ -1,4 +1,12 @@
 # 变更日志
+
+## [0.7.9](https://github.com/puniyu/puniyu/compare/puniyu_event-v0.7.8...puniyu_event-v0.7.9)
+
+### ⚙️ 杂项
+
+
+- Update Cargo.toml dependencies - ([0000000](https://github.com/puniyu/puniyu/commit/0000000))
+
 ## [0.7.8](https://github.com/puniyu/puniyu/compare/puniyu_event-v0.7.7...puniyu_event-v0.7.8) - 2026-01-12
 
 

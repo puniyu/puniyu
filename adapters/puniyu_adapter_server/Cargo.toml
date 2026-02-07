@@ -1,6 +1,6 @@
 [package]
 name = "puniyu_adapter_server"
-version = "0.3.6"
+version = "0.3.7"
 description = "puniyu的server适配器"
 authors.workspace = true
 license.workspace = true
