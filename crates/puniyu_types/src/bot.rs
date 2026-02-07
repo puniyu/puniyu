@@ -1,12 +1,12 @@
 use crate::account::AccountInfo;
-use crate::adapter::{AdapterApi, AdapterInfo, Plugin};
+use crate::adapter::{AdapterApi, AdapterInfo, Adapter};
 use std::fmt::{Debug, Formatter};
 use std::sync::Arc;
 
 #[derive(Clone)]
 pub struct Bot {
 	/// 适配器信息
-	adapter: Arc<dyn Plugin>,
+	adapter: Arc<dyn Adapter>,
 	/// 账户信息
 	account: AccountInfo,
 }
@@ -25,7 +25,7 @@ impl PartialEq for Bot {
 impl Eq for Bot {}
 
 impl Bot {
-	pub fn new<A: Plugin + 'static>(adapter: A, account: AccountInfo) -> Self {
+	pub fn new<A: Adapter + 'static>(adapter: A, account: AccountInfo) -> Self {
 		Self { adapter: Arc::from(adapter), account }
 	}
 	/// 适配器信息

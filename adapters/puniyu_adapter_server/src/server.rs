@@ -4,13 +4,16 @@ use prost::Message;
 use puniyu_adapter::logger::{error, info};
 use puniyu_probuff::event::EventReceive;
 use std::sync::Arc;
+use actix_web::web::ServiceConfig;
 
 mod connection;
 mod event;
 mod store;
 pub use connection::ConnectionManager;
+use puniyu_adapter::macros::server;
+use puniyu_adapter::server::ServerFunction;
 
-pub async fn ws_handler(
+async fn ws_handler(
 	req: HttpRequest,
 	body: web::Payload,
 	path: web::Path<String>,
@@ -50,4 +53,13 @@ pub async fn ws_handler(
 	});
 
 	Ok(response)
+}
+
+#[server]
+fn server(cfg: &mut ServiceConfig) -> ServerFunction {
+	let server= cfg.service(web::scope("/api/bot").configure(|cfg| {
+		cfg.route("/{bot_app}", web::get().to(ws_handler));
+		cfg.route("/{bot_app}/ws", web::get().to(ws_handler));
+	}));
+	Arc::new(server)
 }

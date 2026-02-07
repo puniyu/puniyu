@@ -15,13 +15,13 @@ pub use puniyu_types::adapter::{Error, Result};
 pub use puniyu_types::version::Version;
 
 #[doc(hidden)]
-pub mod private {
+pub mod __private {
 	pub use async_trait::async_trait;
 	pub use inventory;
 	pub use puniyu_common::path::ADAPTER_CONFIG_DIR;
 	pub use puniyu_config::ConfigRegistry;
 	pub use puniyu_types::adapter::{
-        AdapterApi, Plugin, FriendApi, GroupApi, MessageApi, Result,
+		AdapterApi, Adapter, FriendApi, GroupApi, MessageApi, Result, AdapterInfo
 	};
 	pub use puniyu_types::config::Config;
 	pub use puniyu_types::handler::HandlerResult;

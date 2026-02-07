@@ -36,34 +36,33 @@ pub fn config(args: TokenStream, item: TokenStream) -> TokenStream {
 	let expanded = quote! {
 		#item
 
-		impl ::puniyu_adapter::private::Config for #struct_name {
+		impl ::puniyu_adapter::__private::Config for #struct_name {
 			fn name(&self) -> &'static str {
 				#config_name
 			}
 
-			fn config(&self) -> ::puniyu_adapter::private::toml::Value {
-				let config_str = ::puniyu_adapter::private::toml::to_string(&Self::default())
+			fn config(&self) -> ::puniyu_adapter::__private::toml::Value {
+				let config_str = ::puniyu_adapter::__private::toml::to_string(&Self::default())
 					.expect("Failed to serialize config");
-				::puniyu_adapter::private::toml::from_str(&config_str)
+				::puniyu_adapter::__private::toml::from_str(&config_str)
 					.expect("Failed to deserialize config")
 			}
 		}
 
 		impl #struct_name {
 			pub fn get() -> Self {
-				use ::puniyu_adapter::private::AdapterBuilder;
-				let adapter_name = crate::Adapter {}.name().to_lowercase();
-				let path = ::puniyu_adapter::private::ADAPTER_CONFIG_DIR.join(adapter_name).join(format!("{}.toml", #config_name));
-				::puniyu_adapter::private::ConfigRegistry::get(&path)
+				use ::puniyu_adapter::__private::Adapter;
+				let path = ::puniyu_adapter::__private::ADAPTER_CONFIG_DIR.join(#adapter_name).join(format!("{}.toml", #config_name));
+				::puniyu_adapter::__private::ConfigRegistry::get(&path)
 					.and_then(|cfg| cfg.try_into::<#struct_name>().ok())
 					.unwrap_or_default()
 			}
 		}
 
-		::puniyu_adapter::private::inventory::submit! {
+		::puniyu_adapter::__private::inventory::submit! {
 			crate::ConfigRegistry {
 				adapter_name: #adapter_name,
-				builder: || -> Box<dyn ::puniyu_adapter::private::Config> {
+				builder: || -> Box<dyn ::puniyu_adapter::__private::Config> {
 					Box::new(#struct_name::default())
 				}
 			}

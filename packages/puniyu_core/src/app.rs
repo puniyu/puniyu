@@ -12,7 +12,7 @@ use puniyu_config::{init_config, start_config_watcher};
 use puniyu_event::init_event_bus;
 use puniyu_registry::plugin::PluginType;
 use puniyu_registry::{HookRegistry, adapter::AdapterRegistry, plugin::PluginRegistry};
-use puniyu_types::adapter::Plugin;
+use puniyu_types::adapter::Adapter;
 use puniyu_types::hook::{HookType, StatusType};
 use puniyu_types::plugin::Plugin;
 use std::env::current_dir;
@@ -24,8 +24,8 @@ pub struct AppBuilder {
 	app_name: String,
 	app_logo: Bytes,
 	working_dir: PathBuf,
-	plugins: Vec<&'static dyn Plugin>,
-	adapters: Vec<&'static dyn Plugin>,
+	plugins: Vec<&'static dyn Adapter>,
+	adapters: Vec<&'static dyn Adapter>,
 }
 
 impl Default for AppBuilder {
@@ -63,12 +63,12 @@ impl AppBuilder {
 		self
 	}
 
-	pub fn with_plugin(mut self, plugin: &'static dyn Plugin) -> Self {
+	pub fn with_plugin(mut self, plugin: &'static dyn Adapter) -> Self {
 		self.plugins.push(plugin);
 		self
 	}
 
-	pub fn with_adapter(mut self, adapter: &'static dyn Plugin) -> Self {
+	pub fn with_adapter(mut self, adapter: &'static dyn Adapter) -> Self {
 		self.adapters.push(adapter);
 		self
 	}
@@ -143,8 +143,8 @@ impl App {
 }
 
 async fn init_app(
-    plugins: &[&'static dyn Plugin],
-    adapters: &[&'static dyn Plugin],
+    plugins: &[&'static dyn Adapter],
+    adapters: &[&'static dyn Adapter],
 ) {
 	if !DATA_DIR.as_path().exists() {
 		fs::create_dir(DATA_DIR.as_path()).await.unwrap();
@@ -157,7 +157,7 @@ async fn init_app(
 	init_adapter(adapters).await;
 }
 
-async fn init_plugin(plugins: &[&'static dyn Plugin]) {
+async fn init_plugin(plugins: &[&'static dyn Adapter]) {
 	if !PLUGIN_DIR.as_path().exists() {
 		fs::create_dir(PLUGIN_DIR.as_path()).await.expect("Failed to create plugin directory");
 	}
@@ -190,7 +190,7 @@ async fn init_plugin(plugins: &[&'static dyn Plugin]) {
 	)
 }
 
-async fn init_adapter(adapters: &[&'static dyn Plugin]) {
+async fn init_adapter(adapters: &[&'static dyn Adapter]) {
 	AdapterRegistry::load_adapters(adapters).await.unwrap_or_else(|e| {
 		error!("适配器加载失败: {:?}", e);
 	});

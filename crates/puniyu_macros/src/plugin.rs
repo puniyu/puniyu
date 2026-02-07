@@ -50,6 +50,32 @@ pub fn plugin(
 	if !is_async {
 		return syn::Error::new_spanned(fn_sig, "Function must be async").to_compile_error().into();
 	}
+	match &fn_sig.output {
+		syn::ReturnType::Type(_, return_type) => {
+			let is_adapter_api = if let syn::Type::Path(type_path) = &**return_type {
+				if let Some(segment) = type_path.path.segments.last() {
+					segment.ident == "HandlerResult"
+				} else {
+					false
+				}
+			} else {
+				false
+			};
+			if !is_adapter_api {
+				return syn::Error::new_spanned(
+					return_type,
+					"Function must return `HandlerResult` type",
+				)
+				.to_compile_error()
+				.into();
+			}
+		}
+		syn::ReturnType::Default => {
+			return syn::Error::new_spanned(fn_sig, "Function must have an explicit return type")
+				.to_compile_error()
+				.into();
+		}
+	}
 
 	let args = match PluginArg::from_list(&attr_args) {
 		Ok(v) => v,
@@ -67,7 +93,6 @@ pub fn plugin(
 	let version_major = quote! { env!("CARGO_PKG_VERSION_MAJOR").parse::<u16>().unwrap() };
 	let version_minor = quote! { env!("CARGO_PKG_VERSION_MINOR").parse::<u16>().unwrap() };
 	let version_patch = quote! { env!("CARGO_PKG_VERSION_PATCH").parse::<u16>().unwrap() };
-	let version_string = quote! { env!("CARGO_PKG_VERSION") };
 	let plugin_author = quote! {
 		{
 			let authors = env!("CARGO_PKG_AUTHORS");
@@ -82,14 +107,7 @@ pub fn plugin(
 	let struct_name = Ident::new("Plugin", fn_name.span());
 	let init_call = if fn_block.stmts.is_empty() {
 		quote! {
-			async {
-				puniyu_plugin::logger::info!(
-					"{} v{} 初始化完成",
-					#plugin_name,
-					#version_string,
-				);
-				Ok(())
-			}
+			<Self as ::puniyu_plugin::__private::Plugin>::init(self)
 		}
 	} else {
 		quote! {
@@ -144,37 +162,33 @@ pub fn plugin(
 			}
 
 			fn commands(&self) -> Vec<Box<dyn ::puniyu_plugin::private::Command>> {
-				let plugin_name = self.name();
 				::puniyu_plugin::private::inventory::iter::<CommandRegistry>
 					.into_iter()
-					.filter(|command| command.plugin_name == plugin_name)
+					.filter(|command| command.plugin_name == #plugin_name)
 					.map(|command| (command.builder)())
 					.collect()
 			}
 
 			fn hooks(&self) -> Vec<Box<dyn ::puniyu_plugin::private::Hook>> {
-				let plugin_name = self.name();
 				::puniyu_plugin::private::inventory::iter::<HookRegistry>
 					.into_iter()
-					.filter(|hook| hook.plugin_name == plugin_name)
+					.filter(|hook| hook.plugin_name == #plugin_name)
 					.map(|hook| (hook.builder)())
 					.collect()
 			}
 
 			fn config(&self) -> Vec<Box<dyn ::puniyu_plugin::private::Config>> {
-				let plugin_name = self.name();
 				::puniyu_plugin::private::inventory::iter::<ConfigRegistry>
 					.into_iter()
-					.filter(|config| config.plugin_name == plugin_name)
+					.filter(|config| config.plugin_name == #plugin_name)
 					.map(|config| (config.builder)())
 					.collect()
 			}
 
 			fn server(&self) -> Option<::puniyu_plugin::private::ServerFunction> {
-				let plugin_name = self.name();
 				let servers: Vec<_> = ::puniyu_plugin::private::inventory::iter::<ServerRegistry>
 					.into_iter()
-					.filter(|server| server.plugin_name == plugin_name)
+					.filter(|server| server.plugin_name == #plugin_name)
 					.map(|server| (server.builder)())
 					.collect();
 

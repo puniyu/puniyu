@@ -48,9 +48,18 @@ pub fn hook(args: TokenStream, item: TokenStream) -> TokenStream {
 		.into();
 	}
 
-	let first_param = fn_inputs.first().unwrap();
+	let first_param = match fn_inputs.first() {
+		Some(param) => param,
+		None => {
+			return syn::Error::new_spanned(fn_sig, "function signature has no parameters")
+				.to_compile_error()
+				.into();
+		}
+	};
+
 	if let syn::FnArg::Typed(pat_type) = first_param {
 		let ty = &*pat_type.ty;
+
 		let is_valid_type = match ty {
 			syn::Type::Path(type_path) => {
 				if let Some(last_seg) = type_path.path.segments.last() {
@@ -61,12 +70,11 @@ pub fn hook(args: TokenStream, item: TokenStream) -> TokenStream {
 							))) = args.args.first()
 							{
 								if let syn::Type::Path(inner_path) = &*type_ref.elem {
-									inner_path
-										.path
-										.segments
-										.last()
-										.map(|seg| seg.ident == "Event")
-										.unwrap_or(false)
+									if let Some(inner_last_seg) = inner_path.path.segments.last() {
+										inner_last_seg.ident == "Event"
+									} else {
+										false
+									}
 								} else {
 									false
 								}
@@ -123,43 +131,43 @@ pub fn hook(args: TokenStream, item: TokenStream) -> TokenStream {
 			let parts: Vec<&str> = type_str.split('.').collect();
 			match parts.as_slice() {
 				["event"] => quote! {
-					::puniyu_adapter::private::HookType::Event(
-						::puniyu_adapter::private::HookEventType::default()
+					::puniyu_adapter::__private::HookType::Event(
+						::puniyu_adapter::__private::HookEventType::default()
 					)
 				},
 				["event", "message"] => quote! {
-					::puniyu_adapter::private::HookType::Event(
-						::puniyu_adapter::private::HookEventType::Message
+					::puniyu_adapter::__private::HookType::Event(
+						::puniyu_adapter::__private::HookEventType::Message
 					)
 				},
 				["event", "notion"] => quote! {
-					::puniyu_adapter::private::HookType::Event(
-						::puniyu_adapter::private::HookEventType::Notion
+					::puniyu_adapter::__private::HookType::Event(
+						::puniyu_adapter::__private::HookEventType::Notion
 					)
 				},
 				["event", "request"] => quote! {
-					::puniyu_adapter::private::HookType::Event(
-						::puniyu_adapter::private::HookEventType::Request
+					::puniyu_adapter::__private::HookType::Event(
+						::puniyu_adapter::__private::HookEventType::Request
 					)
 				},
 				["event", "all"] => quote! {
-					::puniyu_adapter::private::HookType::Event(
-						::puniyu_adapter::private::HookEventType::All
+					::puniyu_adapter::__private::HookType::Event(
+						::puniyu_adapter::__private::HookEventType::All
 					)
 				},
 				["status"] => quote! {
-					::puniyu_adapter::private::HookType::Status(
-						::puniyu_adapter::private::StatusType::default()
+					::puniyu_adapter::__private::HookType::Status(
+						::puniyu_adapter::__private::StatusType::default()
 					)
 				},
 				["status", "start"] => quote! {
-					::puniyu_adapter::private::HookType::Status(
-						::puniyu_adapter::private::StatusType::Start
+					::puniyu_adapter::__private::HookType::Status(
+						::puniyu_adapter::__private::StatusType::Start
 					)
 				},
 				["status", "stop"] => quote! {
-					::puniyu_adapter::private::HookType::Status(
-						::puniyu_adapter::private::StatusType::Stop
+					::puniyu_adapter::__private::HookType::Status(
+						::puniyu_adapter::__private::StatusType::Stop
 					)
 				},
 				["event", subtype] => {
@@ -204,7 +212,7 @@ pub fn hook(args: TokenStream, item: TokenStream) -> TokenStream {
 				}
 			}
 		}
-		None => quote! { ::puniyu_adapter::private::HookType::default() },
+		None => quote! { ::puniyu_adapter::__private::HookType::default() },
 	};
 	let hook_rank = match &args.rank {
 		Some(rank) => quote! { *#rank },
@@ -217,13 +225,13 @@ pub fn hook(args: TokenStream, item: TokenStream) -> TokenStream {
 		#[allow(non_camel_case_types)]
 		struct #struct_name;
 
-		#[::puniyu_adapter::private::async_trait]
-		impl ::puniyu_adapter::private::Hook for #struct_name {
+		#[::puniyu_adapter::__private::async_trait]
+		impl ::puniyu_adapter::__private::Hook for #struct_name {
 			fn name(&self) -> &'static str {
 				#hook_name
 			}
 
-			fn r#type(&self) -> ::puniyu_adapter::private::HookType {
+			fn r#type(&self) -> ::puniyu_adapter::__private::HookType {
 				#hook_type
 			}
 
@@ -234,15 +242,15 @@ pub fn hook(args: TokenStream, item: TokenStream) -> TokenStream {
 			async fn run(
 				&self,
 				event: Option<&Event>,
-			) -> ::puniyu_adapter::private::HandlerResult {
+			) -> ::puniyu_adapter::__private::HandlerResult {
 				#fn_name(event).await
 			}
 		}
 
-		::puniyu_adapter::private::inventory::submit! {
+		::puniyu_adapter::__private::inventory::submit! {
 			crate::HookRegistry {
 				adapter_name: #adapter_name,
-				builder: || -> Box<dyn ::puniyu_adapter::private::Hook> {
+				builder: || -> Box<dyn ::puniyu_adapter::__private::Hook> {
 					Box::new(#struct_name {})
 				}
 			}

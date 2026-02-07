@@ -7,14 +7,14 @@ use crate::{Error, Result};
 use puniyu_logger::{info, owo_colors::OwoColorize, warn};
 pub use puniyu_types::bot::Bot;
 use std::sync::LazyLock;
-use puniyu_types::adapter::Plugin;
+use puniyu_types::adapter::Adapter;
 use types::BotId;
 
 static STORE: LazyLock<BotStore> = LazyLock::new(BotStore::new);
 
 pub struct BotRegistry;
 
-impl<B: Plugin> BotRegistry {
+impl<B: Adapter> BotRegistry {
 	pub fn register(bot: Bot) -> Result<u64> {
 		let self_id = bot.account().uin.clone();
 		let adapter_name = bot.adapter().name.clone();
@@ -126,7 +126,7 @@ impl<B: Plugin> BotRegistry {
 /// use puniyu_types::adapter::{AdapterInfo, AdapterApi};
 /// use puniyu_types::account::AccountInfo;
 ///
-/// register_bot!(adapter: adapter, account: account, api: api);
+/// register_bot!(adapter: adapter, account: account);
 /// ```
 #[cfg(feature = "bot")]
 #[macro_export]

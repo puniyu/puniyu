@@ -6,7 +6,7 @@ use store::AdapterStore;
 use crate::{Error, Result};
 use convert_case::Casing;
 use puniyu_logger::owo_colors::OwoColorize;
-use puniyu_types::adapter::Plugin;
+use puniyu_types::adapter::Adapter;
 use std::future::Future;
 use std::sync::{Arc, LazyLock};
 use types::AdapterId;
@@ -19,7 +19,7 @@ impl AdapterRegistry {
 	/// 注册一个适配器
 	pub fn register<A>(adapter: A) -> Result<u64>
 	where
-		A: Into<Arc<dyn Plugin>>,
+		A: Into<Arc<dyn Adapter>>,
 	{
 		let adapter = adapter.into();
 		STORE.insert(adapter)
@@ -57,7 +57,7 @@ impl AdapterRegistry {
 		Ok(())
 	}
 
-	pub fn get<A>(adapter: A) -> Vec<Arc<dyn Plugin>>
+	pub fn get<A>(adapter: A) -> Vec<Arc<dyn Adapter>>
 	where
 		A: Into<AdapterId>,
 	{
@@ -68,19 +68,19 @@ impl AdapterRegistry {
 		}
 	}
 
-	pub fn get_with_index(index: u64) -> Option<Arc<dyn Plugin>> {
+	pub fn get_with_index(index: u64) -> Option<Arc<dyn Adapter>> {
 		let raw = STORE.raw();
 		let map = raw.read().expect("Failed to acquire lock");
 		map.get(&index).cloned()
 	}
 
-	pub fn get_with_adapter_name(name: &str) -> Vec<Arc<dyn Plugin>> {
+	pub fn get_with_adapter_name(name: &str) -> Vec<Arc<dyn Adapter>> {
 		let raw = STORE.raw();
 		let map = raw.read().expect("Failed to acquire lock");
 		map.values().filter(|v| v.info().name == name).collect()
 	}
 
-	pub fn all() -> Vec<Arc<dyn Plugin>> {
+	pub fn all() -> Vec<Arc<dyn Adapter>> {
 		STORE.all()
 	}
 }

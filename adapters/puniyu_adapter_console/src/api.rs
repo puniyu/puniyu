@@ -1,10 +1,9 @@
-use crate::common::make_random_id;
-use async_trait::async_trait;
-use puniyu_adapter::logger::debug;
-use puniyu_adapter::prelude::*;
+mod message;
+
+use puniyu_adapter::adapter::AdapterApi;
+use puniyu_adapter::macros::api;
 use puniyu_core::Config;
-use std::sync::LazyLock;
-use std::time::{SystemTime, UNIX_EPOCH};
+use std::sync::{Arc, LazyLock};
 
 pub(crate) static AVATAR_URL: LazyLock<String> = LazyLock::new(|| {
 	let config = Config::app();
@@ -12,33 +11,8 @@ pub(crate) static AVATAR_URL: LazyLock<String> = LazyLock::new(|| {
 	format!("http://{}:{}/logo.png", server.host(), server.port())
 });
 
-pub struct ConsoleMessageApi;
-
-#[async_trait]
-impl MessageApi for ConsoleMessageApi {
-	async fn send_msg(&self, contact: ContactType, message: Message) -> Result<SendMsgType> {
-		let (msg_type, source) = match &contact {
-			ContactType::Friend(friend) => ("私聊消息", &friend.scene),
-			ContactType::Group(group) => ("群聊消息", &group.scene),
-		};
-		let message_id = make_random_id();
-		let timestamp = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs();
-
-		let elements: Vec<Elements> = message.into();
-
-		debug!("[发送{}:{}]\n{:#?}", msg_type, source, elements);
-
-		Ok(SendMsgType { message_id, time: timestamp })
-	}
+#[api]
+fn api() -> AdapterApi {
+	let message_api = Arc::new(message::ConsoleMessageApi);
+	AdapterApi::new(Default::default(), Default::default(), Default::default(), message_api)
 }
-
-pub struct ConsoleAccountApi;
-
-impl AccountApi for ConsoleAccountApi {}
-
-pub struct ConsoleFriendApi;
-
-impl FriendApi for ConsoleFriendApi {}
-
-pub struct ConsoleGroupApi;
-impl GroupApi for ConsoleGroupApi {}

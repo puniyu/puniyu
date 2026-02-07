@@ -43,16 +43,16 @@ pub fn server(item: TokenStream) -> TokenStream {
 						quote::quote! { #ty }
 					),
 				)
-					.to_compile_error()
-					.into();
+				.to_compile_error()
+				.into();
 			}
 		} else {
 			return syn::Error::new_spanned(
 				first_param,
 				format!("function `{}` parameter must be a typed parameter", fn_name),
 			)
-				.to_compile_error()
-				.into();
+			.to_compile_error()
+			.into();
 		}
 	} else {
 		return syn::Error::new_spanned(fn_sig, "function signature has no parameters")
@@ -60,14 +60,14 @@ pub fn server(item: TokenStream) -> TokenStream {
 			.into();
 	}
 
-	let plugin_name = quote! { env!("CARGO_PKG_NAME") };
+	let adapter_name = quote! { env!("CARGO_PKG_NAME") };
 	let expanded = quote! {
 		#item
 
-		::puniyu_plugin::private::inventory::submit! {
+		::puniyu_adapter::__private::inventory::submit! {
 			crate::ServerRegistry {
-				plugin_name: #plugin_name,
-				builder: || -> ::puniyu_plugin::private::ServerFunction { ::std::sync::Arc::new(#fn_name) },
+				adapter_name: #adapter_name,
+				builder: || -> ::puniyu_adapter::__private::ServerFunction { ::std::sync::Arc::new(#fn_name) },
 			}
 		}
 	};

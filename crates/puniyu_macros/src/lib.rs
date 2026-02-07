@@ -10,6 +10,55 @@ pub fn adapter_config(
 	adapter::config(args, item)
 }
 
+/// 注册服务路由
+///
+/// # 示例
+/// ```rust, ignore
+/// use puniyu_adapter::macros::server;
+/// use actix_web::web::{self, ServiceConfig};
+///
+/// #[server]
+/// pub fn routes(cfg: &mut ServiceConfig) {
+///     cfg.service(
+///         web::resource("/hello")
+///             .route(web::get().to(|| async { "Hello World!" }))
+///     );
+/// }
+/// ```
+#[cfg(feature = "server")]
+#[proc_macro_attribute]
+pub fn adapter_server(
+	_args: proc_macro::TokenStream,
+	item: proc_macro::TokenStream,
+) -> proc_macro::TokenStream {
+	adapter::server(item)
+}
+
+/// 注册适配器API
+/// # 示例
+/// ```rust, ignore
+/// use puniyu_adapter::macros::api;
+/// use puniyu_adapter::adapter::AdapterApi
+///
+/// #[api]
+/// pub fn api() -> AdapterApi {
+///     /// 实现的适配器Api
+///     let group_api = /** 群组Api */;
+///     let friend_api = /** 好友Api */;
+///     let message_api = /** 消息Api */;
+///     let account_api = /** 账号Api */;
+///     AdapterApi::new(group_api, friend_api, account_api, message_api)
+/// }
+/// ```
+#[cfg(feature = "adapter")]
+#[proc_macro_attribute]
+pub fn adapter_api(
+	_args: proc_macro::TokenStream,
+	item: proc_macro::TokenStream,
+) -> proc_macro::TokenStream {
+	adapter::api(item)
+}
+
 /// 适配器钩子宏
 ///
 /// 用于在适配器中定义钩子函数，在特定事件或状态变化时自动执行。
@@ -81,13 +130,37 @@ pub fn adapter_hook(
 	adapter::hook(args, item)
 }
 
-#[cfg(feature = "adapter")]
+/// 适配器宏
+/// 
+/// 此宏需要一个info参数
+/// 
+/// ## 示例
+/// ```rust,ignore
+/// use puniyu_adapter::macros::adapter;
+/// use puniyu_adapter::handler::HandlerResult;
+/// use puniyu_adapter::adapter::*;
+/// 
+/// fn info() -> AdapterInfo {
+///     adapter_info!(
+///         name: env!("CARGO_PKG_NAME"),
+///         version: env!("CARGO_PKG_VERSION").into(),
+///         platform: AdapterPlatform::QQ,
+///         standard: AdapterStandard::OneBotV11,
+///         protocol: AdapterProtocol::NapCat,
+///         communication: AdapterCommunication::WebSocketClient,
+///         connect_time: Utc::now()
+///     )
+/// }
+/// 
+/// async fn main() -> HandlerResult {}
+/// ```
+ #[cfg(feature = "adapter")]
 #[proc_macro_attribute]
 pub fn adapter(
-	_args: proc_macro::TokenStream,
+	args: proc_macro::TokenStream,
 	item: proc_macro::TokenStream,
 ) -> proc_macro::TokenStream {
-	adapter::adapter(item)
+	adapter::adapter(args, item)
 }
 
 #[cfg(feature = "config")]

@@ -18,7 +18,7 @@ use puniyu_logger::info;
 pub type Result<T> = std::result::Result<T, Error>;
 
 #[async_trait]
-pub trait Plugin: Send + Sync {
+pub trait Adapter: Send + Sync {
 	/// 适配器信息
 	fn info(&self) -> AdapterInfo;
 	/// 获取适配器API
@@ -49,7 +49,7 @@ pub trait Plugin: Send + Sync {
 	}
 }
 
-impl PartialEq for dyn Plugin {
+impl PartialEq for dyn Adapter {
 	fn eq(&self, other: &Self) -> bool {
 		self.info() == other.info()
 	}
