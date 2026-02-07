@@ -40,9 +40,9 @@ prost = { version = "0.14.1" }
 puniyu_logger = { version = "0.7.0" }
 puniyu_system_info = { version = "1.5.2" }
 
-puniyu_adapter = { version = "0.7.8", path = "./packages/puniyu_adapter" }
-puniyu_core = { version = "0.7.8", path = "./packages/puniyu_core" }
-puniyu_plugin = { version = "0.7.8", path = "./packages/puniyu_plugin" }
+puniyu_adapter = { version = "0.7.9", path = "./packages/puniyu_adapter" }
+puniyu_core = { version = "0.7.9", path = "./packages/puniyu_core" }
+puniyu_plugin = { version = "0.7.9", path = "./packages/puniyu_plugin" }
 
 [profile.release]
 lto = "thin"

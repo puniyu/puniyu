@@ -1,4 +1,18 @@
 # 变更日志
+
+## [0.2.6](https://github.com/puniyu/puniyu/compare/plugin-basic-v0.2.5...plugin-basic-v0.2.6)
+
+### 🚜 重构
+
+
+- *(build)* 重构构建系统并添加插件支持功能 - ([d77fb08](https://github.com/puniyu/puniyu/commit/d77fb084b9da1562475845f8b1d7689df098fc8d))
+- 优化全局注册表, 减少调用时开销 ([#144](https://github.com/puniyu/puniyu/pull/144)) - ([1447162](https://github.com/puniyu/puniyu/commit/1447162841cbebfba06e12eaad9fea263aa0436f))
+
+### ⚙️ 杂项
+
+
+- *(workspace)* 移除release-please配置文件并优化Cargo.toml结构 - ([db957c3](https://github.com/puniyu/puniyu/commit/db957c3939f38d30da5cc8807aed0e154fe23a52))
+
 ## [0.2.5](https://github.com/puniyu/puniyu/compare/plugin-basic-v0.2.4...plugin-basic-v0.2.5) - 2026-01-12
 
 

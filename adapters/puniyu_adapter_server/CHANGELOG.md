@@ -1,4 +1,20 @@
 # 变更日志
+
+## [0.3.7](https://github.com/puniyu/puniyu/compare/puniyu_adapter_server-v0.3.6...puniyu_adapter_server-v0.3.7)
+
+### 🚜 重构
+
+
+- *(adapter)* 重构适配器注册相关内容 - ([cdec0b9](https://github.com/puniyu/puniyu/commit/cdec0b9e002e12aa6effb6dfda8dc3b331a1fec1))
+- *(protocol)* 将 puniyu_protocol 重命名为 puniyu_probuff - ([b68d4ec](https://github.com/puniyu/puniyu/commit/b68d4ecc7f256f9deae6ca0f44bdcbc165d65eaf))
+- *(registry)* 重构注册表 - ([4e93d6c](https://github.com/puniyu/puniyu/commit/4e93d6c44c888309cd236a6d92a38e543e943e2f))
+- 优化全局注册表, 减少调用时开销 ([#144](https://github.com/puniyu/puniyu/pull/144)) - ([1447162](https://github.com/puniyu/puniyu/commit/1447162841cbebfba06e12eaad9fea263aa0436f))
+
+### ⚙️ 杂项
+
+
+- *(workspace)* 移除release-please配置文件并优化Cargo.toml结构 - ([db957c3](https://github.com/puniyu/puniyu/commit/db957c3939f38d30da5cc8807aed0e154fe23a52))
+
 ## [0.3.6](https://github.com/puniyu/puniyu/compare/puniyu_adapter_server-v0.3.5...puniyu_adapter_server-v0.3.6) - 2026-01-12
 
 

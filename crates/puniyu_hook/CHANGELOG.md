@@ -1,4 +1,12 @@
 # 变更日志
+
+## [0.1.3](https://github.com/puniyu/puniyu/compare/puniyu_hook-v0.1.2...puniyu_hook-v0.1.3)
+
+### 🚜 重构
+
+
+- 优化全局注册表, 减少调用时开销 ([#144](https://github.com/puniyu/puniyu/pull/144)) - ([1447162](https://github.com/puniyu/puniyu/commit/1447162841cbebfba06e12eaad9fea263aa0436f))
+
 ## [0.1.2](https://github.com/puniyu/puniyu/compare/puniyu_hook-v0.1.1...puniyu_hook-v0.1.2) - 2026-01-12
 
 
