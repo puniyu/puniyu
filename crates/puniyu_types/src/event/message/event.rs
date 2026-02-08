@@ -119,14 +119,14 @@ impl<'m> MessageEvent<'m> {
 		}
 	}
 
-	pub fn get_text(&self) -> String {
+	pub fn get_text(&self) -> Vec<&str> {
 		match self {
 			MessageEvent::Friend(msg) => msg.get_text(),
 			MessageEvent::Group(msg) => msg.get_text(),
 		}
 	}
 
-	pub fn get_at(&self) -> Vec<String> {
+	pub fn get_at(&self) -> Vec<&str> {
 		match self {
 			MessageEvent::Friend(msg) => msg.get_at(),
 			MessageEvent::Group(msg) => msg.get_at(),
@@ -147,7 +147,7 @@ impl<'m> MessageEvent<'m> {
 		}
 	}
 
-	pub fn get_reply_id(&self) -> Option<String> {
+	pub fn get_reply_id(&self) -> Option<&str> {
 		match self {
 			MessageEvent::Friend(msg) => msg.get_reply_id(),
 			MessageEvent::Group(msg) => msg.get_reply_id(),

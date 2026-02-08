@@ -59,7 +59,7 @@ pub trait MessageBase: Send + Sync + EventBase<EventType, MessageSubType> {
 	fn elements(&self) -> Vec<Elements>;
 
 	/// 获取文本元素
-	fn get_text(&self) -> String {
+	fn get_text(&self) -> Vec<&str> {
 		self.elements()
 			.into_iter()
 			.filter_map(|e| match e {
@@ -67,19 +67,18 @@ pub trait MessageBase: Send + Sync + EventBase<EventType, MessageSubType> {
 				_ => None,
 			})
 			.collect::<Vec<&str>>()
-			.join("")
 	}
 
 	/// 获取艾特元素
-	fn get_at(&self) -> Vec<String> {
+	fn get_at(&self) -> Vec<&str> {
 		self
 			.elements()
 			.iter()
 			.filter_map(|e| match e {
-				Elements::At(at) => Some(at.target_id.to_string()),
+				Elements::At(at) => Some(at.target_id),
 				_ => None,
 			})
-			.collect::<Vec<String>>()
+			.collect::<Vec<&str>>()
 	}
 
 	/// 获取图片元素
@@ -105,11 +104,11 @@ pub trait MessageBase: Send + Sync + EventBase<EventType, MessageSubType> {
 	}
 
 	/// 获取回复Id
-	fn get_reply_id(&self) -> Option<String> {
+	fn get_reply_id(&self) -> Option<&str> {
 		self.elements()
 			.iter()
 			.filter_map(|e| match e {
-				Elements::Reply(reply) => Some(reply.message_id.to_string()),
+				Elements::Reply(reply) => Some(reply.message_id),
 				_ => None,
 			})
 			.next()

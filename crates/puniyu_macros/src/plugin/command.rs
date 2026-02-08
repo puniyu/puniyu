@@ -88,6 +88,98 @@ pub fn command(args: TokenStream, item: TokenStream) -> TokenStream {
 		.into();
 	}
 
+	// 检查返回值类型是否为 HandlerResult<CommandAction>
+	if let syn::ReturnType::Type(_, return_ty) = &fn_sig.output {
+		let is_valid_return = match &**return_ty {
+			syn::Type::Path(type_path) => {
+				let Some(segment) = type_path.path.segments.last() else {
+					return syn::Error::new_spanned(
+						return_ty,
+						format!(
+							"function `{}` must return `HandlerResult<CommandAction>`, found `{}`",
+							fn_name,
+							quote::quote! { #return_ty }
+						),
+					)
+					.to_compile_error()
+					.into();
+				};
+
+				if segment.ident != "HandlerResult" {
+					return syn::Error::new_spanned(
+						return_ty,
+						format!(
+							"function `{}` must return `HandlerResult<CommandAction>`, found `{}`",
+							fn_name,
+							quote::quote! { #return_ty }
+						),
+					)
+					.to_compile_error()
+					.into();
+				}
+
+				let syn::PathArguments::AngleBracketed(args) = &segment.arguments else {
+					return syn::Error::new_spanned(
+						return_ty,
+						format!(
+							"function `{}` must return `HandlerResult<CommandAction>`, found `{}`",
+							fn_name,
+							quote::quote! { #return_ty }
+						),
+					)
+					.to_compile_error()
+					.into();
+				};
+
+				let Some(syn::GenericArgument::Type(syn::Type::Path(inner_path))) =
+					args.args.first()
+				else {
+					return syn::Error::new_spanned(
+						return_ty,
+						format!(
+							"function `{}` must return `HandlerResult<CommandAction>`, found `{}`",
+							fn_name,
+							quote::quote! { #return_ty }
+						),
+					)
+					.to_compile_error()
+					.into();
+				};
+
+				inner_path
+					.path
+					.segments
+					.last()
+					.map(|seg| seg.ident == "CommandAction")
+					.unwrap_or(false)
+			}
+			_ => false,
+		};
+
+		if !is_valid_return {
+			return syn::Error::new_spanned(
+				return_ty,
+				format!(
+					"function `{}` must return `HandlerResult<CommandAction>`, found `{}`",
+					fn_name,
+					quote::quote! { #return_ty }
+				),
+			)
+			.to_compile_error()
+			.into();
+		}
+	} else {
+		return syn::Error::new_spanned(
+			&fn_sig.output,
+			format!(
+				"function `{}` must have a return type of `HandlerResult<CommandAction>`",
+				fn_name
+			),
+		)
+		.to_compile_error()
+		.into();
+	}
+
 	let struct_name_str = {
 		let fn_name_str = fn_name.to_string();
 		let pascal_case_name = fn_name_str.to_case(Case::Pascal);

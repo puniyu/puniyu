@@ -7,14 +7,14 @@ macro_rules! segment {
     };
     (at, $target_id:expr) => {
         $crate::element::send::Elements::At($crate::element::send::AtElement {
-            target_id: $target_id.to_string(),
+            target_id: $target_id,
         })
     };
 
     // 文本元素
     (text, $text:expr) => {
         $crate::element::send::Elements::Text($crate::element::send::TextElement {
-            text: $text.to_string(),
+            text: $text,
         })
     };
 
@@ -70,14 +70,14 @@ macro_rules! segment {
     // JSON 元素
     (json, $json:expr) => {
         $crate::element::send::Elements::Json($crate::element::send::JsonElement {
-            data: $json.to_string(),
+            data: $json,
         })
     };
 
     // XML 元素
     (xml, $xml:expr) => {
         $crate::element::send::Elements::Xml($crate::element::send::XmlElement {
-            file: $xml.to_string(),
+            file: $xml,
         })
     };
     ($($t:tt)*) => {

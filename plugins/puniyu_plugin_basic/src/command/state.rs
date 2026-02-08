@@ -24,6 +24,6 @@ async fn state(ctx: &MessageContext) -> HandlerResult<CommandAction> {
 		minutes,
 		seconds
 	);
-	ctx.reply(message!(segment!(text, info_text))).await?;
+	ctx.reply(message!(segment!(text, info_text.as_str()))).await?;
 	Ok(CommandAction::Done)
 }

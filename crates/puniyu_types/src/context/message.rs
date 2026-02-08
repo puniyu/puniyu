@@ -34,11 +34,11 @@ impl<'c> MessageContext<'c> {
 		self.bot.api().message().send_msg(self.contact().clone(), message.into()).await
 	}
 
-	pub fn as_friend(&self) -> Option<&FriendMessage> {
+	pub fn as_friend(&self) -> Option<&FriendMessage<'_>> {
 		self.event.as_friend()
 	}
 
-	pub fn as_group(&self) -> Option<&GroupMessage> {
+	pub fn as_group(&self) -> Option<&GroupMessage<'_>> {
 		self.event.as_group()
 	}
 
@@ -110,7 +110,7 @@ impl<'c> MessageContext<'c> {
 		self.event.elements()
 	}
 
-	pub fn get_at(&self) -> Vec<String> {
+	pub fn get_at(&self) -> Vec<&str> {
 		self.event.get_at()
 	}
 
@@ -134,7 +134,7 @@ impl<'c> MessageContext<'c> {
 		self.event.get_record()
 	}
 
-	pub fn get_reply_id(&self) -> Option<String> {
+	pub fn get_reply_id(&self) -> Option<&str> {
 		self.event.get_reply_id()
 	}
 

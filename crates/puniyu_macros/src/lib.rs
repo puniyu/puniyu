@@ -131,15 +131,15 @@ pub fn adapter_hook(
 }
 
 /// 适配器宏
-/// 
+///
 /// 此宏需要一个info参数
-/// 
+///
 /// ## 示例
 /// ```rust,ignore
 /// use puniyu_adapter::macros::adapter;
 /// use puniyu_adapter::handler::HandlerResult;
 /// use puniyu_adapter::adapter::*;
-/// 
+///
 /// fn info() -> AdapterInfo {
 ///     adapter_info!(
 ///         name: env!("CARGO_PKG_NAME"),
@@ -151,10 +151,10 @@ pub fn adapter_hook(
 ///         connect_time: Utc::now()
 ///     )
 /// }
-/// 
+///
 /// async fn main() -> HandlerResult {}
 /// ```
- #[cfg(feature = "adapter")]
+#[cfg(feature = "adapter")]
 #[proc_macro_attribute]
 pub fn adapter(
 	args: proc_macro::TokenStream,
@@ -226,7 +226,7 @@ pub fn plugin(
 ///
 /// ```rust,ignore
 /// #[command(name = "help", alias = ["h", "?"])]
-/// async fn help(bot: &BotContext, ev: &MessageContext) -> HandlerResult {
+/// async fn help(ctx: &MessageContext) -> HandlerResult<CommandAction> {
 ///     // !help、!h、!? 都可以触发此命令
 ///     Ok(().into())
 /// }
@@ -234,48 +234,8 @@ pub fn plugin(
 ///
 /// # 命令参数
 ///
-/// 使用 `#[arg]` 属性宏定义命令参数，可以在同一个函数上使用多个 `#[arg]` 属性：
-///
-/// ```rust,ignore
-/// #[command(name = "echo", desc = "回显消息")]
-/// #[arg(name = "message", type = "string", required = true, desc = "要回显的消息")]
-/// #[arg(name = "count", type = "int", mode = "named", desc = "重复次数")]
-/// async fn echo(bot: &BotContext, ev: &MessageContext) -> HandlerResult {
-///     let msg = ev.arg("message").and_then(|v| v.as_str()).unwrap_or("");
-///     let count = ev.arg("count").and_then(|v| v.as_int()).unwrap_or(1);
-///     
-///     for _ in 0..count {
-///         bot.reply(message!(segment!(text, msg))).await?;
-///     }
-///     Ok(().into())
-/// }
-/// ```
-///
-/// ## `#[arg]` 参数说明
-///
-/// | 参数 | 类型 | 必需 | 默认值 | 说明 |
-/// |------|------|:----:|--------|------|
-/// | `name` | `&str` | ✓ | - | 参数名称 |
-/// | `type` | `&str` | | `"string"` | 参数类型 |
-/// | `mode` | `&str` | | `"positional"` | 参数模式 |
-/// | `required` | `bool` | | `false` | 是否必需 |
-/// | `desc` | `&str` | | `None` | 参数描述 |
-///
-/// ### 参数类型
-///
-/// | 类型 | 说明 |
-/// |------|------|
-/// | `"string"` | 字符串类型（默认） |
-/// | `"int"` | 整数类型 |
-/// | `"float"` | 浮点数类型 |
-/// | `"bool"` | 布尔类型 |
-///
-/// ### 参数模式
-///
-/// | 模式 | 说明 |
-/// |------|------|
-/// | `"positional"` | 位置参数（默认），按顺序匹配 |
-/// | `"named"` | 命名参数，需要 `--flag value` 格式 |
+/// 使用 [`arg`] 属性宏定义命令参数，可以在同一个函数上使用多个 [`arg`] 属性。
+/// 详细的参数配置说明请参考 [`arg`] 宏的文档。
 ///
 /// # 示例
 ///
@@ -284,10 +244,10 @@ pub fn plugin(
 /// ```rust,ignore
 /// #[command(name = "echo", desc = "回显消息")]
 /// #[arg(name = "message")]
-/// async fn echo(bot: &BotContext, ev: &MessageContext) -> HandlerResult {
+/// async fn echo(ctx: &MessageContext) -> HandlerResult<CommandAction> {
 ///     // 调用：!echo hello
-///     let msg = ev.arg("message").and_then(|v| v.as_str()).unwrap_or("");
-///     bot.reply(message!(segment!(text, msg))).await?;
+///     let msg = ctx.arg("message").and_then(|v| v.as_str()).unwrap_or("");
+///     ctx.reply(message!(segment!(text, msg))).await?;
 ///     Ok(().into())
 /// }
 /// ```
@@ -296,9 +256,9 @@ pub fn plugin(
 ///
 /// ```rust,ignore
 /// #[command(name = "ping", alias = ["p"], desc = "测试延迟")]
-/// async fn ping(bot: &BotContext, ev: &MessageContext) -> HandlerResult {
+/// async fn ping(ctx: &MessageContext) -> HandlerResult<CommandAction> {
 ///     // !ping 或 !p 都可以触发
-///     bot.reply(message!(segment!(text, "pong!"))).await?;
+///     ctx.reply(message!(segment!(text, "pong!"))).await?;
 ///     Ok(().into())
 /// }
 /// ```
@@ -309,9 +269,9 @@ pub fn plugin(
 ///
 /// ```rust,ignore
 /// #[command(name = "reload", desc = "重载配置", permission = "master")]
-/// async fn reload(bot: &BotContext, ev: &MessageContext) -> HandlerResult {
+/// async fn reload(ctx: &MessageContext) -> HandlerResult<CommandAction> {
 ///     // 仅主人可执行此命令，其他用户会收到"权限不足"提示
-///     bot.reply(message!(segment!(text, "配置已重载"))).await?;
+///     ctx.reply(message!(segment!(text, "配置已重载"))).await?;
 ///     Ok(().into())
 /// }
 /// ```
@@ -322,40 +282,14 @@ pub fn plugin(
 /// #[command(name = "repeat", alias = ["r"], desc = "重复消息")]
 /// #[arg(name = "message", required = true, desc = "要重复的消息")]
 /// #[arg(name = "count", type = "int", mode = "named", desc = "重复次数")]
-/// async fn repeat(bot: &BotContext, ev: &MessageContext) -> HandlerResult {
+/// async fn repeat(ctx: &MessageContext) -> HandlerResult<CommandAction> {
 ///     // 调用：!repeat hello --count 3
-///     let message = ev.arg("message").and_then(|v| v.as_str()).unwrap_or("");
-///     let count = ev.arg("count").and_then(|v| v.as_int()).unwrap_or(1);
+///     let message = ctx.arg("message").and_then(|v| v.as_str()).unwrap_or("");
+///     let count = ctx.arg("count").and_then(|v| v.as_int()).unwrap_or(1);
 ///     
 ///     for _ in 0..count {
-///         bot.reply(message!(segment!(text, message))).await?;
+///         ctx.reply(message!(segment!(text, message))).await?;
 ///     }
-///     Ok(().into())
-/// }
-/// ```
-///
-/// ## 混合参数模式
-///
-/// ```rust,ignore
-/// #[command(name = "calc", desc = "计算器")]
-/// #[arg(name = "a", type = "int", required = true, desc = "第一个数")]
-/// #[arg(name = "b", type = "int", required = true, desc = "第二个数")]
-/// #[arg(name = "op", mode = "named", desc = "运算符")]
-/// async fn calc(bot: &BotContext, ev: &MessageContext) -> HandlerResult {
-///     // 调用：!calc 10 20 --op add
-///     let a = ev.arg("a").and_then(|v| v.as_int()).unwrap_or(0);
-///     let b = ev.arg("b").and_then(|v| v.as_int()).unwrap_or(0);
-///     let op = ev.arg("op").and_then(|v| v.as_str()).unwrap_or("add");
-///     
-///     let result = match op {
-///         "add" => a + b,
-///         "sub" => a - b,
-///         "mul" => a * b,
-///         "div" => a / b,
-///         _ => 0,
-///     };
-///     
-///     bot.reply(message!(segment!(text, format!("结果: {}", result)))).await?;
 ///     Ok(().into())
 /// }
 /// ```
@@ -368,6 +302,122 @@ pub fn command(
 	plugin::command(args, item)
 }
 
+/// 命令参数宏
+///
+/// 用于为 [`command`] 定义的命令函数添加参数配置。
+/// 可以在同一个函数上使用多个 `#[arg]` 属性来定义多个参数。
+///
+/// # 参数
+///
+/// | 参数 | 类型 | 必需 | 默认值 | 说明 |
+/// |------|------|:----:|--------|------|
+/// | `name` | `&str` | ✓ | - | 参数名称 |
+/// | `type` | `&str` | | `"string"` | 参数类型 |
+/// | `mode` | `&str` | | `"positional"` | 参数模式 |
+/// | `required` | `bool` | | `false` | 是否必需 |
+/// | `desc` | `&str` | | `None` | 参数描述 |
+///
+/// ## 参数类型
+///
+/// | 类型 | 说明 |
+/// |------|------|
+/// | `"string"` | 字符串类型（默认） |
+/// | `"int"` | 整数类型 |
+/// | `"float"` | 浮点数类型 |
+/// | `"bool"` | 布尔类型 |
+///
+/// ## 参数模式
+///
+/// | 模式 | 说明 |
+/// |------|------|
+/// | `"positional"` | 位置参数（默认），按顺序匹配 |
+/// | `"named"` | 命名参数，需要 `--flag value` 格式 |
+///
+/// # 示例
+///
+/// ## 基础用法
+///
+/// ```rust,ignore
+/// #[command(name = "echo", desc = "回显消息")]
+/// #[arg(name = "message", desc = "要回显的消息")]
+/// async fn echo(ctx: &MessageContext) -> HandlerResult<CommandAction> {
+///     let msg = ctx.arg("message").and_then(|v| v.as_str()).unwrap_or("");
+///     ctx.reply(message!(segment!(text, msg))).await?;
+///     Ok(().into())
+/// }
+/// ```
+///
+/// ## 必需参数
+///
+/// ```rust,ignore
+/// #[command(name = "greet", desc = "打招呼")]
+/// #[arg(name = "name", required = true, desc = "用户名")]
+/// async fn greet(ctx: &MessageContext) -> HandlerResult<CommandAction> {
+///     // 调用：!greet Alice
+///     let name = ctx.arg("name").and_then(|v| v.as_str()).unwrap_or("");
+///     ctx.reply(message!(segment!(text, format!("你好，{}！", name)))).await?;
+///     Ok(().into())
+/// }
+/// ```
+///
+/// ## 不同类型的参数
+///
+/// ```rust,ignore
+/// #[command(name = "add", desc = "加法计算")]
+/// #[arg(name = "a", type = "int", required = true, desc = "第一个数")]
+/// #[arg(name = "b", type = "int", required = true, desc = "第二个数")]
+/// async fn add(ctx: &MessageContext) -> HandlerResult<CommandAction> {
+///     // 调用：!add 10 20
+///     let a = ctx.arg("a").and_then(|v| v.as_int()).unwrap_or(0);
+///     let b = ctx.arg("b").and_then(|v| v.as_int()).unwrap_or(0);
+///     ctx.reply(message!(segment!(text, format!("结果: {}", a + b)))).await?;
+///     Ok(().into())
+/// }
+/// ```
+///
+/// ## 命名参数
+///
+/// ```rust,ignore
+/// #[command(name = "repeat", desc = "重复消息")]
+/// #[arg(name = "message", required = true, desc = "要重复的消息")]
+/// #[arg(name = "count", type = "int", mode = "named", desc = "重复次数")]
+/// async fn repeat(ctx: &MessageContext) -> HandlerResult<CommandAction> {
+///     // 调用：!repeat hello --count 3
+///     let message = ctx.arg("message").and_then(|v| v.as_str()).unwrap_or("");
+///     let count = ctx.arg("count").and_then(|v| v.as_int()).unwrap_or(1);
+///     
+///     for _ in 0..count {
+///         ctx.reply(message!(segment!(text, message))).await?;
+///     }
+///     Ok(().into())
+/// }
+/// ```
+///
+/// ## 混合参数模式
+///
+/// ```rust,ignore
+/// #[command(name = "calc", desc = "计算器")]
+/// #[arg(name = "a", type = "int", required = true, desc = "第一个数")]
+/// #[arg(name = "b", type = "int", required = true, desc = "第二个数")]
+/// #[arg(name = "op", mode = "named", desc = "运算符")]
+/// async fn calc(ctx: &MessageContext) -> HandlerResult<CommandAction> {
+///     // 调用：!calc 10 20 --op add
+///     let a = ctx.arg("a").and_then(|v| v.as_int()).unwrap_or(0);
+///     let b = ctx.arg("b").and_then(|v| v.as_int()).unwrap_or(0);
+///     let op = ctx.arg("op").and_then(|v| v.as_str()).unwrap_or("add");
+///     
+///     let result = match op {
+///         "add" => a + b,
+///         "sub" => a - b,
+///         "mul" => a * b,
+///         "div" => a / b,
+///         _ => 0,
+///     };
+///     
+///     ctx.reply(message!(segment!(text, format!("结果: {}", result)))).await?;
+///     Ok(().into())
+/// }
+/// ```
 #[cfg(feature = "command")]
 #[proc_macro_attribute]
 pub fn arg(
