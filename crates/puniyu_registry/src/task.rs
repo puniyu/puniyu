@@ -4,7 +4,7 @@ mod types;
 pub use types::TaskInfo;
 
 use crate::{Error, Result};
-use puniyu_types::task::TaskBuilder;
+use puniyu_types::task::Task;
 use std::sync::{Arc, LazyLock};
 use store::TaskStore;
 
@@ -19,7 +19,7 @@ impl TaskRegistry {
 	/// - `plugin_id`: 插件 ID
 	/// - `builder`: 任务构建器
 	///
-	pub async fn register(plugin_id: u64, builder: Arc<dyn TaskBuilder>) -> Result<u64> {
+	pub async fn register(plugin_id: u64, builder: Arc<dyn Task>) -> Result<u64> {
 		let task = TaskInfo { plugin_id, builder };
 		STORE.insert(task).await
 	}

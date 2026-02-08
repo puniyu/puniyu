@@ -1,6 +1,6 @@
 use async_trait::async_trait;
 use puniyu_logger::error;
-use puniyu_registry::HookRegistry;
+use puniyu_registry::hook::HookRegistry;
 use puniyu_types::event::Event;
 use puniyu_types::handler::{Handler, HandlerResult};
 use puniyu_types::hook::HookType;

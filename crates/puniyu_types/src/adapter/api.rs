@@ -1,23 +1,20 @@
 #![allow(unused_variables)]
 
 mod group;
-pub use group::*;
+#[doc(inline)]
+pub use group::GroupApi;
 mod friend;
-pub use friend::*;
+#[doc(inline)]
+pub use friend::FriendApi;
 mod account;
-pub use account::*;
+#[doc(inline)]
+pub use account::AccountApi;
 mod message;
-pub use message::*;
+#[doc(inline)]
+pub use message::MessageApi;
 mod inner;
 
-use super::{Error, types::*};
-use crate::contact::ContactType;
-use crate::element::Message;
-use async_trait::async_trait;
-use bytes::Bytes;
 use std::sync::Arc;
-use std::time::Duration;
-use super::Result;
 
 #[derive(Clone)]
 pub struct AdapterApi {
@@ -39,7 +36,9 @@ impl Default for AdapterApi {
 	}
 }
 
-impl AdapterApi {
+
+impl AdapterApi
+{
 	pub fn new(
 		group_api: Arc<dyn GroupApi>,
 		friend_api: Arc<dyn FriendApi>,
@@ -48,71 +47,19 @@ impl AdapterApi {
 	) -> Self {
 		Self { group_api, friend_api, account_api, message_api }
 	}
+	pub fn group(&self) -> &Arc<dyn GroupApi> {
+		&self.group_api
+	}
+	
+	pub fn friend(&self) -> &Arc<dyn FriendApi> {
+		&self.friend_api
+	}
+	
+	pub fn account(&self) -> &Arc<dyn AccountApi> {
+		&self.account_api
+	}
+	
+	pub fn message(&self) -> &Arc<dyn MessageApi> {
+		&self.message_api
+	}
 }
-
-macro_rules! impl_api{
-    (
-        $impl_type:ty,
-        $field:ident,
-        $trait_name:ident,
-        $($method_name:ident( $($arg_name:ident: $arg_type:ty),* $(,)? ) -> $return_type:ty),* $(,)?
-    ) => {
-        #[async_trait]
-        impl $trait_name for $impl_type {
-            $(
-                async fn $method_name(&self, $($arg_name: $arg_type),*) -> $return_type {
-                    self.$field.$method_name($($arg_name),*).await
-                }
-            )*
-        }
-    };
-}
-
-impl_api!(
-	AdapterApi,
-	group_api,
-	GroupApi,
-	get_group_avatar(group_id: &str, size: Option<AvatarSize>) -> Result<Avatar>,
-	get_group_info(group_id: &str) -> Result<GroupInfo>,
-	get_group_list() -> Result<Vec<GroupInfo>>,
-	get_group_member_list(group_id: &str) -> Result<Vec<UserInfo>>,
-	get_group_mute_list(group_id: &str) -> Result<Vec<GroupMuteInfo>>,
-	set_group_name(group_id: &str, name: &str) -> Result<()>,
-	set_kick_group_member(
-		group_id: &str,
-		target_id: &str,
-		reject_add_request: Option<bool>,
-		reason: Option<&str>
-	) -> Result<()>,
-	set_group_mute(group_id: &str, target_id: &str, duration: Duration) -> Result<()>,
-	set_group_all_mute(group_id: &str, action: MuteType) -> Result<()>,
-	set_group_admin(group_id: &str, target_id: &str, action: SetAdminType) -> Result<()>,
-	set_group_quit(group_id: &str) -> Result<()>,
-	set_group_invited_join(group_id: &str, action: SetGroupApplyType) -> Result<()>
-);
-
-impl_api!(
-	AdapterApi,
-	friend_api,
-	FriendApi,
-	get_user_avatar(target_id: &str, size: Option<AvatarSize>) -> Result<Avatar>,
-	get_friend_list() -> Result<Vec<UserInfo>>,
-	set_friend_apply(action: SetFriendApplyType) -> Result<()>
-);
-
-impl_api!(
-	AdapterApi,
-	account_api,
-	AccountApi,
-	set_avatar(avatar: Bytes) -> Result<bool>
-);
-
-impl_api!(
-	AdapterApi,
-	message_api,
-	MessageApi,
-	send_msg(contact: ContactType, message: Message) -> Result<SendMsgType>,
-	recall_msg(message_id: &str) -> Result<()>,
-	get_msg(message_id: &str) -> Result<MessageType>,
-	get_history_msg(contact: ContactType, message: MessageType, count: u8) -> Result<Vec<MessageInfo>>
-);

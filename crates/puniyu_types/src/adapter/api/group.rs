@@ -1,9 +1,11 @@
-use super::{
-	Avatar, AvatarSize, Error, GroupInfo, GroupMuteInfo, MuteType, Result, SetAdminType,
-	SetGroupApplyType, UserInfo,
+use crate::adapter::{
+	Avatar, AvatarSize, GroupInfo, GroupMuteInfo, MuteType, SetAdminType, SetGroupApplyType,
+	UserInfo,
 };
+use crate::handler::HandlerResult;
 use async_trait::async_trait;
 use std::time::Duration;
+use super::inner::Error;
 
 #[async_trait]
 pub trait GroupApi: Send + Sync {
@@ -13,8 +15,12 @@ pub trait GroupApi: Send + Sync {
 	/// `group_id` - 目标群Id
 	/// `size` - 头像尺寸
 	///
-	async fn get_group_avatar(&self, group_id: &str, size: Option<AvatarSize>) -> Result<Avatar> {
-		Err(Error::NotImpl)
+	async fn get_group_avatar(
+		&self,
+		group_id: &str,
+		size: Option<AvatarSize>,
+	) -> HandlerResult<Avatar> {
+		Err(Error::NotImpl.into())
 	}
 
 	/// 获取群信息
@@ -22,13 +28,13 @@ pub trait GroupApi: Send + Sync {
 	/// ## 参数
 	/// `group_id` - 群ID
 	///
-	async fn get_group_info(&self, group_id: &str) -> Result<GroupInfo> {
-		Err(Error::NotImpl)
+	async fn get_group_info(&self, group_id: &str) -> HandlerResult<GroupInfo> {
+		Err(Error::NotImpl.into())
 	}
 
 	/// 获取群列表
-	async fn get_group_list(&self) -> Result<Vec<GroupInfo>> {
-		Err(Error::NotImpl)
+	async fn get_group_list(&self) -> HandlerResult<Vec<GroupInfo>> {
+		Err(Error::NotImpl.into())
 	}
 
 	/// 获取群成员列表
@@ -36,8 +42,8 @@ pub trait GroupApi: Send + Sync {
 	/// ## 参数
 	/// `group_id` - 群ID
 	///
-	async fn get_group_member_list(&self, group_id: &str) -> Result<Vec<UserInfo>> {
-		Err(Error::NotImpl)
+	async fn get_group_member_list(&self, group_id: &str) -> HandlerResult<Vec<UserInfo>> {
+		Err(Error::NotImpl.into())
 	}
 
 	/// 获取群禁言列表
@@ -45,8 +51,8 @@ pub trait GroupApi: Send + Sync {
 	/// ## 参数
 	/// `group_id` - 群ID
 	///
-	async fn get_group_mute_list(&self, group_id: &str) -> Result<Vec<GroupMuteInfo>> {
-		Err(Error::NotImpl)
+	async fn get_group_mute_list(&self, group_id: &str) -> HandlerResult<Vec<GroupMuteInfo>> {
+		Err(Error::NotImpl.into())
 	}
 
 	/// 设置群名称
@@ -55,8 +61,8 @@ pub trait GroupApi: Send + Sync {
 	/// `group_id` - 群ID
 	/// `name` - 群名称
 	///
-	async fn set_group_name(&self, group_id: &str, name: &str) -> Result<()> {
-		Err(Error::NotImpl)
+	async fn set_group_name(&self, group_id: &str, name: &str) -> HandlerResult<()> {
+		Err(Error::NotImpl.into())
 	}
 
 	/// 群踢人
@@ -73,8 +79,8 @@ pub trait GroupApi: Send + Sync {
 		target_id: &str,
 		reject_add_request: Option<bool>,
 		reason: Option<&str>,
-	) -> Result<()> {
-		Err(Error::NotImpl)
+	) -> HandlerResult<()> {
+		Err(Error::NotImpl.into())
 	}
 
 	/// 群禁言
@@ -89,16 +95,16 @@ pub trait GroupApi: Send + Sync {
 		group_id: &str,
 		target_id: &str,
 		duration: Duration,
-	) -> Result<()> {
-		Err(Error::NotImpl)
+	) -> HandlerResult<()> {
+		Err(Error::NotImpl.into())
 	}
 	/// 群全体禁言
 	///
 	/// ## 参数
 	/// `group_id` - 群ID
 	/// `action` - 设置或取消全体禁言
-	async fn set_group_all_mute(&self, group_id: &str, action: MuteType) -> Result<()> {
-		Err(Error::NotImpl)
+	async fn set_group_all_mute(&self, group_id: &str, action: MuteType) -> HandlerResult<()> {
+		Err(Error::NotImpl.into())
 	}
 
 	/// 设置群管理员
@@ -113,8 +119,8 @@ pub trait GroupApi: Send + Sync {
 		group_id: &str,
 		target_id: &str,
 		action: SetAdminType,
-	) -> Result<()> {
-		Err(Error::NotImpl)
+	) -> HandlerResult<()> {
+		Err(Error::NotImpl.into())
 	}
 
 	/// 退出群组
@@ -122,8 +128,8 @@ pub trait GroupApi: Send + Sync {
 	/// ## 参数
 	/// `group_id` - 群ID
 	///
-	async fn set_group_quit(&self, group_id: &str) -> Result<()> {
-		Err(Error::NotImpl)
+	async fn set_group_quit(&self, group_id: &str) -> HandlerResult<()> {
+		Err(Error::NotImpl.into())
 	}
 
 	/// 设置加群申请
@@ -136,7 +142,7 @@ pub trait GroupApi: Send + Sync {
 		&self,
 		group_id: &str,
 		action: SetGroupApplyType,
-	) -> Result<()> {
-		Err(Error::NotImpl)
+	) -> HandlerResult<()> {
+		Err(Error::NotImpl.into())
 	}
 }

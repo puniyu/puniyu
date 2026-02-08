@@ -4,4 +4,3 @@ pub use puniyu_types::adapter::{
     AccountApi, AdapterApi, Adapter, AdapterCommunication, AdapterInfo, AdapterPlatform,
     AdapterProtocol, AdapterStandard, FriendApi, GroupApi, MessageApi,
 };
-pub use puniyu_types::adapter::{Error, Result};

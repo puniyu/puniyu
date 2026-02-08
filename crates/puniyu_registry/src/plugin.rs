@@ -12,7 +12,7 @@ static STORE: LazyLock<PluginStore> = LazyLock::new(PluginStore::new);
 
 #[derive(Debug, Default)]
 pub struct PluginRegistry;
-impl PluginRegistry {
+impl<'p> PluginRegistry {
 	/// 注册一个插件
 	pub fn register<P>(plugin: P) -> Result<u64>
 	where
@@ -25,7 +25,7 @@ impl PluginRegistry {
 	/// 卸载一个适配器
 	pub fn unregister<P>(adapter: P) -> Result<()>
 	where
-		P: Into<PluginId>,
+		P: Into<PluginId<'p>>,
 	{
 		let plugin_id = adapter.into();
 		match plugin_id {
@@ -47,16 +47,16 @@ impl PluginRegistry {
 	pub fn unregister_with_plugin_name(name: &str) -> Result<()> {
 		let raw = STORE.raw();
 		let mut map = raw.write().expect("Failed to acquire lock");
-		if !map.values().any(|v| v.info().name == name) {
+		if !map.values().any(|v| v.name() == name) {
 			return Err(Error::NotFound("Plugin".to_string()));
 		}
-		map.retain(|_, v| v.info().name != name);
+		map.retain(|_, v| v.name() != name);
 		Ok(())
 	}
 
 	pub fn get<P>(plugin: P) -> Vec<Arc<dyn Plugin>>
 	where
-		P: Into<PluginId>,
+		P: Into<PluginId<'p>>,
 	{
 		let plugin_id = plugin.into();
 		match plugin_id {
@@ -74,7 +74,7 @@ impl PluginRegistry {
 	pub fn get_with_plugin_name(name: &str) -> Vec<Arc<dyn Plugin>> {
 		let raw = STORE.raw();
 		let map = raw.read().expect("Failed to acquire lock");
-		map.values().filter(|v| v.name() == name).collect()
+		map.values().filter(|v| v.name() == name).cloned().collect()
 	}
 
 	pub fn all() -> Vec<Arc<dyn Plugin>> {

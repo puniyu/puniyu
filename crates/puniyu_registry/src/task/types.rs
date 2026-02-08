@@ -1,7 +1,7 @@
 use chrono_tz::Asia::Shanghai;
 use puniyu_logger::owo_colors::OwoColorize;
 use puniyu_logger::{error, info};
-use puniyu_types::task::TaskBuilder;
+use puniyu_types::task::Task;
 use std::sync::Arc;
 use std::time::Instant;
 use tokio_cron_scheduler::JobBuilder;
@@ -9,7 +9,7 @@ use tokio_cron_scheduler::JobBuilder;
 #[derive(Clone)]
 pub struct TaskInfo {
 	pub plugin_id: u64,
-	pub builder: Arc<dyn TaskBuilder>,
+	pub builder: Arc<dyn Task>,
 }
 
 impl From<TaskInfo> for tokio_cron_scheduler::Job {

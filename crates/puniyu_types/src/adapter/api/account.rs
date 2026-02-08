@@ -1,4 +1,5 @@
-use super::{Error, Result};
+use super::inner::Error;
+use crate::handler::HandlerResult;
 use async_trait::async_trait;
 use bytes::Bytes;
 
@@ -9,7 +10,7 @@ pub trait AccountApi: Send + Sync {
 	/// ## 参数
 	/// `avatar` - 头像二进制数据
 	///
-	async fn set_avatar(&self, avatar: Bytes) -> Result<bool> {
-		Err(Error::NotImpl)
+	async fn set_avatar(&self, avatar: Bytes) -> HandlerResult<()> {
+		Err(Error::NotImpl.into())
 	}
 }

@@ -19,7 +19,7 @@ impl AdapterStore {
 	pub fn insert(&self, adapter: Arc<dyn Adapter>) -> Result<u64> {
 		let index = ADAPTER_INDEX.fetch_add(1, Ordering::SeqCst);
 		let mut map = self.0.write().expect("Failed to acquire lock");
-		if map.values().any(|v| v == &adapter) {
+		if map.values().any(|v| v.info() == adapter.info()) {
 			return Err(Error::Exists("Adapter".to_string()));
 		}
 		map.insert(index, adapter);

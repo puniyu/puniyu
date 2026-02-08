@@ -1,14 +1,14 @@
 mod friend;
-
+#[doc(inline)]
 pub use friend::*;
-use serde::{Deserialize, Serialize};
-use std::sync::Arc;
 mod group;
+#[doc(inline)]
 pub use group::*;
 
-use super::EventBase;
+use super::{EventBase, EventType};
 use crate::bot::Bot;
 use strum::{Display, EnumString, IntoStaticStr};
+use serde::{Deserialize, Serialize};
 
 #[derive(
 	Debug,
@@ -88,73 +88,38 @@ pub enum NotionSubEvent {
 	GroupHonorChange,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize)]
-#[serde(rename_all = "lowercase", tag = "type", content = "field0")]
-pub enum NotionEvent {
-	ReceiveLike(ReceiveLike),
-	FriendAdd(FriendAdd),
-	PrivatePoke(PrivatePoke),
-	PrivateRecall(PrivateRecall),
-	PrivateFileUpload(PrivateFileUpload),
-	GroupPoke(GroupPoke),
-	GroupRecall(GroupRecall),
-	GroupFileUpload(GroupFileUpload),
-	GroupCardChange(GroupCardChange),
-	GroupMemberTitleChange(GroupMemberTitleChange),
+#[derive(Debug, Clone)]
+pub enum NotionEvent<'n> {
+	ReceiveLike(ReceiveLike<'n>),
+	FriendAdd(FriendDecrease<'n>),
+	PrivatePoke(PrivateRecall<'n>),
+	PrivateRecall(PrivateRecall<'n>),
+	PrivateFileUpload(PrivateFileUpload<'n>),
+	GroupPoke(GroupPoke<'n>),
+	GroupRecall(GroupRecall<'n>),
+	GroupFileUpload(GroupFileUpload<'n>),
+	GroupCardChange(GroupCardChange<'n>),
+	GroupMemberTitleChange(GroupMemberTitleChange<'n>),
 }
-pub trait NotionBase: Send + Sync + EventBase {
+pub trait NotionBase: Send + Sync + EventBase<EventType, NotionSubEvent> {
 	type Content;
 	/// 通知消息
 	fn notion(&self) -> &str;
 
 	/// 通知内容
-	fn content(&self) -> Self::Content;
+	fn content(&self) -> &Self::Content;
 }
 
-pub struct NotionBuilder<Contact, Sender> {
-	pub bot: Arc<Bot>,
-	pub event_id: String,
+pub struct NotionBuilder<'n, Contact, Sender>
+where
+	Contact: crate::contact::Contact,
+	Sender: crate::sender::Sender,
+{
+	pub bot: &'n Bot,
+	pub event_id: &'n str,
 	pub time: u64,
-	pub self_id: String,
-	pub user_id: String,
-	pub contact: Contact,
-	pub sender: Sender,
-}
-
-#[cfg(feature = "event")]
-#[macro_export]
-macro_rules! create_notion_event {
-    (
-        $variant:ident,
-        $( $key:ident : $value:expr ),* $(,)?
-    ) => {{
-        let mut builder = $crate::event::notion::NotionBuilder {
-            bot: Default::default(),
-            event_id: String::new(),
-            time: 0,
-            self_id: String::new(),
-            user_id: String::new(),
-            contact: Default::default(),
-            sender: Default::default(),
-        };
-
-        $(
-            builder.$key = create_notion_event!(@convert $key, $value);
-        )*
-
-        let notion = $variant::new(builder, builder.content.clone());
-        let event = $crate::event::Event::Notion($crate::event::notion::NotionEvent::$variant(notion));
-
-        $crate::bus::send_event($bot.clone(), event);
-    }};
-
-    (@convert bot, $v:expr) => { $v };
-    (@convert adapter, $v:expr) => { $v };
-    (@convert event_id, $v:expr) => { $v.to_string() };
-    (@convert time, $v:expr) => { $v };
-    (@convert self_id, $v:expr) => { $v.to_string() };
-    (@convert user_id, $v:expr) => { $v.to_string() };
-    (@convert contact, $v:expr) => { $v };
-    (@convert sender, $v:expr) => { $v };
-    (@convert content, $v:expr) => { $v };
+	pub self_id: &'n str,
+	pub user_id: &'n str,
+	pub contact: &'n Contact,
+	pub sender: &'n Sender,
 }

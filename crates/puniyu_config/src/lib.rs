@@ -196,24 +196,9 @@ fn init_env() {
 			env::set_var("LOGGER_LEVEL", level);
 		}
 	}
-
-	if env::var("LOGGER_RETENTION_DAYS").is_err() {
-		let config = config.logger();
-		let retention_day = config.retention_days();
-		unsafe {
-			env::set_var("LOGGER_RETENTION_DAYS", retention_day.to_string());
-		}
-	}
-	if env::var("LOGGER_FILE_ENABLE").is_err() {
-		let config = config.logger();
-		let file_logging = config.enable_file();
-		unsafe {
-			env::set_var("LOGGER_FILE_ENABLE", file_logging.to_string());
-		}
-	}
 	if env::var("HTTP_HOST").is_err() {
 		unsafe {
-			env::set_var("HTTP_HOST", Config::app().server().host());
+			env::set_var("HTTP_HOST", Config::app().server().host().to_string());
 		}
 	}
 	if env::var("HTTP_PORT").is_err() {

@@ -7,14 +7,13 @@ use crate::{Error, Result};
 use puniyu_logger::{info, owo_colors::OwoColorize, warn};
 pub use puniyu_types::bot::Bot;
 use std::sync::LazyLock;
-use puniyu_types::adapter::Adapter;
 use types::BotId;
 
 static STORE: LazyLock<BotStore> = LazyLock::new(BotStore::new);
 
 pub struct BotRegistry;
 
-impl<B: Adapter> BotRegistry {
+impl<'b> BotRegistry {
 	pub fn register(bot: Bot) -> Result<u64> {
 		let self_id = bot.account().uin.clone();
 		let adapter_name = bot.adapter().name.clone();
@@ -28,7 +27,7 @@ impl<B: Adapter> BotRegistry {
 	}
 	pub fn unregister<B>(bot_id: B) -> Result<()>
 	where
-		B: Into<BotId>,
+		B: Into<BotId<'b>>,
 	{
 		let bot_id = bot_id.into();
 		match bot_id {
@@ -85,7 +84,7 @@ impl<B: Adapter> BotRegistry {
 
 	pub fn get<T>(bot_id: T) -> Vec<Bot>
 	where
-		T: Into<BotId>
+		T: Into<BotId<'b>>
 	{
 		let bot_id = bot_id.into();
 		match bot_id {
@@ -190,7 +189,7 @@ macro_rules! unregister_bot {
 /// ```
 ///
 ///
-pub fn get_bot(id: impl Into<BotId>) -> Option<Bot> {
+pub fn get_bot<'b>(id: impl Into<BotId<'b>>) -> Option<Bot> {
 	let bot_id: BotId = id.into();
 	match bot_id {
 		BotId::Index(index) => BotRegistry::get_with_index(index),

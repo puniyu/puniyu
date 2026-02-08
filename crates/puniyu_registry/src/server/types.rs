@@ -1,11 +1,24 @@
-use puniyu_types::server::ServerFunction;
 use crate::SourceType;
+use puniyu_types::server::ServerFunction;
+use std::fmt::Debug;
+use std::sync::Arc;
 
-
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub struct ServerInfo {
 	pub source: SourceType,
 	pub builder: ServerFunction,
+}
+
+impl PartialEq for ServerInfo {
+	fn eq(&self, other: &Self) -> bool {
+		&self.source == &other.source && Arc::as_ptr(&self.builder) == Arc::as_ptr(&other.builder)
+	}
+}
+
+impl Debug for ServerInfo {
+	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+		f.debug_struct("ServerInfo").field("source", &self.source).finish()
+	}
 }
 
 pub(crate) enum ServerId {

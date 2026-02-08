@@ -61,8 +61,4 @@ impl<'c> From<&'c str> for CommandId<'c> {
 	}
 }
 
-impl<'c> From<String> for CommandId<'c> {
-	fn from(name: String) -> Self {
-		Self::Name(name.as_str())
-	}
-}
+

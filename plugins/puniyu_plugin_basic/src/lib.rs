@@ -3,4 +3,6 @@ mod command;
 use puniyu_plugin::prelude::*;
 
 #[plugin]
-async fn _main() {}
+async fn _main() -> HandlerResult {
+    Ok(())
+}

@@ -1,169 +1,45 @@
+macro_rules! codegen_reexport {
+    ($($module:ident => $type:ident),*) => {
+        $(
+            mod $module;
+			#[doc(inline)]
+            pub use $module::$type;
+        )*
+    };
+}
+
+codegen_reexport! {
+    text => TextElement,
+    at => AtElement,
+    reply => ReplyElement,
+    face => FaceElement,
+    image => ImageElement,
+    file => FileElement,
+    video => VideoElement,
+    record => RecordElement,
+    json => JsonElement,
+    xml => XmlElement
+}
+
 use super::RawMessage;
-use bytes::Bytes;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct TextElement {
-	/// 文本元素内容
-	pub text: String,
-}
-impl From<TextElement> for String {
-	fn from(elem: TextElement) -> Self {
-		elem.text
-	}
-}
-
-impl RawMessage for TextElement {
-	fn raw(&self) -> String {
-		format!("[text:{}]", self.text)
-	}
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct AtElement {
-	/// at元素目标id
-	pub target_id: String,
-}
-
-impl AtElement {
-	/// 是否为艾特全体
-	pub fn is_everyone(&self) -> bool {
-		matches!(self.target_id.as_str(), "all")
-	}
-}
-
-impl RawMessage for AtElement {
-	fn raw(&self) -> String {
-		format!("[at:{}]", self.target_id)
-	}
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ReplyElement {
-	/// 回复元素id
-	#[serde(rename = "messageId")]
-	pub message_id: String,
-}
-
-impl RawMessage for ReplyElement {
-	fn raw(&self) -> String {
-		format!("[reply:{}]", self.message_id)
-	}
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct FaceElement {
-	/// 表情元素id
-	pub id: u64,
-}
-
-impl RawMessage for FaceElement {
-	fn raw(&self) -> String {
-		format!("[face:{}]", self.id)
-	}
-}
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ImageElement {
-	/// 图片元素
-	pub file: Bytes,
-	/// 图片外显
-	pub summary: String,
-	/// 图片宽度
-	pub width: u32,
-	/// 图片高度
-	pub height: u32,
-}
-
-impl RawMessage for ImageElement {
-	fn raw(&self) -> String {
-		format!("[image:{}]", self.summary.clone())
-	}
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct FileElement {
-	/// 文件元素
-	pub file: Bytes,
-	/// 文件id
-	pub file_id: String,
-	/// 文件大小, 单位字节
-	pub file_size: u64,
-	/// 文件名称
-	pub file_name: String,
-}
-
-impl RawMessage for FileElement {
-	fn raw(&self) -> String {
-		format!("[file:{}]", self.file_id)
-	}
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct VideoElement {
-	/// 视频元素
-	pub file: Bytes,
-	/// 视频文件名
-	pub file_name: String,
-}
-
-impl RawMessage for VideoElement {
-	fn raw(&self) -> String {
-		format!("[video:{}]", self.file_name)
-	}
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct RecordElement {
-	/// 语言元素
-	pub file: Bytes,
-}
-
-impl RawMessage for RecordElement {
-	fn raw(&self) -> String {
-		format!("[record:{}]", "语音消息")
-	}
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct JsonElement {
-	/// Json数据，未序列化
-	pub data: String,
-}
-
-impl RawMessage for JsonElement {
-	fn raw(&self) -> String {
-		format!("[json:{}]", self.data)
-	}
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct XmlElement {
-	/// Xml数据，未序列化
-	pub data: String,
-}
-
-impl RawMessage for XmlElement {
-	fn raw(&self) -> String {
-		format!("[xml:{}]", self.data)
-	}
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "lowercase", tag = "type", content = "field0")]
-pub enum Elements {
-	Text(TextElement),
-	At(AtElement),
-	Reply(ReplyElement),
+#[serde(rename_all = "lowercase", tag = "type", content = "field0", bound(deserialize = "'de: 'e"))]
+pub enum Elements<'e> {
+	Text(TextElement<'e>),
+	At(AtElement<'e>),
+	Reply(ReplyElement<'e>),
 	Face(FaceElement),
-	Image(ImageElement),
-	File(FileElement),
-	Video(VideoElement),
-	Record(RecordElement),
-	Json(JsonElement),
-	Xml(XmlElement),
+	Image(ImageElement<'e>),
+	File(FileElement<'e>),
+	Video(VideoElement<'e>),
+	Record(RecordElement<'e>),
+	Json(JsonElement<'e>),
+	Xml(XmlElement<'e>),
 }
 
-impl Elements {
+impl<'e> Elements<'e> {
 	pub fn as_text(&self) -> Option<&str> {
 		match self {
 			Elements::Text(element) => Some(&element.text),
@@ -235,7 +111,7 @@ impl Elements {
 	}
 }
 
-impl RawMessage for Elements {
+impl<'e> RawMessage for Elements<'e> {
 	fn raw(&self) -> String {
 		match self {
 			Elements::Text(text_element) => text_element.raw(),
@@ -249,11 +125,5 @@ impl RawMessage for Elements {
 			Elements::Xml(xml_element) => xml_element.raw(),
 			Elements::At(at_element) => at_element.raw(),
 		}
-	}
-}
-
-impl RawMessage for Vec<Elements> {
-	fn raw(&self) -> String {
-		self.iter().map(|element| element.raw()).collect::<Vec<_>>().join("")
 	}
 }

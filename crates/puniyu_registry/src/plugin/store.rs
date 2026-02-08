@@ -10,7 +10,7 @@ use std::{
 
 static PLUGIN_INDEX: AtomicU64 = AtomicU64::new(0);
 
-#[derive(Debug, Clone, Default)]
+#[derive(Clone, Default)]
 pub(crate) struct PluginStore(Arc<RwLock<HashMap<u64, Arc<dyn Plugin>>>>);
 
 impl PluginStore {

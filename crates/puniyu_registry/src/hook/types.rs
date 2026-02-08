@@ -1,11 +1,27 @@
+use std::cmp::PartialEq;
 use crate::SourceType;
 use puniyu_types::hook::Hook;
+use std::fmt::Debug;
 use std::sync::Arc;
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Clone)]
 pub struct HookInfo {
 	pub source: SourceType,
 	pub builder: Arc<dyn Hook>,
+}
+
+impl Debug for HookInfo {
+	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+		f.debug_tuple("HookInfo").field(&self.source).finish()
+	}
+}
+
+
+
+impl PartialEq for HookInfo {
+	fn eq(&self, other: &Self) -> bool {
+		&self.source == &other.source && self.builder.name() == other.builder.name()
+	}
 }
 
 pub(crate) enum HookId<'h> {
@@ -20,17 +36,12 @@ impl From<u64> for HookId<'_> {
 	}
 }
 
-impl From<&str> for HookId<'_> {
-	fn from(name: &str) -> Self {
+impl<'h> From<&'h str> for HookId<'h> {
+	fn from(name: &'h str) -> Self {
 		Self::Name(name)
 	}
 }
 
-impl From<String> for HookId<'_> {
-	fn from(name: String) -> Self {
-		Self::Name(name.as_str())
-	}
-}
 
 impl From<SourceType> for HookId<'_> {
 	fn from(source: SourceType) -> Self {

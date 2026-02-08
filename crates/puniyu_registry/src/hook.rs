@@ -11,14 +11,14 @@ static STORE: LazyLock<HookStore> = LazyLock::new(HookStore::new);
 
 pub struct HookRegistry;
 
-impl HookRegistry {
+impl<'h> HookRegistry {
 	pub fn register(source: SourceType, hook: Arc<dyn Hook>) -> Result<u64> {
 		let hook = HookInfo { source, builder: hook };
 		STORE.insert(hook)
 	}
 	pub fn unregister<H>(hook: H) -> Result<()>
 	where
-		H: Into<HookId>,
+		H: Into<HookId<'h>>,
 	{
 		let hook = hook.into();
 		match hook {
@@ -53,7 +53,7 @@ impl HookRegistry {
 
 	pub fn get<H>(hook: H) -> Vec<HookInfo>
 	where
-		H: Into<HookId>,
+		H: Into<HookId<'h>>,
 	{
 		let hook = hook.into();
 		match hook {

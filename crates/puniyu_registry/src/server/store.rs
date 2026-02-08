@@ -19,7 +19,7 @@ impl ServerStore {
 	}
 	pub fn insert(&self, server: ServerInfo) -> Result<u64> {
 		let mut map = self.0.write().expect("Failed to acquire lock");
-		if map.values().any(|v| v.source == server.source && v.builder == server.builder) {
+		if map.values().any(|v| v == &server) {
 			return Err(Error::Exists("Server".to_string()));
 		}
 		let index = SERVER_ID.fetch_add(1, Ordering::Relaxed);

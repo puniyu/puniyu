@@ -26,7 +26,8 @@ puniyu_types = { version = "0.7.7", path = "../../crates/puniyu_types", default-
     "event",
     "bot",
     "handler",
-    "hook"
+    "hook",
+    "bus"
 ] }
 puniyu_registry = { version = "0.7.9", path = "../../crates/puniyu_registry", default-features = false, features = [
     "adapter",

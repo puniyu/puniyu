@@ -1,12 +1,11 @@
-use serde::{Deserialize, Serialize};
+mod types;
+#[doc(inline)]
+pub use types::*;
 
-#[derive(Debug, Clone, Deserialize, Serialize)]
-pub struct GroupApplyType {
-	/// 申请理由
-	pub(crate) reason: String,
-}
+mod apply;
+#[doc(inline)]
+pub use apply::GroupApply;
 
-#[derive(Debug, Clone, Deserialize, Serialize)]
-pub struct GroupInviteType {
-	pub(crate) target_id: String,
-}
+mod invite;
+#[doc(inline)]
+pub use invite::GroupInvite;

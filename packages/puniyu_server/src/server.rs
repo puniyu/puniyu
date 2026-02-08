@@ -54,7 +54,7 @@ pub async fn run_server_with_control(host: IpAddr, port: u16) -> std::io::Result
 
 			ServerRegistry::get_all()
 				.into_iter()
-				.fold(app, |app, service_cfg| app.configure(|cfg| service_cfg(cfg)))
+				.fold(app, |app, cfg| app.configure(cfg))
 		})
 		.bind((host, port))?;
 

@@ -7,7 +7,7 @@ use itertools::Itertools;
 use puniyu_config::Config;
 use puniyu_logger::info;
 use puniyu_logger::owo_colors::OwoColorize;
-use puniyu_registry::command::{Command, CommandRegistry};
+use puniyu_registry::command::{CommandInfo, CommandRegistry};
 use puniyu_types::adapter::MessageApi;
 use puniyu_types::command::CommandAction;
 use puniyu_types::context::{BotContext, MessageContext};
@@ -24,8 +24,8 @@ impl CommandHandler {
 		event.elements().iter().filter_map(|e| e.as_text()).collect::<Vec<_>>().join(" ")
 	}
 
-	fn get_commands() -> Vec<Arc<Command>> {
-		CommandRegistry::all().into_iter().sorted_by_key(|cmd| cmd.builder.rank()).collect()
+	fn get_commands() -> Vec<CommandInfo> {
+		CommandRegistry::all().into_iter().sorted_by_key(|cmd| cmd.rank).collect()
 	}
 
 	fn matches_command(event: &MessageEvent) -> bool {
@@ -65,7 +65,7 @@ impl CommandHandler {
 
 		let commands = Self::get_commands();
 		if commands.iter().any(|cmd| {
-			cmd.builder.name() == command_name || cmd.builder.alias().contains(&command_name)
+			cmd.name() == command_name || cmd.alias().contains(&command_name)
 		}) {
 			cooldown::set_cooldown(event);
 			true

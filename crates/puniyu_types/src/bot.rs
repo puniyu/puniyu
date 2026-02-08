@@ -1,5 +1,5 @@
 use crate::account::AccountInfo;
-use crate::adapter::{AdapterApi, AdapterInfo, Adapter};
+use crate::adapter::{Adapter, AdapterApi, AdapterInfo};
 use std::fmt::{Debug, Formatter};
 use std::sync::Arc;
 
@@ -18,11 +18,17 @@ impl Debug for Bot {
 }
 impl PartialEq for Bot {
 	fn eq(&self, other: &Self) -> bool {
-		self.adapter.info() == other.adapter.info()
+		self.adapter.info() == other.adapter.info() && self.account == other.account
 	}
 }
 
 impl Eq for Bot {}
+
+impl AsRef<Bot> for Bot {
+	fn as_ref(&self) -> &Bot {
+		self
+	}
+}
 
 impl Bot {
 	pub fn new<A: Adapter + 'static>(adapter: A, account: AccountInfo) -> Self {

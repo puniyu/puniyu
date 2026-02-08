@@ -10,8 +10,7 @@ pub use puniyu_common::APP_NAME;
 use puniyu_common::path::{DATA_DIR, PLUGIN_DATA_DIR, PLUGIN_DIR, RESOURCE_DIR, WORKING_DIR};
 use puniyu_config::{init_config, start_config_watcher};
 use puniyu_event::init_event_bus;
-use puniyu_registry::plugin::PluginType;
-use puniyu_registry::{HookRegistry, adapter::AdapterRegistry, plugin::PluginRegistry};
+use puniyu_registry::{adapter::AdapterRegistry, plugin::PluginRegistry};
 use puniyu_types::adapter::Adapter;
 use puniyu_types::hook::{HookType, StatusType};
 use puniyu_types::plugin::Plugin;
@@ -103,11 +102,11 @@ impl App {
 		}
 		let start_time = std::time::Instant::now();
 		let app_name = APP_NAME.get().unwrap();
-		init_app(&self.builder.plugins, &self.builder.adapters).await;
-		info!("钩子数量: {}", HookRegistry::all().len());
-		start_config_watcher();
+		// init_app(&self.builder.plugins, &self.builder.adapters).await;
+		// info!("钩子数量: {}", HookRegistry::all().len());
+		// start_config_watcher();
 		let duration_str = format_duration(start_time.elapsed());
-		execute_hooks(StatusType::Start).await;
+		// execute_hooks(StatusType::Start).await;
 		info!(
 			"{} 初始化完成，耗时: {}",
 			app_name.to_case(Case::Lower).fg_rgb::<64, 224, 208>(),
@@ -127,12 +126,12 @@ impl App {
 			let config = config.server();
 			let host = IpAddr::V4(config.host().parse().unwrap());
 			let port = config.port();
-			puniyu_server::run_server_spawn(Some(host), Some(port));
+			puniyu_server::run_server_spawn(host, port);
 		}
 
 		signal::ctrl_c().await?;
 		debug!("接收到中断信号，正在关闭...");
-		execute_hooks(StatusType::Stop).await;
+		// execute_hooks(StatusType::Stop).await;
 		info!(
 			"{} 本次运行时间: {}",
 			app_name.to_case(Case::Lower).fg_rgb::<64, 224, 208>(),
@@ -142,68 +141,68 @@ impl App {
 	}
 }
 
-async fn init_app(
-    plugins: &[&'static dyn Adapter],
-    adapters: &[&'static dyn Adapter],
-) {
-	if !DATA_DIR.as_path().exists() {
-		fs::create_dir(DATA_DIR.as_path()).await.unwrap();
-	}
+// async fn init_app(
+//     plugins: &[&'static dyn Adapter],
+//     adapters: &[&'static dyn Adapter],
+// ) {
+// 	if !DATA_DIR.as_path().exists() {
+// 		fs::create_dir(DATA_DIR.as_path()).await.unwrap();
+// 	}
+// 
+// 	if !RESOURCE_DIR.as_path().exists() {
+// 		fs::create_dir(RESOURCE_DIR.as_path()).await.unwrap();
+// 	}
+// 	init_plugin(plugins).await;
+// 	init_adapter(adapters).await;
+// }
 
-	if !RESOURCE_DIR.as_path().exists() {
-		fs::create_dir(RESOURCE_DIR.as_path()).await.unwrap();
-	}
-	init_plugin(plugins).await;
-	init_adapter(adapters).await;
-}
-
-async fn init_plugin(plugins: &[&'static dyn Adapter]) {
-	if !PLUGIN_DIR.as_path().exists() {
-		fs::create_dir(PLUGIN_DIR.as_path()).await.expect("Failed to create plugin directory");
-	}
-
-	if !PLUGIN_DATA_DIR.as_path().exists() {
-		fs::create_dir(PLUGIN_DATA_DIR.as_path())
-			.await
-			.expect("Failed to create plugin data directory");
-	}
-	let mut plugins_list =
-		plugins.iter().map(|p| PluginType::Builder(*p)).collect::<Vec<PluginType>>();
-
-	let pattern = PLUGIN_DIR.join(format!("*.{}", DLL_EXTENSION));
-	if let Ok(paths) = glob::glob(pattern.to_str().expect("Failed to parse plugin path")) {
-		for entry in paths.filter_map(Result::ok) {
-			plugins_list.push(entry.into());
-		}
-	}
-
-	PluginRegistry::load_plugins(plugins_list).await.unwrap_or_else(|e| {
-		error!("插件加载失败: {:?}", e);
-	});
-
-	let plugin_count = PluginRegistry::get_all_plugins().len();
-	debug!(
-		"{}: {} {}",
-		"共加载".fg_rgb::<135, 206, 250>(),
-		plugin_count,
-		"个插件".fg_rgb::<135, 206, 250>()
-	)
-}
-
-async fn init_adapter(adapters: &[&'static dyn Adapter]) {
-	AdapterRegistry::load_adapters(adapters).await.unwrap_or_else(|e| {
-		error!("适配器加载失败: {:?}", e);
-	});
-
-	let adapter_count = AdapterRegistry::adapters().len();
-
-	debug!(
-		"{}: {} {}",
-		"共加载".fg_rgb::<135, 206, 250>(),
-		adapter_count,
-		"个适配器".fg_rgb::<135, 206, 250>()
-	)
-}
+// async fn init_plugin(plugins: &[&'static dyn Adapter]) {
+// 	if !PLUGIN_DIR.as_path().exists() {
+// 		fs::create_dir(PLUGIN_DIR.as_path()).await.expect("Failed to create plugin directory");
+// 	}
+// 
+// 	if !PLUGIN_DATA_DIR.as_path().exists() {
+// 		fs::create_dir(PLUGIN_DATA_DIR.as_path())
+// 			.await
+// 			.expect("Failed to create plugin data directory");
+// 	}
+// 	let mut plugins_list =
+// 		plugins.iter().map(|p| PluginType::Builder(*p)).collect::<Vec<PluginType>>();
+// 
+// 	let pattern = PLUGIN_DIR.join(format!("*.{}", DLL_EXTENSION));
+// 	if let Ok(paths) = glob::glob(pattern.to_str().expect("Failed to parse plugin path")) {
+// 		for entry in paths.filter_map(Result::ok) {
+// 			plugins_list.push(entry.into());
+// 		}
+// 	}
+// 
+// 	PluginRegistry::load_plugins(plugins_list).await.unwrap_or_else(|e| {
+// 		error!("插件加载失败: {:?}", e);
+// 	});
+// 
+// 	let plugin_count = PluginRegistry::get_all_plugins().len();
+// 	debug!(
+// 		"{}: {} {}",
+// 		"共加载".fg_rgb::<135, 206, 250>(),
+// 		plugin_count,
+// 		"个插件".fg_rgb::<135, 206, 250>()
+// 	)
+// }
+// 
+// async fn init_adapter(adapters: &[&'static dyn Adapter]) {
+// 	AdapterRegistry::load_adapters(adapters).await.unwrap_or_else(|e| {
+// 		error!("适配器加载失败: {:?}", e);
+// 	});
+// 
+// 	let adapter_count = AdapterRegistry::adapters().len();
+// 
+// 	debug!(
+// 		"{}: {} {}",
+// 		"共加载".fg_rgb::<135, 206, 250>(),
+// 		adapter_count,
+// 		"个适配器".fg_rgb::<135, 206, 250>()
+// 	)
+// }
 
 fn print_start_log() {
 	let app_name = APP_NAME.get().unwrap();
@@ -221,23 +220,23 @@ fn print_start_log() {
 	println!("Github: {}", env!("CARGO_PKG_REPOSITORY"));
 }
 
-async fn execute_hooks(status_type: StatusType) {
-	let mut hooks = HookRegistry::all()
-		.into_iter()
-		.filter(|x| match x.builder.r#type() {
-			HookType::Status(status) => status == status_type,
-			_ => false,
-		})
-		.collect::<Vec<_>>();
-	hooks.sort_unstable_by_key(|a| a.builder.rank());
-
-	for hook in hooks {
-		if let Err(e) = hook.builder.run(None).await {
-			match status_type {
-				StatusType::Start => error!("启动hook钩子执行失败: {}", e),
-				StatusType::Stop => error!("关闭hook钩子执行失败: {}", e),
-			}
-		}
-		HookRegistry::unregister(hook.index);
-	}
-}
+// async fn execute_hooks(status_type: StatusType) {
+// 	let mut hooks = HookRegistry::all()
+// 		.into_iter()
+// 		.filter(|x| match x.builder.r#type() {
+// 			HookType::Status(status) => status == status_type,
+// 			_ => false,
+// 		})
+// 		.collect::<Vec<_>>();
+// 	hooks.sort_unstable_by_key(|a| a.builder.rank());
+// 
+// 	for hook in hooks {
+// 		if let Err(e) = hook.builder.run(None).await {
+// 			match status_type {
+// 				StatusType::Start => error!("启动hook钩子执行失败: {}", e),
+// 				StatusType::Stop => error!("关闭hook钩子执行失败: {}", e),
+// 			}
+// 		}
+// 		HookRegistry::unregister(hook.index);
+// 	}
+// }

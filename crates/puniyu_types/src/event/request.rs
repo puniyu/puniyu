@@ -1,18 +1,15 @@
 mod friend;
-
+#[doc(inline)]
 pub use friend::*;
-use serde::{Deserialize, Serialize};
-use std::sync::Arc;
 mod group;
+#[doc(inline)]
 pub use group::*;
 
 use super::EventBase;
 use crate::bot::Bot;
-use crate::contact::{FriendContact, GroupContact, Scene};
 use crate::event::EventType;
-use crate::event::inner::{deserialize_bot, serialize_bot};
-use crate::sender::{FriendSender, GroupSender};
 use strum::{Display, EnumString, IntoStaticStr};
+use serde::{Deserialize, Serialize};
 
 #[derive(
 	Debug,
@@ -39,171 +36,36 @@ pub enum RequestSubEvent {
 	GroupInvite,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize)]
-#[serde(rename_all = "lowercase", tag = "type", content = "field0")]
-pub enum RequestEvent {
+#[derive(Debug, Clone)]
+pub enum RequestEvent<'r> {
 	/// 好友申请
-	PrivateApply(PrivateApply),
+	PrivateApply(PrivateApply<'r>),
 	/// 群申请
-	GroupApply(GroupApply),
+	GroupApply(GroupApply<'r>),
 	/// 邀请入群
-	GroupInvite(GroupInvite),
+	GroupInvite(GroupInvite<'r>),
 }
 
-pub trait RequestBase: Send + Sync + EventBase {
+pub trait RequestBase: Send + Sync + EventBase<EventType, RequestSubEvent> {
 	type Content;
 	/// 请求消息
 	fn notion(&self) -> &str;
 
 	/// 请求内容
-	fn content(&self) -> Self::Content;
+	fn content(&self) -> &Self::Content;
 }
 
 #[derive(Debug, Clone)]
-pub struct RequestBuilder<Contact, Sender> {
-	pub bot: Arc<Bot>,
-	pub event_id: String,
+pub struct RequestBuilder<'r, Contact, Sender>
+where
+	Contact: crate::contact::Contact,
+	Sender: crate::sender::Sender,
+{
+	pub bot: &'r Bot,
+	pub event_id: &'r str,
 	pub time: u64,
-	pub self_id: String,
-	pub user_id: String,
-	pub contact: Contact,
-	pub sender: Sender,
-}
-
-macro_rules! impl_request_event {
-    (
-        $(
-            $(#[$attr:meta])*
-            $struct_name:ident,
-            $notion_desc:expr,
-            $sub_event:expr,
-            $contact_ty:ty,
-            $sender_ty:ty,
-            $content_ty:ty;
-        )+
-    ) => {
-        $(
-            impl_request_event!(
-                $(#[$attr])*
-                $struct_name,
-                $notion_desc,
-                $sub_event,
-                $contact_ty,
-                $sender_ty,
-                $content_ty
-            );
-        )+
-    };
-
-    (
-        $(#[$attr:meta])*
-        $struct_name:ident,
-        $notion_desc:expr,
-        $sub_event:expr,
-        $contact_ty:ty,
-        $sender_ty:ty,
-        $content_ty:ty
-    ) => {
-        $(#[$attr])*
-        #[derive(Debug, Clone, Deserialize, Serialize)]
-        pub struct $struct_name {
-            #[serde(
-				serialize_with = "serialize_bot",
-				deserialize_with = "deserialize_bot"
-			)]
-            bot: Arc<Bot>,
-            event_id: String,
-            time: u64,
-            self_id: String,
-            user_id: String,
-            contact: $contact_ty,
-            sender: $sender_ty,
-            content: $content_ty,
-        }
-
-        impl $struct_name {
-            pub fn new(
-                request_builder: RequestBuilder<$contact_ty, $sender_ty>,
-                content: $content_ty
-            ) -> Self {
-                Self {
-                    bot: request_builder.bot,
-                    event_id: request_builder.event_id,
-                    time: request_builder.time,
-                    self_id: request_builder.self_id,
-                    user_id: request_builder.user_id,
-                    contact: request_builder.contact,
-                    sender: request_builder.sender,
-                    content,
-                }
-            }
-        }
-
-        impl EventBase for $struct_name {
-            type ContactType = $contact_ty;
-            type SenderType = $sender_ty;
-
-            fn bot(&self) -> &Bot { &self.bot }
-            fn time(&self) -> u64 { self.time }
-            fn event(&self) -> &str { EventType::Request.into() }
-            fn event_id(&self) -> &str { &self.event_id }
-            fn sub_event(&self) -> &str { $sub_event.into() }
-            fn self_id(&self) -> &str { &self.self_id }
-            fn user_id(&self) -> &str { &self.user_id }
-            fn contact(&self) -> Self::ContactType { self.contact.clone() }
-            fn sender(&self) -> Self::SenderType { self.sender.clone() }
-            fn is_friend(&self) -> bool { matches!(self.contact.scene, Scene::Friend) }
-            fn is_group(&self) -> bool { matches!(self.contact.scene, Scene::Group) }
-        }
-
-        impl RequestBase for $struct_name {
-            type Content = $content_ty;
-            fn notion(&self) -> &str { $notion_desc }
-            fn content(&self) -> Self::Content { self.content.clone() }
-        }
-    };
-}
-
-impl_request_event!(
-	PrivateApply, "收到好友申请请求", RequestSubEvent::PrivateApply, FriendContact, FriendSender, PrivateApplyType;
-	GroupApply, "收到入群申请请求", RequestSubEvent::GroupApply, GroupContact, GroupSender, GroupApplyType;
-	GroupInvite, "收到群邀请请求", RequestSubEvent::GroupInvite, GroupContact, GroupSender, GroupInviteType;
-);
-
-#[cfg(feature = "event")]
-#[macro_export]
-macro_rules! create_request_event {
-    (
-        $variant:ident,
-        $bot:ident,
-        $( $key:ident : $value:expr ),* $(,)?
-    ) => {{
-        let mut builder = $crate::event::request::RequestBuilder {
-            bot: Default::default(),
-            event_id: String::new(),
-            time: 0,
-            self_id: String::new(),
-            user_id: String::new(),
-            contact: Default::default(),
-            sender: Default::default(),
-        };
-
-        $(
-            builder.$key = create_request_event!(@convert $key, $value);
-        )*
-
-        let request = $variant::new(builder);
-        let event = $crate::event::Event::Request($crate::event::request::RequestEvent::$variant(request));
-
-        $crate::bus::send_event($bot.clone(), event);
-    }};
-
-    (@convert bot, $v:expr) => { $v };
-    (@convert adapter, $v:expr) => { $v };
-    (@convert event_id, $v:expr) => { $v.to_string() };
-    (@convert time, $v:expr) => { $v };
-    (@convert self_id, $v:expr) => { $v.to_string() };
-    (@convert user_id, $v:expr) => { $v.to_string() };
-    (@convert contact, $v:expr) => { $v };
-    (@convert sender, $v:expr) => { $v };
+	pub self_id: &'r str,
+	pub user_id: &'r str,
+	pub contact: &'r Contact,
+	pub sender: &'r Sender,
 }

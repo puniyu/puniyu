@@ -3,20 +3,14 @@ pub(crate) enum AdapterId<'a> {
     Name(&'a str),
 }
 
-impl From<u64> for AdapterId {
+impl<'a> From<u64> for AdapterId<'a> {
     fn from(index: u64) -> Self {
         Self::Index(index)
     }
 }
 
-impl<'b> From<&str> for AdapterId<'b> {
-    fn from(self_id: &'b str) -> Self {
+impl<'a> From<&'a str> for AdapterId<'a> {
+    fn from(self_id: &'a str) -> Self {
         Self::Name(self_id)
-    }
-}
-
-impl From<String> for AdapterId {
-    fn from(self_id: String) -> Self {
-        Self::Name(self_id.as_str())
     }
 }

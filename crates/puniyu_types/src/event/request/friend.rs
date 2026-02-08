@@ -1,7 +1,7 @@
-use serde::{Deserialize, Serialize};
+mod types;
+#[doc(inline)]
+pub use types::*;
+mod apply;
+#[doc(inline)]
+pub use apply::PrivateApply;
 
-#[derive(Debug, Clone, Deserialize, Serialize)]
-pub struct PrivateApplyType {
-	/// 验证信息
-	pub(crate) message: String,
-}

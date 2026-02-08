@@ -3,7 +3,7 @@ use crate::config::Config;
 use crate::handler::HandlerResult;
 use crate::hook::Hook;
 use crate::server::ServerFunction;
-use crate::task::TaskBuilder;
+use crate::task::Task;
 use crate::version::Version;
 use async_trait::async_trait;
 
@@ -30,7 +30,7 @@ pub trait Plugin: Send + Sync {
 	}
 
 	/// 任务列表
-	fn tasks(&self) -> Vec<Box<dyn TaskBuilder>> {
+	fn tasks(&self) -> Vec<Box<dyn Task>> {
 		Vec::new()
 	}
 
@@ -55,4 +55,10 @@ pub trait Plugin: Send + Sync {
 	}
 	/// 插件初始化函数
 	async fn init(&self) -> HandlerResult;
+}
+
+impl PartialEq for dyn Plugin {
+	fn eq(&self, other: &Self) -> bool {
+		self.name() == other.name()
+	}
 }

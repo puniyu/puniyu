@@ -23,8 +23,8 @@ pub struct GroupSender {
 
 impl GroupSender {
 	/// 角色
-	pub fn role(&self) -> Role {
-		self.role.clone()
+	pub fn role(&self) -> &Role {
+		&self.role
 	}
 	/// 群名片
 	pub fn card(&self) -> Option<&str> {
@@ -47,8 +47,8 @@ impl Sender for GroupSender {
 	fn name(&self) -> Option<&str> {
 		self.nick.as_deref()
 	}
-	fn sex(&self) -> Sex {
-		self.sex.clone()
+	fn sex(&self) -> &Sex {
+		&self.sex
 	}
 	fn age(&self) -> Option<u8> {
 		self.age

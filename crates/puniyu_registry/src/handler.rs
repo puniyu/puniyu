@@ -12,14 +12,14 @@ static STORE: LazyLock<HandlerStore> = LazyLock::new(|| HandlerStore::new());
 
 pub struct HandlerRegistry;
 
-impl HandlerRegistry {
+impl<'h> HandlerRegistry {
 	pub fn register(handler: Arc<dyn Handler>) -> Result<u64> {
 		STORE.insert(handler)
 	}
 
 	pub fn unregister<H>(handler: H) -> Result<()>
 	where
-		H: Into<HandlerId>,
+		H: Into<HandlerId<'h>>,
 	{
 		let handler = handler.into();
 		match handler {
@@ -43,7 +43,7 @@ impl HandlerRegistry {
 
 	pub fn get<H>(handler: H) -> Option<Arc<dyn Handler>>
 	where
-		H: Into<HandlerId>,
+		H: Into<HandlerId<'h>>,
 	{
 		let handler = handler.into();
 		match handler {

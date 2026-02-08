@@ -35,7 +35,8 @@ pub struct SendMsgType {
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
-pub struct MessageInfo {
+#[serde(bound(deserialize = "'de: 'm"))]
+pub struct MessageInfo<'m> {
 	/// 消息发送时间戳(秒)
 	pub time: u64,
 	/// 消息ID
@@ -47,5 +48,5 @@ pub struct MessageInfo {
 	/// 消息发送者
 	pub sender: SenderType,
 	/// 消息元素
-	pub elements: Vec<Elements>,
+	pub elements: Vec<Elements<'m>>,
 }

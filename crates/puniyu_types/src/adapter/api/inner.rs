@@ -1,18 +1,10 @@
-use super::{AccountApi, FriendApi, MessageApi, GroupApi};
-
-pub(crate) struct DefaultGroupApi;
-
-impl GroupApi for DefaultGroupApi {}
-
-pub(crate) struct DefaultFriendApi;
-
-impl FriendApi for DefaultFriendApi {}
-
-pub(crate) struct DefaultAccountApi;
-
-impl AccountApi for DefaultAccountApi {}
-
-pub(crate) struct DefaultMessageApi;
-
-
-impl MessageApi for DefaultMessageApi {}
+mod error;
+pub(crate) use error::Error;
+mod account;
+pub(crate) use account::DefaultAccountApi;
+mod group;
+pub(crate) use group::DefaultGroupApi;
+mod message;
+pub(crate) use message::DefaultMessageApi;
+mod friend;
+pub(crate) use friend::DefaultFriendApi;

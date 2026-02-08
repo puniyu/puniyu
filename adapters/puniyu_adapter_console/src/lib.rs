@@ -3,9 +3,11 @@ mod common;
 
 use crate::common::make_random_id;
 use async_trait::async_trait;
+use message::{FriendMessage, GroupMessage, MessageBuilder};
 use puniyu_adapter::adapter::*;
 use puniyu_adapter::bot::*;
 use puniyu_adapter::element::receive::*;
+use puniyu_adapter::event::*;
 use puniyu_adapter::logger::info;
 use puniyu_adapter::macros::*;
 use puniyu_adapter::prelude::HandlerResult;
@@ -84,12 +86,14 @@ async fn main() -> HandlerResult {
 					})]
 				}
 				Some(("record", record_url)) => {
-					vec![Elements::Record(RecordElement { file: record_url.to_string().into() })]
+					vec![Elements::Record(RecordElement {
+						file: record_url.to_string().into(),
+						file_name: "语音",
+					})]
 				}
 				Some(("file", file_url)) => {
 					vec![Elements::File(FileElement {
 						file: file_url.to_string().into(),
-						file_id: make_random_id(),
 						file_name: AdapterProtocol::Console.to_string(),
 						file_size: 100,
 					})]
@@ -110,56 +114,53 @@ async fn main() -> HandlerResult {
 				"group" => {
 					let contact = contact_group!(name, name);
 					let sender = group_sender!(user_id: name, nick: name, sex: Sex::Unknown, age: 0, role: Role::Member);
-
-					create_message_event!(
-						Group,
-						{
-							bot: Arc::clone(&bot),
-							event_id: event_id,
-							contact: contact,
-							self_id: bot_id,
-							user_id: name,
-							message_id: message_id,
-							elements: elements,
-							sender: sender,
-							time: timestamp
-						}
-					);
+					let builder = MessageBuilder {
+						bot: &bot,
+						event_id: &event_id,
+						self_id: bot_id,
+						user_id: &name,
+						contact: &contact,
+						sender: &sender,
+						time: timestamp,
+						message_id: &message_id,
+						elements,
+					};
+					let event = GroupMessage::new(builder);
+					send_event!(event)
 				}
 				"friend" => {
 					let contact = contact_friend!(name, name);
 					let sender = friend_sender!(user_id: name, nick: name);
-					create_message_event!(Friend,
-						{
-							bot: Arc::clone(&bot),
-							event_id: event_id,
-							self_id: bot_id,
-							user_id: name,
-							message_id: message_id,
-							elements: elements,
-							sender: sender,
-							contact: contact,
-							time: timestamp
-						}
-					);
+					let builder = MessageBuilder {
+						bot: &bot,
+						event_id: &event_id,
+						self_id: bot_id,
+						user_id: &name,
+						contact: &contact,
+						sender: &sender,
+						time: timestamp,
+						message_id: &message_id,
+						elements,
+					};
+					let event = FriendMessage::new(builder);
+					send_event!(event)
 				}
 				_ => {
 					let contact = contact_friend!(name, name);
 					let sender = friend_sender!(user_id: name, nick: name);
-
-					create_message_event!(Friend,
-						{
-							bot: Arc::clone(&bot),
-							event_id: event_id,
-							self_id: bot_id,
-							user_id: name,
-							message_id: message_id,
-							elements: elements,
-							contact: contact,
-							sender: sender,
-							time: timestamp
-						}
-					);
+					let builder = MessageBuilder {
+						bot: &bot,
+						event_id: &event_id,
+						self_id: bot_id,
+						user_id: &name,
+						contact: &contact,
+						sender: &sender,
+						time: timestamp,
+						message_id: &message_id,
+						elements,
+					};
+					let event = GroupMessage::new(builder);
+					send_event!(event)
 				}
 			};
 		}

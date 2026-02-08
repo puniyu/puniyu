@@ -9,14 +9,9 @@ impl From<u64> for HandlerId<'_> {
 	}
 }
 
-impl From<&str> for HandlerId<'_> {
-	fn from(name: &str) -> Self {
+impl<'h> From<&'h str> for HandlerId<'h> {
+	fn from(name: &'h str) -> Self {
 		Self::Name(name)
 	}
 }
 
-impl From<String> for HandlerId<'_>{
-    fn from(name: String) -> Self {
-        Self::Name(name.as_str())
-    }
-}

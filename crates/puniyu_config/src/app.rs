@@ -8,10 +8,10 @@ pub use adapter::AdapterConfig;
 pub use friend::FriendConfig;
 pub use group::GroupConfig;
 pub use logger::LoggerConfig;
-pub use server::ServerConfig;
 use puniyu_common::config;
 use puniyu_common::path::CONFIG_DIR;
 use serde::{Deserialize, Serialize};
+pub use server::ServerConfig;
 use std::sync::{Arc, LazyLock, RwLock};
 
 pub(crate) static APP_CONFIG: LazyLock<Arc<RwLock<AppConfig>>> = LazyLock::new(|| {
@@ -70,7 +70,7 @@ impl Default for AppConfig {
 
 impl AppConfig {
 	pub fn get() -> Self {
-		APP_CONFIG.read().unwrap().clone()
+		APP_CONFIG.read().expect("Failed to read app config").clone()
 	}
 	/// 获取日志配置
 	pub fn logger(&self) -> &LoggerConfig {

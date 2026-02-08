@@ -20,3 +20,9 @@ pub trait Handler: Send + Sync + 'static {
 	///
 	async fn handle(&self, event: &Event) -> HandlerResult;
 }
+
+impl PartialEq for dyn Handler {
+	fn eq(&self, other: &Self) -> bool {
+		self.name() == other.name()
+	}
+}

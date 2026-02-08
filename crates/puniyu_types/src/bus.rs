@@ -3,8 +3,8 @@ use std::sync::Arc;
 use std::sync::OnceLock;
 use tokio::sync::mpsc;
 
-pub type EventSender = mpsc::Sender<Arc<Event>>;
-pub type EventReceiver = mpsc::Receiver<Arc<Event>>;
+pub type EventSender<'e> = mpsc::Sender<Arc<Event<'e>>>;
+pub type EventReceiver<'e> = mpsc::Receiver<Arc<Event<'e>>>;
 
 pub trait EventBus: Send + Sync {
 	fn run(&self) -> tokio::task::JoinHandle<()>;

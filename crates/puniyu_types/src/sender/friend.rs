@@ -20,8 +20,8 @@ impl Sender for FriendSender {
 	fn name(&self) -> Option<&str> {
 		self.nick.as_deref()
 	}
-	fn sex(&self) -> Sex {
-		self.sex.clone()
+	fn sex(&self) -> &Sex {
+		&self.sex
 	}
 	fn age(&self) -> Option<u8> {
 		self.age

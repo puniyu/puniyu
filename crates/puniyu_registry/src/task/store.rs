@@ -7,7 +7,6 @@ use std::{
 		atomic::{AtomicU64, Ordering},
 	},
 };
-use puniyu_logger::warn;
 use tokio::sync::OnceCell;
 use tokio_cron_scheduler::JobScheduler;
 use uuid::Uuid;

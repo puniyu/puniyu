@@ -35,7 +35,7 @@ pub mod private {
         StatusType,
 	};
 	pub use puniyu_types::plugin::Plugin;
-	pub use puniyu_types::task::TaskBuilder;
+	pub use puniyu_types::task::Task;
 	pub use puniyu_types::version::Version;
 	pub use toml;
 }

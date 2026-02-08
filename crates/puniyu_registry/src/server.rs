@@ -1,7 +1,6 @@
 mod store;
 mod types;
 
-use std::cmp::PartialEq;
 pub use types::*;
 
 use crate::{Error, Result};
@@ -16,7 +15,7 @@ pub struct ServerRegistry;
 
 impl ServerRegistry {
 	pub fn register(source: SourceType, server: impl Into<ServerFunction>) -> Result<u64> {
-		let server = ServerInfo { source, builder: server };
+		let server = ServerInfo { source, builder: server.into() };
 		STORE.insert(server)
 	}
 
