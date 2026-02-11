@@ -1,0 +1,29 @@
+[package]
+name = "puniyu_context"
+version = "0.7.8"
+description = "Puniyu 上下文管理库，提供机器人和事件处理的统一上下文系统"
+authors.workspace = true
+license.workspace = true
+readme.workspace = true
+homepage.workspace = true
+repository.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+bytes.workspace = true
+puniyu_account.workspace = true
+puniyu_adapter_core.workspace = true
+puniyu_bot.workspace = true
+puniyu_sender.workspace = true
+puniyu_error.workspace = true
+puniyu_element.workspace = true
+puniyu_contact.workspace = true
+puniyu_command_core.workspace = true
+puniyu_event.workspace = true
+puniyu_message.workspace = true
+
+

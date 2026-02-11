@@ -172,7 +172,31 @@ name = "puniyu_registry"
 name = "puniyu_probuff"
 
 [[package]]
+name = "puniyu_path"
+
+[[package]]
+name = "puniyu_version"
+
+[[package]]
+name = "puniyu_sender"
+
+[[package]]
+name = "puniyu_contact"
+
+[[package]]
+name = "puniyu_message"
+
+[[package]]
+name = "puniyu_segment"
+
+[[package]]
+name = "puniyu_element"
+
+[[package]]
 name = "puniyu_types"
+
+[[package]]
+name = "puniyu_error"
 
 [[package]]
 name = "puniyu_config"
@@ -185,6 +209,7 @@ name = "puniyu_library"
 
 [[package]]
 name = "puniyu_common"
+
 
 [[package]]
 name = "puniyu_build"

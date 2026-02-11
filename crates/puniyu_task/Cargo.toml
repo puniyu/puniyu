@@ -1,0 +1,38 @@
+[package]
+name = "puniyu_task"
+version = "0.7.8"
+description = "Puniyu 定时任务管理库，提供基于 Cron 表达式的任务调度功能"
+authors.workspace = true
+license.workspace = true
+readme = "README.md"
+homepage.workspace = true
+repository.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+async-trait.workspace = true
+puniyu_error.workspace = true
+
+puniyu_logger = { workspace = true, optional = true }
+tokio = { workspace = true, optional = true }
+uuid = { version = "1.20.0", features = ["v4"], optional = true }
+chrono-tz = { version = "0.10.4", optional = true }
+tokio-cron-scheduler = { version = "0.15.1", optional = true }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["full"] }
+
+[features]
+default = []
+registry = [
+    "puniyu_error/registry",
+    "dep:tokio",
+    "dep:uuid",
+    "dep:chrono-tz",
+    "dep:puniyu_logger",
+    "dep:tokio-cron-scheduler",
+]

@@ -1,0 +1,26 @@
+[package]
+name = "puniyu_error"
+version = "0.7.8"
+description = "puniyu common error library"
+authors.workspace = true
+license.workspace = true
+readme = "README.md"
+homepage.workspace = true
+repository.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+thiserror = { workspace = true, optional = true }
+toml = { workspace = true, optional = true }
+
+
+[features]
+default = ["full"]
+config = ["dep:thiserror", "dep:toml"]
+registry = ["dep:thiserror"]
+full = ["config", "registry"]
+

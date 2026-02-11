@@ -31,8 +31,8 @@ pub mod private {
 	pub use puniyu_types::event::Permission;
 	pub use puniyu_types::handler::HandlerResult;
 	pub use puniyu_types::hook::{
-        Hook, HookEventType, HookMessageType, HookNotionType, HookRequestType, HookType,
-        StatusType,
+		Hook, HookEventType, MessageType, NotionType, RequestType, HookType,
+		StatusType,
 	};
 	pub use puniyu_types::plugin::Plugin;
 	pub use puniyu_types::task::Task;

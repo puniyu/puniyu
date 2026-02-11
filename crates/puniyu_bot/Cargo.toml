@@ -1,0 +1,26 @@
+[package]
+name = "puniyu_bot"
+version = "0.7.8"
+description = "Puniyu 机器人实例库，提供机器人的统一类型定义和注册表管理"
+authors.workspace = true
+license.workspace = true
+readme.workspace = true
+homepage.workspace = true
+repository.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+puniyu_account.workspace = true
+puniyu_adapter_core.workspace = true
+puniyu_error = { workspace = true, features = ["registry"], optional = true }
+
+[dev-dependencies]
+puniyu_version.workspace = true
+
+[features]
+default = []
+registry = ["dep:puniyu_error"]

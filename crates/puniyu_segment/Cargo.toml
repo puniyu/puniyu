@@ -1,0 +1,19 @@
+[package]
+name = "puniyu_segment"
+version = "0.7.8"
+description = "puniyu  crate for segment"
+authors.workspace = true
+license.workspace = true
+readme = "README.md"
+homepage.workspace = true
+repository.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+puniyu_element.workspace = true
+bytes.workspace = true
+

@@ -1,14 +1,13 @@
-mod error;
-pub use error::Error;
-pub mod path;
-pub use path::*;
-pub mod config;
+mod config;
+#[doc(inline)]
 pub use config::{delete_config, merge_config, read_config, update_config, write_config};
-#[cfg(feature = "system-info")]
-pub mod system;
 
 #[cfg(feature = "version")]
 mod version;
+
+#[cfg(feature = "source")]
+pub mod source;
+
 #[cfg(feature = "version")]
 pub use version::{Channel, VERSION, Version};
 

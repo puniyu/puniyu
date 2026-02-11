@@ -1,22 +1,22 @@
-use puniyu_types::contact::Scene;
+use puniyu_types::contact::SceneType;
 use puniyu_types::contact::{ContactType, FriendContact, GroupContact};
 
 include!(concat!(env!("OUT_DIR"), "/puniyu.contact.rs"));
 
-impl From<SceneType> for Scene {
+impl From<SceneType> for SceneType {
 	fn from(scene_type: SceneType) -> Self {
 		match scene_type {
-			SceneType::Friend => Scene::Friend,
-			SceneType::Group => Scene::Group,
+			SceneType::Friend => SceneType::Friend,
+			SceneType::Group => SceneType::Group,
 		}
 	}
 }
 
-impl From<Scene> for SceneType {
-	fn from(scene: Scene) -> Self {
+impl From<SceneType> for SceneType {
+	fn from(scene: SceneType) -> Self {
 		match scene {
-			Scene::Friend => SceneType::Friend,
-			Scene::Group => SceneType::Group,
+			SceneType::Friend => SceneType::Friend,
+			SceneType::Group => SceneType::Group,
 		}
 	}
 }
@@ -30,7 +30,7 @@ impl From<FriendContact> for Contact {
 
 impl From<Contact> for FriendContact {
 	fn from(value: Contact) -> Self {
-		Self { scene: Scene::Friend, peer: value.peer, name: value.name }
+		Self { scene: SceneType::Friend, peer: value.peer, name: value.name }
 	}
 }
 impl From<GroupContact> for Contact {
@@ -42,7 +42,7 @@ impl From<GroupContact> for Contact {
 
 impl From<Contact> for GroupContact {
 	fn from(value: Contact) -> Self {
-		Self { scene: Scene::Group, peer: value.peer, name: value.name }
+		Self { scene: SceneType::Group, peer: value.peer, name: value.name }
 	}
 }
 
@@ -53,10 +53,10 @@ impl From<Contact> for ContactType {
 		let scene = SceneType::try_from(value.scene).unwrap_or_default();
 		match scene {
 			SceneType::Friend => {
-				ContactType::Friend(FriendContact { scene: Scene::Friend, peer, name })
+				ContactType::Friend(FriendContact { scene: SceneType::Friend, peer, name })
 			}
 			SceneType::Group => {
-				ContactType::Group(GroupContact { scene: Scene::Group, peer, name })
+				ContactType::Group(GroupContact { scene: SceneType::Group, peer, name })
 			}
 		}
 	}

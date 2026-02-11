@@ -1,0 +1,31 @@
+[package]
+name = "puniyu_adapter"
+version = "0.7.8"
+description = "Puniyu 适配器库，提供适配器的统一接口定义和注册管理"
+authors.workspace = true
+license.workspace = true
+readme.workspace = true
+homepage.workspace = true
+repository.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+async-trait.workspace = true
+puniyu_logger.workspace = true
+puniyu_config.workspace = true
+puniyu_server_core.workspace = true
+puniyu_hook.workspace = true
+puniyu_error.workspace = true
+puniyu_adapter_core.workspace = true
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
+puniyu_version.workspace = true
+
+[features]
+default = []
+registry = ["puniyu_error/registry"]

@@ -3,7 +3,7 @@ use async_trait::async_trait;
 use prost::Message;
 use puniyu_adapter::__private::{AdapterInfo, MessageApi};
 use puniyu_adapter::adapter::{AccountInfo, SendMsgType};
-use puniyu_adapter::contact::{Contact, ContactType, Scene};
+use puniyu_adapter::contact::{Contact, ContactType, SceneType};
 use puniyu_adapter::Error;
 use puniyu_adapter::prelude::{FriendSender, GroupSender, SenderType};
 use crate::bot::Bot;
@@ -78,7 +78,7 @@ impl MessageApi for ServerMessageApi {
         let contact_type = Self::build_contact(&contact);
 
         let message = match contact.scene() {
-            Scene::Friend => {
+            SceneType::Friend => {
                 use puniyu_probuff::event::message::receive::FriendMessage;
                 let sender_type = if let SenderType::Friend(sender) = &event.sender {
                     Self::create_friend_sender(sender)
@@ -98,7 +98,7 @@ impl MessageApi for ServerMessageApi {
                     sender: Some(sender_type),
                 })
             }
-            Scene::Group => {
+            SceneType::Group => {
                 use puniyu_probuff::event::message::receive::GroupMessage;
                 let sender_type = if let SenderType::Group(sender) = &event.sender {
                     Self::create_group_sender(sender)

@@ -14,7 +14,7 @@ pub fn adapter_config(
 ///
 /// # 示例
 /// ```rust, ignore
-/// use puniyu_adapter::macros::server;
+/// use puniyu_adapter_api::macros::server;
 /// use actix_web::web::{self, ServiceConfig};
 ///
 /// #[server]
@@ -37,8 +37,8 @@ pub fn adapter_server(
 /// 注册适配器API
 /// # 示例
 /// ```rust, ignore
-/// use puniyu_adapter::macros::api;
-/// use puniyu_adapter::adapter::AdapterApi
+/// use puniyu_adapter_api::macros::api;
+/// use puniyu_adapter_api::adapter::AdapterApi
 ///
 /// #[api]
 /// pub fn api() -> AdapterApi {
@@ -136,9 +136,9 @@ pub fn adapter_hook(
 ///
 /// ## 示例
 /// ```rust,ignore
-/// use puniyu_adapter::macros::adapter;
-/// use puniyu_adapter::handler::HandlerResult;
-/// use puniyu_adapter::adapter::*;
+/// use puniyu_adapter_api::macros::adapter;
+/// use puniyu_adapter_api::handler::HandlerResult;
+/// use puniyu_adapter_api::adapter::*;
 ///
 /// fn info() -> AdapterInfo {
 ///     adapter_info!(

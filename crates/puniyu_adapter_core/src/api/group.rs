@@ -1,0 +1,144 @@
+use super::inner::Error;
+use crate::types::{
+	GroupInfo, GroupMuteInfo, MuteType, SetAdminType, SetGroupApplyType, UserInfo,
+	avatar::{Avatar, AvatarSize},
+};
+use async_trait::async_trait;
+use puniyu_error::Result;
+use std::time::Duration;
+
+#[async_trait]
+pub trait GroupApi: Send + Sync {
+	/// 获取头像
+	///
+	/// ## 参数
+	/// `group_id` - 目标群Id
+	/// `size` - 头像尺寸
+	///
+	async fn get_group_avatar(&self, group_id: &str, size: Option<&AvatarSize>) -> Result<Avatar> {
+		Err(Error::NotImpl.into())
+	}
+
+	/// 获取群信息
+	///
+	/// ## 参数
+	/// `group_id` - 群ID
+	///
+	async fn get_group_info(&self, group_id: &str) -> Result<GroupInfo> {
+		Err(Error::NotImpl.into())
+	}
+
+	/// 获取群列表
+	async fn get_group_list(&self) -> Result<Vec<GroupInfo>> {
+		Err(Error::NotImpl.into())
+	}
+
+	/// 获取群成员列表
+	///
+	/// ## 参数
+	/// `group_id` - 群ID
+	///
+	async fn get_group_member_list(&self, group_id: &str) -> Result<Vec<UserInfo>> {
+		Err(Error::NotImpl.into())
+	}
+
+	/// 获取群禁言列表
+	///
+	/// ## 参数
+	/// `group_id` - 群ID
+	///
+	async fn get_group_mute_list(&self, group_id: &str) -> Result<Vec<GroupMuteInfo>> {
+		Err(Error::NotImpl.into())
+	}
+
+	/// 设置群名称
+	///
+	/// ## 参数
+	/// `group_id` - 群ID
+	/// `name` - 群名称
+	///
+	async fn set_group_name(&self, group_id: &str, name: &str) -> Result<()> {
+		Err(Error::NotImpl.into())
+	}
+
+	/// 群踢人
+	///
+	/// ## 参数
+	/// `group_id` - 群ID
+	/// `target_id` - 目标ID
+	/// `reject_add_request` - 是否拒绝加群请求
+	/// `reason` - 踢人原因
+	///
+	async fn set_kick_group_member(
+		&self,
+		group_id: &str,
+		target_id: &str,
+		reject_add_request: Option<bool>,
+		reason: Option<&str>,
+	) -> Result<()> {
+		Err(Error::NotImpl.into())
+	}
+
+	/// 群禁言
+	///
+	/// ## 参数
+	/// `group_id` - 群ID
+	/// `target_id` - 目标ID
+	/// `duration` - 禁言时长
+	///
+	async fn set_group_mute(
+		&self,
+		group_id: &str,
+		target_id: &str,
+		duration: &Duration,
+	) -> Result<()> {
+		Err(Error::NotImpl.into())
+	}
+	/// 群全体禁言
+	///
+	/// ## 参数
+	/// `group_id` - 群ID
+	/// `action` - 设置或取消全体禁言
+	async fn set_group_all_mute(&self, group_id: &str, action: &MuteType) -> Result<()> {
+		Err(Error::NotImpl.into())
+	}
+
+	/// 设置群管理员
+	///
+	/// ## 参数
+	/// `group_id` - 群ID
+	/// `target_id` - 目标ID
+	/// `action` - 设置或取消管理员
+	///
+	async fn set_group_admin(
+		&self,
+		group_id: &str,
+		target_id: &str,
+		action: &SetAdminType,
+	) -> Result<()> {
+		Err(Error::NotImpl.into())
+	}
+
+	/// 退出群组
+	///     如果Bot为群主，则解散群组
+	/// ## 参数
+	/// `group_id` - 群ID
+	///
+	async fn set_group_quit(&self, group_id: &str) -> Result<()> {
+		Err(Error::NotImpl.into())
+	}
+
+	/// 设置加群申请
+	///
+	/// ## 参数
+	/// `group_id` - 群ID
+	/// `action` - 设置或拒绝加群申请
+	///
+	async fn set_group_invited_join(
+		&self,
+		group_id: &str,
+		action: &SetGroupApplyType,
+	) -> Result<()> {
+		Err(Error::NotImpl.into())
+	}
+}

@@ -1,0 +1,25 @@
+[package]
+name = "puniyu_dispatch"
+version = "0.7.8"
+description = "事件分发和处理库，提供全局事件总线用于异步事件分发"
+authors.workspace = true
+license.workspace = true
+readme.workspace = true
+homepage.workspace = true
+repository.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+puniyu_logger.workspace = true
+puniyu_event.workspace = true
+puniyu_context.workspace = true
+puniyu_bot.workspace = true
+puniyu_handler = { workspace = true, features = ["registry"] }
+tokio = { workspace = true, features = ["rt", "sync", "macros"] }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["rt", "sync", "macros", "time"] }
+
+[lints]
+workspace = true
