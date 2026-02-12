@@ -1,7 +1,7 @@
 [package]
 name = "puniyu_command"
-version = "0.7.9"
-description = "puniyu的命令处理器"
+version = "0.7.10"
+description = "puniyu 命令库，提供命令定义和注册管理"
 authors.workspace = true
 license.workspace = true
 readme.workspace = true
@@ -10,22 +10,15 @@ repository.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 
+[lints]
+workspace = true
+
 [dependencies]
 async-trait.workspace = true
-puniyu_logger.workspace = true
-thiserror.workspace = true
-clap = { workspace = true, features = ["string", "error-context"] }
-itertools.workspace = true
+puniyu_command_core.workspace = true
+puniyu_context.workspace = true
+puniyu_error.workspace = true
 
-puniyu_config = { version = "0.7.5", path = "../puniyu_config" }
-puniyu_registry = { version = "0.7.9", path = "../puniyu_registry", default-features = false, features = [
-    "command",
-    "cooldown",
-    "bot"
-] }
-puniyu_types = { version = "0.7.7", path = "../puniyu_types", default-features = false, features = [
-    "handler",
-    "element",
-    "event",
-] }
-
+[features]
+default = []
+registry = ["puniyu_error/registry"]

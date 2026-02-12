@@ -1,0 +1,42 @@
+[package]
+name = "puniyu_server"
+version = "0.7.8"
+description = "puniyu HTTP 服务器库，提供基于 Actix-Web 的 Web 服务功能"
+readme = "README.md"
+authors.workspace = true
+license.workspace = true
+homepage.workspace = true
+repository.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[[bin]]
+name = "puniyu_server"
+path = "src/main.rs"
+
+[lints]
+workspace = true
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true
+puniyu_logger.workspace = true
+bytes.workspace = true
+tokio = { workspace = true, features = ["full"] }
+actix-web.workspace = true
+futures-util = "0.3.31"
+clap = { workspace = true, optional = true, features = ["derive", "help"] }
+
+puniyu_common = { workspace = true, features = ["version", "source"] }
+puniyu_config.workspace = true
+puniyu_server_core.workspace = true
+puniyu_error.workspace = true
+
+[features]
+default = ["cli"]
+cli = ["dep:clap"]
+registry = ["puniyu_error/registry"]
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
+tempfile = "3.8"

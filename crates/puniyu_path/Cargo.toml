@@ -1,0 +1,21 @@
+[package]
+name = "puniyu_path"
+version = "0.7.8"
+description = "puniyu crate for Path"
+authors.workspace = true
+license.workspace = true
+readme.workspace = true
+homepage.workspace = true
+repository.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[lib]
+doctest = false
+
+[lints]
+workspace = true
+
+[dependencies]
+puniyu_common.workspace = true
+

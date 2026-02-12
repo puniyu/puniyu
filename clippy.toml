@@ -1,1 +1,2 @@
 allow-mixed-uninlined-format-args = true
+allow-unwrap-in-tests = true

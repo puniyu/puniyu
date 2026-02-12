@@ -1,16 +1,11 @@
-mod error;
-pub use error::Error;
-pub mod path;
-pub use path::*;
-pub mod config;
-pub use config::{delete_config, merge_config, read_config, update_config, write_config};
-#[cfg(feature = "system-info")]
-pub mod system;
+mod config;
+#[doc(inline)]
+pub use config::*;
 
+#[cfg(feature = "source")]
+pub mod source;
 #[cfg(feature = "version")]
-mod version;
-#[cfg(feature = "version")]
-pub use version::{Channel, VERSION, Version};
+pub mod version;
 
 use std::sync::OnceLock;
 /// 当前应用名称, 也就是此实例的名称
