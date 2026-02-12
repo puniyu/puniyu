@@ -219,7 +219,7 @@ pub enum AdapterCommunication {
 ///     .protocol(AdapterProtocol::NapCat)
 ///     .communication(AdapterCommunication::WebSocketServer)
 ///     .version(Version::new(1, 0, 0))
-///     .address("127.0.0.1:8080")
+///     .address("127.0.0.1:8080".to_string())
 ///     .build()
 ///     .unwrap();
 /// ```

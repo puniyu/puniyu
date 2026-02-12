@@ -1,6 +1,6 @@
 use crate::BaseResponse;
 use actix_web::{get, HttpResponse};
-use puniyu_common::{APP_NAME, VERSION};
+use puniyu_common::{APP_NAME, version::VERSION};
 use serde::Serialize;
 
 #[derive(Debug, Serialize)]

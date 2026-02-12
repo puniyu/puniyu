@@ -10,12 +10,12 @@ struct TestAdapter {
 
 #[async_trait::async_trait]
 impl Adapter for TestAdapter {
-	fn info(&self) -> &AdapterInfo {
-		&self.info
+	fn info(&self) -> AdapterInfo {
+		self.info.clone()
 	}
 
-	fn api(&self) -> &AdapterApi {
-		&self.api
+	fn api(&self) -> AdapterApi {
+		self.api.clone()
 	}
 }
 
@@ -99,12 +99,12 @@ async fn test_adapter_custom_init() {
 
 	#[async_trait::async_trait]
 	impl Adapter for CustomAdapter {
-		fn info(&self) -> &AdapterInfo {
-			&self.info
+		fn info(&self) -> AdapterInfo {
+			self.info.clone()
 		}
 
-		fn api(&self) -> &AdapterApi {
-			&self.api
+		fn api(&self) -> AdapterApi {
+			self.api.clone()
 		}
 
 		async fn init(&self) -> puniyu_error::Result {

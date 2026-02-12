@@ -22,20 +22,20 @@ pub trait Plugin: Send + Sync + 'static {
 	/// 插件名称
 	fn name(&self) -> &'static str;
 	/// 插件版本
-	fn version(&self) -> &Version;
+	fn version(&self) -> &'static Version;
 
 	/// api版本
-	fn abi_version(&self) -> &Version;
+	fn abi_version(&self) -> &'static Version;
 
 	/// 插件描述
-	fn description(&self) -> Option<&str>;
+	fn description(&self) -> Option<&'static str>;
 	/// 插件作者
-	fn author(&self) -> Option<&str> {
+	fn author(&self) -> Option<&'static str> {
 		None
 	}
 
 	/// 插件命令前缀
-	fn prefix(&self) -> Option<&str> {
+	fn prefix(&self) -> Option<&'static str> {
 		None
 	}
 

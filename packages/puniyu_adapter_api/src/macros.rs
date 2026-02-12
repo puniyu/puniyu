@@ -1,8 +1,0 @@
-pub use puniyu_macros::{
-	adapter, adapter_api as api, adapter_config as config, adapter_hook as hook, adapter_server as server,
-};
-pub use puniyu_types::send_event;
-pub use puniyu_types::{account_info, adapter_info};
-pub use puniyu_types::{contact_friend, contact_group};
-pub use puniyu_types::{friend_sender, group_sender};
-pub use puniyu_types::{message, segment};

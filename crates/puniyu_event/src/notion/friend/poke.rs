@@ -85,6 +85,6 @@ impl NotionBase for PrivatePoke<'_> {
 	}
 
 	fn content(&self) -> &Self::Content {
-		&self.content
+		self.content
 	}
 }

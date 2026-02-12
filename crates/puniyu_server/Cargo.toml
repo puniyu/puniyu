@@ -27,7 +27,7 @@ actix-web.workspace = true
 futures-util = "0.3.31"
 clap = { workspace = true, optional = true, features = ["derive", "help"] }
 
-puniyu_common = { workspace = true }
+puniyu_common = { workspace = true, features = ["version", "source"] }
 puniyu_config.workspace = true
 puniyu_server_core.workspace = true
 puniyu_error.workspace = true

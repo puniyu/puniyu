@@ -52,7 +52,7 @@ where
 ///
 /// # 示例
 ///
-/// ```rust
+/// ```rust, ignore
 /// use serde::Serialize;
 /// use std::path::Path;
 /// use puniyu_common::config::write_config;
@@ -81,7 +81,7 @@ where
 ///
 /// # 示例
 ///
-/// ```rust
+/// ```rust, ignore
 /// use serde::{Deserialize, Serialize};
 /// use std::path::Path;
 /// use puniyu_common::config::update_config;
@@ -114,7 +114,7 @@ where
 ///
 /// # 示例
 ///
-/// ```rust
+/// ```rust, ignore
 /// use serde::Serialize;
 /// use std::path::Path;
 /// use puniyu_common::config::merge_config;

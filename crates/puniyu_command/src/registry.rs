@@ -2,9 +2,10 @@
 
 mod store;
 
+use crate::Command;
 use crate::types::{CommandId, CommandInfo};
 use puniyu_error::registry::Error;
-use std::sync::LazyLock;
+use std::sync::{Arc, LazyLock};
 use store::CommandStore;
 
 static STORE: LazyLock<CommandStore> = LazyLock::new(CommandStore::new);
@@ -34,6 +35,7 @@ impl<'c> CommandRegistry {
 	///
 	/// # 参数
 	///
+	/// - `plugin_id` - 插件 ID
 	/// - `command` - 命令信息
 	///
 	/// # 返回值
@@ -43,11 +45,8 @@ impl<'c> CommandRegistry {
 	/// # 错误
 	///
 	/// 如果命令已存在，返回错误
-	pub fn register<C>(command: C) -> Result<u64, Error>
-	where
-		C: Into<CommandInfo>,
-	{
-		let command = command.into();
+	pub fn register(plugin_id: u64, command: Arc<dyn Command>) -> Result<u64, Error> {
+		let command = CommandInfo { plugin_id, builder: command };
 		STORE.insert(command)
 	}
 

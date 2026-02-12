@@ -1,7 +1,6 @@
 use std::collections::HashMap;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Arc, RwLock};
-use puniyu_common::source::SourceType;
 use crate::types::HookInfo;
 use puniyu_error::registry::Error;
 
@@ -22,11 +21,6 @@ impl HookStore {
         let index = HOOK_INDEX.fetch_add(1, Ordering::Relaxed);
         map.insert(index, hook);
         Ok(index)
-    }
-
-    pub fn get(&self, source: SourceType) -> Option<HookInfo> {
-        let map = &self.0.read().expect("Failed to acquire lock");
-        map.values().find(|h| h.source == source).cloned()
     }
 
     pub fn all(&self) -> Vec<HookInfo> {

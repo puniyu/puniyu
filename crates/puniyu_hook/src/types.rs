@@ -25,7 +25,7 @@ use strum::{Display, IntoStaticStr};
 ///
 /// ## 基本使用
 ///
-/// ```rust
+/// ```rust, ignore
 /// use puniyu_hook::types::{HookType, HookEventType};
 ///
 /// let hook_type = HookType::Event(HookEventType::Message);

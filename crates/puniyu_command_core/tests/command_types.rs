@@ -71,8 +71,8 @@ fn test_arg_value_int() {
 
 #[test]
 fn test_arg_value_float() {
-	let val = ArgValue::from(3.14f64);
-	assert_eq!(val.as_float(), Some(3.14));
+	let val = ArgValue::from(4.12f64);
+	assert_eq!(val.as_float(), Some(4.12));
 }
 
 #[test]

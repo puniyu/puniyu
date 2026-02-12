@@ -86,6 +86,6 @@ impl NotionBase for GroupHighlightsChange<'_> {
 	}
 
 	fn content(&self) -> &Self::Content {
-		&self.content
+		self.content
 	}
 }

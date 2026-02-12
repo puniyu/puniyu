@@ -119,97 +119,103 @@ link_parsers = [
 ]
 
 [[package]]
-name = "puniyu"
-git_release_enable = true
-git_tag_enable = true
-git_tag_name = "puniyu-v{{ version }}"
-publish = false
-version_group = "puniyu"
-
-[[package]]
-name = "puniyu_plugin_basic"
-git_release_enable = true
-git_tag_enable = true
-git_tag_name = "plugin-basic-v{{ version }}"
-
-[[package]]
-name = "puniyu_adapter_console"
-
-[[package]]
-name = "puniyu_adapter_server"
-
-[[package]]
 name = "puniyu_core"
 git_tag_enable = true
-git_tag_name = "core-v{{ version }}"
-version_group = "puniyu"
+git_tag_name = "v{{ version }}"
 
 [[package]]
-name = "puniyu_adapter"
-version_group = "puniyu"
-
-[[package]]
-name = "puniyu_plugin"
-version_group = "puniyu"
-
-[[package]]
-name = "puniyu_server"
-version_group = "puniyu"
-
-[[package]]
-name = "puniyu_event"
-
-[[package]]
-name = "puniyu_hook"
-
-[[package]]
-name = "puniyu_command"
-
-[[package]]
-name = "puniyu_registry"
-
-[[package]]
-name = "puniyu_probuff"
-
-[[package]]
-name = "puniyu_path"
-
-[[package]]
-name = "puniyu_version"
-
-[[package]]
-name = "puniyu_sender"
-
-[[package]]
-name = "puniyu_contact"
-
-[[package]]
-name = "puniyu_message"
-
-[[package]]
-name = "puniyu_segment"
-
-[[package]]
-name = "puniyu_element"
-
-[[package]]
-name = "puniyu_types"
+name = "puniyu_build"
 
 [[package]]
 name = "puniyu_error"
 
 [[package]]
+name = "puniyu_common"
+
+[[package]]
+name = "puniyu_version"
+
+[[package]]
+name = "puniyu_path"
+
+[[package]]
 name = "puniyu_config"
 
 [[package]]
-name = "puniyu_macros"
+name = "puniyu_contact"
+
+[[package]]
+name = "puniyu_sender"
+
+[[package]]
+name = "puniyu_element"
+version_group = "element"
+changelog_include = ["puniyu_segment", "puniyu_message"]
+
+[[package]]
+name = "puniyu_segment"
+version_group = "element"
+
+[[package]]
+name = "puniyu_message"
+version_group = "element"
+
+[[package]]
+name = "puniyu_account"
+
+[[package]]
+name = "puniyu_command"
+version_group = "command"
+changelog_include = ["puniyu_command_core"]
+
+[[package]]
+name = "puniyu_command_core"
+version_group = "command"
+
+[[package]]
+name = "puniyu_task"
+
+[[package]]
+name = "puniyu_server"
+version_group = "server"
+changelog_include = ["puniyu_server_core"]
+
+[[package]]
+name = "puniyu_server_core"
+version_group = "server"
 
 [[package]]
 name = "puniyu_library"
 
 [[package]]
-name = "puniyu_common"
-
+name = "puniyu_adapter"
+version_group = "adapter"
+changelog_include = ["puniyu_adapter_core"]
 
 [[package]]
-name = "puniyu_build"
+name = "puniyu_adapter_core"
+version_group = "adapter"
+
+[[package]]
+name = "puniyu_bot"
+
+[[package]]
+name = "puniyu_event"
+
+[[package]]
+name = "puniyu_dispatch"
+
+[[package]]
+name = "puniyu_context"
+
+[[package]]
+name = "puniyu_hook"
+
+[[package]]
+name = "puniyu_handler"
+
+[[package]]
+name = "puniyu_plugin"
+
+[[package]]
+name = "puniyu_loader"

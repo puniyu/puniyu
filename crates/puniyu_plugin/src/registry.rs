@@ -30,7 +30,7 @@ where
 		let plugin_id = adapter.into();
 		match plugin_id {
 			PluginId::Index(index) => Self::unregister_with_index(index),
-			PluginId::Name(name) => Self::unregister_with_plugin_name(&name),
+			PluginId::Name(name) => Self::unregister_with_plugin_name(name),
 		}
 	}
 
@@ -54,14 +54,14 @@ where
 		Ok(())
 	}
 
-	pub fn get<P>(plugin: P) -> Vec<PluginInfo<'p>>
+	pub fn get<P>(plugin: P) -> Option<PluginInfo<'p>>
 	where
 		P: Into<PluginId<'p>>,
 	{
 		let plugin_id = plugin.into();
 		match plugin_id {
-			PluginId::Index(index) => Self::get_with_index(index).into_iter().collect(),
-			PluginId::Name(name) => Self::get_with_plugin_name(&name),
+			PluginId::Index(index) => Self::get_with_index(index),
+			PluginId::Name(name) => Self::get_with_plugin_name(name),
 		}
 	}
 
@@ -71,10 +71,10 @@ where
 		map.get(&index).cloned()
 	}
 
-	pub fn get_with_plugin_name(name: &str) -> Vec<PluginInfo<'p>> {
+	pub fn get_with_plugin_name(name: &str) -> Option<PluginInfo<'p>> {
 		let raw = STORE.raw();
 		let map = raw.read().expect("Failed to acquire lock");
-		map.values().filter(|v| v.name == name).cloned().collect()
+		map.values().find(|v| v.name == name).cloned()
 	}
 
 	pub fn all() -> Vec<PluginInfo<'p>> {

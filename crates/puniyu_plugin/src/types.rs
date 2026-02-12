@@ -5,7 +5,7 @@ pub struct PluginInfo<'p> {
     pub name: &'p str,
     pub author: Option<&'p str>,
     pub description: Option<&'p str>,
-    pub version: Option<&'p Version>,
+    pub version: &'p Version,
 }
 
 

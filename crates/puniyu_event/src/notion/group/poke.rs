@@ -84,6 +84,6 @@ impl NotionBase for GroupPoke<'_> {
 	}
 
 	fn content(&self) -> &Self::Content {
-		&self.content
+		self.content
 	}
 }

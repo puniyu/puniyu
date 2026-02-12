@@ -118,7 +118,9 @@
 //! - `registry`: 启用任务注册表功能（包含调度器和日志）
 
 #[cfg(feature = "registry")]
-pub mod registry;
+mod registry;
+#[cfg(feature = "registry")]
+pub use registry::TaskRegistry;
 mod types;
 #[doc(inline)]
 pub use types::*;

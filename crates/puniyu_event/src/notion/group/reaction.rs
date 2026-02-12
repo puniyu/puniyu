@@ -86,6 +86,6 @@ impl NotionBase for GroupMessageReaction<'_> {
 	}
 
 	fn content(&self) -> &Self::Content {
-		&self.content
+		self.content
 	}
 }

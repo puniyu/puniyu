@@ -16,8 +16,9 @@ strum.workspace = true
 serde.workspace = true
 
 puniyu_error = { workspace = true, features = ["config"] }
+derive_more = { workspace = true, features = ["display"], optional = true }
 
 [features]
-default = ["version"]
-version = []
+default = []
+version = ["dep:derive_more"]
 source = []

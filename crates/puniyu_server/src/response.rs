@@ -49,6 +49,7 @@ impl Default for BaseResponse<()> {
     }
 }
 
+#[allow(dead_code)]
 impl<T> BaseResponse<T> {
     /// 创建成功响应（200 OK）
     ///

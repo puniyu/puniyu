@@ -4,7 +4,7 @@ use store::HandlerStore;
 use crate::{Handler, HandlerId};
 use puniyu_error::registry::Error;
 
-static STORE: LazyLock<HandlerStore> = LazyLock::new(|| HandlerStore::new());
+static STORE: LazyLock<HandlerStore> = LazyLock::new(HandlerStore::new);
 
 pub struct HandlerRegistry;
 
@@ -20,7 +20,7 @@ impl<'h> HandlerRegistry {
 		let handler = handler.into();
 		match handler {
 			HandlerId::Index(index) => Self::unregister_with_index(index),
-			HandlerId::Name(name) => Self::unregister_with_handler_name(&name),
+			HandlerId::Name(name) => Self::unregister_with_handler_name(name),
 		}
 	}
 	pub fn unregister_with_index(index: u64) -> Result<(), Error> {
@@ -44,7 +44,7 @@ impl<'h> HandlerRegistry {
 		let handler = handler.into();
 		match handler {
 			HandlerId::Index(index) => Self::get_with_index(index),
-			HandlerId::Name(name) => Self::get_with_handler_name(&name),
+			HandlerId::Name(name) => Self::get_with_handler_name(name),
 		}
 	}
 	pub fn get_with_index(index: u64) -> Option<Arc<dyn Handler>> {

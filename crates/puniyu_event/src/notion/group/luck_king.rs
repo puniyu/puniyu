@@ -86,6 +86,6 @@ impl NotionBase for GroupLuckKing<'_> {
 	}
 
 	fn content(&self) -> &Self::Content {
-		&self.content
+		self.content
 	}
 }

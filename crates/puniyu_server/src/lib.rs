@@ -142,13 +142,14 @@
 //! ```
 
 mod api;
-mod config;
 mod logger;
 mod middleware;
 #[cfg(feature = "registry")]
 mod registry;
 #[cfg(feature = "registry")]
 pub use registry::ServerRegistry;
+#[doc(inline)]
+pub use puniyu_server_core::*;
 mod server;
 pub use server::{restart_server, run_server, run_server_spawn, stop_server};
 mod response;

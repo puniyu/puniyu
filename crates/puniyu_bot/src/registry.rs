@@ -152,13 +152,13 @@ impl<'b> BotRegistry {
 	/// // 使用 UIN 查询
 	/// let bots = BotRegistry::get("123456");
 	/// ```
-	pub fn get<T>(bot_id: T) -> Vec<Bot>
+	pub fn get<T>(bot_id: T) -> Option<Bot>
 	where
 		T: Into<BotId<'b>>,
 	{
 		let bot_id = bot_id.into();
 		match bot_id {
-			BotId::Index(index) => Self::get_with_index(index).into_iter().collect(),
+			BotId::Index(index) => Self::get_with_index(index),
 			BotId::SelfId(self_id) => Self::get_with_bot_id(self_id),
 		}
 	}
@@ -171,7 +171,7 @@ impl<'b> BotRegistry {
 	///
 	/// # 返回值
 	///
-	/// 返回机器人实例，如果不存在则返回 `None`
+	/// 返回机器人实例，如果不存在则返回 [`None`]
 	///
 	/// # 示例
 	///
@@ -196,20 +196,19 @@ impl<'b> BotRegistry {
 	///
 	/// # 返回值
 	///
-	/// 返回匹配的机器人实例列表
+	/// 返回机器人实例，如果不存在则返回 [`None`]
 	///
 	/// # 示例
 	///
 	/// ```rust,ignore
-	/// let bots = BotRegistry::get_with_bot_id("123456");
-	/// for bot in bots {
-	///     println!("机器人: {}", bot.account().name);
+	/// if let Some(bot) = BotRegistry::get_with_bot_id(("123456") {
+	///     println!("找到机器人: {}", bot.account().uin);
 	/// }
 	/// ```
-	pub fn get_with_bot_id(self_id: &str) -> Vec<Bot> {
+	pub fn get_with_bot_id(self_id: &str) -> Option<Bot> {
 		let raw = STORE.raw();
 		let map = raw.read().expect("Failed to acquire lock");
-		map.values().filter(|bot| bot.account().uin == self_id).cloned().collect()
+		map.values().find(|bot| bot.account().uin == self_id).cloned()
 	}
 
 	/// 获取所有已注册的机器人

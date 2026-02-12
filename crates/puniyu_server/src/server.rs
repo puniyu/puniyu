@@ -120,7 +120,7 @@ pub fn run_server_spawn(host: IpAddr, port: u16) -> tokio::task::JoinHandle<std:
 pub async fn stop_server() -> std::io::Result<()> {
 	let handle = SERVER_HANDLE
 		.lock()
-		.map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e.to_string()))?
+		.map_err(|e| std::io::Error::other(e.to_string()))?
 		.take()
 		.ok_or_else(|| std::io::Error::new(std::io::ErrorKind::NotFound, "服务器未运行"))?;
 

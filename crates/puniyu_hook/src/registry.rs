@@ -30,7 +30,7 @@ impl<'h> HookRegistry {
 	pub fn unregister_with_index(index: u64) -> Result<(), Error> {
 		let raw = STORE.raw();
 		let mut map = raw.write().expect("Failed to acquire lock");
-		if let Some(_) = map.remove(&index) {
+		if map.remove(&index).is_some() {
 			Ok(())
 		} else {
 			Err(Error::NotFound("Hook".to_string()))
@@ -57,7 +57,7 @@ impl<'h> HookRegistry {
 		let hook = hook.into();
 		match hook {
 			HookId::Index(index) => Self::get_with_index(index).into_iter().collect(),
-			HookId::Name(name) => Self::get_with_hook_name(&name),
+			HookId::Name(name) => Self::get_with_hook_name(name),
 			HookId::Source(source) => Self::get_with_source(source),
 		}
 	}

@@ -47,7 +47,7 @@ impl<'e> EventBase for FriendAdd<'e> {
 	}
 
 	fn event_id(&self) -> &str {
-		&self.event_id
+		self.event_id
 	}
 
 	fn sub_event(&self) -> &NotionSubEvent {
@@ -59,19 +59,19 @@ impl<'e> EventBase for FriendAdd<'e> {
 	}
 
 	fn self_id(&self) -> &str {
-		&self.self_id
+		self.self_id
 	}
 
 	fn user_id(&self) -> &str {
-		&self.user_id
+		self.user_id
 	}
 
 	fn contact(&self) -> &Self::Contact {
-		&self.contact
+		self.contact
 	}
 
 	fn sender(&self) -> &Self::Sender {
-		&self.sender
+		self.sender
 	}
 }
 

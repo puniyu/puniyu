@@ -83,6 +83,6 @@ impl NotionBase for FriendDecrease<'_> {
 	}
 
 	fn content(&self) -> &Self::Content {
-		&self.content
+		self.content
 	}
 }

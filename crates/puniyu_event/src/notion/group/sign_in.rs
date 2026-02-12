@@ -83,6 +83,6 @@ impl NotionBase for GroupSignIn<'_> {
 	}
 
 	fn content(&self) -> &Self::Content {
-		&self.content
+		self.content
 	}
 }

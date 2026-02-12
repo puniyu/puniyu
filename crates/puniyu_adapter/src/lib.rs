@@ -107,7 +107,7 @@ pub trait Adapter: Send + Sync {
 	/// println!("适配器名称: {}", info.name);
 	/// println!("平台: {}", info.platform);
 	/// ```
-	fn info(&self) -> &AdapterInfo;
+	fn info(&self) -> AdapterInfo;
 
 	/// 获取适配器 API
 	///
@@ -124,7 +124,7 @@ pub trait Adapter: Send + Sync {
 	/// // 获取群列表
 	/// let groups = api.group().get_group_list().await?;
 	/// ```
-	fn api(&self) -> &AdapterApi;
+	fn api(&self) -> AdapterApi;
 
 	/// 获取配置文件列表
 	///

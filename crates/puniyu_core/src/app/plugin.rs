@@ -1,0 +1,50 @@
+use crate::logger::error;
+use puniyu_command::Command;
+use puniyu_common::source::SourceType;
+use puniyu_error::registry::Error;
+use puniyu_plugin::{Plugin, PluginInfo};
+use puniyu_task::Task;
+use std::sync::Arc;
+
+pub async fn init_plugin(plugin: Arc<dyn Plugin>) -> Result<(), Error> {
+	use puniyu_plugin::PluginRegistry;
+	let plugin_info = PluginInfo {
+		name: plugin.name(),
+		author: plugin.author(),
+		description: plugin.description(),
+		version: plugin.version(),
+	};
+	let index = PluginRegistry::register(plugin_info)?;
+	let source = SourceType::Plugin(index);
+	super::hook::init_hook(source, plugin.hooks())?;
+	init_command(index, plugin.commands())?;
+	init_task(index, plugin.tasks()).await?;
+	#[cfg(feature = "server")]
+	{
+		if let Some(server) = plugin.server() {
+			super::server::init_server(source, server)?;
+		}
+	}
+
+	Ok(())
+}
+
+fn init_command(plugin_id: u64, commands: Vec<Arc<dyn Command>>) -> Result<(), Error> {
+	use puniyu_command::CommandRegistry;
+	for command in commands {
+		if let Err(e) = CommandRegistry::register(plugin_id, command) {
+			error!("Failed to register command: {:?}", e);
+		}
+	}
+	Ok(())
+}
+
+async fn init_task(plugin_id: u64, tasks: Vec<Arc<dyn Task>>) -> Result<(), Error> {
+	use puniyu_task::TaskRegistry;
+	for task in tasks {
+		if let Err(e) = TaskRegistry::register(plugin_id, task).await {
+			error!("Failed to register task: {:?}", e);
+		}
+	}
+	Ok(())
+}

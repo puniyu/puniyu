@@ -1,9 +1,6 @@
 [workspace]
 members = [
-    "crates/*",
-    #    "packages/*",
-    #    "adapters/*",
-    #    "plugins/*"
+    "crates/*"
 ]
 resolver = "2"
 
@@ -46,10 +43,10 @@ bytes = { version = "1.11.0", features = ["serde"] }
 prost = { version = "0.14.1" }
 
 puniyu_logger = { version = "0.7.0" }
-puniyu_system_info = { version = "1.5.2" }
+puniyu_system_info = { version = "1.5.5" }
 
 puniyu_error = { version = "0.7.8", path = "./crates/puniyu_error", default-features = false }
-puniyu_common = { version = "0.7.8", path = "./crates/puniyu_common" }
+puniyu_common = { version = "0.7.8", path = "./crates/puniyu_common", default-features = false }
 puniyu_element = { version = "0.7.8", path = "./crates/puniyu_element" }
 puniyu_message = { version = "0.7.8", path = "./crates/puniyu_message" }
 puniyu_segment = { version = "0.7.8", path = "./crates/puniyu_segment" }
@@ -60,6 +57,7 @@ puniyu_version = { version = "0.7.8", path = "./crates/puniyu_version" }
 puniyu_path = { version = "0.7.8", path = "./crates/puniyu_path" }
 puniyu_config = { version = "0.7.8", path = "./crates/puniyu_config" }
 puniyu_event = { version = "0.7.8", path = "./crates/puniyu_event" }
+puniyu_dispatch = { version = "0.7.8", path = "./crates/puniyu_dispatch" }
 puniyu_context = { version = "0.7.8", path = "./crates/puniyu_context" }
 
 puniyu_adapter = { version = "0.7.8", path = "./crates/puniyu_adapter" }
@@ -78,6 +76,8 @@ puniyu_hook = { version = "0.7.8", path = "./crates/puniyu_hook" }
 puniyu_handler = { version = "0.7.8", path = "./crates/puniyu_handler" }
 
 puniyu_plugin = { version = "0.7.8", path = "./crates/puniyu_plugin" }
+
+puniyu_loader = { version = "0.7.8", path = "./crates/puniyu_loader" }
 
 [profile.release]
 lto = "thin"
