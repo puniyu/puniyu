@@ -1,7 +1,7 @@
 [package]
 name = "puniyu_command"
-description = "puniyu crate for command"
 version = "0.7.10"
+description = "puniyu 命令库，提供命令定义和注册管理"
 authors.workspace = true
 license.workspace = true
 readme.workspace = true

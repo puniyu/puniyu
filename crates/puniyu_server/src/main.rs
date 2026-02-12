@@ -1,6 +1,6 @@
 use clap::Parser;
 use puniyu_logger::{LoggerOptions, init};
-use std::net::IpAddr;
+use std::net::{IpAddr, Ipv4Addr};
 
 #[derive(Parser)]
 #[command(
@@ -25,6 +25,10 @@ struct Args {
 async fn main() -> std::io::Result<()> {
 	let args = Args::parse();
 	init(Some(LoggerOptions::default()));
-	puniyu_server::run_server_with_control(args.host, args.port).await?;
+	puniyu_server::run_server(
+		args.host.unwrap_or(IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1))),
+		args.port.unwrap_or(33700),
+	)
+	.await?;
 	Ok(())
 }

@@ -51,7 +51,9 @@ where
 		let method = req.method().clone();
 		let path = req.path().to_string();
 		let peer_addr = req.peer_addr();
-		let ip_str = parse_ip(req.headers()).unwrap_or_else(|| peer_addr.unwrap().ip().to_string());
+		let ip_str = parse_ip(req.headers()).unwrap_or_else(|| {
+			peer_addr.map(|addr| addr.ip().to_string()).unwrap_or_else(|| "unknown".to_string())
+		});
 
 		let fut = self.service.call(req);
 

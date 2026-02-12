@@ -71,7 +71,7 @@ puniyu_command_core = { version = "0.7.8", path = "./crates/puniyu_command_core"
 puniyu_command = { version = "0.7.10", path = "./crates/puniyu_command" }
 
 puniyu_server_core = { version = "0.7.8", path = "./crates/puniyu_server_core" }
-puniyu_server = { version = "0.7.8", path = "./crates/puniyu_server" }
+puniyu_server = { version = "0.7.8", path = "./crates/puniyu_server", default-features = false }
 
 puniyu_task = { version = "0.7.8", path = "./crates/puniyu_task" }
 puniyu_hook = { version = "0.7.8", path = "./crates/puniyu_hook" }

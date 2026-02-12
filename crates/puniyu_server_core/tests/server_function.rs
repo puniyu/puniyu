@@ -128,7 +128,7 @@ async fn test_server_function_in_struct() {
 	}
 
 	let config: ServerFunction = Arc::new(|cfg: &mut ServiceConfig| {
-		cfg.service(resource("/test").to(|| async { HttpResponse::Ok() }));
+		cfg.service(resource("/test").to(|| async { HttpResponse::Ok().await }));
 	});
 
 	let server = Server::new(config.clone());

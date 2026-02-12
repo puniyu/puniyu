@@ -14,7 +14,6 @@ rust-version.workspace = true
 puniyu_logger.workspace = true
 puniyu_event.workspace = true
 puniyu_context.workspace = true
-puniyu_bot.workspace = true
 puniyu_handler = { workspace = true, features = ["registry"] }
 tokio = { workspace = true, features = ["rt", "sync", "macros"] }
 
