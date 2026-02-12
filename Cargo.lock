@@ -1889,6 +1889,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "puniyu_cooldown"
+version = "0.7.8"
+dependencies = [
+ "chrono",
+ "puniyu_error",
+ "serde",
+ "strum",
+]
+
+[[package]]
 name = "puniyu_core"
 version = "0.7.8"
 dependencies = [

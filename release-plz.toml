@@ -121,7 +121,7 @@ link_parsers = [
 [[package]]
 name = "puniyu_core"
 git_tag_enable = true
-git_tag_name = "v{{ version }}"
+git_tag_name = "core-v{{ version }}"
 
 [[package]]
 name = "puniyu_build"
@@ -162,6 +162,9 @@ version_group = "element"
 
 [[package]]
 name = "puniyu_account"
+
+[[package]]
+name = "puniyu_cooldown"
 
 [[package]]
 name = "puniyu_command"
