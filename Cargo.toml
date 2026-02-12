@@ -23,7 +23,7 @@ serde = { version = "1.0", features = ["derive"] }
 serde_repr = { version = "0.1" }
 serde_json = { version = "1.0" }
 glob = { version = "0.3.3" }
-toml = { version = "0.9.5" }
+toml = { version = "1.0.0" }
 itertools = { version = "0.14.0" }
 futures = { version = "0.3.31" }
 async-trait = { version = "0.1.89" }
