@@ -119,6 +119,13 @@ link_parsers = [
 ]
 
 [[package]]
+name = "puniyu"
+publish = false
+git_tag_enable = true
+git_tag_name = "puniyu-v{{ version }}"
+git_only = true
+
+[[package]]
 name = "puniyu_core"
 git_tag_enable = true
 git_tag_name = "core-v{{ version }}"
@@ -172,6 +179,10 @@ version_group = "command"
 changelog_include = ["puniyu_command_core"]
 
 [[package]]
+name = "puniyu_command_parser"
+version_group = "command"
+
+[[package]]
 name = "puniyu_command_core"
 version_group = "command"
 
@@ -216,6 +227,9 @@ name = "puniyu_hook"
 
 [[package]]
 name = "puniyu_handler"
+
+[[package]]
+name = "puniyu_handler_command"
 
 [[package]]
 name = "puniyu_plugin"
