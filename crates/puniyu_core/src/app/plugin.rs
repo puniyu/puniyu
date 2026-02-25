@@ -2,19 +2,13 @@ use crate::logger::error;
 use puniyu_command::Command;
 use puniyu_common::source::SourceType;
 use puniyu_error::registry::Error;
-use puniyu_plugin::{Plugin, PluginInfo};
+use puniyu_plugin::Plugin;
 use puniyu_task::Task;
 use std::sync::Arc;
 
 pub async fn init_plugin(plugin: Arc<dyn Plugin>) -> Result<(), Error> {
 	use puniyu_plugin::PluginRegistry;
-	let plugin_info = PluginInfo {
-		name: plugin.name(),
-		author: plugin.author(),
-		description: plugin.description(),
-		version: plugin.version(),
-	};
-	let index = PluginRegistry::register(plugin_info)?;
+	let index = PluginRegistry::register(plugin.clone())?;
 	let source = SourceType::Plugin(index);
 	super::hook::init_hook(source, plugin.hooks())?;
 	init_command(index, plugin.commands())?;

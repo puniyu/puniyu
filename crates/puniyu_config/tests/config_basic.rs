@@ -27,8 +27,8 @@ fn test_app_config_default() {
 	assert_eq!(config.logger().level(), "info");
 	assert_eq!(config.server().host(), IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)));
 	assert_eq!(config.server().port(), 33720);
-	assert_eq!(config.masters(), &vec!["console".to_string()]);
-	assert_eq!(config.prefix(), "!");
+	assert_eq!(config.masters(), vec!["console".to_string()]);
+	assert_eq!(config.prefix().as_ref().map(|s| s.as_str()), Some("!"));
 }
 
 #[test]

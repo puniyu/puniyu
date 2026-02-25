@@ -83,8 +83,8 @@ fn test_app_config_from_toml_string() {
 
 	let config: AppConfig = toml::from_str(toml_content).expect("解析 TOML 失败");
 
-	assert_eq!(config.prefix(), "/");
-	assert_eq!(config.masters(), &vec!["admin1".to_string(), "admin2".to_string()]);
+	assert_eq!(config.prefix().as_ref().map(|s| s.as_str()), Some("/"));
+	assert_eq!(config.masters(), vec!["admin1".to_string(), "admin2".to_string()]);
 	assert_eq!(config.logger().level(), "debug");
 	assert_eq!(config.server().host(), IpAddr::V4(Ipv4Addr::new(0, 0, 0, 0)));
 	assert_eq!(config.server().port(), 9000);
@@ -160,8 +160,8 @@ fn test_partial_config_deserialization() {
 
 	let config: AppConfig = toml::from_str(toml_content).expect("解析部分配置失败");
 
-	assert_eq!(config.prefix(), "#");
-	assert_eq!(config.masters(), &vec!["console".to_string()]); // 默认值
+	assert_eq!(config.prefix().as_ref().map(|s| s.as_str()), Some("#"));
+	assert_eq!(config.masters(), vec!["console".to_string()]); // 默认值
 }
 
 #[test]
@@ -172,6 +172,6 @@ fn test_empty_config_deserialization() {
 
 	let config: AppConfig = toml::from_str(toml_content).expect("解析空配置失败");
 
-	assert_eq!(config.prefix(), "!");
-	assert_eq!(config.masters(), &vec!["console".to_string()]);
+	assert_eq!(config.prefix().as_ref().map(|s| s.as_str()), Some("!"));
+	assert_eq!(config.masters(), vec!["console".to_string()]);
 }

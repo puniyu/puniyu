@@ -1,7 +1,7 @@
-use puniyu_bot::Bot;
 use super::types::{GroupMemberBanType, GroupWholeBanType};
-use crate::notion::{NotionBase, NotionBuilder, NotionSubEvent};
+use crate::notion::{NotionBase, NotionBuilder, NotionSubEventType};
 use crate::{EventBase, EventType};
+use puniyu_bot::Bot;
 use puniyu_contact::GroupContact as Contact;
 use puniyu_sender::GroupSender as Sender;
 
@@ -11,7 +11,6 @@ pub struct GroupMemberBan<'n> {
 	bot: &'n Bot,
 	event_id: &'n str,
 	time: u64,
-	self_id: &'n str,
 	user_id: &'n str,
 	contact: &'n Contact<'n>,
 	sender: &'n Sender<'n>,
@@ -19,14 +18,11 @@ pub struct GroupMemberBan<'n> {
 }
 
 impl<'n> GroupMemberBan<'n> {
-	pub fn new(
-		builder: NotionBuilder<'n, Contact<'n>, Sender<'n>, GroupMemberBanType>,
-	) -> Self {
+	pub fn new(builder: NotionBuilder<'n, Contact<'n>, Sender<'n>, GroupMemberBanType>) -> Self {
 		Self {
 			bot: builder.bot,
 			event_id: builder.event_id,
 			time: builder.time,
-			self_id: builder.self_id,
 			user_id: builder.user_id,
 			contact: builder.contact,
 			sender: builder.sender,
@@ -37,7 +33,7 @@ impl<'n> GroupMemberBan<'n> {
 
 impl<'n> EventBase for GroupMemberBan<'n> {
 	type EventType = EventType;
-	type SubEventType = NotionSubEvent;
+	type SubEventType = NotionSubEventType;
 	type Contact = Contact<'n>;
 	type Sender = Sender<'n>;
 
@@ -53,8 +49,8 @@ impl<'n> EventBase for GroupMemberBan<'n> {
 		self.event_id
 	}
 
-	fn sub_event(&self) -> &NotionSubEvent {
-		&NotionSubEvent::GroupMemberBan
+	fn sub_event(&self) -> &NotionSubEventType {
+		&NotionSubEventType::GroupMemberBan
 	}
 
 	fn bot(&self) -> &Bot {
@@ -62,7 +58,7 @@ impl<'n> EventBase for GroupMemberBan<'n> {
 	}
 
 	fn self_id(&self) -> &str {
-		self.self_id
+		self.bot.account().uin.as_str()
 	}
 
 	fn user_id(&self) -> &str {
@@ -78,14 +74,12 @@ impl<'n> EventBase for GroupMemberBan<'n> {
 	}
 }
 
-impl NotionBase for GroupMemberBan<'_> {
-	type Content = GroupMemberBanType;
-
+impl<'n> NotionBase<GroupMemberBanType> for GroupMemberBan<'n> {
 	fn notion(&self) -> &str {
 		"收到群成员禁言事件"
 	}
 
-	fn content(&self) -> &Self::Content {
+	fn content(&self) -> &GroupMemberBanType {
 		self.content
 	}
 }
@@ -96,7 +90,6 @@ pub struct GroupWholeBan<'n> {
 	bot: &'n Bot,
 	event_id: &'n str,
 	time: u64,
-	self_id: &'n str,
 	user_id: &'n str,
 	contact: &'n Contact<'n>,
 	sender: &'n Sender<'n>,
@@ -104,14 +97,11 @@ pub struct GroupWholeBan<'n> {
 }
 
 impl<'n> GroupWholeBan<'n> {
-	pub fn new(
-		builder: NotionBuilder<'n, Contact<'n>, Sender<'n>, GroupWholeBanType>,
-	) -> Self {
+	pub fn new(builder: NotionBuilder<'n, Contact<'n>, Sender<'n>, GroupWholeBanType>) -> Self {
 		Self {
 			bot: builder.bot,
 			event_id: builder.event_id,
 			time: builder.time,
-			self_id: builder.self_id,
 			user_id: builder.user_id,
 			contact: builder.contact,
 			sender: builder.sender,
@@ -122,7 +112,7 @@ impl<'n> GroupWholeBan<'n> {
 
 impl<'n> EventBase for GroupWholeBan<'n> {
 	type EventType = EventType;
-	type SubEventType = NotionSubEvent;
+	type SubEventType = NotionSubEventType;
 	type Contact = Contact<'n>;
 	type Sender = Sender<'n>;
 
@@ -138,8 +128,8 @@ impl<'n> EventBase for GroupWholeBan<'n> {
 		self.event_id
 	}
 
-	fn sub_event(&self) -> &NotionSubEvent {
-		&NotionSubEvent::GroupWholeBan
+	fn sub_event(&self) -> &NotionSubEventType {
+		&NotionSubEventType::GroupWholeBan
 	}
 
 	fn bot(&self) -> &Bot {
@@ -147,7 +137,7 @@ impl<'n> EventBase for GroupWholeBan<'n> {
 	}
 
 	fn self_id(&self) -> &str {
-		self.self_id
+		self.bot.account().uin.as_str()
 	}
 
 	fn user_id(&self) -> &str {
@@ -163,14 +153,12 @@ impl<'n> EventBase for GroupWholeBan<'n> {
 	}
 }
 
-impl NotionBase for GroupWholeBan<'_> {
-	type Content = GroupWholeBanType;
-
+impl NotionBase<GroupWholeBanType> for GroupWholeBan<'_> {
 	fn notion(&self) -> &str {
 		"收到群全体成员禁言事件"
 	}
 
-	fn content(&self) -> &Self::Content {
+	fn content(&self) -> &GroupWholeBanType {
 		self.content
 	}
 }

@@ -1,5 +1,6 @@
 //! 命令参数类型定义
 
+use serde::{Deserialize, Serialize};
 use std::fmt;
 
 /// 参数值类型
@@ -14,7 +15,7 @@ use std::fmt;
 /// let string_type = ArgType::String;
 /// let int_type = ArgType::Int;
 /// ```
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Deserialize, Serialize)]
 pub enum ArgType {
 	/// 字符串类型
 	String,
@@ -24,28 +25,6 @@ pub enum ArgType {
 	Float,
 	/// 布尔值类型
 	Bool,
-}
-
-/// 参数名称
-///
-/// 用于显示参数类型的中文名称。
-pub struct ArgName(pub &'static str);
-
-impl fmt::Display for ArgName {
-	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-		write!(f, "{}", self.0)
-	}
-}
-
-impl From<ArgType> for ArgName {
-	fn from(arg_type: ArgType) -> Self {
-		match arg_type {
-			ArgType::String => ArgName("字符串"),
-			ArgType::Int => ArgName("整数"),
-			ArgType::Float => ArgName("浮点数"),
-			ArgType::Bool => ArgName("布尔值"),
-		}
-	}
 }
 
 /// 参数模式
@@ -220,7 +199,7 @@ impl<'a> Arg<'a> {
 ///     println!("字符串: {}", s);
 /// }
 /// ```
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
 pub enum ArgValue {
 	/// 字符串值
 	String(String),
@@ -291,18 +270,23 @@ impl From<&str> for ArgValue {
 
 impl From<i64> for ArgValue {
 	fn from(i: i64) -> Self {
-		ArgValue::Int(i)
+		Self::Int(i)
 	}
 }
 
+impl From<u64> for ArgValue {
+	fn from(u: u64) -> Self {
+		Self::Int(u as i64)
+	}
+}
 impl From<f64> for ArgValue {
 	fn from(f: f64) -> Self {
-		ArgValue::Float(f)
+		Self::Float(f)
 	}
 }
 
 impl From<bool> for ArgValue {
 	fn from(b: bool) -> Self {
-		ArgValue::Bool(b)
+		Self::Bool(b)
 	}
 }

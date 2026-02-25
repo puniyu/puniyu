@@ -7,112 +7,270 @@ mod plugin;
 mod server;
 
 use crate::{
-	common, logger::log_init,
-	logger::{debug, error, info, OwoColorize},
-	VERSION,
+	VERSION, common,
+	logger::log_init,
+	logger::{OwoColorize, debug, error, info},
 };
 use bytes::Bytes;
 use convert_case::{Case, Casing};
-use derive_builder::Builder;
 use figlet_rs::FIGfont;
 use puniyu_adapter::Adapter;
 use puniyu_common::APP_NAME;
+use puniyu_handler::Handler;
 use puniyu_hook::types::{HookType, StatusType};
-use puniyu_loader::{Loader};
+use puniyu_loader::Loader;
 use puniyu_path::{RESOURCE_DIR, WORKING_DIR};
 use puniyu_plugin::Plugin;
-use std::path::{PathBuf};
+use std::path::PathBuf;
 use std::sync::Arc;
 use std::{env, io};
 use tokio::{fs, signal};
 
-#[derive(Builder)]
-#[builder(setter(into), pattern = "mutable")]
-pub struct App {
-	#[builder(setter(name = "with_app_name"), default = "Self::default_app_name()")]
+/// 应用构建器
+///
+/// 使用构建器模式配置和创建应用实例
+///
+/// # 示例
+///
+/// ```rust,ignore
+/// use puniyu_core::App;
+///
+/// let app = App::builder()
+///     .with_app_name("my_bot")
+///     .with_plugin(MyPlugin)
+///     .with_adapter(MyAdapter)
+///     .build()
+///     .unwrap();
+///
+/// app.run().await?;
+/// ```
+pub struct AppBuilder {
 	app_name: String,
-	#[builder(setter(name = "with_app_logo"),default)]
 	app_logo: Option<Bytes>,
-	#[builder(setter(name = "with_working_dir"),default = "Self::default_working_dir()")]
 	working_dir: PathBuf,
-	#[builder(setter(name = "with_plugin", custom), default)]
 	plugins: Vec<Arc<dyn Plugin>>,
-	#[builder(setter(name = "with_adapter", custom), default)]
 	adapters: Vec<Arc<dyn Adapter>>,
-	#[builder(setter(name = "with_loader", custom), default)]
 	loaders: Vec<Arc<dyn Loader>>,
+	handlers: Vec<Arc<dyn Handler>>,
+}
+
+impl Default for AppBuilder {
+	fn default() -> Self {
+		Self {
+			app_name: String::from("puniyu"),
+			app_logo: None,
+			working_dir: PathBuf::from("."),
+			plugins: Vec::new(),
+			adapters: Vec::new(),
+			loaders: Vec::new(),
+			handlers: Vec::new(),
+		}
+	}
 }
 
 impl AppBuilder {
-	pub(crate) fn default_app_name() -> String {
-		String::from("puniyu")
-	}
-	pub(crate) fn default_working_dir() -> PathBuf {
-		PathBuf::from(".")
+	/// 设置应用名称
+	///
+	/// # 参数
+	///
+	/// - `name`: 应用名称
+	pub fn with_app_name(mut self, name: impl Into<String>) -> Self {
+		self.app_name = name.into();
+		self
 	}
 
-	pub fn with_plugin(&mut self, plugin: Arc<dyn Plugin>) -> &mut Self {
-		if self.plugins.is_none() {
-			self.plugins = Some(Vec::new());
-		}
-		self.plugins.as_mut().unwrap().push(plugin);
+	/// 设置应用 Logo
+	///
+	/// # 参数
+	///
+	/// - `logo`: Logo 图片的字节数据
+	pub fn with_app_logo(mut self, logo: Bytes) -> Self {
+		self.app_logo = Some(logo);
 		self
 	}
-	pub fn with_adapter(&mut self, adapter: Arc<dyn Adapter>) -> &mut Self {
-		if self.adapters.is_none() {
-			self.adapters = Some(Vec::new());
-		}
-		self.adapters.as_mut().unwrap().push(adapter);
+
+	/// 设置工作目录
+	///
+	/// # 参数
+	///
+	/// - `dir`: 工作目录路径
+	pub fn with_working_dir(mut self, dir: impl Into<PathBuf>) -> Self {
+		self.working_dir = dir.into();
 		self
 	}
-	pub fn with_loader(&mut self, loader: Arc<dyn Loader>) -> &mut Self {
-		if self.loaders.is_none() {
-			self.loaders = Some(Vec::new());
-		}
-		self.loaders.as_mut().unwrap().push(loader);
+
+	/// 添加插件
+	///
+	/// 接受任何实现了 `Plugin` trait 的类型，在编译期确定
+	///
+	/// # 参数
+	///
+	/// - `plugin`: 插件实例
+	///
+	/// # 示例
+	///
+	/// ```rust,ignore
+	/// App::builder()
+	///     .with_plugin(MyPlugin::new())
+	///     .with_plugin(AnotherPlugin)
+	/// ```
+	pub fn with_plugin<P: Plugin + 'static>(mut self, plugin: P) -> Self {
+		self.plugins.push(Arc::new(plugin));
 		self
 	}
+
+	/// 添加适配器
+	///
+	/// 接受任何实现了 `Adapter` trait 的类型，在编译期确定
+	///
+	/// # 参数
+	///
+	/// - `adapter`: 适配器实例
+	///
+	/// # 示例
+	///
+	/// ```rust,ignore
+	/// App::builder()
+	///     .with_adapter(ConsoleAdapter::new())
+	///     .with_adapter(HttpAdapter::new())
+	/// ```
+	pub fn with_adapter<A: Adapter + 'static>(mut self, adapter: A) -> Self {
+		self.adapters.push(Arc::new(adapter));
+		self
+	}
+
+	/// 添加加载器
+	///
+	/// 接受任何实现了 `Loader` trait 的类型，在编译期确定
+	///
+	/// # 参数
+	///
+	/// - `loader`: 加载器实例
+	///
+	/// # 示例
+	///
+	/// ```rust,ignore
+	/// App::builder()
+	///     .with_loader(PluginLoader::new())
+	/// ```
+	pub fn with_loader<L: Loader + 'static>(mut self, loader: L) -> Self {
+		self.loaders.push(Arc::new(loader));
+		self
+	}
+
+	/// 添加处理器
+	///
+	/// 接受任何实现了 `Handler` trait 的类型，在编译期确定
+	///
+	/// # 参数
+	///
+	/// - `handler`: 处理器实例
+	///
+	/// # 示例
+	///
+	/// ```rust,ignore
+	/// App::builder()
+	///     .with_handler(MyHandler::new())
+	///     .with_handler(AnotherHandler)
+	/// ```
+	pub fn with_handler<H: Handler + 'static>(mut self, handler: H) -> Self {
+		self.handlers.push(Arc::new(handler));
+		self
+	}
+
+	/// 构建应用实例
+	///
+	/// # 返回值
+	///
+	/// 返回配置好的 `App` 实例
+	pub fn build(self) -> App {
+		App {
+			app_name: self.app_name,
+			app_logo: self.app_logo,
+			working_dir: self.working_dir,
+			plugins: self.plugins,
+			adapters: self.adapters,
+			loaders: self.loaders,
+			handlers: self.handlers,
+		}
+	}
+}
+
+pub struct App {
+	app_name: String,
+	app_logo: Option<Bytes>,
+	working_dir: PathBuf,
+	plugins: Vec<Arc<dyn Plugin>>,
+	adapters: Vec<Arc<dyn Adapter>>,
+	loaders: Vec<Arc<dyn Loader>>,
+	handlers: Vec<Arc<dyn Handler>>,
 }
 
 impl App {
 	pub fn builder() -> AppBuilder {
 		AppBuilder::default()
 	}
+	/// 运行应用
+	///
+	/// 初始化所有组件并启动应用，直到接收到中断信号
+	///
+	/// # 返回值
+	///
+	/// 成功返回 `Ok(())`，失败返回 IO 错误
+	///
+	/// # 示例
+	///
+	/// ```rust,ignore
+	/// let app = App::builder().build();
+	/// app.run().await?;
+	/// ```
 	pub async fn run(self) -> io::Result<()> {
 		use crate::common::time::format_duration;
 		use puniyu_loader::LoaderRegistry;
-		WORKING_DIR.get_or_init(|| self.working_dir);
-		APP_NAME.get_or_init(|| self.app_name);
 		use std::time::Duration;
+
+		WORKING_DIR.get_or_init(|| self.working_dir);
+		APP_NAME.get_or_init(|| self.app_name.clone());
+
 		print_start_log();
 		config::init_config();
+
 		#[cfg(feature = "logger")]
 		{
 			log_init();
 		}
-
+		for handler in self.handlers.into_iter() {
+			if let Err(e) = puniyu_handler::HandlerRegistry::register(handler) {
+				error!("Failed to register handler: {}", e);
+			}
+		}
 		for loader in self.loaders.into_iter() {
 			if let Err(e) = LoaderRegistry::register(loader) {
 				error!("Failed to register loader: {}", e);
 			}
 		}
+
 		let start_time = std::time::Instant::now();
 		if let Err(e) = init_app(self.plugins, self.adapters, LoaderRegistry::all()).await {
 			error!("Failed to init app: {}", e);
 		}
+
 		info!("hooks: {}", puniyu_hook::HookRegistry::all().len());
 		let duration_str = format_duration(start_time.elapsed());
 		execute_hooks(StatusType::Start).await;
+
 		let app_name = APP_NAME.get().unwrap();
 		info!(
 			"{} 初始化完成，耗时: {}",
 			app_name.to_case(Case::Lower).fg_rgb::<64, 224, 208>(),
 			duration_str.fg_rgb::<255, 127, 80>()
 		);
+
 		let event_bus = puniyu_dispatch::EventBus::new();
 		puniyu_dispatch::setup_event_bus(event_bus);
 		let event_bus = puniyu_dispatch::get_event_bus();
 		event_bus.run();
+
 		#[cfg(feature = "server")]
 		{
 			use puniyu_config::Config;

@@ -1,12 +1,6 @@
 use puniyu_version::Version;
 
-#[derive(Debug, Clone, PartialEq)]
-pub struct PluginInfo<'p> {
-    pub name: &'p str,
-    pub author: Option<&'p str>,
-    pub description: Option<&'p str>,
-    pub version: &'p Version,
-}
+
 
 
 #[derive(Debug, Clone)]

@@ -25,7 +25,7 @@ use puniyu_bot::Bot;
 /// ```
 #[derive(Clone)]
 pub struct BotContext<'c> {
-	bot: &'c Bot,
+	inner: &'c Bot,
 }
 
 impl<'c> BotContext<'c> {
@@ -43,7 +43,7 @@ impl<'c> BotContext<'c> {
 	/// let bot_context = BotContext::new(Arc::new(bot));
 	/// ```
 	pub fn new(bot: &'c Bot) -> Self {
-		Self { bot }
+		Self { inner: bot }
 	}
 
 	/// 获取适配器的引用
@@ -56,7 +56,7 @@ impl<'c> BotContext<'c> {
 	/// let adapter = bot_context.adapter();
 	/// ```
 	pub fn adapter(&self) -> &AdapterInfo {
-		self.bot.adapter()
+		self.inner.adapter()
 	}
 
 	/// 获取适配器 API
@@ -70,7 +70,7 @@ impl<'c> BotContext<'c> {
 	/// api.message().send_msg(&contact, &message).await?;
 	/// ```
 	pub fn api(&self) -> &AdapterApi {
-		self.bot.api()
+		self.inner.api()
 	}
 
 	/// 获取账号信息
@@ -83,6 +83,6 @@ impl<'c> BotContext<'c> {
 	/// let account = bot_context.account();
 	/// ```
 	pub fn account(&self) -> &AccountInfo {
-		self.bot.account()
+		self.inner.account()
 	}
 }

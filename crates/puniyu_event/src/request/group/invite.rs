@@ -1,7 +1,7 @@
-use puniyu_bot::Bot;
 use crate::request::group::types::GroupInviteType;
-use crate::request::{RequestBase, RequestBuilder, RequestSubEvent};
+use crate::request::{RequestBase, RequestBuilder, RequestSubEventType};
 use crate::{EventBase, EventType};
+use puniyu_bot::Bot;
 use puniyu_contact::GroupContact as Contact;
 use puniyu_sender::GroupSender as Sender;
 
@@ -11,7 +11,6 @@ pub struct GroupInvite<'n> {
 	bot: &'n Bot,
 	event_id: &'n str,
 	time: u64,
-	self_id: &'n str,
 	user_id: &'n str,
 	contact: &'n Contact<'n>,
 	sender: &'n Sender<'n>,
@@ -19,14 +18,11 @@ pub struct GroupInvite<'n> {
 }
 
 impl<'n> GroupInvite<'n> {
-	pub fn new(
-		builder: RequestBuilder<'n, Contact<'n>, Sender<'n>, GroupInviteType>,
-	) -> Self {
+	pub fn new(builder: RequestBuilder<'n, Contact<'n>, Sender<'n>, GroupInviteType>) -> Self {
 		Self {
 			bot: builder.bot,
 			event_id: builder.event_id,
 			time: builder.time,
-			self_id: builder.self_id,
 			user_id: builder.user_id,
 			contact: builder.contact,
 			sender: builder.sender,
@@ -37,7 +33,7 @@ impl<'n> GroupInvite<'n> {
 
 impl<'n> EventBase for GroupInvite<'n> {
 	type EventType = EventType;
-	type SubEventType = RequestSubEvent;
+	type SubEventType = RequestSubEventType;
 	type Contact = Contact<'n>;
 	type Sender = Sender<'n>;
 	fn time(&self) -> u64 {
@@ -52,8 +48,8 @@ impl<'n> EventBase for GroupInvite<'n> {
 		self.event_id
 	}
 
-	fn sub_event(&self) -> &RequestSubEvent {
-		&RequestSubEvent::GroupInvite
+	fn sub_event(&self) -> &RequestSubEventType {
+		&RequestSubEventType::GroupInvite
 	}
 
 	fn bot(&self) -> &Bot {
@@ -61,7 +57,7 @@ impl<'n> EventBase for GroupInvite<'n> {
 	}
 
 	fn self_id(&self) -> &str {
-		self.self_id
+		self.bot.account().uin.as_str()
 	}
 
 	fn user_id(&self) -> &str {
@@ -77,14 +73,14 @@ impl<'n> EventBase for GroupInvite<'n> {
 	}
 }
 
-impl RequestBase for GroupInvite<'_> {
-	type Content = GroupInviteType;
+impl<'n> RequestBase for GroupInvite<'n> {
+	type Content = &'n GroupInviteType;
 
-	fn notion(&self) -> &str {
+	fn request(&self) -> &str {
 		"收到群组邀请"
 	}
 
-	fn content(&self) -> &Self::Content {
+	fn content(&self) -> Self::Content {
 		self.content
 	}
 }

@@ -2,56 +2,42 @@ use serde::{Deserialize, Serialize};
 
 /// 适配器配置结构
 ///
-/// 控制启用哪些消息适配器。
+/// 控制哪些适配器被启用或禁用。适配器用于连接不同的消息平台或服务。
+///
+/// # 配置优先级
+///
+/// 如果同一个适配器同时出现在启用和禁用列表中，禁用列表优先级更高。
 ///
 /// # 示例
 ///
 /// ```toml
 /// [adapter]
-/// console = true
-/// server = true
+/// enable_list = ["console", "http"]
+/// disenable_list = ["websocket"]
 /// ```
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct AdapterConfig {
-	/// 是否启用控制台适配器
+	/// 启用的适配器列表
 	///
-	/// 控制台适配器允许通过命令行与 Bot 交互
-	#[serde(default = "default_adapter")]
-	console: bool,
+	/// 列出需要启用的适配器名称
+	#[serde(default)]
+	enable_list: Vec<String>,
 
-	/// 是否启用服务器适配器
+	/// 禁用的适配器列表
 	///
-	/// 服务器适配器允许通过 HTTP 接口与 Bot 交互
-	#[serde(default = "default_adapter")]
-	server: bool,
+	/// 列出需要禁用的适配器名称，优先级高于启用列表
+	#[serde(default)]
+	disable_list: Vec<String>,
 }
 
 impl AdapterConfig {
-	/// 是否启用控制台适配器
-	///
-	/// # 返回值
-	///
-	/// 返回 `true` 表示启用控制台适配器
-	pub fn console(&self) -> bool {
-		self.console
+	/// 获取启用的适配器列表
+	pub fn enable_list(&self) -> &Vec<String> {
+		&self.enable_list
 	}
 
-	/// 是否启用服务器适配器
-	///
-	/// # 返回值
-	///
-	/// 返回 `true` 表示启用服务器适配器
-	pub fn server(&self) -> bool {
-		self.server
+	/// 获取禁用的适配器列表
+	pub fn disable_list(&self) -> &Vec<String> {
+		&self.disable_list
 	}
-}
-
-impl Default for AdapterConfig {
-	#[inline]
-	fn default() -> Self {
-		Self { console: default_adapter(), server: default_adapter() }
-	}
-}
-fn default_adapter() -> bool {
-	true
 }

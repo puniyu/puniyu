@@ -11,42 +11,17 @@ pub use group::GroupMessage;
 mod event;
 #[doc(inline)]
 pub use event::MessageEvent;
+mod types;
+#[doc(inline)]
+pub use types::*;
+
 
 use super::EventBase;
 use bytes::Bytes;
-use puniyu_config::Config;
 use puniyu_element::receive::Elements;
-use serde::{Deserialize, Serialize};
-use strum::{Display, EnumString, IntoStaticStr};
 use puniyu_bot::Bot;
+pub use puniyu_element::RawMessage;
 
-/// 消息子类型枚举
-///
-/// 定义消息的具体来源类型。
-#[derive(
-	Debug,
-	Clone,
-	EnumString,
-	Display,
-	IntoStaticStr,
-	Deserialize,
-	Serialize,
-	PartialEq,
-	Eq,
-	PartialOrd,
-	Ord,
-)]
-pub enum MessageSubType {
-	/// 好友消息
-	#[strum(serialize = "friend")]
-	Friend,
-	/// 群消息
-	#[strum(serialize = "group")]
-	Group,
-	/// 频道消息
-	#[strum(serialize = "guild")]
-	Guild,
-}
 
 /// 消息基础 trait
 ///
@@ -180,17 +155,6 @@ pub trait MessageBase: Send + Sync + EventBase {
 			})
 			.next()
 	}
-
-	/// 判断发送者是否为主人
-	///
-	/// # 返回值
-	///
-	/// 如果发送者在配置的主人列表中返回 `true`，否则返回 `false`
-	fn is_master(&self) -> bool {
-		let config = Config::app();
-		let masters = config.masters();
-		masters.contains(&self.user_id().to_string())
-	}
 }
 
 /// 消息构建器
@@ -206,8 +170,6 @@ where
 	pub bot: &'m Bot,
 	/// 事件 ID
 	pub event_id: &'m str,
-	/// 机器人 ID
-	pub self_id: &'m str,
 	/// 用户 ID
 	pub user_id: &'m str,
 	/// 联系人信息

@@ -1,42 +1,73 @@
-use puniyu_event::notion::NotionSubEvent;
+use puniyu_event::notion::NotionSubEventType;
 
 #[test]
 fn test_notion_sub_event_display() {
-	assert_eq!(NotionSubEvent::ReceiveLike.to_string(), "receiveLike");
-	assert_eq!(NotionSubEvent::FriendAdd.to_string(), "friendAdd");
-	assert_eq!(NotionSubEvent::FriendDecrease.to_string(), "friendDecrease");
-	assert_eq!(NotionSubEvent::PrivatePoke.to_string(), "privatePoke");
-	assert_eq!(NotionSubEvent::PrivateRecall.to_string(), "privateRecall");
-	assert_eq!(NotionSubEvent::GroupPoke.to_string(), "groupPoke");
+	assert_eq!(NotionSubEventType::ReceiveLike.to_string(), "receiveLike");
+	assert_eq!(NotionSubEventType::FriendAdd.to_string(), "friendAdd");
+	assert_eq!(NotionSubEventType::FriendDecrease.to_string(), "friendDecrease");
+	assert_eq!(NotionSubEventType::PrivatePoke.to_string(), "privatePoke");
+	assert_eq!(NotionSubEventType::PrivateRecall.to_string(), "privateRecall");
+	assert_eq!(NotionSubEventType::GroupPoke.to_string(), "groupPoke");
 }
 
 #[test]
 fn test_notion_sub_event_from_str() {
 	use std::str::FromStr;
 
-	assert_eq!(NotionSubEvent::from_str("receiveLike").unwrap(), NotionSubEvent::ReceiveLike);
-	assert_eq!(NotionSubEvent::from_str("friendAdd").unwrap(), NotionSubEvent::FriendAdd);
-	assert_eq!(NotionSubEvent::from_str("privatePoke").unwrap(), NotionSubEvent::PrivatePoke);
+	assert_eq!(
+		NotionSubEventType::from_str("receiveLike").unwrap(),
+		NotionSubEventType::ReceiveLike
+	);
+	assert_eq!(NotionSubEventType::from_str("friendAdd").unwrap(), NotionSubEventType::FriendAdd);
+	assert_eq!(
+		NotionSubEventType::from_str("privatePoke").unwrap(),
+		NotionSubEventType::PrivatePoke
+	);
 }
 
 #[test]
 fn test_notion_sub_event_equality() {
-	assert_eq!(NotionSubEvent::ReceiveLike, NotionSubEvent::ReceiveLike);
-	assert_eq!(NotionSubEvent::FriendAdd, NotionSubEvent::FriendAdd);
-	assert_ne!(NotionSubEvent::ReceiveLike, NotionSubEvent::FriendAdd);
+	assert_eq!(NotionSubEventType::ReceiveLike, NotionSubEventType::ReceiveLike);
+	assert_eq!(NotionSubEventType::FriendAdd, NotionSubEventType::FriendAdd);
+	assert_ne!(NotionSubEventType::ReceiveLike, NotionSubEventType::FriendAdd);
 }
 
 #[test]
 fn test_notion_sub_event_clone() {
-	let event = NotionSubEvent::GroupPoke;
+	let event = NotionSubEventType::GroupPoke;
 	let cloned = event.clone();
 	assert_eq!(event, cloned);
 }
 
 #[test]
 fn test_notion_sub_event_group_types() {
-	assert_eq!(NotionSubEvent::GroupFileUpload.to_string(), "groupFileUpload");
-	assert_eq!(NotionSubEvent::GroupCardChange.to_string(), "groupCardChange");
-	assert_eq!(NotionSubEvent::GroupMemberAdd.to_string(), "groupMemberAdd");
-	assert_eq!(NotionSubEvent::GroupAdminChange.to_string(), "groupAdminChange");
+	assert_eq!(NotionSubEventType::GroupFileUpload.to_string(), "groupFileUpload");
+	assert_eq!(NotionSubEventType::GroupCardChange.to_string(), "groupCardChange");
+	assert_eq!(NotionSubEventType::GroupMemberAdd.to_string(), "groupMemberAdd");
+	assert_eq!(NotionSubEventType::GroupAdminChange.to_string(), "groupAdminChange");
+}
+
+#[test]
+fn test_notion_sub_event_friend_types() {
+	assert_eq!(NotionSubEventType::PrivateFileUpload.to_string(), "privateFileUpload");
+	assert_eq!(NotionSubEventType::PrivateRecall.to_string(), "privateRecall");
+	assert_eq!(NotionSubEventType::PrivatePoke.to_string(), "privatePoke");
+}
+
+#[test]
+fn test_notion_sub_event_serialization() {
+	use serde_json;
+
+	let event = NotionSubEventType::GroupPoke;
+	let json = serde_json::to_string(&event).unwrap();
+	assert_eq!(json, r#""GroupPoke""#);
+}
+
+#[test]
+fn test_notion_sub_event_deserialization() {
+	use serde_json;
+
+	let json = r#""GroupPoke""#;
+	let event: NotionSubEventType = serde_json::from_str(json).unwrap();
+	assert_eq!(event, NotionSubEventType::GroupPoke);
 }

@@ -1,6 +1,6 @@
-use puniyu_bot::Bot;
-use crate::notion::{NotionBase, NotionBuilder, NotionSubEvent};
+use crate::notion::{FriendAddType, NotionBase, NotionBuilder, NotionSubEventType};
 use crate::{EventBase, EventType};
+use puniyu_bot::Bot;
 use puniyu_contact::FriendContact as Contact;
 use puniyu_sender::FriendSender as Sender;
 
@@ -10,31 +10,29 @@ pub struct FriendAdd<'n> {
 	bot: &'n Bot,
 	event_id: &'n str,
 	time: u64,
-	self_id: &'n str,
 	user_id: &'n str,
 	contact: &'n Contact<'n>,
 	sender: &'n Sender<'n>,
-	content: (),
+	content: &'n FriendAddType,
 }
 
 impl<'n> FriendAdd<'n> {
-	pub fn new(builder: NotionBuilder<'n, Contact<'n>, Sender<'n>, ()>) -> Self {
+	pub fn new(builder: NotionBuilder<'n, Contact<'n>, Sender<'n>, FriendAddType>) -> Self {
 		Self {
 			bot: builder.bot,
 			event_id: builder.event_id,
 			time: builder.time,
-			self_id: builder.self_id,
 			user_id: builder.user_id,
 			contact: builder.contact,
 			sender: builder.sender,
-			content: *builder.content,
+			content: builder.content,
 		}
 	}
 }
 
 impl<'e> EventBase for FriendAdd<'e> {
 	type EventType = EventType;
-	type SubEventType = NotionSubEvent;
+	type SubEventType = NotionSubEventType;
 	type Contact = Contact<'e>;
 	type Sender = Sender<'e>;
 
@@ -50,8 +48,8 @@ impl<'e> EventBase for FriendAdd<'e> {
 		self.event_id
 	}
 
-	fn sub_event(&self) -> &NotionSubEvent {
-		&NotionSubEvent::FriendAdd
+	fn sub_event(&self) -> &NotionSubEventType {
+		&NotionSubEventType::FriendAdd
 	}
 
 	fn bot(&self) -> &Bot {
@@ -59,7 +57,7 @@ impl<'e> EventBase for FriendAdd<'e> {
 	}
 
 	fn self_id(&self) -> &str {
-		self.self_id
+		self.bot.account().uin.as_str()
 	}
 
 	fn user_id(&self) -> &str {
@@ -75,12 +73,12 @@ impl<'e> EventBase for FriendAdd<'e> {
 	}
 }
 
-impl NotionBase for FriendAdd<'_> {
-	type Content = ();
+impl NotionBase<FriendAddType> for FriendAdd<'_> {
 	fn notion(&self) -> &str {
 		"收到好友增加事件"
 	}
-	fn content(&self) -> &Self::Content {
-		&self.content
+
+	fn content(&self) -> &FriendAddType {
+		self.content
 	}
 }

@@ -742,6 +742,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "780955b8b195a21ab8e4ac6b60dd1dbdcec1dc6c51c0617964b08c81785e12c9"
 
 [[package]]
+name = "either"
+version = "1.15.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "48c757948c5ede0e46177b7add2e67155f70e33c07fea8284df6576da70b3719"
+
+[[package]]
 name = "encoding_rs"
 version = "0.8.35"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1267,15 +1273,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "inventory"
-version = "0.3.21"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bc61209c082fbeb19919bee74b176221b27223e27b65d781eb91af24eb1fb46e"
-dependencies = [
- "rustversion",
-]
-
-[[package]]
 name = "io-kit-sys"
 version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1283,6 +1280,15 @@ checksum = "06d3a048d09fbb6597dbf7c69f40d14df4a49487db1487191618c893fc3b1c26"
 dependencies = [
  "core-foundation-sys",
  "mach2 0.5.0",
+]
+
+[[package]]
+name = "itertools"
+version = "0.14.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2b192c782037fadd9cfa75548310488aabdbf3d2da73885b31bd0abd03351285"
+dependencies = [
+ "either",
 ]
 
 [[package]]
@@ -1753,6 +1759,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "puniyu"
+version = "0.7.8"
+dependencies = [
+ "puniyu_core",
+ "tokio",
+]
+
+[[package]]
 name = "puniyu_account"
 version = "0.7.8"
 dependencies = [
@@ -1819,6 +1833,7 @@ name = "puniyu_command"
 version = "0.7.10"
 dependencies = [
  "async-trait",
+ "clap",
  "puniyu_command_core",
  "puniyu_context",
  "puniyu_error",
@@ -1831,6 +1846,17 @@ dependencies = [
  "puniyu_error",
  "serde",
  "strum",
+]
+
+[[package]]
+name = "puniyu_command_parser"
+version = "0.7.8"
+dependencies = [
+ "clap",
+ "puniyu_command",
+ "puniyu_command_core",
+ "shlex",
+ "thiserror 2.0.18",
 ]
 
 [[package]]
@@ -1880,6 +1906,7 @@ dependencies = [
  "puniyu_adapter_core",
  "puniyu_bot",
  "puniyu_command_core",
+ "puniyu_config",
  "puniyu_contact",
  "puniyu_element",
  "puniyu_error",
@@ -1902,13 +1929,9 @@ dependencies = [
 name = "puniyu_core"
 version = "0.7.8"
 dependencies = [
- "async-trait",
  "bytes",
  "convert_case 0.11.0",
- "derive_builder",
  "figlet-rs",
- "futures",
- "inventory",
  "puniyu_adapter",
  "puniyu_bot",
  "puniyu_command",
@@ -1916,6 +1939,7 @@ dependencies = [
  "puniyu_config",
  "puniyu_dispatch",
  "puniyu_error",
+ "puniyu_handler",
  "puniyu_hook",
  "puniyu_loader",
  "puniyu_logger",
@@ -1924,9 +1948,7 @@ dependencies = [
  "puniyu_server",
  "puniyu_system_info",
  "puniyu_task",
- "serde",
- "strum",
- "thiserror 2.0.18",
+ "puniyu_version",
  "tokio",
 ]
 
@@ -1934,7 +1956,6 @@ dependencies = [
 name = "puniyu_dispatch"
 version = "0.7.8"
 dependencies = [
- "puniyu_context",
  "puniyu_event",
  "puniyu_handler",
  "puniyu_logger",
@@ -1965,7 +1986,6 @@ version = "0.7.8"
 dependencies = [
  "bytes",
  "puniyu_bot",
- "puniyu_config",
  "puniyu_contact",
  "puniyu_element",
  "puniyu_sender",
@@ -1979,8 +1999,27 @@ name = "puniyu_handler"
 version = "0.7.8"
 dependencies = [
  "async-trait",
- "puniyu_context",
  "puniyu_error",
+ "puniyu_event",
+]
+
+[[package]]
+name = "puniyu_handler_command"
+version = "0.7.9"
+dependencies = [
+ "async-trait",
+ "itertools",
+ "puniyu_command",
+ "puniyu_command_parser",
+ "puniyu_config",
+ "puniyu_context",
+ "puniyu_cooldown",
+ "puniyu_error",
+ "puniyu_event",
+ "puniyu_handler",
+ "puniyu_logger",
+ "puniyu_message",
+ "puniyu_plugin",
 ]
 
 [[package]]

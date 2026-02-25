@@ -260,6 +260,7 @@ impl<'s> From<FriendSender<'s>> for SenderType<'s> {
 		Self::Friend(sender)
 	}
 }
+
 impl<'s> From<GroupSender<'s>> for SenderType<'s> {
 	fn from(sender: GroupSender<'s>) -> Self {
 		Self::Group(sender)

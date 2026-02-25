@@ -281,6 +281,7 @@ impl<'c> From<FriendContact<'c>> for ContactType<'c> {
 	}
 }
 
+
 impl<'c> From<GroupContact<'c>> for ContactType<'c> {
 	fn from(contact: GroupContact<'c>) -> Self {
 		Self::Group(contact)

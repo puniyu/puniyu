@@ -13,18 +13,12 @@ include = ["src", "Cargo.toml", "README.md", "assets"]
 
 [dependencies]
 figlet-rs = "0.1.5"
-futures.workspace = true
 bytes.workspace = true
-thiserror.workspace = true
 tokio.workspace = true
-async-trait.workspace = true
-inventory.workspace = true
 convert_case.workspace = true
 puniyu_system_info.workspace = true
-serde.workspace = true
-strum.workspace = true
-derive_builder.workspace = true
 
+puniyu_version.workspace = true
 puniyu_path.workspace = true
 puniyu_config.workspace = true
 puniyu_dispatch.workspace = true
@@ -37,6 +31,7 @@ puniyu_command = { workspace = true, features = ["registry"] }
 puniyu_task = { workspace = true, features = ["registry"] }
 puniyu_plugin = { workspace = true, features = ["registry"] }
 puniyu_loader = { workspace = true, features = ["registry"] }
+puniyu_handler = { workspace = true, features = ["registry"] }
 puniyu_adapter = { workspace = true, features = ["registry"] }
 puniyu_server = { workspace = true, features = ["registry"], optional = true }
 

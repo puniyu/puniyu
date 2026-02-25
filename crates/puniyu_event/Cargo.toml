@@ -21,7 +21,6 @@ bytes.workspace = true
 puniyu_bot.workspace = true
 puniyu_contact.workspace = true
 puniyu_sender.workspace = true
-puniyu_config.workspace = true
 puniyu_element.workspace = true
 
 [dev-dependencies]

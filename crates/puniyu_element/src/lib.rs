@@ -71,3 +71,15 @@ pub mod send;
 mod types;
 #[doc(inline)]
 pub use types::{ElementType, RawMessage};
+
+
+macro_rules! codegen_reexport {
+    ($($module:ident => $type:ident),*) => {
+        $(
+            mod $module;
+			#[doc(inline)]
+            pub use $module::$type;
+        )*
+    };
+}
+pub(crate) use codegen_reexport;

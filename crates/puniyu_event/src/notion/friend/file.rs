@@ -1,6 +1,6 @@
-use puniyu_bot::Bot;
-use crate::notion::{NotionBase, NotionBuilder, NotionSubEvent, PrivateFileUploadOption};
+use crate::notion::{NotionBase, NotionBuilder, NotionSubEventType, PrivateFileUploadType};
 use crate::{EventBase, EventType};
+use puniyu_bot::Bot;
 use puniyu_contact::FriendContact as Contact;
 use puniyu_sender::FriendSender as Sender;
 
@@ -10,22 +10,18 @@ pub struct PrivateFileUpload<'n> {
 	bot: &'n Bot,
 	event_id: &'n str,
 	time: u64,
-	self_id: &'n str,
 	user_id: &'n str,
 	contact: &'n Contact<'n>,
 	sender: &'n Sender<'n>,
-	content: &'n PrivateFileUploadOption,
+	content: &'n PrivateFileUploadType,
 }
 
 impl<'n> PrivateFileUpload<'n> {
-	pub fn new(
-		builder: NotionBuilder<'n, Contact<'n>, Sender<'n>, PrivateFileUploadOption>,
-	) -> Self {
+	pub fn new(builder: NotionBuilder<'n, Contact<'n>, Sender<'n>, PrivateFileUploadType>) -> Self {
 		Self {
 			bot: builder.bot,
 			event_id: builder.event_id,
 			time: builder.time,
-			self_id: builder.self_id,
 			user_id: builder.user_id,
 			contact: builder.contact,
 			sender: builder.sender,
@@ -36,7 +32,7 @@ impl<'n> PrivateFileUpload<'n> {
 
 impl<'e> EventBase for PrivateFileUpload<'e> {
 	type EventType = EventType;
-	type SubEventType = NotionSubEvent;
+	type SubEventType = NotionSubEventType;
 	type Contact = Contact<'e>;
 	type Sender = Sender<'e>;
 	fn time(&self) -> u64 {
@@ -51,8 +47,8 @@ impl<'e> EventBase for PrivateFileUpload<'e> {
 		self.event_id
 	}
 
-	fn sub_event(&self) -> &NotionSubEvent {
-		&NotionSubEvent::PrivateFileUpload
+	fn sub_event(&self) -> &NotionSubEventType {
+		&NotionSubEventType::PrivateFileUpload
 	}
 
 	fn bot(&self) -> &Bot {
@@ -60,7 +56,7 @@ impl<'e> EventBase for PrivateFileUpload<'e> {
 	}
 
 	fn self_id(&self) -> &str {
-		self.self_id
+		self.bot.account().uin.as_str()
 	}
 
 	fn user_id(&self) -> &str {
@@ -76,12 +72,11 @@ impl<'e> EventBase for PrivateFileUpload<'e> {
 	}
 }
 
-impl NotionBase for PrivateFileUpload<'_> {
-	type Content = PrivateFileUploadOption;
+impl NotionBase<PrivateFileUploadType> for PrivateFileUpload<'_> {
 	fn notion(&self) -> &str {
 		"收到好友撤回事件"
 	}
-	fn content(&self) -> &Self::Content {
+	fn content(&self) -> &PrivateFileUploadType {
 		self.content
 	}
 }

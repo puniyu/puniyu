@@ -1,11 +1,25 @@
 pub use puniyu_plugin::PluginId;
-use puniyu_plugin::PluginInfo;
+use puniyu_version::Version;
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct PluginInfo<'p> {
+	pub name: &'p str,
+	pub author: Option<&'p str>,
+	pub description: Option<&'p str>,
+	pub version: &'p Version,
+}
 
 pub fn get_plugin<'p>(plugin: impl Into<PluginId<'p>>) -> Option<PluginInfo<'p>> {
 	use puniyu_plugin::PluginRegistry;
 	let plugin_id = plugin.into();
-	match plugin_id {
-		PluginId::Index( index) => PluginRegistry::get_with_index( index),
-		PluginId::Name( name) => PluginRegistry::get_with_plugin_name(name)
-	}
+	let plugin = match plugin_id {
+		PluginId::Index(index) => PluginRegistry::get_with_index(index),
+		PluginId::Name(name) => PluginRegistry::get_with_plugin_name(name),
+	};
+	plugin.map(|plugin| PluginInfo {
+		name: plugin.name(),
+		author: plugin.author(),
+		description: plugin.description(),
+		version: plugin.version(),
+	})
 }

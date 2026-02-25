@@ -47,7 +47,6 @@
 //! 3. 事件被分发到所有注册的处理器
 //! 4. 处理器按优先级（rank）顺序执行
 
-use puniyu_context::EventContext;
 use puniyu_event::Event;
 use puniyu_handler::HandlerRegistry;
 use puniyu_logger::owo_colors::OwoColorize;
@@ -183,10 +182,9 @@ impl EventBus {
 	async fn dispatch_event(event: &Event<'_>) {
 		let mut handlers = HandlerRegistry::all();
 		handlers.sort_unstable_by_key(|a| a.rank());
-		let context = EventContext::new(event);
 
 		for handler in handlers {
-			if let Err(e) = handler.handle(&context).await {
+			if let Err(e) = handler.handle(event).await {
 				error!("[{}]: 处理器 {} 执行失败: {:?}", "Event".blue(), handler.name(), e);
 			}
 		}

@@ -22,8 +22,8 @@ fn default_master() -> Vec<String> {
 	vec!["console".to_string()]
 }
 
-fn default_prefix() -> String {
-	String::from("!")
+fn default_prefix() -> Option<String> {
+	Some(String::from("!"))
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -68,7 +68,7 @@ pub struct AppConfig {
 	///
 	/// 用于识别命令的前缀字符，默认为 "!"
 	#[serde(default = "default_prefix")]
-	prefix: String,
+	prefix: Option<String>,
 }
 
 impl Default for AppConfig {
@@ -128,8 +128,8 @@ impl AppConfig {
 	/// # 返回值
 	///
 	/// 返回主人用户 ID 列表的引用
-	pub fn masters(&self) -> &Vec<String> {
-		&self.masters
+	pub fn masters(&self) -> Vec<String> {
+		self.masters.clone()
 	}
 
 	/// 获取应用级群组配置
@@ -154,8 +154,8 @@ impl AppConfig {
 	///
 	/// # 返回值
 	///
-	/// 返回命令前缀字符串的引用，默认为 "!"
-	pub fn prefix(&self) -> &String {
-		&self.prefix
+	/// 返回命令前缀字符串的引用，默认为 "!", 为空时返回为[`None`]
+	pub fn prefix(&self) -> Option<String> {
+		self.prefix.clone()
 	}
 }

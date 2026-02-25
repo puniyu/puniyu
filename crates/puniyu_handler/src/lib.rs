@@ -8,7 +8,7 @@ pub use registry::HandlerRegistry;
 
 use async_trait::async_trait;
 use puniyu_error::Result;
-use puniyu_context::EventContext;
+use puniyu_event::Event;
 
 #[async_trait]
 pub trait Handler: Send + Sync + 'static {
@@ -24,7 +24,7 @@ pub trait Handler: Send + Sync + 'static {
     ///
     /// - `event`: 事件
     ///
-    async fn handle(&self, event: &EventContext) -> Result;
+    async fn handle(&self, event: &Event) -> Result;
 }
 
 

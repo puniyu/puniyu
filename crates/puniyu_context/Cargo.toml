@@ -25,5 +25,6 @@ puniyu_contact.workspace = true
 puniyu_command_core.workspace = true
 puniyu_event.workspace = true
 puniyu_message.workspace = true
+puniyu_config.workspace = true
 
 

@@ -44,7 +44,7 @@
 //!
 //! ### TaskRegistry
 //!
-//! 使用 [`registry::TaskRegistry`] 管理任务的生命周期：
+//! 使用 [`TaskRegistry`] 管理任务的生命周期：
 //!
 //! - `register`: 注册新任务
 //! - `unregister`: 卸载任务

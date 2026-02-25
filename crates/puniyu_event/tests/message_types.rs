@@ -1,37 +1,63 @@
-use puniyu_event::message::MessageSubType;
+use puniyu_event::message::MessageSubEventType;
 
 #[test]
 fn test_message_sub_type_display() {
-	assert_eq!(MessageSubType::Friend.to_string(), "friend");
-	assert_eq!(MessageSubType::Group.to_string(), "group");
-	assert_eq!(MessageSubType::Guild.to_string(), "guild");
+	assert_eq!(MessageSubEventType::Friend.to_string(), "friend");
+	assert_eq!(MessageSubEventType::Group.to_string(), "group");
+	assert_eq!(MessageSubEventType::Guild.to_string(), "guild");
 }
 
 #[test]
 fn test_message_sub_type_from_str() {
 	use std::str::FromStr;
 
-	assert_eq!(MessageSubType::from_str("friend").unwrap(), MessageSubType::Friend);
-	assert_eq!(MessageSubType::from_str("group").unwrap(), MessageSubType::Group);
-	assert_eq!(MessageSubType::from_str("guild").unwrap(), MessageSubType::Guild);
+	assert_eq!(MessageSubEventType::from_str("friend").unwrap(), MessageSubEventType::Friend);
+	assert_eq!(MessageSubEventType::from_str("group").unwrap(), MessageSubEventType::Group);
+	assert_eq!(MessageSubEventType::from_str("guild").unwrap(), MessageSubEventType::Guild);
 }
 
 #[test]
 fn test_message_sub_type_equality() {
-	assert_eq!(MessageSubType::Friend, MessageSubType::Friend);
-	assert_eq!(MessageSubType::Group, MessageSubType::Group);
-	assert_ne!(MessageSubType::Friend, MessageSubType::Group);
+	assert_eq!(MessageSubEventType::Friend, MessageSubEventType::Friend);
+	assert_eq!(MessageSubEventType::Group, MessageSubEventType::Group);
+	assert_ne!(MessageSubEventType::Friend, MessageSubEventType::Group);
 }
 
 #[test]
 fn test_message_sub_type_ordering() {
-	assert!(MessageSubType::Friend < MessageSubType::Group);
-	assert!(MessageSubType::Group < MessageSubType::Guild);
+	assert!(MessageSubEventType::Friend < MessageSubEventType::Group);
+	assert!(MessageSubEventType::Group < MessageSubEventType::Guild);
 }
 
 #[test]
 fn test_message_sub_type_clone() {
-	let sub_type = MessageSubType::Friend;
+	let sub_type = MessageSubEventType::Friend;
 	let cloned = sub_type.clone();
 	assert_eq!(sub_type, cloned);
+}
+
+#[test]
+fn test_message_sub_type_serialization() {
+	use serde_json;
+
+	let friend = MessageSubEventType::Friend;
+	let json = serde_json::to_string(&friend).unwrap();
+	assert_eq!(json, r#""Friend""#);
+
+	let group = MessageSubEventType::Group;
+	let json = serde_json::to_string(&group).unwrap();
+	assert_eq!(json, r#""Group""#);
+}
+
+#[test]
+fn test_message_sub_type_deserialization() {
+	use serde_json;
+
+	let json = r#""Friend""#;
+	let sub_type: MessageSubEventType = serde_json::from_str(json).unwrap();
+	assert_eq!(sub_type, MessageSubEventType::Friend);
+
+	let json = r#""Group""#;
+	let sub_type: MessageSubEventType = serde_json::from_str(json).unwrap();
+	assert_eq!(sub_type, MessageSubEventType::Group);
 }

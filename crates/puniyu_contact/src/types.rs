@@ -95,3 +95,18 @@ pub trait Contact: Send + Sync {
 		matches!(self.scene(), SceneType::Group)
 	}
 }
+
+
+impl<T: Contact> Contact for &T {
+	fn scene(&self) -> &SceneType {
+		(**self).scene()
+	}
+
+	fn peer(&self) -> &str {
+		(**self).peer()
+	}
+
+	fn name(&self) -> Option<&str> {
+		(**self).name()
+	}
+}

@@ -1,7 +1,7 @@
-use puniyu_bot::Bot;
-use super::types::ReceiveLikeOption;
-use crate::notion::{NotionBase, NotionBuilder, NotionSubEvent};
+use super::types::ReceiveLikeType;
+use crate::notion::{NotionBase, NotionBuilder, NotionSubEventType};
 use crate::{EventBase, EventType};
+use puniyu_bot::Bot;
 use puniyu_contact::FriendContact as Contact;
 use puniyu_sender::FriendSender as Sender;
 
@@ -11,22 +11,18 @@ pub struct ReceiveLike<'n> {
 	bot: &'n Bot,
 	event_id: &'n str,
 	time: u64,
-	self_id: &'n str,
 	user_id: &'n str,
 	contact: &'n Contact<'n>,
 	sender: &'n Sender<'n>,
-	content: &'n ReceiveLikeOption,
+	content: &'n ReceiveLikeType,
 }
 
 impl<'n> ReceiveLike<'n> {
-	pub fn new(
-		builder: NotionBuilder<'n, Contact<'n>, Sender<'n>, ReceiveLikeOption>,
-	) -> Self {
+	pub fn new(builder: NotionBuilder<'n, Contact<'n>, Sender<'n>, ReceiveLikeType>) -> Self {
 		Self {
 			bot: builder.bot,
 			event_id: builder.event_id,
 			time: builder.time,
-			self_id: builder.self_id,
 			user_id: builder.user_id,
 			contact: builder.contact,
 			sender: builder.sender,
@@ -37,7 +33,7 @@ impl<'n> ReceiveLike<'n> {
 
 impl<'e> EventBase for ReceiveLike<'e> {
 	type EventType = EventType;
-	type SubEventType = NotionSubEvent;
+	type SubEventType = NotionSubEventType;
 	type Contact = Contact<'e>;
 	type Sender = Sender<'e>;
 
@@ -53,8 +49,8 @@ impl<'e> EventBase for ReceiveLike<'e> {
 		self.event_id
 	}
 
-	fn sub_event(&self) -> &NotionSubEvent {
-		&NotionSubEvent::ReceiveLike
+	fn sub_event(&self) -> &NotionSubEventType {
+		&NotionSubEventType::ReceiveLike
 	}
 
 	fn bot(&self) -> &Bot {
@@ -62,7 +58,7 @@ impl<'e> EventBase for ReceiveLike<'e> {
 	}
 
 	fn self_id(&self) -> &str {
-		self.self_id
+		self.bot.account().uin.as_str()
 	}
 
 	fn user_id(&self) -> &str {
@@ -78,14 +74,12 @@ impl<'e> EventBase for ReceiveLike<'e> {
 	}
 }
 
-impl NotionBase for ReceiveLike<'_> {
-	type Content = ReceiveLikeOption;
-
+impl NotionBase<ReceiveLikeType> for ReceiveLike<'_> {
 	fn notion(&self) -> &str {
 		"收到点赞事件"
 	}
 
-	fn content(&self) -> &Self::Content {
+	fn content(&self) -> &ReceiveLikeType {
 		self.content
 	}
 }

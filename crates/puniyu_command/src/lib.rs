@@ -109,7 +109,7 @@ pub trait Command: Send + Sync + 'static {
 	fn name(&self) -> &'static str;
 
 	/// 命令描述
-	///
+	///	TODO: 实现插件帮助
 	/// 返回命令的描述信息，用于帮助文档。
 	///
 	/// # 示例

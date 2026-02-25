@@ -1,23 +1,30 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
-pub struct ReceiveLikeOption {
+pub struct FriendAddType {}
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct FriendDecreaseType {}
+
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct ReceiveLikeType {
 	pub count: u8,
 }
 
+
 #[derive(Debug, Clone, Deserialize, Serialize)]
-pub struct PrivatePokeOption {
+pub struct PrivatePokeType {
 	/// 目标id, 就是被戳的用户
 	pub target_id: String,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
-pub struct PrivateRecallOption {
+pub struct PrivateRecallType {
 	pub message_id: String,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
-pub struct PrivateFileUploadOption {
+pub struct PrivateFileUploadType {
 	/// 文件id
 	pub file_id: String,
 	/// 文件名
@@ -27,3 +34,4 @@ pub struct PrivateFileUploadOption {
 	/// 文件Url
 	pub file_url: String,
 }
+

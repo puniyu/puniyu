@@ -25,15 +25,9 @@
 //! let face = FaceElement::new(42u64);
 //! ```
 
-macro_rules! codegen_reexport {
-    ($($module:ident => $type:ident),*) => {
-        $(
-            mod $module;
-			#[doc(inline)]
-            pub use $module::$type;
-        )*
-    };
-}
+use crate::codegen_reexport;
+use serde::{Deserialize, Serialize};
+use strum::Display;
 
 codegen_reexport! {
 	text => TextElement,
@@ -47,9 +41,6 @@ codegen_reexport! {
 	json => JsonElement,
 	xml => XmlElement
 }
-
-use serde::{Deserialize, Serialize};
-use strum::Display;
 
 #[derive(Debug, Clone, Serialize, Deserialize, Display)]
 #[serde(rename_all = "lowercase", tag = "type", content = "field0", bound(deserialize = "'de: 'e"))]

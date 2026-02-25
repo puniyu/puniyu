@@ -1,6 +1,6 @@
 mod option;
 
-use option::GroupOption;
+pub use option::GroupOption;
 use puniyu_common::read_config;
 use puniyu_path::CONFIG_DIR;
 use serde::{Deserialize, Serialize};

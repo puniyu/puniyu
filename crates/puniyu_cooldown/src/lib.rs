@@ -86,4 +86,5 @@ mod types;
 #[doc(inline)]
 pub use types::CooldownScope;
 mod registry;
+#[doc(inline)]
 pub use registry::CooldownRegistry;

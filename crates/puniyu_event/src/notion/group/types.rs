@@ -1,6 +1,9 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct GroupSignInType {}
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct GroupPokeType {
 	/// 被戳的用户id
 	pub target_id: String,

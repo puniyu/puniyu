@@ -142,8 +142,8 @@ fn test_config_file_with_comments() {
 	let content = std::fs::read_to_string(config_file.path()).unwrap();
 	let config: puniyu_config::app::AppConfig = toml::from_str(&content).unwrap();
 
-	assert_eq!(config.prefix(), "!");
-	assert_eq!(config.masters(), &vec!["admin".to_string()]);
+	assert_eq!(config.prefix().as_ref().map(|s| s.as_str()), Some("!"));
+	assert_eq!(config.masters(), vec!["admin".to_string()]);
 }
 
 #[test]
@@ -191,7 +191,7 @@ fn test_nested_config_structure() {
 	let content = std::fs::read_to_string(config_file.path()).unwrap();
 	let config: puniyu_config::app::AppConfig = toml::from_str(&content).unwrap();
 
-	assert_eq!(config.prefix(), "/");
+	assert_eq!(config.prefix().as_ref().map(|s| s.as_str()), Some("/"));
 	assert_eq!(config.logger().level(), "debug");
 	assert_eq!(config.server().host(), IpAddr::V4(Ipv4Addr::new(0, 0, 0, 0)));
 	assert_eq!(config.server().port(), 8080);

@@ -1,7 +1,7 @@
-use puniyu_bot::Bot;
 use super::types::GroupHighlightsChangeType;
-use crate::notion::{NotionBase, NotionBuilder, NotionSubEvent};
+use crate::notion::{NotionBase, NotionBuilder, NotionSubEventType};
 use crate::{EventBase, EventType};
+use puniyu_bot::Bot;
 use puniyu_contact::GroupContact as Contact;
 use puniyu_sender::GroupSender as Sender;
 
@@ -11,7 +11,6 @@ pub struct GroupHighlightsChange<'n> {
 	bot: &'n Bot,
 	event_id: &'n str,
 	time: u64,
-	self_id: &'n str,
 	user_id: &'n str,
 	contact: &'n Contact<'n>,
 	sender: &'n Sender<'n>,
@@ -26,7 +25,6 @@ impl<'n> GroupHighlightsChange<'n> {
 			bot: builder.bot,
 			event_id: builder.event_id,
 			time: builder.time,
-			self_id: builder.self_id,
 			user_id: builder.user_id,
 			contact: builder.contact,
 			sender: builder.sender,
@@ -37,7 +35,7 @@ impl<'n> GroupHighlightsChange<'n> {
 
 impl<'n> EventBase for GroupHighlightsChange<'n> {
 	type EventType = EventType;
-	type SubEventType = NotionSubEvent;
+	type SubEventType = NotionSubEventType;
 	type Contact = Contact<'n>;
 	type Sender = Sender<'n>;
 
@@ -53,8 +51,8 @@ impl<'n> EventBase for GroupHighlightsChange<'n> {
 		self.event_id
 	}
 
-	fn sub_event(&self) -> &NotionSubEvent {
-		&NotionSubEvent::GroupHighlightsChange
+	fn sub_event(&self) -> &NotionSubEventType {
+		&NotionSubEventType::GroupHighlightsChange
 	}
 
 	fn bot(&self) -> &Bot {
@@ -62,7 +60,7 @@ impl<'n> EventBase for GroupHighlightsChange<'n> {
 	}
 
 	fn self_id(&self) -> &str {
-		self.self_id
+		self.bot.account().uin.as_str()
 	}
 
 	fn user_id(&self) -> &str {
@@ -78,14 +76,12 @@ impl<'n> EventBase for GroupHighlightsChange<'n> {
 	}
 }
 
-impl NotionBase for GroupHighlightsChange<'_> {
-	type Content = GroupHighlightsChangeType;
-
+impl NotionBase<GroupHighlightsChangeType> for GroupHighlightsChange<'_> {
 	fn notion(&self) -> &str {
 		"收到群精华消息变动事件"
 	}
 
-	fn content(&self) -> &Self::Content {
+	fn content(&self) -> &GroupHighlightsChangeType {
 		self.content
 	}
 }

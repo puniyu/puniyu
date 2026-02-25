@@ -5,7 +5,7 @@ use std::collections::HashMap;
 use std::sync::{Arc, LazyLock, RwLock};
 
 mod option;
-use option::FriendOption;
+pub use option::FriendOption;
 
 pub(crate) static FRIEND_CONFIG: LazyLock<Arc<RwLock<FriendConfig>>> = LazyLock::new(|| {
 	Arc::new(RwLock::new(read_config(CONFIG_DIR.as_path(), "friend").unwrap_or_default()))

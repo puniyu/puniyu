@@ -1,6 +1,6 @@
-use puniyu_bot::Bot;
-use crate::notion::{NotionBase, NotionBuilder, NotionSubEvent};
+use crate::notion::{GroupSignInType, NotionBase, NotionBuilder, NotionSubEventType};
 use crate::{EventBase, EventType};
+use puniyu_bot::Bot;
 use puniyu_contact::GroupContact as Contact;
 use puniyu_sender::GroupSender as Sender;
 
@@ -10,20 +10,18 @@ pub struct GroupSignIn<'n> {
 	bot: &'n Bot,
 	event_id: &'n str,
 	time: u64,
-	self_id: &'n str,
 	user_id: &'n str,
 	contact: &'n Contact<'n>,
 	sender: &'n Sender<'n>,
-	content: &'n (),
+	content: &'n GroupSignInType,
 }
 
 impl<'n> GroupSignIn<'n> {
-	pub fn new(builder: NotionBuilder<'n, Contact, Sender, ()>) -> Self {
+	pub fn new(builder: NotionBuilder<'n, Contact, Sender, GroupSignInType>) -> Self {
 		Self {
 			bot: builder.bot,
 			event_id: builder.event_id,
 			time: builder.time,
-			self_id: builder.self_id,
 			user_id: builder.user_id,
 			contact: builder.contact,
 			sender: builder.sender,
@@ -34,7 +32,7 @@ impl<'n> GroupSignIn<'n> {
 
 impl<'n> EventBase for GroupSignIn<'n> {
 	type EventType = EventType;
-	type SubEventType = NotionSubEvent;
+	type SubEventType = NotionSubEventType;
 	type Contact = Contact<'n>;
 	type Sender = Sender<'n>;
 
@@ -50,8 +48,8 @@ impl<'n> EventBase for GroupSignIn<'n> {
 		self.event_id
 	}
 
-	fn sub_event(&self) -> &NotionSubEvent {
-		&NotionSubEvent::GroupSignIn
+	fn sub_event(&self) -> &NotionSubEventType {
+		&NotionSubEventType::GroupSignIn
 	}
 
 	fn bot(&self) -> &Bot {
@@ -59,7 +57,7 @@ impl<'n> EventBase for GroupSignIn<'n> {
 	}
 
 	fn self_id(&self) -> &str {
-		self.self_id
+		self.bot.account().uin.as_str()
 	}
 
 	fn user_id(&self) -> &str {
@@ -75,14 +73,12 @@ impl<'n> EventBase for GroupSignIn<'n> {
 	}
 }
 
-impl NotionBase for GroupSignIn<'_> {
-	type Content = ();
-
+impl NotionBase<GroupSignInType> for GroupSignIn<'_> {
 	fn notion(&self) -> &str {
 		"收到群成员打卡事件"
 	}
 
-	fn content(&self) -> &Self::Content {
+	fn content(&self) -> &GroupSignInType {
 		self.content
 	}
 }

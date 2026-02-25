@@ -63,3 +63,21 @@ pub trait Sender: Send + Sync {
 	/// 返回发送者的年龄，如果未设置则返回 `None`。
 	fn age(&self) -> Option<u32>;
 }
+
+impl<T: Sender> Sender for &T {
+	fn user_id(&self) -> &str {
+		(**self).user_id()
+	}
+
+	fn name(&self) -> Option<&str> {
+		(**self).name()
+	}
+
+	fn sex(&self) -> &Sex {
+		(**self).sex()
+	}
+
+	fn age(&self) -> Option<u32> {
+		(**self).age()
+	}
+}

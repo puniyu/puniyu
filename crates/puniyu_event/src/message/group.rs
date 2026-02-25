@@ -1,6 +1,6 @@
-use puniyu_bot::Bot;
-use super::{MessageBase, MessageBuilder, MessageSubType};
+use super::{MessageBase, MessageBuilder, MessageSubEventType};
 use crate::{EventBase, EventType};
+use puniyu_bot::Bot;
 use puniyu_contact::GroupContact as Contact;
 use puniyu_element::receive::Elements;
 use puniyu_sender::GroupSender as Sender;
@@ -34,7 +34,6 @@ pub struct GroupMessage<'m> {
 	bot: &'m Bot,
 	event_id: &'m str,
 	time: u64,
-	self_id: &'m str,
 	user_id: &'m str,
 	message_id: &'m str,
 	elements: &'m Vec<Elements<'m>>,
@@ -53,7 +52,6 @@ impl<'m> GroupMessage<'m> {
 			bot: builder.bot,
 			event_id: builder.event_id,
 			time: builder.time,
-			self_id: builder.self_id,
 			user_id: builder.user_id,
 			message_id: builder.message_id,
 			elements: builder.elements,
@@ -92,7 +90,7 @@ impl<'m> GroupMessage<'m> {
 
 impl<'e> EventBase for GroupMessage<'e> {
 	type EventType = EventType;
-	type SubEventType = MessageSubType;
+	type SubEventType = MessageSubEventType;
 	type Contact = Contact<'e>;
 	type Sender = Sender<'e>;
 
@@ -108,8 +106,8 @@ impl<'e> EventBase for GroupMessage<'e> {
 		self.event_id
 	}
 
-	fn sub_event(&self) -> &MessageSubType {
-		&MessageSubType::Group
+	fn sub_event(&self) -> &MessageSubEventType {
+		&MessageSubEventType::Group
 	}
 
 	fn bot(&self) -> &Bot {
@@ -117,7 +115,7 @@ impl<'e> EventBase for GroupMessage<'e> {
 	}
 
 	fn self_id(&self) -> &str {
-		self.self_id
+		self.bot.account().uin.as_str()
 	}
 
 	fn user_id(&self) -> &str {

@@ -1,7 +1,5 @@
-//! 命令类型定义模块
-
 #[doc(inline)]
-pub use puniyu_command_core::{Arg, CommandAction, Permission};
+pub use puniyu_command_core::*;
 use std::sync::Arc;
 
 /// 命令信息

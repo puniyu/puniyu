@@ -1,7 +1,7 @@
 [workspace]
 members = [
     "crates/*"
-]
+, "puniyu"]
 resolver = "2"
 
 [workspace.lints.clippy]
@@ -66,6 +66,8 @@ puniyu_adapter_core = { version = "0.7.8", path = "./crates/puniyu_adapter_core"
 puniyu_bot = { version = "0.7.8", path = "./crates/puniyu_bot" }
 
 puniyu_command_core = { version = "0.7.8", path = "./crates/puniyu_command_core" }
+puniyu_command_parser = { version = "0.7.8", path = "./crates/puniyu_command_parser" }
+
 puniyu_command = { version = "0.7.10", path = "./crates/puniyu_command" }
 
 puniyu_server_core = { version = "0.7.8", path = "./crates/puniyu_server_core" }
@@ -78,6 +80,7 @@ puniyu_handler = { version = "0.7.8", path = "./crates/puniyu_handler" }
 puniyu_plugin = { version = "0.7.8", path = "./crates/puniyu_plugin" }
 
 puniyu_loader = { version = "0.7.8", path = "./crates/puniyu_loader" }
+
 
 [profile.release]
 lto = "thin"

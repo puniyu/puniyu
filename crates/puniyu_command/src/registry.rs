@@ -130,11 +130,21 @@ impl<'c> CommandRegistry {
 		map.get(&id).cloned()
 	}
 
-	/// 通过名称查询命令
+	/// 通过命令名称查询命令
 	pub fn get_with_command_name(name: &str) -> Vec<CommandInfo> {
 		let raw = STORE.raw();
 		let map = raw.read().expect("Failed to acquire lock");
 		map.values().filter(|v| v.builder.name() == name).cloned().collect::<Vec<CommandInfo>>()
+	}
+
+	/// 通过命令别名查询命令
+	pub fn get_with_command_alias(alias: &str) -> Vec<CommandInfo> {
+		let raw = STORE.raw();
+		let map = raw.read().expect("Failed to acquire lock");
+		map.values()
+			.filter(|v| v.builder.alias().contains(&alias))
+			.cloned()
+			.collect::<Vec<CommandInfo>>()
 	}
 
 	/// 通过插件 ID 查询所有命令

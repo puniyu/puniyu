@@ -1,7 +1,7 @@
-use puniyu_bot::Bot;
 use super::types::GroupMemberAddType;
-use crate::notion::{NotionBase, NotionBuilder, NotionSubEvent};
+use crate::notion::{NotionBase, NotionBuilder, NotionSubEventType};
 use crate::{EventBase, EventType};
+use puniyu_bot::Bot;
 use puniyu_contact::GroupContact as Contact;
 use puniyu_sender::GroupSender as Sender;
 
@@ -11,7 +11,6 @@ pub struct GroupMemberAdd<'n> {
 	bot: &'n Bot,
 	event_id: &'n str,
 	time: u64,
-	self_id: &'n str,
 	user_id: &'n str,
 	contact: &'n Contact<'n>,
 	sender: &'n Sender<'n>,
@@ -19,14 +18,11 @@ pub struct GroupMemberAdd<'n> {
 }
 
 impl<'n> GroupMemberAdd<'n> {
-	pub fn new(
-		builder: NotionBuilder<'n, Contact<'n>, Sender<'n>, GroupMemberAddType>,
-	) -> Self {
+	pub fn new(builder: NotionBuilder<'n, Contact<'n>, Sender<'n>, GroupMemberAddType>) -> Self {
 		Self {
 			bot: builder.bot,
 			event_id: builder.event_id,
 			time: builder.time,
-			self_id: builder.self_id,
 			user_id: builder.user_id,
 			contact: builder.contact,
 			sender: builder.sender,
@@ -37,7 +33,7 @@ impl<'n> GroupMemberAdd<'n> {
 
 impl<'n> EventBase for GroupMemberAdd<'n> {
 	type EventType = EventType;
-	type SubEventType = NotionSubEvent;
+	type SubEventType = NotionSubEventType;
 	type Contact = Contact<'n>;
 	type Sender = Sender<'n>;
 
@@ -53,8 +49,8 @@ impl<'n> EventBase for GroupMemberAdd<'n> {
 		self.event_id
 	}
 
-	fn sub_event(&self) -> &NotionSubEvent {
-		&NotionSubEvent::GroupMemberAdd
+	fn sub_event(&self) -> &NotionSubEventType {
+		&NotionSubEventType::GroupMemberAdd
 	}
 
 	fn bot(&self) -> &Bot {
@@ -62,7 +58,7 @@ impl<'n> EventBase for GroupMemberAdd<'n> {
 	}
 
 	fn self_id(&self) -> &str {
-		self.self_id
+		self.bot.account().uin.as_str()
 	}
 
 	fn user_id(&self) -> &str {
@@ -78,14 +74,12 @@ impl<'n> EventBase for GroupMemberAdd<'n> {
 	}
 }
 
-impl NotionBase for GroupMemberAdd<'_> {
-	type Content = GroupMemberAddType;
-
+impl NotionBase<GroupMemberAddType> for GroupMemberAdd<'_> {
 	fn notion(&self) -> &str {
 		"收到群成员添加事件"
 	}
 
-	fn content(&self) -> &Self::Content {
+	fn content(&self) -> &GroupMemberAddType {
 		self.content
 	}
 }
