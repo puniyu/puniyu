@@ -1,4 +1,22 @@
 # 变更日志
+
+## [0.4.6](https://github.com/puniyu/puniyu/compare/puniyu_adapter_console-v0.4.5...puniyu_adapter_console-v0.4.6)
+
+### 🚜 重构
+
+
+- *(adapter)* 统一HandlerResult类型并优化API实现 - ([3926f29](https://github.com/puniyu/puniyu/commit/3926f29742bb000b8b861c35205257b85be9017e))
+- *(adapter)* 重构适配器注册相关内容 - ([cdec0b9](https://github.com/puniyu/puniyu/commit/cdec0b9e002e12aa6effb6dfda8dc3b331a1fec1))
+- *(core)* 重构部分核心实现 ([#150](https://github.com/puniyu/puniyu/pull/150)) - ([e06459e](https://github.com/puniyu/puniyu/commit/e06459e40f1ec37f8e0de7427e6905c9bb295d5e))
+- *(registry)* 重构注册表 - ([4e93d6c](https://github.com/puniyu/puniyu/commit/4e93d6c44c888309cd236a6d92a38e543e943e2f))
+- 重构core, 抽象层实现 - ([62a2862](https://github.com/puniyu/puniyu/commit/62a28625debc8bd3407beb464ae9e550bec9ea9e))
+- 优化全局注册表, 减少调用时开销 ([#144](https://github.com/puniyu/puniyu/pull/144)) - ([1447162](https://github.com/puniyu/puniyu/commit/1447162841cbebfba06e12eaad9fea263aa0436f))
+
+### ⚙️ 杂项
+
+
+- *(workspace)* 移除release-please配置文件并优化Cargo.toml结构 - ([db957c3](https://github.com/puniyu/puniyu/commit/db957c3939f38d30da5cc8807aed0e154fe23a52))
+
 ## [0.4.5](https://github.com/puniyu/puniyu/compare/puniyu_adapter_console-v0.4.4...puniyu_adapter_console-v0.4.5) - 2026-01-12
 
 

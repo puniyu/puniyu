@@ -1,4 +1,22 @@
 # 变更日志
+
+## [0.7.8]
+
+### 🐛 Bug 修复
+
+
+- *(command)* 添加命令返回类型验证并优化消息事件处理 - ([8db2173](https://github.com/puniyu/puniyu/commit/8db21733d5fe99034f285bb4035e4dbf30340eee))
+
+### 🚜 重构
+
+
+- *(adapter)* 重构适配器注册相关内容 - ([cdec0b9](https://github.com/puniyu/puniyu/commit/cdec0b9e002e12aa6effb6dfda8dc3b331a1fec1))
+- *(core)* 重构部分核心实现 ([#150](https://github.com/puniyu/puniyu/pull/150)) - ([e06459e](https://github.com/puniyu/puniyu/commit/e06459e40f1ec37f8e0de7427e6905c9bb295d5e))
+- *(plugin)* 统一插件初始化返回类型为HandlerResult - ([31c1e58](https://github.com/puniyu/puniyu/commit/31c1e584885121f6464e761d7008ce1548460a57))
+- *(registry)* 重构注册表 - ([4e93d6c](https://github.com/puniyu/puniyu/commit/4e93d6c44c888309cd236a6d92a38e543e943e2f))
+- 重构core, 抽象层实现 - ([62a2862](https://github.com/puniyu/puniyu/commit/62a28625debc8bd3407beb464ae9e550bec9ea9e))
+- 优化全局注册表, 减少调用时开销 ([#144](https://github.com/puniyu/puniyu/pull/144)) - ([1447162](https://github.com/puniyu/puniyu/commit/1447162841cbebfba06e12eaad9fea263aa0436f))
+
 ## [0.7.6](https://github.com/puniyu/puniyu/compare/puniyu_macros-v0.7.5...puniyu_macros-v0.7.6) - 2026-01-12
 
 
