@@ -23,7 +23,7 @@
 puniyu_loader = "*"
 
 # 启用注册表功能
-puniyu_loader = { version = "*", features = ["registry"] }
+puniyu_loader = { VERSION = "*", features = ["registry"] }
 ```
 
 ## 快速开始

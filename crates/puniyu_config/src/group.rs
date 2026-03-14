@@ -1,6 +1,4 @@
-mod option;
 
-pub use option::GroupOption;
 use puniyu_common::read_config;
 use puniyu_path::CONFIG_DIR;
 use serde::{Deserialize, Serialize};
@@ -8,6 +6,7 @@ use std::{
 	collections::HashMap,
 	sync::{Arc, LazyLock, RwLock},
 };
+use crate::GroupOption;
 
 pub(crate) static GROUP_CONFIG: LazyLock<Arc<RwLock<GroupConfig>>> = LazyLock::new(|| {
 	Arc::new(RwLock::new(read_config(CONFIG_DIR.as_path(), "group").unwrap_or_default()))

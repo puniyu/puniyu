@@ -2,7 +2,7 @@ mod store;
 use crate::Bot;
 use crate::types::BotId;
 use puniyu_error::registry::Error;
-use std::sync::LazyLock;
+use std::sync::{Arc, LazyLock};
 use store::BotStore;
 
 static STORE: LazyLock<BotStore> = LazyLock::new(BotStore::new);
@@ -47,7 +47,7 @@ impl<'b> BotRegistry {
 	/// let index = BotRegistry::register(bot)?;
 	/// println!("机器人已注册，索引: {}", index);
 	/// ```
-	pub fn register(bot: Bot) -> Result<u64, Error> {
+	pub fn register(bot: Arc<dyn Bot>) -> Result<u64, Error> {
 		STORE.insert(bot)
 	}
 
@@ -152,7 +152,7 @@ impl<'b> BotRegistry {
 	/// // 使用 UIN 查询
 	/// let bots = BotRegistry::get("123456");
 	/// ```
-	pub fn get<T>(bot_id: T) -> Option<Bot>
+	pub fn get<T>(bot_id: T) -> Option<Arc<dyn Bot>>
 	where
 		T: Into<BotId<'b>>,
 	{
@@ -180,7 +180,7 @@ impl<'b> BotRegistry {
 	///     println!("找到机器人: {}", bot.account().uin);
 	/// }
 	/// ```
-	pub fn get_with_index(index: u64) -> Option<Bot> {
+	pub fn get_with_index(index: u64) -> Option<Arc<dyn Bot>> {
 		let raw = STORE.raw();
 		let map = raw.read().expect("Failed to acquire lock");
 		map.get(&index).cloned()
@@ -205,7 +205,7 @@ impl<'b> BotRegistry {
 	///     println!("找到机器人: {}", bot.account().uin);
 	/// }
 	/// ```
-	pub fn get_with_bot_id(self_id: &str) -> Option<Bot> {
+	pub fn get_with_bot_id(self_id: &str) -> Option<Arc<dyn Bot>> {
 		let raw = STORE.raw();
 		let map = raw.read().expect("Failed to acquire lock");
 		map.values().find(|bot| bot.account().uin == self_id).cloned()
@@ -223,7 +223,7 @@ impl<'b> BotRegistry {
 	/// let all_bots = BotRegistry::all();
 	/// println!("共有 {} 个机器人", all_bots.len());
 	/// ```
-	pub fn all() -> Vec<Bot> {
+	pub fn all() -> Vec<Arc<dyn Bot>> {
 		STORE.all()
 	}
 }

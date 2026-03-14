@@ -3,9 +3,7 @@ use puniyu_path::CONFIG_DIR;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::sync::{Arc, LazyLock, RwLock};
-
-mod option;
-pub use option::FriendOption;
+use crate::FriendOption;
 
 pub(crate) static FRIEND_CONFIG: LazyLock<Arc<RwLock<FriendConfig>>> = LazyLock::new(|| {
 	Arc::new(RwLock::new(read_config(CONFIG_DIR.as_path(), "friend").unwrap_or_default()))

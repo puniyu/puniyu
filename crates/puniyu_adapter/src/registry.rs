@@ -1,9 +1,9 @@
 mod store;
 
+use crate::Adapter;
 use crate::types::AdapterId;
-use crate::types::info::AdapterInfo;
 use puniyu_error::registry::Error;
-use std::sync::LazyLock;
+use std::sync::{Arc, LazyLock};
 use store::AdapterStore;
 
 static STORE: LazyLock<AdapterStore> = LazyLock::new(AdapterStore::new);
@@ -42,7 +42,7 @@ impl<'a> AdapterRegistry {
 	/// # 错误
 	///
 	/// 如果适配器已存在，返回错误
-	pub fn register(adapter: AdapterInfo) -> Result<u64, Error> {
+	pub fn register(adapter: Arc<dyn Adapter>) -> Result<u64, Error> {
 		STORE.insert(adapter)
 	}
 
@@ -81,10 +81,10 @@ impl<'a> AdapterRegistry {
 	pub fn unregister_with_adapter_name(name: &str) -> Result<(), Error> {
 		let raw = STORE.raw();
 		let mut map = raw.write().expect("Failed to acquire lock");
-		if !map.values().any(|v| v.name == name) {
+		if !map.values().any(|v| v.name() == name) {
 			return Err(Error::NotFound("Adapter".to_string()));
 		}
-		map.retain(|_, v| v.name != name);
+		map.retain(|_, v| v.name() != name);
 		Ok(())
 	}
 
@@ -97,7 +97,7 @@ impl<'a> AdapterRegistry {
 	/// # 返回值
 	///
 	/// 返回匹配的适配器信息列表
-	pub fn get<A>(adapter: A) -> Vec<AdapterInfo>
+	pub fn get<A>(adapter: A) -> Vec<Arc<dyn Adapter>>
 	where
 		A: Into<AdapterId<'a>>,
 	{
@@ -109,21 +109,21 @@ impl<'a> AdapterRegistry {
 	}
 
 	/// 通过索引查询适配器
-	pub fn get_with_index(index: u64) -> Option<AdapterInfo> {
+	pub fn get_with_index(index: u64) -> Option<Arc<dyn Adapter>> {
 		let raw = STORE.raw();
 		let map = raw.read().expect("Failed to acquire lock");
 		map.get(&index).cloned()
 	}
 
 	/// 通过名称查询适配器
-	pub fn get_with_adapter_name(name: &str) -> Vec<AdapterInfo> {
+	pub fn get_with_adapter_name(name: &str) -> Vec<Arc<dyn Adapter>> {
 		let raw = STORE.raw();
 		let map = raw.read().expect("Failed to acquire lock");
-		map.values().filter(|v| v.name == name).cloned().collect()
+		map.values().filter(|v| v.name() == name).cloned().collect()
 	}
 
 	/// 获取所有适配器
-	pub fn all() -> Vec<AdapterInfo> {
+	pub fn all() -> Vec<Arc<dyn Adapter>> {
 		STORE.all()
 	}
 }

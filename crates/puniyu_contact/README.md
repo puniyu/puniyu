@@ -1,53 +1,33 @@
 # puniyu_contact
 
-联系人类型定义库，提供好友和群聊联系人的类型系统。
-
-## 概述
-
-`puniyu_contact` 提供了统一的联系人类型定义，用于处理聊天机器人中的好友和群聊联系人信息。该库将联系人分为两类：
-
-- **好友联系人（FriendContact）** - 一对一聊天的好友信息
-- **群聊联系人（GroupContact）** - 群组聊天的群信息
-
-## 特性
-
-- 🎯 **类型安全** - 使用 Rust 类型系统确保联系人信息的正确性
-- 🔧 **便捷宏** - 提供 `contact_friend!` 和 `contact_group!` 宏快速创建联系人
-- 🔄 **统一接口** - 通过 `Contact` trait 提供统一的访问接口
-- 📦 **序列化支持** - 内置 serde 支持
-- 🎨 **生命周期优化** - 使用生命周期参数避免不必要的内存分配
-
-## 安装
-
-在 `Cargo.toml` 中添加依赖：
-
-```toml
-[dependencies]
-puniyu_contact = "*"
-```
+联系人类型定义。
 
 ## 快速开始
 
-### 创建好友联系人
-
 ```rust
-use puniyu_contact::{FriendContact, SceneType};
+use puniyu_contact::{contact, Contact};
 
-// 手动创建
-let friend = FriendContact {
-    scene: &SceneType::Friend,
-    peer: "123456",
-    name: Some("Alice"),
-};
+// 使用统一的 contact 宏
+let friend = contact!(Friend, peer: "123456", name: "Alice");
+let group = contact!(Group, peer: "789012", name: "Dev Team");
 
-// 使用宏创建（仅包含 ID）
-let friend = contact_friend!("123456");
-
-// 使用宏创建（包含 ID 和名称）
-let friend = contact_friend!("123456", "Alice");
+// 统一访问
+println!("联系人 ID: {}", friend.peer());
+println!("名称: {:?}", friend.name());
 ```
 
-### 创建群聊联系人
+## 类型
+
+- `FriendContact` - 好友联系人
+- `GroupContact` - 群聊联系人
+- `ContactType` - 统一联系人枚举
+- `Contact` trait - 统一访问接口
+
+详细文档见 [docs.rs](https://docs.rs/puniyu_contact)
+
+## 许可证
+
+[LGPL-3.0](../../LICENSE)
 
 ```rust
 use puniyu_contact::{GroupContact, SceneType};
@@ -116,6 +96,22 @@ pub trait Contact {
 
 ## 宏使用
 
+### contact! 宏（推荐）
+
+统一的联系人创建宏，根据类型自动创建相应的联系人。
+
+```rust
+use puniyu_contact::contact;
+
+// 创建好友联系人
+let friend = contact!(Friend, peer: "123456");
+let friend = contact!(Friend, peer: "123456", name: "Alice");
+
+// 创建群聊联系人
+let group = contact!(Group, peer: "789012");
+let group = contact!(Group, peer: "789012", name: "Dev Team");
+```
+
 ### contact_friend! 宏
 
 快速创建好友联系人的便捷宏。
@@ -155,6 +151,18 @@ let group = contact_group!(
     name: "Dev Team",
 );
 ```
+
+### 宏对比
+
+| 宏 | 支持位置参数 | 支持命名字段 | 类型指定 |
+|----|------------|------------|---------|
+| `contact!` | ❌ | ✅ | 显式（Friend/Group） |
+| `contact_friend!` | ✅ | ✅ | 隐式（Friend） |
+| `contact_group!` | ✅ | ✅ | 隐式（Group） |
+
+**选择建议：**
+- 需要动态类型或统一接口：使用 `contact!`
+- 类型固定且需要简洁语法：使用 `contact_friend!` 或 `contact_group!`
 
 ## 完整示例
 
@@ -264,12 +272,14 @@ if let Some(friend) = contact.as_friend() {
 优先使用宏而不是手动构建：
 
 ```rust
-// 推荐
+// 推荐：使用统一宏
+let friend = contact!(Friend, peer: "123456", name: "Alice");
+
+// 推荐：使用专用宏（更简洁）
 let friend = contact_friend!("123456", "Alice");
 
-// 不推荐
+// 不推荐：手动构建
 let friend = FriendContact {
-    scene: SceneType::Friend,
     peer: "123456",
     name: Some("Alice"),
 };
@@ -285,7 +295,25 @@ fn send_message<C: Contact>(contact: &C, message: &str) {
 }
 ```
 
-### 3. 生命周期管理
+### 3. 根据场景选择合适的宏
+
+```rust
+use puniyu_contact::{contact, contact_friend};
+
+// 场景1：类型在编译时已知，使用专用宏更简洁
+let friend = contact_friend!("123456", "Alice");
+
+// 场景2：需要统一处理或类型来自变量，使用 contact! 宏
+fn create_contact(is_friend: bool, id: &str, name: &str) -> ContactType {
+    if is_friend {
+        contact!(Friend, peer: id, name: name).into()
+    } else {
+        contact!(Group, peer: id, name: name).into()
+    }
+}
+```
+
+### 4. 生命周期管理
 
 注意联系人的生命周期，确保引用的数据有效：
 

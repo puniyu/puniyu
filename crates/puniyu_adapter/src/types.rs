@@ -1,9 +1,19 @@
 //! 类型定义模块
 //!
 //! 重新导出 `puniyu_adapter_core` 的类型，并提供适配器 ID 类型。
-
 #[doc(inline)]
-pub use puniyu_adapter_core::types::*;
+pub use puniyu_adapter_core::types::account::*;
+#[doc(inline)]
+pub use puniyu_adapter_core::types::friend::*;
+#[doc(inline)]
+pub use puniyu_adapter_core::types::group::*;
+#[doc(inline)]
+pub use puniyu_adapter_core::types::info::{
+	AdapterCommunication, AdapterInfo, AdapterInfoBuilder, AdapterPlatform, AdapterProtocol,
+	AdapterStandard,
+};
+#[doc(inline)]
+pub use puniyu_adapter_core::types::message::*;
 
 /// 适配器 ID
 ///

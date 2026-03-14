@@ -1,6 +1,3 @@
-mod option;
-
-use option::BotOption;
 use puniyu_common::read_config;
 use puniyu_path::CONFIG_DIR;
 use serde::{Deserialize, Serialize};
@@ -8,6 +5,7 @@ use std::{
 	collections::HashMap,
 	sync::{Arc, LazyLock, RwLock},
 };
+use crate::BotOption;
 
 pub(crate) static BOT_CONFIG: LazyLock<Arc<RwLock<BotConfig>>> = LazyLock::new(|| {
 	Arc::new(RwLock::new(read_config(CONFIG_DIR.as_path(), "bot").unwrap_or_default()))

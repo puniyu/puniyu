@@ -1,6 +1,6 @@
 use crate::BotContext;
 use bytes::Bytes;
-use puniyu_adapter_core::types::SendMsgType;
+use puniyu_adapter_core::types::message::SendMsgType;
 use puniyu_bot::Bot;
 use puniyu_command_core::ArgValue;
 use puniyu_config::Config;

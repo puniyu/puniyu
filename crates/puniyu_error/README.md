@@ -24,10 +24,10 @@
 puniyu_error = "*"
 
 # 仅启用配置错误
-puniyu_error = { version = "*", features = ["config"], default-features = false }
+puniyu_error = { VERSION = "*", features = ["config"], default-features = false }
 
 # 仅启用注册表错误
-puniyu_error = { version = "*", features = ["registry"], default-features = false }
+puniyu_error = { VERSION = "*", features = ["registry"], default-features = false }
 ```
 
 ## 快速开始

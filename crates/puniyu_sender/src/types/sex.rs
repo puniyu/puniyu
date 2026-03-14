@@ -50,15 +50,13 @@ use strum::{Display, EnumString, IntoStaticStr};
 	Serialize,
 )]
 #[serde(rename_all = "lowercase")]
+#[strum(serialize_all = "lowercase")]
 pub enum Sex {
 	/// 男性
-	#[strum(serialize = "male")]
 	Male,
 	/// 女性
-	#[strum(serialize = "female")]
 	Female,
 	/// 未知性别
-	#[strum(serialize = "unknow")]
 	#[default]
 	Unknown,
 }

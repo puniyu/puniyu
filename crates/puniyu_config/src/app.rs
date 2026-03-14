@@ -1,21 +1,13 @@
-mod adapter;
-mod friend;
-mod group;
-mod logger;
-mod server;
-
-pub use adapter::AdapterConfig;
-pub use friend::FriendConfig;
-pub use group::GroupConfig;
-pub use logger::LoggerConfig;
+use std::path::PathBuf;
 use puniyu_common::read_config;
-use puniyu_path::CONFIG_DIR;
+use puniyu_path::config_dir;
 use serde::{Deserialize, Serialize};
-pub use server::ServerConfig;
 use std::sync::{Arc, LazyLock, RwLock};
+use crate::{AdapterConfig, LoggerConfig, ServerConfig, GroupConfig, FriendConfig};
 
+static CONFIG_PATH: LazyLock<PathBuf> = LazyLock::new(|| config_dir().join("app.yml"));
 pub(crate) static APP_CONFIG: LazyLock<Arc<RwLock<AppConfig>>> = LazyLock::new(|| {
-	Arc::new(RwLock::new(read_config::<AppConfig>(CONFIG_DIR.as_path(), "app").unwrap_or_default()))
+	Arc::new(RwLock::new(read_config::<AppConfig>(config_dir().as_path(), "app").unwrap_or_default()))
 });
 
 fn default_master() -> Vec<String> {
@@ -159,3 +151,4 @@ impl AppConfig {
 		self.prefix.clone()
 	}
 }
+

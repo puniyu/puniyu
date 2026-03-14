@@ -39,28 +39,28 @@ pub trait Sender: Send + Sync {
 	///
 	/// # 返回值
 	///
-	/// 返回发送者的唯一标识符。
+	/// 返回发送者的唯一标识符 [`&str`]。
 	fn user_id(&self) -> &str;
 
 	/// 获取发送者昵称
 	///
 	/// # 返回值
 	///
-	/// 返回发送者的昵称，如果未设置则返回 `None`。
+	/// 返回发送者的昵称 [`Option<&str>`]，如果未设置则返回 [`None`]。
 	fn name(&self) -> Option<&str>;
 
 	/// 获取发送者性别
 	///
 	/// # 返回值
 	///
-	/// 返回发送者的性别信息。
+	/// 返回发送者的性别信息 &[`Sex`]。
 	fn sex(&self) -> &Sex;
 
 	/// 获取发送者年龄
 	///
 	/// # 返回值
 	///
-	/// 返回发送者的年龄，如果未设置则返回 `None`。
+	/// 返回发送者的年龄 [`Option<u32>`]，如果未设置则返回 [`None`]。
 	fn age(&self) -> Option<u32>;
 }
 
@@ -79,5 +79,14 @@ impl<T: Sender> Sender for &T {
 
 	fn age(&self) -> Option<u32> {
 		(**self).age()
+	}
+}
+
+impl PartialEq for dyn Sender {
+	fn eq(&self, other: &Self) -> bool {
+		self.user_id() == other.user_id()
+			&& self.name() == other.name()
+			&& self.sex() == other.sex()
+			&& self.age() == other.age()
 	}
 }

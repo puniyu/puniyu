@@ -1,5 +1,6 @@
-#[macro_export]
-macro_rules! info {
+#![allow(unused_macros, unused_imports)]
+
+macro_rules! server_info {
     ($($arg:tt)*) => {
         {
             use ::puniyu_logger::owo_colors::OwoColorize;
@@ -9,8 +10,7 @@ macro_rules! info {
     };
 }
 
-#[macro_export]
-macro_rules! warn {
+macro_rules! server_warn {
     ($($arg:tt)*) => {
         {
             use ::puniyu_logger::owo_colors::OwoColorize;
@@ -20,8 +20,7 @@ macro_rules! warn {
     };
 }
 
-#[macro_export]
-macro_rules! error {
+macro_rules! server_error {
     ($($arg:tt)*) => {
         {
             use ::puniyu_logger::owo_colors::OwoColorize;
@@ -31,8 +30,7 @@ macro_rules! error {
     };
 }
 
-#[macro_export]
-macro_rules! debug {
+macro_rules! server_debug {
     ($($arg:tt)*) => {
         {
             use ::puniyu_logger::owo_colors::OwoColorize;
@@ -41,3 +39,6 @@ macro_rules! debug {
         }
     };
 }
+pub(crate) use {
+	server_debug as debug, server_error as error, server_info as info, server_warn as warn,
+};

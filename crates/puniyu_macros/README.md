@@ -225,7 +225,7 @@ pub fn routes(cfg: &mut ServiceConfig) {
 ```toml
 [package]
 name = "my_plugin"
-version = "0.1.0"
+VERSION = "0.1.0"
 authors = ["Your Name <your.email@example.com>"]
 ```
 
@@ -247,10 +247,10 @@ authors = ["Your Name <your.email@example.com>"]
 puniyu_macros = "0.4.1"
 
 # 只使用适配器宏
-puniyu_macros = { version = "0.4.1", default-features = false, features = ["adapter"] }
+puniyu_macros = { VERSION = "0.4.1", default-features = false, features = ["adapter"] }
 
 # 使用插件和适配器宏
-puniyu_macros = { version = "0.4.1", features = ["adapter"] }
+puniyu_macros = { VERSION = "0.4.1", features = ["adapter"] }
 ```
 
 ## 错误处理
