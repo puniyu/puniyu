@@ -280,7 +280,7 @@ async fn execute_hooks(hooks: &[Box<dyn Hook>], ctx: &EventContext) {
 
 ```toml
 [dependencies]
-puniyu_hook = { version = "*", features = ["registry"] }
+puniyu_hook = { VERSION = "*", features = ["registry"] }
 ```
 
 启用后可以使用 `HookRegistry` 来管理多个钩子实例。

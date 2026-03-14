@@ -17,7 +17,7 @@
 //! let account = AccountInfo {
 //!     uin: "123456789".to_string(),
 //!     name: "MyBot".to_string(),
-//!     avatar: "https://example.com/avatar.jpg".to_string(),
+//!     avatar: bytes::Bytes::from("image data"),
 //! };
 //! ```
 //!
@@ -29,10 +29,11 @@
 //! let account = account_info!(
 //!     uin: "123456789",
 //!     name: "MyBot",
-//!     avatar: "https://example.com/avatar.jpg",
+//!     avatar: bytes::Bytes::from("image data"),
 //! );
 //! ```
 
+use bytes::Bytes;
 use derive_builder::Builder;
 use serde::{Deserialize, Serialize};
 
@@ -44,7 +45,7 @@ use serde::{Deserialize, Serialize};
 ///
 /// - `uin` - Bot 账号的 UIN（用户识别号）
 /// - `name` - Bot 账号的昵称
-/// - `avatar` - Bot 账号的头像 URL 地址
+/// - `avatar` - Bot 账号的头像数据（Bytes 类型）
 ///
 /// # 示例
 ///
@@ -54,7 +55,7 @@ use serde::{Deserialize, Serialize};
 /// let account = AccountInfo {
 ///     uin: "123456789".to_string(),
 ///     name: "MyBot".to_string(),
-///     avatar: "https://example.com/avatar.jpg".to_string(),
+///     avatar: bytes::Bytes::from("image data"),
 /// };
 ///
 /// assert_eq!(account.uin, "123456789");
@@ -63,12 +64,12 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Default, Clone, PartialEq, Eq, Serialize, Deserialize, Builder)]
 #[builder(setter(into))]
 pub struct AccountInfo {
-	/// Bot 账号的 UIN（用户识别号）
+	/// Bot 账号的 UIN
 	pub uin: String,
 	/// Bot 账号的昵称
 	pub name: String,
-	/// Bot 账号的头像 URL 地址
-	pub avatar: String,
+	/// Bot 账号的头像数据
+	pub avatar: Bytes,
 }
 
 /// 构建账户信息宏
@@ -85,7 +86,7 @@ pub struct AccountInfo {
 /// let account = account_info!(
 ///     uin: "123456789",
 ///     name: "MyBot",
-///     avatar: "https://example.com/avatar.jpg",
+///     avatar: bytes::Bytes::from("image data"),
 /// );
 /// ```
 ///
@@ -99,7 +100,7 @@ pub struct AccountInfo {
 /// let account = account_info!(
 ///     "123456789",
 ///     "MyBot",
-///     "https://example.com/avatar.jpg"
+///     bytes::Bytes::from("image data")
 /// );
 /// ```
 ///
@@ -114,11 +115,11 @@ pub struct AccountInfo {
 /// let account = account_info!(
 ///     uin: "123456789",
 ///     name: "MyBot",
-///     avatar: "",
+///     avatar: bytes::Bytes::new(),
 /// );
 ///
 /// // 位置参数形式
-/// let account = account_info!("123456789", "MyBot", "");
+/// let account = account_info!("123456789", "MyBot", bytes::Bytes::new());
 /// ```
 #[macro_export]
 macro_rules! account_info {

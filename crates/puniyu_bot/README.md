@@ -27,7 +27,7 @@ puniyu_bot = "*"
 
 ```toml
 [dependencies]
-puniyu_bot = { version = "*", features = ["registry"] }
+puniyu_bot = { VERSION = "*", features = ["registry"] }
 ```
 
 ## 快速开始
@@ -47,7 +47,7 @@ let adapter = adapter_info!(
     name: "my_adapter",
     platform: AdapterPlatform::QQ,
     protocol: AdapterProtocol::Console,
-    version: Version::new(1, 0, 0),
+    VERSION: Version::new(1, 0, 0),
 );
 
 // 创建 API 实例
@@ -272,7 +272,7 @@ let adapter = adapter_info!(
     name: "napcat_adapter",
     platform: AdapterPlatform::QQ,
     protocol: AdapterProtocol::NapCat,
-    version: Version::new(1, 0, 0),
+    VERSION: Version::new(1, 0, 0),
 );
 
 let api = AdapterApi::default();
@@ -312,7 +312,7 @@ println!("适配器: {}", bot.adapter().name);
 
 ```toml
 [dependencies]
-puniyu_bot = { version = "*", features = ["registry"] }
+puniyu_bot = { VERSION = "*", features = ["registry"] }
 ```
 
 启用后可以使用 `BotRegistry` 来管理多个机器人实例。

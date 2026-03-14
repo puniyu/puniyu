@@ -51,18 +51,15 @@ use strum::{Display, EnumString, IntoStaticStr};
 	Serialize,
 )]
 #[serde(rename_all = "lowercase")]
+#[strum(serialize_all = "lowercase")]
 pub enum Role {
 	/// 群主
-	#[strum(serialize = "owner")]
 	Owner,
 	/// 管理员
-	#[strum(serialize = "admin")]
 	Admin,
 	/// 普通成员
-	#[strum(serialize = "member")]
 	Member,
 	/// 未知角色
-	#[strum(serialize = "unknow")]
 	#[default]
 	Unknown,
 }

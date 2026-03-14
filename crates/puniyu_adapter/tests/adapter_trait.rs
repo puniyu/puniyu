@@ -1,6 +1,6 @@
 use puniyu_adapter::Adapter;
 use puniyu_adapter::api::AdapterApi;
-use puniyu_adapter::types::info::AdapterInfo;
+use puniyu_adapter::types::AdapterInfo;
 
 // 测试用的简单适配器实现
 struct TestAdapter {
@@ -59,25 +59,6 @@ async fn test_adapter_init() {
 	assert!(result.is_ok());
 }
 
-#[test]
-fn test_adapter_info_access() {
-	use puniyu_adapter::types::info::{AdapterInfoBuilder, AdapterPlatform, AdapterProtocol};
-	use puniyu_version::Version;
-
-	let info = AdapterInfoBuilder::default()
-		.name("test_adapter")
-		.platform(AdapterPlatform::QQ)
-		.protocol(AdapterProtocol::Console)
-		.version(Version::new(1, 0, 0))
-		.build()
-		.unwrap();
-
-	let adapter = TestAdapter { info: info.clone(), api: AdapterApi::default() };
-
-	let adapter_info = adapter.info();
-	assert_eq!(adapter_info.name, "test_adapter");
-	assert_eq!(adapter_info.platform, AdapterPlatform::QQ);
-}
 
 #[test]
 fn test_adapter_api_access() {

@@ -213,19 +213,10 @@ use std::sync::Arc;
 /// # 特性
 ///
 /// - 接受 `&mut ServiceConfig` 参数，用于配置服务
-/// - 使用 `Fn`，表示配置函数可以被多次调用（虽然通常只调用一次）
 /// - 实现 `Send + Sync`，可在多线程环境中安全使用
 /// - 使用 `Arc` 包装，支持动态分发和高效克隆
 /// - 可以在多个地方共享和调用同一个配置函数
 ///
-/// # 为什么使用 Fn 而不是 FnOnce
-///
-/// 虽然服务器配置通常只需要执行一次，但使用 `Fn` 有以下优势：
-///
-/// - **简化调用** - 可以直接通过 `Arc` 调用，无需 `try_unwrap`
-/// - **灵活性** - 允许在测试或特殊场景下多次调用
-/// - **共享友好** - 与 `Arc` 的共享语义更匹配
-/// - **避免复杂性** - `FnOnce` 在 `Arc` 中调用需要处理不定大小类型
 ///
 /// # Arc 的作用
 ///
@@ -415,7 +406,8 @@ impl Debug for ServerInfo {
 		f.debug_struct("ServerInfo").field("source", &self.source).finish()
 	}
 }
-
+unsafe impl Send for ServerInfo {}
+unsafe impl Sync for ServerInfo {}
 /// 服务器标识符
 ///
 /// 用于标识服务器的枚举类型，可以通过索引或来源类型来标识服务器。

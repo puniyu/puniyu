@@ -1,12 +1,13 @@
 use crate::BaseResponse;
-use crate::{api, info, middleware};
+use crate::{api, middleware};
 use actix_web::dev::ServerHandle;
 use actix_web::middleware::{NormalizePath, TrailingSlash};
 use actix_web::{App, HttpResponse, HttpServer, web};
-use puniyu_common::APP_NAME;
+use puniyu_common::app::app_name;
 
 use std::net::IpAddr;
 use std::sync::{Arc, LazyLock, Mutex};
+use crate::logger::info;
 
 static SERVER_HANDLE: LazyLock<Arc<Mutex<Option<ServerHandle>>>> =
 	LazyLock::new(|| Arc::new(Mutex::new(None)));
@@ -38,8 +39,7 @@ pub async fn run_server(host: IpAddr, port: u16) -> std::io::Result<()> {
 			.wrap(middleware::AccessLog)
 			.wrap(NormalizePath::new(TrailingSlash::Trim))
 			.service(
-				#[allow(clippy::unwrap_used)]
-				web::resource("/").to(|| async { format!("welcome {}", APP_NAME.get().unwrap()) }),
+				web::resource("/").to(|| async { format!("welcome {}", app_name()) }),
 			)
 			.service(web::resource("/logo").route(web::get().to(logo)))
 			.service(web::resource("/logo.png").route(web::get().to(logo)))

@@ -88,7 +88,7 @@ pub fn command(args: TokenStream, item: TokenStream) -> TokenStream {
 		.into();
 	}
 
-	// 检查返回值类型是否为 HandlerResult<CommandAction>
+	// 检查返回值类型是否为 Result<CommandAction>
 	if let syn::ReturnType::Type(_, return_ty) = &fn_sig.output {
 		let is_valid_return = match &**return_ty {
 			syn::Type::Path(type_path) => {
@@ -96,7 +96,7 @@ pub fn command(args: TokenStream, item: TokenStream) -> TokenStream {
 					return syn::Error::new_spanned(
 						return_ty,
 						format!(
-							"function `{}` must return `HandlerResult<CommandAction>`, found `{}`",
+							"function `{}` must return `Result<CommandAction>`, found `{}`",
 							fn_name,
 							quote::quote! { #return_ty }
 						),

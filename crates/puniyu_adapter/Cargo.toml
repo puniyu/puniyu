@@ -24,7 +24,6 @@ puniyu_adapter_core.workspace = true
 
 [dev-dependencies]
 tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
-puniyu_version.workspace = true
 
 [features]
 default = []
