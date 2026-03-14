@@ -24,7 +24,7 @@ puniyu_path.workspace = true
 puniyu_dispatch.workspace = true
 const-str.workspace = true
 
-figlet-rs = "0.1.5"
+figlet-rs = "1.0.0"
 
 puniyu_config = { workspace = true, features = ["registry", "watcher"] }
 puniyu_error = { workspace = true, features = ["registry"] }
