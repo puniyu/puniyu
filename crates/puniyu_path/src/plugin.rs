@@ -1,7 +1,6 @@
 use std::path::PathBuf;
-use std::sync::LazyLock;
 
-pub(crate) const FOLDER_NAME:&str = "plugins";
+pub(crate) const NAME:&str = "plugins";
 
 /// 插件配置文件夹路径
 ///
@@ -9,29 +8,24 @@ pub(crate) const FOLDER_NAME:&str = "plugins";
 ///
 /// # 示例
 /// ```
-/// use puniyu_common::path::PLUGIN_CONFIG_DIR;
-/// let plugin_config_dir = PLUGIN_CONFIG_DIR.as_path();
+/// use puniyu_path::plugin;
+/// let plugin_config = plugin::config_dir();
 /// ```
-pub static CONFIG_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
-    let mut path = crate::CONFIG_DIR.to_path_buf();
-    path.push(FOLDER_NAME);
-    path
-});
+pub fn config_dir() -> PathBuf {
+    crate::config_dir().join(NAME)
+}
 
 /// 插件数据文件夹
 ///
 /// # 示例
 ///
 /// ```
-/// use puniyu_common::path::PLUGIN_DATA_DIR;
-/// let plugin_data_dir = PLUGIN_DATA_DIR.as_path();
+/// use puniyu_path::plugin;
+/// let plugin_data = plugin::data_dir();
 /// ```
-pub static DATA_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
-    let mut path = crate::DATA_DIR.to_path_buf();
-    path.push(FOLDER_NAME);
-    path
-});
-
+pub fn data_dir() -> PathBuf {
+    crate::data_dir().join(NAME)
+}
 
 /// 插件资源文件夹路径
 ///
@@ -39,15 +33,12 @@ pub static DATA_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
 ///
 /// # 示例
 /// ```
-/// use puniyu_common::path::PLUGIN_RESOURCE_DIR;
-/// let plugin_resource_dir = PLUGIN_RESOURCE_DIR.as_path();
+/// use puniyu_path::plugin;
+/// let plugin_resource = plugin::resource_dir();
 /// ```
-pub static RESOURCE_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
-    let mut path = crate::RESOURCE_DIR.to_path_buf();
-    path.push("plugins");
-    path
-});
-
+pub fn resource_dir() -> PathBuf {
+    crate::resource_dir().join(NAME)
+}
 
 /// 插件临时文件夹路径
 ///
@@ -55,11 +46,9 @@ pub static RESOURCE_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
 ///
 /// # 示例
 /// ```
-/// use puniyu_common::path::PLUGIN_TEMP_DIR;
-/// let plugin_temp_dir = PLUGIN_TEMP_DIR.as_path();
+/// use puniyu_path::plugin;
+/// let plugin_temp = plugin::temp_dir();
 /// ```
-pub static TEMP_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
-    let mut path = crate::TEMP_DIR.to_path_buf();
-    path.push(FOLDER_NAME);
-    path
-});
+pub fn temp_dir() -> PathBuf {
+    crate::temp_dir().join(NAME)
+}

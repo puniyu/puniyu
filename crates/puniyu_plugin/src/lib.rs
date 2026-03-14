@@ -22,11 +22,7 @@ pub trait Plugin: Send + Sync + 'static {
 	/// 插件名称
 	fn name(&self) -> &'static str;
 	/// 插件版本
-	fn version(&self) -> &'static Version;
-
-	/// api版本
-	fn abi_version(&self) -> &'static Version;
-
+	fn version(&self) -> Version;
 	/// 插件描述
 	fn description(&self) -> Option<&'static str>;
 	/// 插件作者

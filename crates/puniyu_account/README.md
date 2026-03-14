@@ -4,7 +4,7 @@
 
 ## 概述
 
-`puniyu_account` 提供了机器人账户信息的结构定义，用于存储和管理机器人的基本信息，包括 UIN（用户识别号）、昵称和头像。
+`puniyu_account` 提供了机器人账户信息的结构定义，用于存储和管理机器人的基本信息，包括 UIN、昵称和头像。
 
 ## 特性
 
@@ -28,11 +28,12 @@ puniyu_account = "*"
 
 ```rust
 use puniyu_account::AccountInfo;
+use bytes::Bytes;
 
 let account = AccountInfo {
     uin: "123456789".to_string(),
     name: "MyBot".to_string(),
-    avatar: "https://example.com/avatar.jpg".to_string(),
+    avatar: Bytes::from("image data"),
 };
 
 println!("Bot UIN: {}", account.uin);
@@ -43,11 +44,12 @@ println!("Bot Name: {}", account.name);
 
 ```rust
 use puniyu_account::account_info;
+use bytes::Bytes;
 
 let account = account_info!(
     uin: "123456789",
     name: "MyBot",
-    avatar: "https://example.com/avatar.jpg",
+    avatar: Bytes::from("image data"),
 );
 ```
 
@@ -55,13 +57,14 @@ let account = account_info!(
 
 ```rust
 use puniyu_account::AccountInfo;
+use bytes::Bytes;
 
 // 创建空账户信息
 let account = AccountInfo::default();
 
 assert_eq!(account.uin, "");
 assert_eq!(account.name, "");
-assert_eq!(account.avatar, "");
+assert_eq!(account.avatar, Bytes::new());
 ```
 
 ## AccountInfo 结构
@@ -70,7 +73,7 @@ assert_eq!(account.avatar, "");
 | -------- | -------- | ---------------------------- |
 | `uin`    | `String` | Bot 账号的 UIN（用户识别号） |
 | `name`   | `String` | Bot 账号的昵称               |
-| `avatar` | `String` | Bot 账号的头像 URL 地址      |
+| `avatar` | `Bytes`  | Bot 账号的头像数据（字节）   |
 
 ## 宏使用
 
@@ -84,11 +87,12 @@ assert_eq!(account.avatar, "");
 
 ```rust
 use puniyu_account::account_info;
+use bytes::Bytes;
 
 let account = account_info!(
     uin: "123456789",
     name: "MyBot",
-    avatar: "https://example.com/avatar.jpg",
+    avatar: Bytes::from("image data"),
 );
 ```
 
@@ -98,11 +102,12 @@ let account = account_info!(
 
 ```rust
 use puniyu_account::account_info;
+use bytes::Bytes;
 
 let account = account_info!(
     "123456789",
     "MyBot",
-    "https://example.com/avatar.jpg"
+    Bytes::from("image data")
 );
 ```
 
@@ -112,16 +117,17 @@ let account = account_info!(
 
 ```rust
 use puniyu_account::account_info;
+use bytes::Bytes;
 
 // 命名字段形式
 let account = account_info!(
     uin: "123456789",
     name: "MyBot",
-    avatar: "",
+    avatar: Bytes::new(),
 );
 
 // 位置参数形式
-let account = account_info!("123456789", "MyBot", "");
+let account = account_info!("123456789", "MyBot", Bytes::new());
 ```
 
 #### String 类型支持
@@ -130,10 +136,11 @@ let account = account_info!("123456789", "MyBot", "");
 
 ```rust
 use puniyu_account::account_info;
+use bytes::Bytes;
 
 let uin = String::from("123456789");
 let name = String::from("MyBot");
-let avatar = String::from("https://example.com/avatar.jpg");
+let avatar = Bytes::from("image data");
 
 // 命名字段形式
 let account = account_info!(
@@ -152,11 +159,12 @@ let account = account_info!(uin, name, avatar);
 
 ```rust
 use puniyu_account::AccountInfo;
+use bytes::Bytes;
 
 let account = AccountInfo {
     uin: "123456789".to_string(),
     name: "MyBot".to_string(),
-    avatar: "https://example.com/avatar.jpg".to_string(),
+    avatar: Bytes::from("image data"),
 };
 
 // 序列化为 JSON
@@ -172,11 +180,12 @@ assert_eq!(account, deserialized);
 
 ```rust
 use puniyu_account::AccountInfo;
+use bytes::Bytes;
 
 let account1 = AccountInfo {
     uin: "123456789".to_string(),
     name: "MyBot".to_string(),
-    avatar: "https://example.com/avatar.jpg".to_string(),
+    avatar: Bytes::from("image data"),
 };
 
 // 克隆
@@ -187,7 +196,7 @@ assert_eq!(account1, account2);
 let account3 = AccountInfo {
     uin: "987654321".to_string(),
     name: "OtherBot".to_string(),
-    avatar: "https://example.com/other.jpg".to_string(),
+    avatar: Bytes::from("other data"),
 };
 assert_ne!(account1, account3);
 ```

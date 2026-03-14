@@ -22,7 +22,7 @@ Puniyu HTTP 服务器库，提供基于 Actix-Web 的 Web 服务功能。
 ```toml
 [dependencies]
 puniyu_server = "*"
-tokio = { version = "1", features = ["full"] }
+tokio = { VERSION = "1", features = ["full"] }
 ```
 
 ## 快速开始
@@ -158,7 +158,7 @@ load_logo_from_file("resources/logo.png").ok();
 
 ```toml
 [dependencies]
-puniyu_server = { version = "*", features = ["cli"] }
+puniyu_server = { VERSION = "*", features = ["cli"] }
 ```
 
 ### registry
@@ -167,7 +167,7 @@ puniyu_server = { version = "*", features = ["cli"] }
 
 ```toml
 [dependencies]
-puniyu_server = { version = "*", features = ["registry"] }
+puniyu_server = { VERSION = "*", features = ["registry"] }
 ```
 
 使用示例：

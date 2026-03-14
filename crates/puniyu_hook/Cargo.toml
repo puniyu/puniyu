@@ -20,7 +20,7 @@ puniyu_error.workspace = true
 puniyu_event.workspace = true
 serde.workspace = true
 strum.workspace = true
-puniyu_common = { workspace = true, features = ["source"] }
+puniyu_common.workspace = true
 
 [dev-dependencies]
 tokio = { workspace = true, features = ["macros", "rt-multi-thread", "time"] }

@@ -1,4 +1,3 @@
-use puniyu_adapter_core::types::info::AdapterInfo;
 use puniyu_error::registry::Error;
 use std::{
 	collections::HashMap,
@@ -7,17 +6,18 @@ use std::{
 		atomic::{AtomicU64, Ordering},
 	},
 };
+use crate::Adapter;
 
 static ADAPTER_INDEX: AtomicU64 = AtomicU64::new(0);
 
 #[derive(Clone, Default)]
-pub(crate) struct AdapterStore(Arc<RwLock<HashMap<u64, AdapterInfo>>>);
+pub(crate) struct AdapterStore(Arc<RwLock<HashMap<u64, Arc<dyn Adapter>>>>);
 
 impl AdapterStore {
 	pub fn new() -> Self {
 		Self::default()
 	}
-	pub fn insert(&self, adapter: AdapterInfo) -> Result<u64, Error> {
+	pub fn insert(&self, adapter: Arc<dyn  Adapter>) -> Result<u64, Error> {
 		let index = ADAPTER_INDEX.fetch_add(1, Ordering::SeqCst);
 		let mut map = self.0.write().expect("Failed to acquire lock");
 		if map.values().any(|v| v == &adapter) {
@@ -27,12 +27,12 @@ impl AdapterStore {
 		Ok(index)
 	}
 
-	pub fn all(&self) -> Vec<AdapterInfo> {
+	pub fn all(&self) -> Vec<Arc<dyn  Adapter>> {
 		let map = self.0.read().expect("Failed to acquire lock");
 		map.values().cloned().collect()
 	}
 
-	pub fn raw(&self) -> Arc<RwLock<HashMap<u64, AdapterInfo>>> {
+	pub fn raw(&self) -> Arc<RwLock<HashMap<u64, Arc<dyn  Adapter>>>> {
 		self.0.clone()
 	}
 }

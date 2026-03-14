@@ -15,7 +15,7 @@ use crate::Sender;
 ///
 /// - `user_id` - 发送者 ID
 /// - `nick` - 用户昵称（可选）
-/// - `sex` - 性别
+/// - `sex` - 性别，类型为 [`Sex`]
 /// - `age` - 年龄（可选）
 ///
 /// # 示例
@@ -31,7 +31,7 @@ use crate::Sender;
 /// };
 /// ```
 #[derive(Debug, Default, Clone, PartialEq, Deserialize, Serialize, Builder)]
-#[builder(setter(into))]
+#[builder(setter(into), pattern = "owned")]
 pub struct FriendSender<'s> {
 	/// 发送者id
 	pub user_id: &'s str,
@@ -90,11 +90,12 @@ impl<'s> Sender for FriendSender<'s> {
 #[macro_export]
 macro_rules! sender_friend {
     ( $( $key:ident : $value:expr ),+ $(,)? ) => {{
-        let mut builder = $crate::FriendSenderBuilder::default();
-        $(
-            builder.$key($value);
-        )*
-        builder.build().expect("Failed to build FriendSender")
+        $crate::FriendSenderBuilder::default()
+            $(
+                .$key($value)
+            )*
+            .build()
+            .expect("Failed to build FriendSender")
     }};
 	($user_id:expr) => {{
 		$crate::FriendSenderBuilder::default()

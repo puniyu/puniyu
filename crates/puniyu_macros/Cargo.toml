@@ -1,6 +1,6 @@
 [package]
 name = "puniyu_macros"
-version = "0.7.6"
+version = "0.7.8"
 description = "puniyu crate for proc-macro"
 readme = "README.md"
 authors.workspace = true

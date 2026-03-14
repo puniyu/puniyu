@@ -1,7 +1,6 @@
 use std::path::PathBuf;
-use std::sync::LazyLock;
 
-pub(crate) const FOLDER_NAME: &str = "adapters";
+pub(crate) const NAME: &str = "adapters";
 
 /// 适配器配置文件夹路径
 ///
@@ -9,28 +8,24 @@ pub(crate) const FOLDER_NAME: &str = "adapters";
 ///
 /// # 示例
 /// ```
-/// use puniyu_common::path::ADAPTER_CONFIG_DIR;
-/// let adapter_config_dir = ADAPTER_CONFIG_DIR.as_path();
+/// use puniyu_path::adapter;
+/// let adapter_config = adapter::config_dir();
 /// ```
-pub static CONFIG_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
-	let mut path = crate::CONFIG_DIR.to_path_buf();
-	path.push(FOLDER_NAME);
-	path
-});
+pub fn config_dir() -> PathBuf {
+	crate::config_dir().join(NAME)
+}
 
 /// 适配器数据文件夹
 ///
 /// # 示例
 ///
 /// ```
-/// use puniyu_common::path::ADAPTER_DATA_DIR;
-/// let adapter_data_dir = ADAPTER_DATA_DIR.as_path();
+/// use puniyu_path::adapter;
+/// let adapter_data = adapter::data_dir();
 /// ```
-pub static DATA_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
-	let mut path = crate::DATA_DIR.to_path_buf();
-	path.push(FOLDER_NAME);
-	path
-});
+pub fn data_dir() -> PathBuf {
+	crate::data_dir().join(NAME)
+}
 
 /// 适配器资源文件夹路径
 ///
@@ -38,27 +33,22 @@ pub static DATA_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
 ///
 /// # 示例
 /// ```
-/// use puniyu_common::path::ADAPTER_RESOURCE_DIR;
-/// let adapter_resource_dir = ADAPTER_RESOURCE_DIR.as_path();
+/// use puniyu_path::adapter;
+/// let adapter_resource = adapter::resource_dir();
 /// ```
-pub static RESOURCE_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
-	let mut path = crate::RESOURCE_DIR.to_path_buf();
-	path.push(FOLDER_NAME);
-	path
-});
-
+pub fn resource_dir() -> PathBuf {
+	crate::resource_dir().join(NAME)
+}
 
 /// 适配器临时文件夹路径
 ///
 /// 存放适配器临时文件
 ///
-/// ## 示例
+/// # 示例
 /// ```
-/// use puniyu_common::path::ADAPTER_TEMP_DIR;
-/// let adapter_temp_dir = ADAPTER_TEMP_DIR.as_path();
+/// use puniyu_path::adapter;
+/// let adapter_temp = adapter::temp_dir();
 /// ```
-pub static TEMP_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
-	let mut path = crate::TEMP_DIR.to_path_buf();
-	path.push(FOLDER_NAME);
-	path
-});
+pub fn temp_dir() -> PathBuf {
+	crate::temp_dir().join(NAME)
+}

@@ -1,11 +1,8 @@
 #[cfg(feature = "config")]
 mod config;
+
 #[cfg(feature = "config")]
 pub use config::config;
-#[cfg(feature = "adapter")]
-mod api;
-#[cfg(feature = "adapter")]
-pub use api::api;
 #[cfg(feature = "hook")]
 mod hook;
 #[cfg(feature = "hook")]
@@ -14,84 +11,47 @@ pub use hook::hook;
 mod server;
 #[cfg(feature = "server")]
 pub use server::server;
-mod info;
+
+
+use crate::common::{validate_async, validate_return_type};
 
 #[cfg(feature = "adapter")]
-#[derive(Debug, darling::FromMeta)]
-struct AdapterArg {
-	info: syn::Path,
-}
-
-#[cfg(feature = "adapter")]
-impl quote::ToTokens for AdapterArg {
-	fn to_tokens(&self, tokens: &mut proc_macro2::TokenStream) {
-		self.info.to_tokens(tokens);
-	}
-}
-#[cfg(feature = "adapter")]
-pub fn adapter(
-	args: proc_macro::TokenStream,
-	item: proc_macro::TokenStream,
-) -> proc_macro::TokenStream {
-	use darling::ast::NestedMeta;
-	use darling::{Error, FromMeta};
+pub fn adapter(attr: proc_macro::TokenStream, item: proc_macro::TokenStream) -> proc_macro::TokenStream {
 	use proc_macro2::Ident;
 	use quote::quote;
 	use syn::{ItemFn, parse_macro_input};
+	use darling::FromMeta;
+	use darling::ast::NestedMeta;
 
-	let attr_args = match NestedMeta::parse_meta_list(args.into()) {
+	#[derive(Debug, FromMeta)]
+	struct AdapterArgs {
+		info: syn::Path,
+		api: syn::Path,
+	}
+
+	let attr_args = match NestedMeta::parse_meta_list(attr.into()) {
 		Ok(v) => v,
-		Err(e) => return proc_macro::TokenStream::from(Error::from(e).write_errors()),
+		Err(e) => return proc_macro::TokenStream::from(darling::Error::from(e).write_errors()),
 	};
+	let args = match AdapterArgs::from_list(&attr_args) {
+		Ok(v) => v,
+		Err(e) => return proc_macro::TokenStream::from(e.write_errors()),
+	};
+
 	let item = parse_macro_input!(item as ItemFn);
 	let fn_sig = &item.sig;
 	let fn_name = &fn_sig.ident;
 	let fn_block = &item.block;
-	let is_async = fn_sig.asyncness.is_some();
-	if !is_async {
-		return syn::Error::new_spanned(fn_sig, "Function must be async").to_compile_error().into();
-	}
+	validate_async(fn_sig);
+	validate_return_type(fn_sig, "Result");
 
-	match &fn_sig.output {
-		syn::ReturnType::Type(_, return_type) => {
-			let is_adapter_api = if let syn::Type::Path(type_path) = &**return_type {
-				if let Some(segment) = type_path.path.segments.last() {
-					segment.ident == "HandlerResult"
-				} else {
-					false
-				}
-			} else {
-				false
-			};
-			if !is_adapter_api {
-				return syn::Error::new_spanned(
-					return_type,
-					"Function must return `HandlerResult` type",
-				)
-				.to_compile_error()
-				.into();
-			}
-		}
-		syn::ReturnType::Default => {
-			return syn::Error::new_spanned(fn_sig, "Function must have an explicit return type")
-				.to_compile_error()
-				.into();
-		}
-	}
-
-	let args = match AdapterArg::from_list(&attr_args) {
-		Ok(v) => v,
-		Err(e) => return proc_macro::TokenStream::from(e.write_errors()),
-	};
-	let adapter_info = quote! {
-		(#args.info)()
-	};
-
+	let info = &args.info;
+	let api = &args.api;
 	let adapter_name = quote! { env!("CARGO_PKG_NAME") };
 	let struct_name = Ident::new("Adapter", proc_macro2::Span::call_site());
 	let init_call = if fn_block.stmts.is_empty() {
 		quote! {
-			<Self as ::puniyu_adapter::__private::Adapter>::init(self)
+			<Self as ::puniyu_adapter_api::__private::Adapter>::init(self)
 		}
 	} else {
 		quote! {
@@ -106,50 +66,41 @@ pub fn adapter(
 
 		pub struct #struct_name;
 
-		#[::puniyu_adapter::__private::async_trait]
-		impl ::puniyu_adapter::__private::Adapter for #struct_name {
-			fn info(&self) -> ::puniyu_adapter::__private::AdapterInfo {
-				#adapter_info
+		#[::puniyu_adapter_api::__private::async_trait]
+		impl ::puniyu_adapter_api::__private::Adapter for #struct_name {
+			fn info(&self) -> ::puniyu_adapter_api::AdapterInfo {
+				#info()
 			}
 
-			fn api(&self) -> ::puniyu_adapter::__private::AdapterApi {
-				let api = ::puniyu_adapter::__private::inventory::iter::<crate::ApiRegistry>
-					.into_iter()
-					.find(|registry| registry.adapter_name == #adapter_name);
-
-				match api {
-					Some(registry) => (registry.builder)(),
-					None => {
-						compile_error!(concat!("No ApiRegistry found for adapter: ", env!("CARGO_PKG_NAME")));
-					}
-				}
+			fn api(&self) -> ::puniyu_adapter_api::AdapterApi {
+				#api()
 			}
 
-			fn config(&self) -> Vec<Box<dyn ::puniyu_adapter::__private::Config>> {
-				::puniyu_adapter::__private::inventory::iter::<crate::ConfigRegistry>
+			fn config(&self) -> Vec<::std::sync::Arc<dyn ::puniyu_adapter_api::config::Config>> {
+				::puniyu_adapter_api::__private::inventory::iter::<crate::ConfigRegistry>
 					.into_iter()
 					.filter(|registry| registry.adapter_name == #adapter_name)
 					.map(|registry| (registry.builder)())
 					.collect()
 			}
 
-			fn hooks(&self) -> Vec<Box<dyn ::puniyu_adapter::__private::Hook>> {
-				::puniyu_adapter::__private::inventory::iter::<crate::HookRegistry>
+			fn hooks(&self) -> Vec<::std::sync::Arc<dyn ::puniyu_adapter_api::hook::Hook>> {
+				::puniyu_adapter_api::__private::inventory::iter::<crate::HookRegistry>
 					.into_iter()
 					.filter(|registry| registry.adapter_name == #adapter_name)
 					.map(|registry| (registry.builder)())
 					.collect()
 			}
 
-			fn server(&self) -> Option<::puniyu_adapter::__private::ServerFunction> {
-				let servers: Vec<_> = ::puniyu_adapter::__private::inventory::iter::<crate::ServerRegistry>
+			fn server(&self) -> Option<::puniyu_adapter_api::server::ServerFunction> {
+				let servers: Vec<_> = ::puniyu_adapter_api::__private::inventory::iter::<crate::ServerRegistry>
 					.into_iter()
 					.filter(|server| server.adapter_name == #adapter_name)
 					.map(|server| (server.builder)())
 					.collect();
 
 				if !servers.is_empty() {
-					Some(::std::sync::Arc::new(move |cfg: &mut ::puniyu_adapter::__private::ServiceConfig| {
+					Some(::std::sync::Arc::new(move |cfg: &mut ::puniyu_adapter_api::server::ServiceConfig| {
 						servers.iter().for_each(|server| server(cfg));
 					}))
 				} else {
@@ -157,7 +108,7 @@ pub fn adapter(
 				}
 			}
 
-			async fn init(&self) -> ::puniyu_adapter::__private::HandlerResult {
+			async fn init(&self) -> ::puniyu_adapter_api::Result {
 				#init_call.await
 			}
 		}
@@ -166,33 +117,25 @@ pub fn adapter(
 		pub(crate) struct ConfigRegistry {
 			adapter_name: &'static str,
 			/// 配置构造器
-			builder: fn() -> Box<dyn ::puniyu_adapter::__private::Config>,
+			builder: fn() -> ::std::sync::Arc<dyn ::puniyu_adapter_api::config::Config>,
 		}
-		::puniyu_adapter::__private::inventory::collect!(crate::ConfigRegistry);
+		::puniyu_adapter_api::__private::inventory::collect!(crate::ConfigRegistry);
 
 		/// 钩子注册注册表
 		pub(crate) struct HookRegistry {
 			adapter_name: &'static str,
 			/// 钩子构造器
-			builder: fn() -> Box<dyn ::puniyu_adapter::__private::Hook>,
+			builder: fn() -> ::std::sync::Arc<dyn ::puniyu_adapter_api::hook::Hook>,
 		}
-		::puniyu_adapter::__private::inventory::collect!(crate::HookRegistry);
-				/// 服务器注册表
+		::puniyu_adapter_api::__private::inventory::collect!(crate::HookRegistry);
+		/// 服务器注册表
 		pub(crate) struct ServerRegistry {
 			/// 插件名称
 			adapter_name: &'static str,
 			/// 服务器配置构造器
-			builder: fn() -> ::puniyu_adapter::__private::ServerFunction,
+			builder: fn() -> ::puniyu_adapter_api::server::ServerFunction,
 		}
-		::puniyu_adapter::__private::inventory::collect!(crate::ServerRegistry);
-
-		pub(crate) struct ApiRegistry {
-			/// 插件名称
-			adapter_name: &'static str,
-			/// 服务器配置构造器
-			builder: ::puniyu_adapter::__private::AdapterApi,
-		}
-		::puniyu_adapter::__private::inventory::collect!(crate::ApiRegistry);
+		::puniyu_adapter_api::__private::inventory::collect!(crate::ServerRegistry);
 	};
 
 	proc_macro::TokenStream::from(expanded)

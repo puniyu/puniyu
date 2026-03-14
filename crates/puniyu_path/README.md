@@ -26,82 +26,79 @@ puniyu_path = "*"
 
 ### 初始化
 
-在使用任何路径之前，必须先初始化 `WORKING_DIR` 和 `APP_NAME`：
+在使用任何路径之前，必须先初始化应用信息：
 
 ```rust
-use puniyu_path::WORKING_DIR;
-use puniyu_common::APP_NAME;
-use std::path::PathBuf;
+use puniyu_common::app::{AppInfo, set_app_info};
+use puniyu_version::Version;
+use std::path::Path;
 
-// 初始化工作目录
-WORKING_DIR.set(PathBuf::from("/path/to/work")).ok();
-
-// 初始化应用名称
-APP_NAME.set("myapp".to_string()).ok();
+// 初始化应用信息
+let version = Version::new(1, 0, 0);
+let info = AppInfo::new("myapp", &version, Path::new("/path/to/work"));
+set_app_info(info);
 ```
 
 ### 使用路径
 
 ```rust
-use puniyu_path::{BASE_DIR, APP_DIR, CONFIG_DIR, LOG_DIR};
+use puniyu_path::{base_dir, app_dir, config_dir, log_dir};
 
 // 获取基础目录
-let base = BASE_DIR.as_path();
+let base = base_dir();
 
 // 获取应用目录
-let app = APP_DIR.as_path();
+let app = app_dir();
 
 // 获取配置目录
-let config = CONFIG_DIR.as_path();
+let config = config_dir();
 
 // 获取日志目录
-let log = LOG_DIR.as_path();
+let log = log_dir();
 ```
 
 ## 目录结构
 
 ### 主要目录
 
-| 路径常量       | 路径格式                 | 说明         |
-| -------------- | ------------------------ | ------------ |
-| `BASE_DIR`     | `{WORKING_DIR}`          | 应用根目录   |
-| `APP_DIR`      | `{BASE_DIR}/@{APP_NAME}` | 应用文件夹   |
-| `LOG_DIR`      | `{APP_DIR}/logs`         | 日志文件夹   |
-| `CONFIG_DIR`   | `{APP_DIR}/config`       | 配置文件夹   |
-| `TEMP_DIR`     | `{APP_DIR}/temp`         | 临时文件夹   |
-| `DATA_DIR`     | `{APP_DIR}/data`         | 数据文件夹   |
-| `RESOURCE_DIR` | `{APP_DIR}/resources`    | 资源文件夹   |
-| `PLUGIN_DIR`   | `{BASE_DIR}/plugins`     | 插件文件夹   |
-| `ADAPTER_DIR`  | `{BASE_DIR}/adapters`    | 适配器文件夹 |
+| 函数             | 路径格式                 | 说明         |
+| ---------------- | ------------------------ | ------------ |
+| `base_dir()`     | `{WORKING_DIR}`          | 应用根目录   |
+| `app_dir()`      | `{BASE_DIR}/@{APP_NAME}` | 应用文件夹   |
+| `log_dir()`      | `{APP_DIR}/logs`         | 日志文件夹   |
+| `config_dir()`   | `{APP_DIR}/config`       | 配置文件夹   |
+| `temp_dir()`     | `{APP_DIR}/temp`         | 临时文件夹   |
+| `data_dir()`     | `{APP_DIR}/data`         | 数据文件夹   |
+| `resource_dir()` | `{APP_DIR}/resources`    | 资源文件夹   |
+| `plugin_dir()`   | `{BASE_DIR}/plugins`     | 插件文件夹   |
+| `adapter_dir()`  | `{BASE_DIR}/adapters`    | 适配器文件夹 |
 
 ### 插件子目录
 
-| 路径常量               | 路径格式                 | 说明           |
-| ---------------------- | ------------------------ | -------------- |
-| `plugin::CONFIG_DIR`   | `{CONFIG_DIR}/plugins`   | 插件配置文件夹 |
-| `plugin::DATA_DIR`     | `{DATA_DIR}/plugins`     | 插件数据文件夹 |
-| `plugin::RESOURCE_DIR` | `{RESOURCE_DIR}/plugins` | 插件资源文件夹 |
-| `plugin::TEMP_DIR`     | `{TEMP_DIR}/plugins`     | 插件临时文件夹 |
+| 函数                      | 路径格式                 | 说明           |
+| ------------------------- | ------------------------ | -------------- |
+| `plugin::config_dir()`    | `{CONFIG_DIR}/plugins`   | 插件配置文件夹 |
+| `plugin::data_dir()`      | `{DATA_DIR}/plugins`     | 插件数据文件夹 |
+| `plugin::resource_dir()`  | `{RESOURCE_DIR}/plugins` | 插件资源文件夹 |
+| `plugin::temp_dir()`      | `{TEMP_DIR}/plugins`     | 插件临时文件夹 |
 
 ### 适配器子目录
 
-| 路径常量              | 路径格式                | 说明             |
-| --------------------- | ----------------------- | ---------------- |
-| `adapter::CONFIG_DIR` | `{CONFIG_DIR}/adapters` | 适配器配置文件夹 |
-| `adapter::DATA_DIR`   | `{DATA_DIR}/adapters`   | 适配器数据文件夹 |
-| `adapter::TEMP_DIR`   | `{TEMP_DIR}/adapters`   | 适配器临时文件夹 |
+| 函数                       | 路径格式                | 说明             |
+| -------------------------- | ----------------------- | ---------------- |
+| `adapter::config_dir()`    | `{CONFIG_DIR}/adapters` | 适配器配置文件夹 |
+| `adapter::data_dir()`      | `{DATA_DIR}/adapters`   | 适配器数据文件夹 |
+| `adapter::resource_dir()`  | `{RESOURCE_DIR}/adapters` | 适配器资源文件夹 |
+| `adapter::temp_dir()`      | `{TEMP_DIR}/adapters`   | 适配器临时文件夹 |
 
 ## 使用示例
 
 ### 获取配置文件路径
 
 ```rust
-use puniyu_path::CONFIG_DIR;
-use std::path::PathBuf;
+use puniyu_path::config_dir;
 
-let mut config_file = CONFIG_DIR.to_path_buf();
-config_file.push("app.toml");
-
+let config_file = config_dir().join("app.toml");
 println!("Config file: {:?}", config_file);
 ```
 
@@ -109,23 +106,17 @@ println!("Config file: {:?}", config_file);
 
 ```rust
 use puniyu_path::plugin;
-use std::path::PathBuf;
 
-let mut plugin_config = plugin::CONFIG_DIR.to_path_buf();
-plugin_config.push("my_plugin.toml");
-
+let plugin_config = plugin::config_dir().join("my_plugin.toml");
 println!("Plugin config: {:?}", plugin_config);
 ```
 
 ### 获取日志文件路径
 
 ```rust
-use puniyu_path::LOG_DIR;
-use std::path::PathBuf;
+use puniyu_path::log_dir;
 
-let mut log_file = LOG_DIR.to_path_buf();
-log_file.push("app.log");
-
+let log_file = log_dir().join("app.log");
 println!("Log file: {:?}", log_file);
 ```
 

@@ -19,3 +19,5 @@ workspace = true
 [dependencies]
 puniyu_common.workspace = true
 
+[dev-dependencies]
+puniyu_version.workspace = true

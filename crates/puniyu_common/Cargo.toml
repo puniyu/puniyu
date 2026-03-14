@@ -12,13 +12,9 @@ rust-version.workspace = true
 
 [dependencies]
 toml.workspace = true
-strum.workspace = true
 serde.workspace = true
+puniyu_system_info.workspace = true
+puniyu_version.workspace = true
 
 puniyu_error = { workspace = true, features = ["config"] }
-derive_more = { workspace = true, features = ["display"], optional = true }
 
-[features]
-default = []
-version = ["dep:derive_more"]
-source = []

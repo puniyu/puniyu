@@ -1,81 +1,19 @@
 //! # puniyu_contact
 //!
-//! 联系人类型定义库，提供好友和群聊联系人的类型系统。
+//! 联系人类型定义。
 //!
-//! ## 概述
-//!
-//! `puniyu_contact` 提供了统一的联系人类型定义，用于处理聊天机器人中的好友和群聊联系人信息。
-//! 该库将联系人分为两类：
-//!
-//! - **好友联系人（FriendContact）** - 一对一聊天的好友信息
-//! - **群聊联系人（GroupContact）** - 群组聊天的群信息
-//!
-//! ## 使用方式
-//!
-//! ### 创建好友联系人
+//! ## 使用
 //!
 //! ```rust
-//! use puniyu_contact::{FriendContact, SceneType, contact_friend};
+//! use puniyu_contact::{contact, contact_friend, contact_group};
 //!
-//! // 手动创建
-//! let friend = FriendContact {
-//!     scene: SceneType::Friend,
-//!     peer: "123456",
-//!     name: Some("Alice"),
-//! };
+//! // 使用统一的 contact 宏
+//! let friend = contact!(Friend, peer: "123456", name: "Alice");
+//! let group = contact!(Group, peer: "789012", name: "Dev Team");
 //!
-//! // 使用宏创建（仅包含 ID）
-//! let friend = contact_friend!("123456");
-//!
-//! // 使用宏创建（包含 ID 和名称）
+//! // 或使用专用宏
 //! let friend = contact_friend!("123456", "Alice");
-//! ```
-//!
-//! ### 创建群聊联系人
-//!
-//! ```rust
-//! use puniyu_contact::{GroupContact, SceneType, contact_group};
-//!
-//! // 手动创建
-//! let group = GroupContact {
-//!     scene: SceneType::Group,
-//!     peer: "789012",
-//!     name: Some("Dev Team"),
-//! };
-//!
-//! // 使用宏创建（仅包含 ID）
-//! let group = contact_group!("789012");
-//!
-//! // 使用宏创建（包含 ID 和名称）
 //! let group = contact_group!("789012", "Dev Team");
-//! ```
-//!
-//! ### 使用统一的联系人类型
-//!
-//! ```rust
-//! use puniyu_contact::{ContactType, FriendContact, GroupContact, Contact, SceneType};
-//!
-//! // 从好友创建
-//! let friend = FriendContact {
-//!     scene: SceneType::Friend,
-//!     peer: "123456",
-//!     name: Some("Alice"),
-//! };
-//! let contact = ContactType::from(friend);
-//!
-//! // 从群聊创建
-//! let group = GroupContact {
-//!     scene: SceneType::Group,
-//!     peer: "789012",
-//!     name: Some("Dev Team"),
-//! };
-//! let contact = ContactType::from(group);
-//!
-//! // 使用 Contact trait 方法
-//! println!("Peer ID: {}", contact.peer());
-//! if let Some(name) = contact.name() {
-//!     println!("Name: {}", name);
-//! }
 //! ```
 
 mod friend;
@@ -99,11 +37,10 @@ use strum::{Display, IntoStaticStr};
 /// # 示例
 ///
 /// ```rust
-/// use puniyu_contact::{ContactType, FriendContact, GroupContact, SceneType};
+/// use puniyu_contact::{ContactType, FriendContact, GroupContact};
 ///
 /// // 创建好友联系人
 /// let friend = FriendContact {
-///     scene: SceneType::Friend,
 ///     peer: "123456",
 ///     name: Some("Alice"),
 /// };
@@ -111,7 +48,6 @@ use strum::{Display, IntoStaticStr};
 ///
 /// // 创建群聊联系人
 /// let group = GroupContact {
-///     scene: SceneType::Group,
 ///     peer: "789012",
 ///     name: Some("Dev Team"),
 /// };
@@ -119,12 +55,11 @@ use strum::{Display, IntoStaticStr};
 /// ```
 #[derive(Debug, Clone, PartialEq, Display, IntoStaticStr, Deserialize, Serialize)]
 #[serde(rename_all = "lowercase", tag = "type", content = "field0", bound(deserialize = "'de: 'c"))]
+#[strum(serialize_all = "lowercase")]
 pub enum ContactType<'c> {
 	/// 好友联系人
-	#[strum(serialize = "friend")]
 	Friend(FriendContact<'c>),
 	/// 群聊联系人
-	#[strum(serialize = "group")]
 	Group(GroupContact<'c>),
 }
 
@@ -159,15 +94,14 @@ impl<'c> ContactType<'c> {
 
 	/// 尝试获取好友联系人的引用
 	///
-	/// 如果是好友联系人则返回 `Some`，否则返回 `None`。
+	/// 如果是好友联系人则返回 [`Some`]，否则返回 [`None`]。
 	///
 	/// # 示例
 	///
 	/// ```rust
-	/// use puniyu_contact::{ContactType, FriendContact, SceneType, Contact};
+	/// use puniyu_contact::{ContactType, FriendContact, Contact};
 	///
 	/// let friend = FriendContact {
-	///     scene: SceneType::Friend,
 	///     peer: "123456",
 	///     name: Some("Alice"),
 	/// };
@@ -186,15 +120,14 @@ impl<'c> ContactType<'c> {
 
 	/// 尝试获取群聊联系人的引用
 	///
-	/// 如果是群聊联系人则返回 `Some`，否则返回 `None`。
+	/// 如果是群聊联系人则返回 [`Some`]，否则返回 [`None`]。
 	///
 	/// # 示例
 	///
 	/// ```rust
-	/// use puniyu_contact::{ContactType, GroupContact, SceneType, Contact};
+	/// use puniyu_contact::{ContactType, GroupContact, Contact};
 	///
 	/// let group = GroupContact {
-	///     scene: SceneType::Group,
 	///     peer: "789012",
 	///     name: Some("Dev Team"),
 	/// };
@@ -216,10 +149,9 @@ impl<'c> ContactType<'c> {
 	/// # 示例
 	///
 	/// ```rust
-	/// use puniyu_contact::{ContactType, FriendContact, SceneType};
+	/// use puniyu_contact::{ContactType, FriendContact};
 	///
 	/// let friend = FriendContact {
-	///     scene: SceneType::Friend,
 	///     peer: "123456",
 	///     name: Some("Alice"),
 	/// };
@@ -236,10 +168,9 @@ impl<'c> ContactType<'c> {
 	/// # 示例
 	///
 	/// ```rust
-	/// use puniyu_contact::{ContactType, GroupContact, SceneType};
+	/// use puniyu_contact::{ContactType, GroupContact};
 	///
 	/// let group = GroupContact {
-	///     scene: SceneType::Group,
 	///     peer: "789012",
 	///     name: Some("Dev Team"),
 	/// };
@@ -281,9 +212,82 @@ impl<'c> From<FriendContact<'c>> for ContactType<'c> {
 	}
 }
 
-
 impl<'c> From<GroupContact<'c>> for ContactType<'c> {
 	fn from(contact: GroupContact<'c>) -> Self {
 		Self::Group(contact)
 	}
+}
+
+/// 统一的联系人构建宏
+///
+/// 根据联系人类型（Friend 或 Group）创建相应的联系人对象。
+/// 这是一个便捷宏，内部会调用 [`contact_friend!`] 或 [`contact_group!`]。
+///
+/// # 语法
+///
+/// ```text
+/// contact!(Friend, field: value, ...)
+/// contact!(Group, field: value, ...)
+/// ```
+///
+/// # 参数
+///
+/// - 第一个参数：联系人类型，必须是 `Friend` 或 `Group`
+/// - 后续参数：字段名和值的键值对
+///   - `peer`: 联系人 ID（必需）
+///   - `name`: 联系人名称（可选）
+///
+/// # 示例
+///
+/// ## 创建好友联系人
+///
+/// ```rust
+/// use puniyu_contact::contact;
+///
+/// // 仅指定 peer
+/// let friend = contact!(Friend, peer: "123456");
+///
+/// // 指定 peer 和 name
+/// let friend = contact!(Friend, peer: "123456", name: "Alice");
+/// ```
+///
+/// ## 创建群聊联系人
+///
+/// ```rust
+/// use puniyu_contact::contact;
+///
+/// // 仅指定 peer
+/// let group = contact!(Group, peer: "789012");
+///
+/// // 指定 peer 和 name
+/// let group = contact!(Group, peer: "789012", name: "Dev Team");
+/// ```
+///
+/// ## 与专用宏的对比
+///
+/// ```rust
+/// use puniyu_contact::{contact, contact_friend, contact_group};
+///
+/// // 使用统一宏
+/// let friend = contact!(Friend, peer: "123456", name: "Alice");
+/// let group = contact!(Group, peer: "789012", name: "Dev Team");
+///
+/// // 使用专用宏（效果相同）
+/// let friend = contact_friend!(peer: "123456", name: "Alice");
+/// let group = contact_group!(peer: "789012", name: "Dev Team");
+/// ```
+///
+/// # 注意
+///
+/// - 此宏只支持命名字段语法，不支持位置参数
+/// - 如果需要使用位置参数（如 `contact_friend!("123456", "Alice")`），请直接使用专用宏
+#[macro_export]
+macro_rules! contact {
+    (Friend, $( $key:ident : $value:expr ),+ $(,)?) => {
+        $crate::contact_friend!( $( $key : $value ),+ )
+    };
+
+    (Group, $( $key:ident : $value:expr ),+ $(,)?) => {
+        $crate::contact_group!( $( $key : $value ),+ )
+    };
 }

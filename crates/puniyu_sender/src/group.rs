@@ -14,9 +14,9 @@ use serde::{Deserialize, Serialize};
 ///
 /// - `user_id` - 发送者 ID
 /// - `nick` - 用户昵称（可选）
-/// - `sex` - 性别
+/// - `sex` - 性别，类型为 [`Sex`]
 /// - `age` - 年龄（可选）
-/// - `role` - 群角色
+/// - `role` - 群角色，类型为 [`Role`]
 /// - `card` - 群名片（可选）
 /// - `level` - 等级（可选）
 /// - `title` - 专属头衔（可选）
@@ -38,7 +38,7 @@ use serde::{Deserialize, Serialize};
 /// };
 /// ```
 #[derive(Debug, Default, Clone, PartialEq, Deserialize, Serialize, Builder)]
-#[builder(setter(into))]
+#[builder(setter(into), pattern = "owned")]
 pub struct GroupSender<'s> {
 	/// 发送者id
 	pub user_id: &'s str,
@@ -70,26 +70,7 @@ impl<'s> GroupSender<'s> {
 	///
 	/// # 返回值
 	///
-	/// 返回发送者在群中的角色（成员、管理员或群主）。
-	///
-	/// # 示例
-	///
-	/// ```rust
-	/// use puniyu_sender::{GroupSender, Role, Sex};
-	///
-	/// let sender = GroupSender {
-	///     user_id: "123456",
-	///     nick: Some("Alice"),
-	///     sex: Sex::Female,
-	///     age: Some(25),
-	///     role: Role::Admin,
-	///     card: None,
-	///     level: None,
-	///     title: None,
-	/// };
-	///
-	/// assert_eq!(sender.role(), &Role::Admin);
-	/// ```
+	/// 返回发送者在群中的角色 &[`Role`]。
 	pub fn role(&self) -> &Role {
 		&self.role
 	}
@@ -98,26 +79,7 @@ impl<'s> GroupSender<'s> {
 	///
 	/// # 返回值
 	///
-	/// 返回发送者的群名片，如果未设置则返回 `None`。
-	///
-	/// # 示例
-	///
-	/// ```rust
-	/// use puniyu_sender::{GroupSender, Role, Sex};
-	///
-	/// let sender = GroupSender {
-	///     user_id: "123456",
-	///     nick: Some("Alice"),
-	///     sex: Sex::Female,
-	///     age: Some(25),
-	///     role: Role::Member,
-	///     card: Some("Group Card"),
-	///     level: None,
-	///     title: None,
-	/// };
-	///
-	/// assert_eq!(sender.card(), Some("Group Card"));
-	/// ```
+	/// 返回发送者的群名片 [`Option<&str>`]，如果未设置则返回 [`None`]。
 	pub fn card(&self) -> Option<&str> {
 		self.card
 	}
@@ -126,26 +88,7 @@ impl<'s> GroupSender<'s> {
 	///
 	/// # 返回值
 	///
-	/// 返回发送者在群中的等级，如果未设置则返回 `None`。
-	///
-	/// # 示例
-	///
-	/// ```rust
-	/// use puniyu_sender::{GroupSender, Role, Sex};
-	///
-	/// let sender = GroupSender {
-	///     user_id: "123456",
-	///     nick: Some("Alice"),
-	///     sex: Sex::Female,
-	///     age: Some(25),
-	///     role: Role::Member,
-	///     card: None,
-	///     level: Some(10),
-	///     title: None,
-	/// };
-	///
-	/// assert_eq!(sender.level(), Some(10));
-	/// ```
+	/// 返回发送者在群中的等级 [`Option<u32>`]，如果未设置则返回 [`None`]。
 	pub fn level(&self) -> Option<u32> {
 		self.level
 	}
@@ -154,26 +97,7 @@ impl<'s> GroupSender<'s> {
 	///
 	/// # 返回值
 	///
-	/// 返回发送者的专属头衔，如果未设置则返回 `None`。
-	///
-	/// # 示例
-	///
-	/// ```rust
-	/// use puniyu_sender::{GroupSender, Role, Sex};
-	///
-	/// let sender = GroupSender {
-	///     user_id: "123456",
-	///     nick: Some("Alice"),
-	///     sex: Sex::Female,
-	///     age: Some(25),
-	///     role: Role::Member,
-	///     card: None,
-	///     level: None,
-	///     title: Some("Active Member"),
-	/// };
-	///
-	/// assert_eq!(sender.title(), Some("Active Member"));
-	/// ```
+	/// 返回发送者的专属头衔 [`Option<&str>`]，如果未设置则返回 [`None`]。
 	pub fn title(&self) -> Option<&str> {
 		self.title
 	}
@@ -225,11 +149,12 @@ impl<'s> Sender for GroupSender<'s> {
 #[macro_export]
 macro_rules! sender_group {
     ( $( $key:ident : $value:expr ),+ $(,)? ) => {{
-        let mut builder = $crate::GroupSenderBuilder::default();
+        $crate::GroupSenderBuilder::default()
         $(
-            builder.$key($value);
+            .$key($value)
         )*
-        builder.build().expect("Failed to build GroupSender")
+        .build()
+		.expect("Failed to build GroupSender")
     }};
 	($user_id:expr) => {{
 		$crate::GroupSenderBuilder::default()
