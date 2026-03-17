@@ -14,21 +14,26 @@ mod types;
 #[doc(inline)]
 pub use types::*;
 mod config;
+mod registry;
 
-#[doc(inline)]
-pub use puniyu_config_core::{ConfigInfo, ConfigId};
-#[doc(inline)]
-pub use puniyu_config_core::Config;
+pub use registry::ConfigRegistry;
 
-#[doc(inline)]
-#[cfg(feature = "registry")]
-pub use puniyu_config_core::ConfigRegistry;
+use puniyu_common::merge_config;
+use puniyu_logger::{debug, error, info};
+use puniyu_path::{config_dir, log_dir};
 
+/// 配置 trait
+///
+/// 定义配置的基本接口，用于外部包实现自定义配置。
+pub trait Config: Send + Sync + 'static {
+	fn config(&self) -> ConfigInfo;
+}
 
-use puniyu_common::{merge_config};
-use puniyu_logger::{error};
-use puniyu_path::{CONFIG_DIR, LOG_DIR};
-
+impl PartialEq for dyn Config {
+	fn eq(&self, other: &Self) -> bool {
+		self.config() == other.config()
+	}
+}
 
 #[inline]
 pub fn app_config() -> AppConfig {
@@ -45,36 +50,64 @@ pub fn friend_config() -> FriendConfig {
 	FriendConfig::get()
 }
 
+#[inline]
 pub fn group_config() -> GroupConfig {
 	GroupConfig::get()
 }
 
 pub fn init() {
-	if !CONFIG_DIR.as_path().exists() {
-		std::fs::create_dir_all(CONFIG_DIR.as_path())
-			.unwrap_or_else(|_| error!("[配置文件] 初始化配置文件失败"));
+	if !config_dir().as_path().exists() {
+		std::fs::create_dir_all(config_dir().as_path())
+			.unwrap_or_else(|_| error!("[Config] Failed to initialize config directory"));
 	}
-	if !LOG_DIR.as_path().exists() {
-		std::fs::create_dir_all(LOG_DIR.as_path())
-			.unwrap_or_else(|_| error!("[配置文件] 初始化日志目录失败"));
+	if !log_dir().as_path().exists() {
+		std::fs::create_dir_all(log_dir().as_path())
+			.unwrap_or_else(|_| error!("[Config] Failed to initialize log directory"));
 	}
-	merge_config(CONFIG_DIR.as_path(), "app", &AppConfig::default(), &AppConfig::get())
+
+	merge_config(config_dir().as_path(), "app", &AppConfig::default(), &AppConfig::get())
 		.unwrap_or_else(|e| {
-			error!("[配置文件] 合并APP配置失败: {}", e);
+			error!("[Config] Failed to merge app config: {}", e);
 		});
-	merge_config(CONFIG_DIR.as_path(), "group", &GroupConfig::default(), &GroupConfig::get())
+	merge_config(config_dir().as_path(), "group", &GroupConfig::default(), &GroupConfig::get())
 		.unwrap_or_else(|e| {
-			error!("[配置文件] 合并Group配置失败: {}", e);
+			error!("[Config] Failed to merge group config: {}", e);
 		});
-	merge_config(CONFIG_DIR.as_path(), "friend", &FriendConfig::default(), &FriendConfig::get())
+	merge_config(config_dir().as_path(), "friend", &FriendConfig::default(), &FriendConfig::get())
 		.unwrap_or_else(|e| {
-			error!("[配置文件] 合并Friend配置失败: {}", e);
+			error!("[Config] Failed to merge friend config: {}", e);
 		});
-	merge_config(CONFIG_DIR.as_path(), "bot", &BotConfig::default(), &BotConfig::get())
+	merge_config(config_dir().as_path(), "bot", &BotConfig::default(), &BotConfig::get())
 		.unwrap_or_else(|e| {
-			error!("[配置文件] 合并Bot配置失败: {}", e);
+			error!("[Config] Failed to merge bot config: {}", e);
 		});
-	#[cfg(feature = "watcher")]
+
+	let app_config = AppConfig::get();
+	if let Err(e) = ConfigRegistry::register(app_config.config()) {
+		error!("[Config] Failed to register app config: {}", e);
+	} else {
+		info!("[Config] App config registered");
+	}
+
+	let bot_config = BotConfig::get();
+	if let Err(e) = ConfigRegistry::register(bot_config.config()) {
+		error!("[Config] Failed to register bot config: {}", e);
+	} else {
+		debug!("[Config] Bot config registered");
+	}
+
+	let group_config = GroupConfig::get();
+	if let Err(e) = ConfigRegistry::register(group_config.config()) {
+		error!("[Config] Failed to register group config: {}", e);
+	} else {
+		debug!("[Config] Group config registered");
+	}
+
+	let friend_config = FriendConfig::get();
+	if let Err(e) = ConfigRegistry::register(friend_config.config()) {
+		error!("[Config] Failed to register friend config: {}", e);
+	} else {
+		debug!("[Config] Friend config registered");
+	}
 	config::start_config_watcher();
 }
-

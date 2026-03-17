@@ -1,14 +1,11 @@
-use std::path::PathBuf;
+use crate::{AdapterConfig, FriendConfig, GroupConfig, LoggerConfig, ServerConfig};
 use puniyu_common::read_config;
 use puniyu_path::config_dir;
 use serde::{Deserialize, Serialize};
-use std::sync::{Arc, LazyLock, RwLock};
-use crate::{AdapterConfig, LoggerConfig, ServerConfig, GroupConfig, FriendConfig};
+use std::path::PathBuf;
+use std::sync::LazyLock;
 
-static CONFIG_PATH: LazyLock<PathBuf> = LazyLock::new(|| config_dir().join("app.yml"));
-pub(crate) static APP_CONFIG: LazyLock<Arc<RwLock<AppConfig>>> = LazyLock::new(|| {
-	Arc::new(RwLock::new(read_config::<AppConfig>(config_dir().as_path(), "app").unwrap_or_default()))
-});
+static CONFIG_PATH: LazyLock<PathBuf> = LazyLock::new(|| config_dir().join("app.toml"));
 
 fn default_master() -> Vec<String> {
 	vec!["console".to_string()]
@@ -83,9 +80,14 @@ impl AppConfig {
 	///
 	/// # 返回值
 	///
-	/// 返回当前的应用配置副本
+	/// 返回当前的应用配置副本，从注册表获取
 	pub fn get() -> Self {
-		APP_CONFIG.read().expect("Failed to read app config").clone()
+		use crate::ConfigRegistry;
+		ConfigRegistry::get(CONFIG_PATH.as_path())
+			.and_then(|v| toml::from_str::<Self>(&v.to_string()).ok())
+			.unwrap_or_else(|| {
+				read_config::<Self>(config_dir().as_path(), "app").unwrap_or_default()
+			})
 	}
 
 	/// 获取日志配置
@@ -152,3 +154,15 @@ impl AppConfig {
 	}
 }
 
+impl crate::Config for AppConfig {
+	fn config(&self) -> crate::ConfigInfo {
+		crate::ConfigInfo {
+			name: "app".to_string(),
+			path: CONFIG_PATH.clone(),
+			value: toml::to_string(self)
+				.expect("Failed to serialize AppConfig to TOML string")
+				.parse()
+				.expect("Failed to parse TOML string to Value"),
+		}
+	}
+}

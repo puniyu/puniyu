@@ -1808,7 +1808,7 @@ dependencies = [
  "async-trait",
  "puniyu_adapter_api",
  "puniyu_adapter_types",
- "puniyu_config_core",
+ "puniyu_config",
 ]
 
 [[package]]
@@ -1905,20 +1905,11 @@ version = "0.7.8"
 dependencies = [
  "notify-debouncer-full",
  "puniyu_common",
- "puniyu_config_core",
  "puniyu_error",
  "puniyu_logger",
  "puniyu_path",
  "serde",
  "serde_repr",
- "toml",
-]
-
-[[package]]
-name = "puniyu_config_core"
-version = "0.7.8"
-dependencies = [
- "puniyu_error",
  "toml",
 ]
 

@@ -1,4 +1,3 @@
-use crate::Config;
 use crate::types::ConfigInfo;
 use puniyu_error::registry::Error;
 use std::collections::HashMap;
@@ -21,16 +20,6 @@ impl ConfigStore {
 	}
 
 	/// 插入配置
-	///
-	/// 将配置添加到存储中，如果配置已存在则返回错误。
-	///
-	/// # 参数
-	///
-	/// - `config`: 要插入的配置，可以是任何实现了 `Into<ConfigInfo>` 的类型
-	///
-	/// # 返回值
-	///
-	/// 成功时返回配置的唯一索引 ID，失败时返回错误
 	pub fn insert<C>(&self, config: C) -> Result<u64, Error>
 	where
 		C: Into<ConfigInfo>,
@@ -41,25 +30,18 @@ impl ConfigStore {
 			return Err(Error::Exists("Config".to_string()));
 		}
 		let index = CONFIG_ID.fetch_add(1, Ordering::Relaxed);
-		map.insert(index, config).ok_or(Error::Exists("Config".to_string()))?;
+		map.insert(index, config);
 		Ok(index)
 	}
 
 	/// 获取所有配置
-	///
-	/// # 返回值
-	///
-	/// 返回所有已注册配置的列表
 	pub fn all(&self) -> Vec<ConfigInfo> {
 		let map = self.0.read().expect("Failed to acquire lock");
 		map.values().cloned().collect()
 	}
 
 	/// 获取原始存储的引用
-	///
-	/// 用于内部访问底层的 HashMap。
 	pub(crate) fn raw(&self) -> Arc<RwLock<HashMap<u64, ConfigInfo>>> {
 		self.0.clone()
 	}
 }
-

@@ -26,7 +26,7 @@ const-str.workspace = true
 
 figlet-rs = "0.1.5"
 
-puniyu_config = { workspace = true, features = ["registry", "watcher"] }
+puniyu_config.workspace = true
 puniyu_error = { workspace = true, features = ["registry"] }
 puniyu_bot = { workspace = true, features = ["registry"] }
 puniyu_hook = { workspace = true, features = ["registry"] }

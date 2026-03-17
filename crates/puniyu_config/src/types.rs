@@ -1,4 +1,6 @@
 mod app;
+
+use std::path::{Path, PathBuf};
 #[doc(inline)]
 pub use app::*;
 mod bot;
@@ -9,11 +11,12 @@ mod friend;
 #[doc(inline)]
 pub use friend::*;
 mod group;
+
 #[doc(inline)]
 pub use group::*;
 
-
 use serde_repr::{Deserialize_repr, Serialize_repr};
+use toml::Value;
 
 /// Bot 响应模式枚举
 ///
@@ -61,3 +64,52 @@ pub enum ReactiveMode {
     /// 只响应配置中定义的主人发送的消息
     Master = 4,
 }
+
+/// 配置标识符
+///
+/// 用于标识配置的方式，可以通过索引或路径
+#[derive(Debug, Clone, PartialEq)]
+pub enum ConfigId {
+    /// 通过索引标识
+    Index(u64),
+    /// 通过路径标识
+    Path(PathBuf),
+}
+
+impl From<u64> for ConfigId {
+    fn from(index: u64) -> Self {
+        Self::Index(index)
+    }
+}
+
+impl From<PathBuf> for ConfigId {
+    fn from(path: PathBuf) -> Self {
+        Self::Path(path)
+    }
+}
+
+impl From<&Path> for ConfigId {
+    fn from(path: &Path) -> Self {
+        Self::Path(path.to_path_buf())
+    }
+}
+
+impl From<&str> for ConfigId {
+    fn from(path: &str) -> Self {
+        Self::Path(PathBuf::from(path))
+    }
+}
+
+/// 配置信息
+///
+/// 包含配置的名称、路径和值
+#[derive(Debug, Clone, PartialEq)]
+pub struct ConfigInfo {
+    /// 配置文件名称
+    pub name: String,
+    /// 配置文件路径
+    pub path: PathBuf,
+    /// 配置内容
+    pub value: Value,
+}
+

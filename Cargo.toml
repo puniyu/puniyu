@@ -63,7 +63,6 @@ puniyu_dispatch = { version = "0.7.8", path = "./crates/puniyu_dispatch" }
 puniyu_context = { version = "0.7.8", path = "./crates/puniyu_context" }
 
 puniyu_config = { version = "0.7.8", path = "./crates/puniyu_config" }
-puniyu_config_core = { version = "0.7.8", path = "./crates/puniyu_config_core" }
 
 puniyu_adapter = { version = "0.7.8", path = "./crates/puniyu_adapter" }
 puniyu_adapter_types = { version = "0.7.8", path = "./crates/puniyu_adapter_types" }

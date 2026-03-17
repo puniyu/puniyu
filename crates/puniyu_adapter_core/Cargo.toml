@@ -18,5 +18,5 @@ async-trait.workspace = true
 
 puniyu_adapter_types.workspace = true
 puniyu_adapter_api.workspace = true
-puniyu_config_core.workspace = true
+puniyu_config.workspace = true
 

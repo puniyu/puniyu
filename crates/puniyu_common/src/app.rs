@@ -1,7 +1,6 @@
 use puniyu_version::Version;
 use std::path::Path;
 use std::sync::OnceLock;
-use std::env::current_dir;
 
 #[derive(Debug)]
 pub struct AppInfo {
