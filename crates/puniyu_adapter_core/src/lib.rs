@@ -1,13 +1,10 @@
 use std::sync::Arc;
-#[doc(inline)]
-pub use puniyu_adapter_types::*;
-#[doc(inline)]
-pub use puniyu_adapter_api::*;
-
-use puniyu_config_core::Config;
+use puniyu_adapter_api::AdapterApi;
+use puniyu_adapter_types::AdapterInfo;
+use puniyu_config::Config;
 
 #[async_trait::async_trait]
-pub trait Adapter: Send + Sync {
+pub trait Adapter: Send + Sync + 'static {
     /// 获取适配器信息
     ///
     /// 返回适配器的元数据，包括名称、版本、平台等信息。

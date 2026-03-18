@@ -14,7 +14,7 @@ static BOT_INDEX: AtomicU64 = AtomicU64::new(0);
 ///
 /// 内部使用的机器人存储结构，提供线程安全的机器人实例管理。
 #[derive(Clone, Default)]
-pub(crate) struct BotStore(Arc<RwLock<HashMap<u64, Arc<dyn Bot>>>>);
+pub(crate) struct BotStore(Arc<RwLock<HashMap<u64, Bot>>>);
 
 impl BotStore {
 	/// 创建新的机器人存储
@@ -31,7 +31,7 @@ impl BotStore {
 	/// # 返回值
 	///
 	/// 返回分配的索引号，如果机器人已存在则返回错误
-	pub fn insert(&self, bot: Arc<dyn Bot>) -> Result<u64, Error> {
+	pub fn insert(&self, bot: Bot) -> Result<u64, Error> {
 		let index = BOT_INDEX.fetch_add(1, Ordering::SeqCst);
 		let mut map = self.0.write().expect("Failed to acquire lock");
 		if map.values().any(|v| v == &bot) {
@@ -44,7 +44,7 @@ impl BotStore {
 	/// 获取原始存储的引用
 	///
 	/// 用于直接访问底层的 HashMap
-	pub(crate) fn raw(&self) -> Arc<RwLock<HashMap<u64, Arc<dyn Bot>>>> {
+	pub(crate) fn raw(&self) -> Arc<RwLock<HashMap<u64, Bot>>> {
 		self.0.clone()
 	}
 
@@ -53,7 +53,7 @@ impl BotStore {
 	/// # 返回值
 	///
 	/// 返回所有机器人实例的列表
-	pub fn all(&self) -> Vec<Arc<dyn Bot>> {
+	pub fn all(&self) -> Vec<Bot> {
 		let map = self.0.read().expect("Failed to acquire lock");
 		map.values().cloned().collect()
 	}

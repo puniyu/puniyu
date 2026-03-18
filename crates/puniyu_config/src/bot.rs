@@ -51,7 +51,7 @@ impl BotConfig {
 	pub fn get() -> Self {
 		use crate::ConfigRegistry;
 		ConfigRegistry::get(CONFIG_PATH.as_path())
-			.and_then(|v| toml::from_str::<Self>(&v.to_string()).ok())
+			.and_then(|v| v.try_into().ok())
 			.unwrap_or_else(|| {
 				read_config::<Self>(config_dir().as_path(), "bot").unwrap_or_default()
 			})

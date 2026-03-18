@@ -16,6 +16,6 @@ workspace = true
 puniyu_api.workspace = true
 puniyu_path.workspace = true
 
-puniyu_bot = { workspace = true, features = ["registry"] }
+puniyu_bot.workspace = true
 puniyu_plugin = { workspace = true, features = ["registry"] }
 

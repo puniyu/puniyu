@@ -1,6 +1,6 @@
 use chrono::{DateTime, Utc};
 use derive_builder::Builder;
-use semver::Version;
+use puniyu_version::Version;
 use serde::{Deserialize, Serialize};
 use strum::{Display, EnumString, IntoStaticStr};
 

@@ -25,19 +25,16 @@ pub fn start_config_watcher() {
 						for path in event.event.paths.iter() {
 							info!("[Config] File changed: {}", path.display());
 
-							#[cfg(feature = "registry")]
+							use crate::ConfigRegistry;
+							if ConfigRegistry::all().iter().any(|c| c.path == *path)
+								&& let Some(name) = path.file_stem().and_then(|s| s.to_str())
+								&& let Some(dir) = path.parent()
+								&& let Ok(value) = read_config::<toml::Value>(dir, name)
 							{
-								use crate::ConfigRegistry;
-								if ConfigRegistry::all().iter().any(|c| c.path == *path)
-									&& let Some(name) = path.file_stem().and_then(|s| s.to_str())
-									&& let Some(dir) = path.parent()
-									&& let Ok(value) = read_config::<toml::Value>(dir, name)
-								{
-									if let Err(e) = ConfigRegistry::update(path.as_path(), value) {
-										error!("[Config] Failed to update config: {}, {}", name, e);
-									} else {
-										debug!("[Config] Config updated: {}", name);
-									}
+								if let Err(e) = ConfigRegistry::update(path.as_path(), value) {
+									error!("[Config] Failed to update config: {}, {}", name, e);
+								} else {
+									info!("[Config] Config updated: {}", name);
 								}
 							}
 						}

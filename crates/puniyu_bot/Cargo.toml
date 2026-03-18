@@ -15,12 +15,7 @@ workspace = true
 
 [dependencies]
 puniyu_account.workspace = true
-puniyu_adapter_core.workspace = true
+puniyu_adapter_api.workspace = true
 puniyu_adapter_types.workspace = true
-puniyu_error = { workspace = true, features = ["registry"], optional = true }
+puniyu_error = { workspace = true, features = ["registry"] }
 
-[dev-dependencies]
-
-[features]
-default = []
-registry = ["dep:puniyu_error"]

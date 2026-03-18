@@ -23,8 +23,6 @@ use puniyu_logger::{debug, error, info};
 use puniyu_path::{config_dir, log_dir};
 
 /// 配置 trait
-///
-/// 定义配置的基本接口，用于外部包实现自定义配置。
 pub trait Config: Send + Sync + 'static {
 	fn config(&self) -> ConfigInfo;
 }

@@ -1,6 +1,4 @@
 mod app;
-
-use std::path::{Path, PathBuf};
 #[doc(inline)]
 pub use app::*;
 mod bot;
@@ -17,6 +15,8 @@ pub use group::*;
 
 use serde_repr::{Deserialize_repr, Serialize_repr};
 use toml::Value;
+use std::path::{Path, PathBuf};
+use serde::{Deserialize, Serialize};
 
 /// Bot 响应模式枚举
 ///
@@ -103,7 +103,7 @@ impl From<&str> for ConfigId {
 /// 配置信息
 ///
 /// 包含配置的名称、路径和值
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
 pub struct ConfigInfo {
     /// 配置文件名称
     pub name: String,

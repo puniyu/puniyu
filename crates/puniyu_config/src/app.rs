@@ -1,4 +1,4 @@
-use crate::{AdapterConfig, FriendConfig, GroupConfig, LoggerConfig, ServerConfig};
+use crate::{AdapterConfig, LoggerConfig, ServerConfig};
 use puniyu_common::read_config;
 use puniyu_path::config_dir;
 use serde::{Deserialize, Serialize};
@@ -35,18 +35,6 @@ pub struct AppConfig {
 	#[serde(default)]
 	adapter: AdapterConfig,
 
-	/// 应用级群组配置
-	///
-	/// 包含群聊黑白名单等全局设置
-	#[serde(default)]
-	group: GroupConfig,
-
-	/// 应用级好友配置
-	///
-	/// 包含好友黑白名单等全局设置
-	#[serde(default)]
-	friend: FriendConfig,
-
 	/// Bot 主人列表
 	///
 	/// 定义哪些用户是 Bot 的主人，拥有最高权限
@@ -67,8 +55,6 @@ impl Default for AppConfig {
 			logger: LoggerConfig::default(),
 			server: ServerConfig::default(),
 			adapter: AdapterConfig::default(),
-			group: GroupConfig::default(),
-			friend: FriendConfig::default(),
 			masters: default_master(),
 			prefix: default_prefix(),
 		}
@@ -84,7 +70,7 @@ impl AppConfig {
 	pub fn get() -> Self {
 		use crate::ConfigRegistry;
 		ConfigRegistry::get(CONFIG_PATH.as_path())
-			.and_then(|v| toml::from_str::<Self>(&v.to_string()).ok())
+			.and_then(|v| v.try_into().ok())
 			.unwrap_or_else(|| {
 				read_config::<Self>(config_dir().as_path(), "app").unwrap_or_default()
 			})
@@ -124,24 +110,6 @@ impl AppConfig {
 	/// 返回主人用户 ID 列表的引用
 	pub fn masters(&self) -> Vec<String> {
 		self.masters.clone()
-	}
-
-	/// 获取应用级群组配置
-	///
-	/// # 返回值
-	///
-	/// 返回应用级群组配置的引用，包含群聊黑白名单等全局设置
-	pub fn group(&self) -> &GroupConfig {
-		&self.group
-	}
-
-	/// 获取应用级好友配置
-	///
-	/// # 返回值
-	///
-	/// 返回应用级好友配置的引用，包含好友黑白名单等全局设置
-	pub fn friend(&self) -> &FriendConfig {
-		&self.friend
 	}
 
 	/// 获取全局命令前缀

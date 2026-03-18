@@ -13,20 +13,8 @@ rust-version.workspace = true
 workspace = true
 
 [dependencies]
-async-trait.workspace = true
-semver.workspace = true
-puniyu_element.workspace = true
-puniyu_message.workspace = true
-puniyu_error.workspace = true
-puniyu_contact.workspace = true
-
-puniyu_sender = { workspace = true, optional = true }
+puniyu_config.workspace = true
 
 
 [features]
-default = [
 
-]
-adapter = [
-    "dep:puniyu_sender"
-]

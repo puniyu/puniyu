@@ -1809,6 +1809,8 @@ dependencies = [
  "puniyu_adapter_api",
  "puniyu_adapter_types",
  "puniyu_config",
+ "puniyu_error",
+ "puniyu_logger",
 ]
 
 [[package]]
@@ -1821,7 +1823,7 @@ dependencies = [
  "puniyu_contact",
  "puniyu_element",
  "puniyu_sender",
- "semver",
+ "puniyu_version",
  "serde",
  "strum",
 ]
@@ -1830,13 +1832,7 @@ dependencies = [
 name = "puniyu_api"
 version = "0.7.8"
 dependencies = [
- "async-trait",
- "puniyu_contact",
- "puniyu_element",
- "puniyu_error",
- "puniyu_message",
- "puniyu_sender",
- "semver",
+ "puniyu_config",
 ]
 
 [[package]]
@@ -1844,7 +1840,7 @@ name = "puniyu_bot"
 version = "0.7.8"
 dependencies = [
  "puniyu_account",
- "puniyu_adapter_core",
+ "puniyu_adapter_api",
  "puniyu_adapter_types",
  "puniyu_error",
 ]
@@ -2135,7 +2131,7 @@ dependencies = [
  "puniyu_hook",
  "puniyu_server_core",
  "puniyu_task",
- "semver",
+ "puniyu_version",
 ]
 
 [[package]]

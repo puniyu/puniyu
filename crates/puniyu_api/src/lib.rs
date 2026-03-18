@@ -1,2 +1,1 @@
-mod adapter;
-mod bot;
+pub mod config;
