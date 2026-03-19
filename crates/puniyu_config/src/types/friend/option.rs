@@ -72,7 +72,7 @@ impl FriendOption {
 	pub fn merge_with(&self, global: &FriendOption) -> FriendOption {
 		FriendOption {
 			cd: self.cd.or(global.cd),
-			mode: self.mode.clone().or(global.mode.clone()),
+			mode: self.mode.or(global.mode),
 			alias: self.alias.clone().or(global.alias.clone()),
 		}
 	}
@@ -101,6 +101,6 @@ impl FriendOption {
 	///
 	/// 返回当前的响应模式
 	pub fn mode(&self) -> ReactiveMode {
-		self.mode.clone().unwrap_or(ReactiveMode::All)
+		self.mode.unwrap_or(ReactiveMode::All)
 	}
 }

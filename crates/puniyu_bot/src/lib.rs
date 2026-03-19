@@ -170,7 +170,7 @@ use std::fmt::{Debug, Formatter};
 /// assert_eq!(bot.account().uin, "123456");
 /// assert_eq!(bot.adapter().name, "my_adapter");
 /// ```
-#[derive(Clone)]
+#[derive(Clone, PartialEq)]
 pub struct Bot {
 	adapter: AdapterInfo,
 	api: AdapterApi,
@@ -183,11 +183,6 @@ impl Debug for Bot {
 	}
 }
 
-impl PartialEq for Bot {
-	fn eq(&self, other: &Self) -> bool {
-		self.adapter == other.adapter && self.account == other.account
-	}
-}
 
 impl Bot {
 	/// 创建新的机器人实例

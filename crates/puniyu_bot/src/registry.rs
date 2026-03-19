@@ -2,7 +2,7 @@ mod store;
 use crate::Bot;
 use crate::types::BotId;
 use puniyu_error::registry::Error;
-use std::sync::{Arc, LazyLock};
+use std::sync::LazyLock;
 use store::BotStore;
 
 static STORE: LazyLock<BotStore> = LazyLock::new(BotStore::new);
@@ -201,7 +201,7 @@ impl<'b> BotRegistry {
 	/// # 示例
 	///
 	/// ```rust,ignore
-	/// if let Some(bot) = BotRegistry::get_with_bot_id(("123456") {
+	/// if let Some(bot) = BotRegistry::get_with_bot_id("123456") {
 	///     println!("找到机器人: {}", bot.account().uin);
 	/// }
 	/// ```

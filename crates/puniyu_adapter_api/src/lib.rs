@@ -97,6 +97,15 @@ impl Default for AdapterApi {
     }
 }
 
+impl PartialEq for AdapterApi {
+    fn eq(&self, other: &Self) -> bool {
+        Arc::ptr_eq(&self.group_api, &other.group_api)
+            && Arc::ptr_eq(&self.friend_api, &other.friend_api)
+            && Arc::ptr_eq(&self.account_api, &other.account_api)
+            && Arc::ptr_eq(&self.message_api, &other.message_api)
+    }
+}
+
 impl AdapterApi {
     /// 创建新的 AdapterApi 实例
     ///

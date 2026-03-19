@@ -1,3 +1,4 @@
+use crate::types::ListConfig;
 use crate::{AdapterConfig, LoggerConfig, ServerConfig};
 use puniyu_common::read_config;
 use puniyu_path::config_dir;
@@ -35,6 +36,18 @@ pub struct AppConfig {
 	#[serde(default)]
 	adapter: AdapterConfig,
 
+	/// 应用级群组配置
+	///
+	/// 包含群聊黑白名单等全局设置
+	#[serde(default)]
+	group: ListConfig,
+
+	/// 应用级好友配置
+	///
+	/// 包含好友黑白名单等全局设置
+	#[serde(default)]
+	friend: ListConfig,
+
 	/// Bot 主人列表
 	///
 	/// 定义哪些用户是 Bot 的主人，拥有最高权限
@@ -52,11 +65,13 @@ impl Default for AppConfig {
 	#[inline]
 	fn default() -> Self {
 		Self {
-			logger: LoggerConfig::default(),
-			server: ServerConfig::default(),
-			adapter: AdapterConfig::default(),
+			logger: Default::default(),
+			server: Default::default(),
+			adapter: Default::default(),
 			masters: default_master(),
 			prefix: default_prefix(),
+			group: Default::default(),
+			friend: Default::default(),
 		}
 	}
 }
@@ -69,11 +84,9 @@ impl AppConfig {
 	/// 返回当前的应用配置副本，从注册表获取
 	pub fn get() -> Self {
 		use crate::ConfigRegistry;
-		ConfigRegistry::get(CONFIG_PATH.as_path())
-			.and_then(|v| v.try_into().ok())
-			.unwrap_or_else(|| {
-				read_config::<Self>(config_dir().as_path(), "app").unwrap_or_default()
-			})
+		ConfigRegistry::get(CONFIG_PATH.as_path()).and_then(|v| v.try_into().ok()).unwrap_or_else(
+			|| read_config::<Self>(config_dir().as_path(), "app").unwrap_or_default(),
+		)
 	}
 
 	/// 获取日志配置
@@ -101,6 +114,24 @@ impl AppConfig {
 	/// 返回适配器配置的引用，控制启用哪些适配器
 	pub fn adapter(&self) -> &AdapterConfig {
 		&self.adapter
+	}
+
+		/// 获取应用级群组配置
+	///
+	/// # 返回值
+	///
+	/// 返回应用级群组配置的引用，包含群聊黑白名单等全局设置
+	pub fn group(&self) -> &ListConfig {
+		&self.group
+	}
+
+	/// 获取应用级好友配置
+	///
+	/// # 返回值
+	///
+	/// 返回应用级好友配置的引用，包含好友黑白名单等全局设置
+	pub fn friend(&self) -> &ListConfig {
+		&self.friend
 	}
 
 	/// 获取 Bot 主人列表

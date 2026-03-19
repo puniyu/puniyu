@@ -1,6 +1,6 @@
 pub use puniyu_config::{
 	AdapterConfig, AppConfig, BotConfig, BotOption, FriendConfig, GroupConfig, GroupOption,
-	LoggerConfig, ServerConfig,
+	ListConfig, LoggerConfig, ServerConfig,
 };
 pub use puniyu_config::{ConfigId, ConfigInfo, ReactiveMode};
 pub use puniyu_config::{app_config, bot_config, friend_config, group_config};

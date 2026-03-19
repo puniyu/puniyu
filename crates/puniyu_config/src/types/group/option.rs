@@ -88,7 +88,7 @@ impl GroupOption {
 		GroupOption {
 			cd: self.cd.or(global.cd),
 			user_cd: self.user_cd.or(global.user_cd),
-			mode: self.mode.clone().or(global.mode.clone()),
+			mode: self.mode.or(global.mode),
 			alias: self.alias.clone().or(global.alias.clone()),
 		}
 	}
@@ -117,7 +117,7 @@ impl GroupOption {
 	///
 	/// 返回当前的响应模式
 	pub fn mode(&self) -> ReactiveMode {
-		self.mode.clone().unwrap_or(ReactiveMode::All)
+		self.mode.unwrap_or(ReactiveMode::All)
 	}
 
 	/// 获取 Bot 别名列表

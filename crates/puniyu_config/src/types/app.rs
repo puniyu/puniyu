@@ -1,12 +1,9 @@
 mod adapter;
 #[doc(inline)]
 pub use adapter::AdapterConfig;
-mod friend;
+mod list;
 #[doc(inline)]
-pub use friend::FriendConfig;
-mod group;
-#[doc(inline)]
-pub use group::GroupConfig;
+pub use list::ListConfig;
 mod logger;
 #[doc(inline)]
 pub use logger::LoggerConfig;
