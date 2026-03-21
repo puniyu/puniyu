@@ -1,5 +1,5 @@
-use crate::BaseResponse;
-use actix_web::{get, HttpResponse};
+use crate::Response;
+use actix_web::{get, Responder};
 use serde::Serialize;
 
 #[derive(Debug, Serialize)]
@@ -10,14 +10,14 @@ struct AppInfo<'a> {
 }
 
 #[get("/info")]
-pub async fn info() -> HttpResponse {
-	let version = puniyu_api::app::app_version();
-	let app_name = puniyu_api::app::app_name();
+pub async fn info() -> impl Responder {
+	let version = puniyu_common::app::app_version();
+	let app_name = puniyu_common::app::app_name();
 	let info = AppInfo {
 		name: app_name,
 		version,
 	};
 
-	BaseResponse::<AppInfo>::ok("success", Some(info)).send_json()
+	Response::success(info)
 
 }

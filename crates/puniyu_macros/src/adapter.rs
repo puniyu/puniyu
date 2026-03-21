@@ -100,8 +100,8 @@ pub fn adapter(attr: proc_macro::TokenStream, item: proc_macro::TokenStream) -> 
 					.collect();
 
 				if !servers.is_empty() {
-					Some(::std::sync::Arc::new(move |cfg: &mut ::puniyu_adapter_api::server::ServiceConfig| {
-						servers.iter().for_each(|server| server(cfg));
+					Some(::puniyu_adapter_api::server::ServerFunction::new(move |cfg: &mut ::puniyu_adapter_api::server::ServiceConfig| {
+						servers.iter().for_each(|server| server.call(cfg));
 					}))
 				} else {
 					None

@@ -23,17 +23,15 @@ serde_json.workspace = true
 puniyu_logger.workspace = true
 puniyu_common.workspace = true
 puniyu_version.workspace = true
-puniyu_api.workspace = true
+puniyu_path.workspace = true
 bytes.workspace = true
 tokio = { workspace = true, features = ["full"] }
 actix-web.workspace = true
 futures-util = "0.3.31"
 clap = { workspace = true, optional = true, features = ["derive", "help"] }
 const-str = { workspace = true, optional = true }
-
-
-puniyu_server_core.workspace = true
 puniyu_error.workspace = true
+mime = "0.3.17"
 
 [features]
 default = ["cli"]
@@ -42,4 +40,3 @@ registry = ["puniyu_error/registry"]
 
 [dev-dependencies]
 tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
-tempfile = "3.8"

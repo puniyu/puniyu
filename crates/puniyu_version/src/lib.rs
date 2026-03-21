@@ -35,6 +35,6 @@ impl FromStr for Version {
 	type Err = semver::Error;
 
 	fn from_str(s: &str) -> Result<Self, Self::Err> {
-		semver::Version::parse(s).map(Into::into)
+		semver::Version::from_str(s).map(Into::into)
 	}
 }

@@ -1,9 +1,9 @@
+use std::env::current_dir;
 use clap::Parser;
 use const_str::parse;
 use puniyu_logger::{LoggerOptions, init as log_init};
 use puniyu_common::app as puniyu_common;
 use std::net::{IpAddr, Ipv4Addr};
-use std::path::Path;
 
 #[derive(Parser)]
 #[command(
@@ -33,9 +33,9 @@ async fn main() -> std::io::Result<()> {
 		parse!(env!("CARGO_PKG_VERSION_PATCH"), u64),
 	);
 
-	let info = puniyu_common::AppInfo::new("puniyu_server", &VERSION, Path::new("."));
+	let info = puniyu_common::AppInfo::new("puniyu-server", &VERSION, current_dir().unwrap());
 	puniyu_common::set_app_info(info);
-	log_init(Some(LoggerOptions::default()));
+	log_init(Some(LoggerOptions::default().with_prefix("puniyu-server")));
 	puniyu_server::run_server(
 		args.host.unwrap_or(IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1))),
 		args.port.unwrap_or(33700),

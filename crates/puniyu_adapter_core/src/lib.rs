@@ -94,7 +94,7 @@ pub trait Adapter: Send + Sync + 'static {
     /// # 示例
     ///
     /// ```rust,ignore
-    /// use puniyu_server_core::ServerFunction;
+    /// use puniyu_server_types::ServerFunction;
     /// use actix_web::web::{ServiceConfig, resource};
     /// use actix_web::HttpResponse;
     /// use std::sync::Arc;
@@ -111,7 +111,7 @@ pub trait Adapter: Send + Sync + 'static {
     ///     }
     /// }
     /// ```
-    fn server(&self) -> Option<puniyu_server_core::ServerFunction> {
+    fn server(&self) -> Option<puniyu_server::ServerFunction> {
         None
     }
 
