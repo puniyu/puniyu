@@ -70,7 +70,7 @@ pub mod receive;
 pub mod send;
 mod types;
 #[doc(inline)]
-pub use types::{ElementType, RawMessage};
+pub use types::{ElementType, RawMessage, Element};
 
 
 macro_rules! codegen_reexport {

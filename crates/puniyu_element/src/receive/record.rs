@@ -1,6 +1,6 @@
 use bytes::Bytes;
 use serde::{Deserialize, Serialize};
-use crate::{ElementType, RawMessage};
+use crate::{Element, ElementType, RawMessage};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RecordElement<'r> {
@@ -10,11 +10,13 @@ pub struct RecordElement<'r> {
 	pub file_name: &'r str
 }
 
-impl<'r> RawMessage for RecordElement<'r> {
+impl<'r> Element for RecordElement<'r> {
 	fn r#type(&self) -> ElementType {
 		ElementType::Record
 	}
+}
 
+impl<'r> RawMessage for RecordElement<'r> {
 	fn raw(&self) -> String {
 		self.file_name.to_string()
 	}

@@ -33,7 +33,7 @@
 //! }
 //! ```
 
-use crate::{ElementType, RawMessage, codegen_reexport};
+use crate::{Element, ElementType, RawMessage, codegen_reexport};
 use serde::{Deserialize, Serialize};
 
 codegen_reexport! {
@@ -136,7 +136,7 @@ impl<'e> Elements<'e> {
 	}
 }
 
-impl<'e> RawMessage for Elements<'e> {
+impl<'e> Element for Elements<'e> {
 	fn r#type(&self) -> ElementType {
 		match self {
 			Elements::Text(element) => element.r#type(),
@@ -151,7 +151,9 @@ impl<'e> RawMessage for Elements<'e> {
 			Elements::At(element) => element.r#type(),
 		}
 	}
+}
 
+impl<'e> RawMessage for Elements<'e> {
 	fn raw(&self) -> String {
 		match self {
 			Elements::Text(element) => element.raw(),

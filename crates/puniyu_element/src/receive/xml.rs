@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use crate::{ElementType, RawMessage};
+use crate::{Element, ElementType, RawMessage};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct XmlElement<'x> {
@@ -7,11 +7,13 @@ pub struct XmlElement<'x> {
     pub data: &'x str,
 }
 
-impl<'x> RawMessage for XmlElement<'x> {
+impl<'x> Element for XmlElement<'x> {
     fn r#type(&self) -> ElementType {
         ElementType::Xml
     }
+}
 
+impl<'x> RawMessage for XmlElement<'x> {
     fn raw(&self) -> String {
         self.data.to_string()
     }

@@ -1,5 +1,5 @@
 use bytes::Bytes;
-use puniyu_element::ElementType;
+use puniyu_element::{Element, ElementType};
 use puniyu_element::RawMessage;
 use puniyu_element::receive::*;
 

@@ -1,6 +1,6 @@
 use bytes::Bytes;
 use serde::{Deserialize, Serialize};
-use crate::{ElementType, RawMessage};
+use crate::{Element, ElementType, RawMessage};
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct VideoElement<'v> {
@@ -10,11 +10,13 @@ pub struct VideoElement<'v> {
     pub file_name: &'v str,
 }
 
-impl<'v> RawMessage for VideoElement<'v> {
+impl<'v> Element for VideoElement<'v> {
     fn r#type(&self) -> ElementType {
         ElementType::Video
     }
+}
 
+impl<'v> RawMessage for VideoElement<'v> {
     fn raw(&self) -> String {
         self.file_name.to_string()
     }

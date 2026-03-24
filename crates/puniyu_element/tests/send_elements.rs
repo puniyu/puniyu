@@ -1,5 +1,5 @@
 use puniyu_element::send::*;
-use puniyu_element::ElementType;
+use puniyu_element::{Element, ElementType};
 use puniyu_element::RawMessage;
 
 #[test]
