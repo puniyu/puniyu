@@ -44,8 +44,7 @@ pub async fn run_server(host: IpAddr, port: u16) -> std::io::Result<()> {
 			.configure(|cfg| {
 				cfg.service(
 					web::scope("/api/v1")
-						.configure(api::register_routes)
-						.wrap(middleware::PrettyJson),
+						.configure(api::register_routes),
 				);
 			});
 

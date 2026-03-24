@@ -5,8 +5,7 @@ use serde::Serialize;
 #[derive(Debug, Serialize)]
 struct AppInfo<'a> {
 	name: &'a str,
-	#[serde(flatten)]
-	version: &'a puniyu_version::Version,
+	version: String,
 }
 
 #[get("/info")]
@@ -15,9 +14,8 @@ pub async fn info() -> impl Responder {
 	let app_name = puniyu_common::app::app_name();
 	let info = AppInfo {
 		name: app_name,
-		version,
+		version: version.to_string(),
 	};
 
-	Response::success(info)
-
+	Response::success(info).pretty()
 }

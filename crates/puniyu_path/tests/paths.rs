@@ -18,9 +18,9 @@ fn init_test_env() {
 #[test]
 fn test_working_dir() {
 	init_test_env();
-	use puniyu_common::app::app_working_dir;
+	use puniyu_common::app::app_cwd_dir;
 
-	let working_dir = app_working_dir();
+	let working_dir = app_cwd_dir();
 	assert_eq!(working_dir, &PathBuf::from("."));
 }
 

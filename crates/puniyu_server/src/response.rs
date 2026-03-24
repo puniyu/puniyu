@@ -3,6 +3,8 @@ use actix_web::http::StatusCode;
 use actix_web::{HttpRequest, HttpResponse, Responder};
 use serde::{Deserialize, Serialize};
 
+use crate::PrettyJson;
+
 #[derive(Serialize, Deserialize)]
 pub struct Response<T = ()> {
     pub code: u16,
@@ -59,5 +61,12 @@ impl<T> Response<T> {
 
     pub fn forbidden(message: impl Into<String>) -> Self {
         Self::error(StatusCode::FORBIDDEN, message)
+    }
+}
+
+impl<T: Serialize> Response<T> {
+    pub fn pretty(self) -> PrettyJson<Self> {
+        let status = self.status;
+        PrettyJson { inner: self, status }
     }
 }

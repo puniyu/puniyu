@@ -7,16 +7,16 @@ use std::sync::OnceLock;
 pub struct AppInfo {
 	name: &'static str,
 	version: &'static Version,
-	working_dir: PathBuf,
+	cwd_dir: PathBuf,
 }
 
 impl AppInfo {
 	pub fn new(
 		name: &'static str,
 		version: &'static Version,
-		working_dir: impl Into<PathBuf>,
+		cwd_dir: impl Into<PathBuf>,
 	) -> Self {
-		Self { name, version, working_dir: working_dir.into() }
+		Self { name, version, cwd_dir: cwd_dir.into() }
 	}
 
 	pub fn name(&self) -> &'static str {
@@ -27,8 +27,8 @@ impl AppInfo {
 		self.version
 	}
 
-	pub fn working_dir(&self) -> &Path {
-		&self.working_dir
+	pub fn cwd_dir(&self) -> &Path {
+		&self.cwd_dir
 	}
 }
 
@@ -50,6 +50,6 @@ pub fn app_version() -> &'static Version {
 	app_info().version()
 }
 
-pub fn app_working_dir() -> &'static Path {
-	app_info().working_dir()
+pub fn app_cwd_dir() -> &'static Path {
+	app_info().cwd_dir()
 }

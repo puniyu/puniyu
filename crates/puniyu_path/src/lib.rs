@@ -1,7 +1,7 @@
 pub mod adapter;
 pub mod plugin;
 
-use puniyu_common::app::{app_name, app_working_dir};
+use puniyu_common::app::{app_cwd_dir, app_name};
 use std::path::PathBuf;
 
 /// 应用根目录
@@ -17,7 +17,7 @@ use std::path::PathBuf;
 /// println!("Base directory: {:?}", base);
 /// ```
 pub fn base_dir() -> PathBuf {
-	app_working_dir().to_path_buf()
+	app_cwd_dir().to_path_buf()
 }
 
 /// 应用文件夹路径
