@@ -42,22 +42,22 @@ fn test_message_sub_type_serialization() {
 
 	let friend = MessageSubEventType::Friend;
 	let json = serde_json::to_string(&friend).unwrap();
-	assert_eq!(json, r#""Friend""#);
+	assert_eq!(json, r#""friend""#);
 
 	let group = MessageSubEventType::Group;
 	let json = serde_json::to_string(&group).unwrap();
-	assert_eq!(json, r#""Group""#);
+	assert_eq!(json, r#""group""#);
 }
 
 #[test]
 fn test_message_sub_type_deserialization() {
 	use serde_json;
 
-	let json = r#""Friend""#;
+	let json = r#""friend""#;
 	let sub_type: MessageSubEventType = serde_json::from_str(json).unwrap();
 	assert_eq!(sub_type, MessageSubEventType::Friend);
 
-	let json = r#""Group""#;
+	let json = r#""group""#;
 	let sub_type: MessageSubEventType = serde_json::from_str(json).unwrap();
 	assert_eq!(sub_type, MessageSubEventType::Group);
 }

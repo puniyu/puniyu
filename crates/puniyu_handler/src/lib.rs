@@ -30,6 +30,6 @@ pub trait Handler: Send + Sync + 'static {
 
 impl PartialEq for dyn Handler {
     fn eq(&self, other: &Self) -> bool {
-        self.name() == other.name()
+        self.name() == other.name() && self.rank() == other.rank()
     }
 }

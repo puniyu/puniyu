@@ -21,3 +21,4 @@ puniyu_adapter_api.workspace = true
 puniyu_config.workspace = true
 puniyu_logger.workspace = true
 puniyu_error.workspace = true
+puniyu_server.workspace = true

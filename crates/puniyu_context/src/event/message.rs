@@ -1,13 +1,13 @@
 use crate::BotContext;
 use bytes::Bytes;
-use puniyu_adapter_core::types::message::SendMsgType;
+use puniyu_adapter_types::SendMsgType;
 use puniyu_bot::Bot;
 use puniyu_command_core::ArgValue;
-use puniyu_config::Config;
+use puniyu_config::app_config;
 use puniyu_contact::ContactType;
 use puniyu_element::receive::Elements;
-use puniyu_event::EventType;
 use puniyu_event::message::{FriendMessage, GroupMessage, MessageEvent, MessageSubEventType};
+use puniyu_event::EventType;
 use puniyu_message::Message;
 use puniyu_sender::SenderType;
 use std::collections::HashMap;
@@ -42,7 +42,7 @@ use std::collections::HashMap;
 /// ```
 #[derive(Clone)]
 pub struct MessageContext<'c> {
-	inner: &'c MessageEvent<'c>,
+	event: &'c MessageEvent<'c>,
 	bot: BotContext<'c>,
 	args: HashMap<String, ArgValue>,
 }
@@ -62,31 +62,31 @@ impl<'c> MessageContext<'c> {
 	/// let msg_context = MessageContext::new(&bot_context, &message_event, &args);
 	/// ```
 	pub fn new(event: &'c MessageEvent, args: HashMap<String, ArgValue>) -> Self {
-		Self { inner: event, bot: BotContext::new(event.bot()), args }
+		Self { event, bot: BotContext::new(event.bot()), args }
 	}
 
 	/// 获取内部消息事件
-	pub fn inner(&self) -> &MessageEvent<'c> {
-		self.inner
+	pub fn event(&self) -> &'c MessageEvent<'c> {
+		self.event
 	}
 
 	pub fn is_friend(&self) -> bool {
-		matches!(self.inner, MessageEvent::Friend(_))
+		matches!(self.event, MessageEvent::Friend(_))
 	}
 
 	pub fn is_group(&self) -> bool {
-		matches!(self.inner, MessageEvent::Group(_))
+		matches!(self.event, MessageEvent::Group(_))
 	}
 
 	pub fn as_bot(&self) -> &BotContext<'_> {
 		&self.bot
 	}
 	pub fn as_friend(&self) -> Option<&FriendMessage<'_>> {
-		self.inner.as_friend()
+		self.event.as_friend()
 	}
 
 	pub fn as_group(&self) -> Option<&GroupMessage<'_>> {
-		self.inner.as_group()
+		self.event.as_group()
 	}
 
 	pub async fn reply<M>(&self, message: M) -> puniyu_error::Result<SendMsgType>
@@ -127,7 +127,7 @@ impl<'c> MessageContext<'c> {
 
 	/// 判断用户是否为Bot Master
 	pub fn is_master(&self) -> bool {
-		let config = Config::app();
+		let config = app_config();
 		let masters = config.masters();
 		masters.contains(&self.user_id().to_string())
 	}
@@ -140,7 +140,7 @@ impl<'c> MessageContext<'c> {
 	///
 	/// 返回 Unix 时间戳（秒）
 	pub fn time(&self) -> u64 {
-		self.inner.time()
+		self.event.time()
 	}
 
 	/// 获取事件类型
@@ -148,8 +148,8 @@ impl<'c> MessageContext<'c> {
 	/// # 返回值
 	///
 	/// 返回 `EventType::Message`
-	pub fn event(&self) -> &EventType {
-		self.inner.event()
+	pub fn event_type(&self) -> &EventType {
+		self.event.event_type()
 	}
 
 	/// 获取事件 ID
@@ -158,7 +158,7 @@ impl<'c> MessageContext<'c> {
 	///
 	/// 返回事件的唯一标识符
 	pub fn event_id(&self) -> &str {
-		self.inner.event_id()
+		self.event.event_id()
 	}
 
 	/// 获取消息子类型
@@ -167,7 +167,7 @@ impl<'c> MessageContext<'c> {
 	///
 	/// 返回消息子类型（Friend 或 Group）
 	pub fn sub_event(&self) -> &MessageSubEventType {
-		self.inner.sub_event()
+		self.event.sub_event()
 	}
 
 	/// 获取机器人实例
@@ -176,7 +176,7 @@ impl<'c> MessageContext<'c> {
 	///
 	/// 返回处理该消息的机器人实例引用
 	pub fn bot(&self) -> &Bot {
-		self.inner.bot()
+		self.event.bot()
 	}
 
 	/// 获取机器人 ID
@@ -185,7 +185,7 @@ impl<'c> MessageContext<'c> {
 	///
 	/// 返回机器人的唯一标识符
 	pub fn self_id(&self) -> &str {
-		self.inner.self_id()
+		self.event.self_id()
 	}
 
 	/// 获取用户 ID
@@ -194,7 +194,7 @@ impl<'c> MessageContext<'c> {
 	///
 	/// 返回发送消息的用户 ID
 	pub fn user_id(&self) -> &str {
-		self.inner.user_id()
+		self.event.user_id()
 	}
 
 	/// 获取联系人信息
@@ -203,7 +203,7 @@ impl<'c> MessageContext<'c> {
 	///
 	/// 返回消息发生的联系人信息（好友或群聊）
 	pub fn contact(&self) -> ContactType<'_> {
-		self.inner.contact()
+		self.event.contact()
 	}
 
 	/// 获取发送者信息
@@ -212,17 +212,17 @@ impl<'c> MessageContext<'c> {
 	///
 	/// 返回发送消息的用户详细信息
 	pub fn sender(&self) -> SenderType<'_> {
-		self.inner.sender()
+		self.event.sender()
 	}
 }
 
 impl<'c> MessageContext<'c> {
 	pub fn message_id(&self) -> &str {
-		self.inner.message_id()
+		self.event.message_id()
 	}
 
 	pub fn elements(&self) -> &Vec<Elements<'_>> {
-		self.inner.elements()
+		self.event.elements()
 	}
 
 	pub fn get_at(&self) -> Vec<&str> {

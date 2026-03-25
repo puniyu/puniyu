@@ -15,11 +15,10 @@
 //!
 //! ```rust
 //! use puniyu_element::receive::*;
-//! use puniyu_element::RawMessage;
+//! use puniyu_element::Element;
 //!
 //! // 创建文本元素
 //! let text = TextElement { text: "Hello, World!" };
-//! println!("Message: {}", text.raw());
 //!
 //! // 创建 @提及元素
 //! let at = AtElement { target_id: "123456" };
@@ -70,7 +69,7 @@ pub mod receive;
 pub mod send;
 mod types;
 #[doc(inline)]
-pub use types::{ElementType, RawMessage, Element};
+pub use types::{ElementType, Element};
 
 
 macro_rules! codegen_reexport {

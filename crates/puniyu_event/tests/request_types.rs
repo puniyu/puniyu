@@ -51,22 +51,22 @@ fn test_request_sub_event_serialization() {
 
 	let event = RequestSubEventType::PrivateApply;
 	let json = serde_json::to_string(&event).unwrap();
-	assert_eq!(json, r#""PrivateApply""#);
+	assert_eq!(json, r#""privateApply""#);
 
 	let event = RequestSubEventType::GroupInvite;
 	let json = serde_json::to_string(&event).unwrap();
-	assert_eq!(json, r#""GroupInvite""#);
+	assert_eq!(json, r#""groupInvite""#);
 }
 
 #[test]
 fn test_request_sub_event_deserialization() {
 	use serde_json;
 
-	let json = r#""PrivateApply""#;
+	let json = r#""privateApply""#;
 	let event: RequestSubEventType = serde_json::from_str(json).unwrap();
 	assert_eq!(event, RequestSubEventType::PrivateApply);
 
-	let json = r#""GroupApply""#;
+	let json = r#""groupApply""#;
 	let event: RequestSubEventType = serde_json::from_str(json).unwrap();
 	assert_eq!(event, RequestSubEventType::GroupApply);
 }

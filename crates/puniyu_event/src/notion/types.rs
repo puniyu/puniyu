@@ -5,6 +5,7 @@ use crate::notion::{
 	GroupMessageReactionType, GroupPokeType, GroupRecallType, GroupSignInType, GroupWholeBanType,
 	PrivateFileUploadType, PrivatePokeType, PrivateRecallType, ReceiveLikeType,
 };
+use crate::types::codegen_from_for_content_type;
 use serde::{Deserialize, Serialize};
 use strum::{Display, EnumString, IntoStaticStr};
 
@@ -65,69 +66,50 @@ use strum::{Display, EnumString, IntoStaticStr};
 	PartialOrd,
 	Ord,
 )]
+#[strum(serialize_all = "camelCase")]
+#[serde(rename_all = "camelCase")]
 pub enum NotionSubEventType {
 	/// 收到点赞
-	#[strum(serialize = "receiveLike")]
 	ReceiveLike,
 	/// 好友增加
-	#[strum(serialize = "friendAdd")]
 	FriendAdd,
 	/// 好友删除
-	#[strum(serialize = "friendDecrease")]
 	FriendDecrease,
 	/// 私聊戳一戳
-	#[strum(serialize = "privatePoke")]
 	PrivatePoke,
 	/// 私聊撤回
-	#[strum(serialize = "privateRecall")]
 	PrivateRecall,
 	/// 私聊文件上传
-	#[strum(serialize = "privateFileUpload")]
 	PrivateFileUpload,
 	/// 群戳一戳
-	#[strum(serialize = "groupPoke")]
 	GroupPoke,
 	/// 群聊撤回
-	#[strum(serialize = "GroupRecall")]
 	GroupRecall,
 	/// 群文件上传
-	#[strum(serialize = "groupFileUpload")]
 	GroupFileUpload,
 	/// 群名片修改
-	#[strum(serialize = "groupCardChange")]
 	GroupCardChange,
 	/// 群成员头衔变动
-	#[strum(serialize = "groupMemberTitleChange")]
 	GroupMemberTitleChange,
 	/// 群精华消息变动
-	#[strum(serialize = "groupHighlightsChange")]
 	GroupHighlightsChange,
 	/// 群成员增加
-	#[strum(serialize = "groupMemberAdd")]
 	GroupMemberAdd,
 	/// 群成员减少
-	#[strum(serialize = "groupMemberDecrease")]
 	GroupMemberDecrease,
 	/// 群管理员变动
-	#[strum(serialize = "groupAdminChange")]
 	GroupAdminChange,
 	/// 群打卡
-	#[strum(serialize = "groupSignIn")]
 	GroupSignIn,
 	/// 群成员禁言
-	#[strum(serialize = "groupMemberBan")]
 	GroupMemberBan,
 	/// 群全员禁言
-	#[strum(serialize = "groupWholeBan")]
 	GroupWholeBan,
 	/// 群消息表情动态
-	#[strum(serialize = "groupMessageReaction")]
 	GroupMessageReaction,
 	/// 群幸运王
-	#[strum(serialize = "groupLuckKing")]
 	GroupLuckKing,
 	/// 群荣耀变动
-	#[strum(serialize = "groupHonorChange")]
 	GroupHonorChange,
 }
 
@@ -198,19 +180,7 @@ pub enum ContentType {
 	GroupHonorChange(GroupHonorChangeType),
 }
 
-macro_rules! impl_from_for_content_type {
-    ($($variant:ident($inner_type:ty)),* $(,)?) => {
-        $(
-            impl From<$inner_type> for ContentType {
-                fn from(value: $inner_type) -> Self {
-                    Self::$variant(value)
-                }
-            }
-        )*
-    };
-}
-
-impl_from_for_content_type! {
+codegen_from_for_content_type! {
 	ReceiveLike(ReceiveLikeType),
 	FriendAdd(FriendAddType),
 	FriendDecrease(FriendDecreaseType),
@@ -233,3 +203,4 @@ impl_from_for_content_type! {
 	GroupLuckKing(GroupLuckKingType),
 	GroupHonorChange(GroupHonorChangeType),
 }
+

@@ -109,8 +109,7 @@ impl CommandHandler {
 			return;
 		}
 
-
-		let message_ctx = MessageContext::new(event.inner(), parsed_args);
+		let message_ctx = MessageContext::new(event.event(), parsed_args);
 
 		Self::execute_command(&message_ctx, &command_name).await;
 	}

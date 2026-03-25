@@ -1,8 +1,7 @@
 use bytes::Bytes;
 use puniyu_account::AccountInfo;
-use puniyu_adapter_core::adapter_info;
-use puniyu_adapter_core::api::AdapterApi;
-use puniyu_adapter_core::types::info::{AdapterPlatform, AdapterProtocol};
+use puniyu_adapter_api::AdapterApi;
+use puniyu_adapter_types::{AdapterPlatform, AdapterProtocol, adapter_info};
 use puniyu_bot::Bot;
 use puniyu_context::BotContext;
 

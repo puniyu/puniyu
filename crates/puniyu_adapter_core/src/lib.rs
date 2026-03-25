@@ -65,7 +65,7 @@ pub trait Adapter: Send + Sync + 'static {
     ///
     /// # 返回值
     ///
-    /// 返回实现了 `Hook` trait 的钩子对象列表
+    /// 返回实现了 [`Hook`] trait 的钩子对象列表
     ///
     /// # 示例
     ///
@@ -149,6 +149,6 @@ pub trait Adapter: Send + Sync + 'static {
 
 impl PartialEq for dyn Adapter {
     fn eq(&self, other: &Self) -> bool {
-        self.info() == other.info()
+        self.info() == other.info() && self.api() == other.api()
     }
 }

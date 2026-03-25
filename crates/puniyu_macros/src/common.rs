@@ -8,8 +8,7 @@ pub(crate) fn validate_return_type(fn_sig: &syn::Signature, expected_type: &str)
                     return_type,
                     format!("Function must return `{}` type", expected_type),
                 )
-                    .to_compile_error()
-                    .into();
+                    .to_compile_error();
             }
         }
         syn::ReturnType::Default => {
@@ -17,8 +16,7 @@ pub(crate) fn validate_return_type(fn_sig: &syn::Signature, expected_type: &str)
                 fn_sig,
                 "Function must have an explicit return type",
             )
-                .to_compile_error()
-                .into();
+                .to_compile_error();
         }
     }
 
@@ -27,11 +25,10 @@ pub(crate) fn validate_return_type(fn_sig: &syn::Signature, expected_type: &str)
 
 fn check_simple_type_match(return_type: &syn::Type, expected_type: &str) -> bool {
     if let syn::Type::Path(type_path) = return_type {
-        if let Some(segment) = type_path.path.segments.last() {
-            if segment.ident == expected_type {
+        if let Some(segment) = type_path.path.segments.last()
+            && segment.ident == expected_type {
                 return true;
             }
-        }
 
         let full_path = type_path.path.segments.iter()
             .map(|seg| seg.ident.to_string())
@@ -53,8 +50,7 @@ pub(crate) fn validate_async(fn_sig: &syn::Signature) -> proc_macro2::TokenStrea
             fn_sig,
             "Function must be async",
         )
-            .to_compile_error()
-            .into();
+            .to_compile_error();
     }
 
     quote::quote! {}

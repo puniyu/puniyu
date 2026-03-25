@@ -86,8 +86,8 @@ impl<'c> EventContext<'c> {
 	/// # 返回值
 	///
 	/// 返回 `EventType::Message`
-	pub fn event(&self) -> &EventType {
-		self.inner.event()
+	pub fn event_type(&self) -> &EventType {
+		self.inner.event_type()
 	}
 
 	/// 获取事件 ID

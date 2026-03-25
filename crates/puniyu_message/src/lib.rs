@@ -98,7 +98,7 @@ impl<'m> fmt::Display for Message<'m> {
 	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
 		if f.alternate() {
 			let segments: Vec<String> = self.0.iter().map(|s| format!("{:#}", s)).collect();
-			write!(f, "{}", segments.join("\n"))
+			write!(f, "{}", segments.join(""))
 		} else {
 			let segments: Vec<String> = self.0.iter().map(|s| s.to_string()).collect();
 			write!(f, "{}", segments.join(""))

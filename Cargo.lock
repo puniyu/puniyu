@@ -1795,6 +1795,7 @@ dependencies = [
  "puniyu_config",
  "puniyu_error",
  "puniyu_logger",
+ "puniyu_server",
 ]
 
 [[package]]
@@ -1909,7 +1910,8 @@ version = "0.7.8"
 dependencies = [
  "bytes",
  "puniyu_account",
- "puniyu_adapter_core",
+ "puniyu_adapter_api",
+ "puniyu_adapter_types",
  "puniyu_bot",
  "puniyu_command_core",
  "puniyu_config",
@@ -2020,6 +2022,7 @@ dependencies = [
  "puniyu_config",
  "puniyu_context",
  "puniyu_cooldown",
+ "puniyu_element",
  "puniyu_error",
  "puniyu_event",
  "puniyu_handler",
