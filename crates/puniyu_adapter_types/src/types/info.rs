@@ -20,7 +20,7 @@ use strum::{Display, EnumString, IntoStaticStr};
 /// # 示例
 ///
 /// ```rust
-/// use puniyu_adapter_core::types::info::AdapterPlatform;
+/// use puniyu_adapter_types::AdapterPlatform;
 ///
 /// let platform = AdapterPlatform::QQ;
 /// assert_eq!(platform.to_string(), "qq");
@@ -31,18 +31,14 @@ use strum::{Display, EnumString, IntoStaticStr};
 #[derive(
 	Debug, Default, Clone, PartialEq, Eq, Display, Deserialize, Serialize, EnumString, IntoStaticStr,
 )]
+#[strum(serialize_all = "lowercase")]
+#[serde(rename_all = "lowercase")]
 pub enum AdapterPlatform {
-	#[strum(serialize = "qq")]
 	QQ,
-	#[strum(serialize = "wechat")]
 	Wechat,
-	#[strum(serialize = "telegram")]
 	Telegram,
-	#[strum(serialize = "discord")]
 	Discord,
-	#[strum(serialize = "kook")]
 	Kook,
-	#[strum(serialize = "other")]
 	#[default]
 	Other,
 }
@@ -62,24 +58,19 @@ pub enum AdapterPlatform {
 /// # 示例
 ///
 /// ```rust
-/// use puniyu_adapter_core::types::info::AdapterStandard;
+/// use puniyu_adapter_types::AdapterStandard;
 ///
 /// let standard = AdapterStandard::OneBotV11;
-/// assert_eq!(standard.to_string(), "OnebotV11");
+/// assert_eq!(standard.to_string(), "OneBotV11");
 /// ```
 #[derive(
 	Debug, Default, Clone, PartialEq, Eq, Display, Deserialize, Serialize, EnumString, IntoStaticStr,
 )]
 pub enum AdapterStandard {
-	#[strum(serialize = "OnebotV11")]
 	OneBotV11,
-	#[strum(serialize = "OnebotV12")]
 	OneBotV12,
-	#[strum(serialize = "Oicq")]
 	Oicq,
-	#[strum(serialize = "Icqq")]
 	Icqq,
-	#[strum(serialize = "Other")]
 	#[default]
 	Other,
 }
@@ -104,7 +95,7 @@ pub enum AdapterStandard {
 /// # 示例
 ///
 /// ```rust
-/// use puniyu_adapter_core::types::info::AdapterProtocol;
+/// use puniyu_adapter_types::AdapterProtocol;
 ///
 /// let protocol = AdapterProtocol::NapCat;
 /// assert_eq!(protocol.to_string(), "NapCat");
@@ -116,25 +107,15 @@ pub enum AdapterStandard {
 	Debug, Default, Clone, PartialEq, Eq, Display, Deserialize, Serialize, EnumString, IntoStaticStr,
 )]
 pub enum AdapterProtocol {
-	#[strum(serialize = "QQBot")]
 	QQBot,
-	#[strum(serialize = "Icqq")]
 	Icqq,
-	#[strum(serialize = "Oicq")]
 	Oicq,
-	#[strum(serialize = "GoCqHttp")]
 	GoCqHttp,
-	#[strum(serialize = "NapCat")]
 	NapCat,
-	#[strum(serialize = "LLOneBot")]
 	LLOneBot,
-	#[strum(serialize = "Conwechat")]
 	Conwechat,
-	#[strum(serialize = "Lagrange")]
 	Lagrange,
-	#[strum(serialize = "Console")]
 	Console,
-	#[strum(serialize = "Other")]
 	#[default]
 	Other,
 }
@@ -154,7 +135,7 @@ pub enum AdapterProtocol {
 /// # 示例
 ///
 /// ```rust
-/// use puniyu_adapter_core::types::info::AdapterCommunication;
+/// use puniyu_adapter_types::AdapterCommunication;
 ///
 /// let comm = AdapterCommunication::WebSocketServer;
 /// assert_eq!(comm.to_string(), "WebSocketServer");
@@ -173,16 +154,11 @@ pub enum AdapterProtocol {
 	Debug, Default, Clone, PartialEq, Eq, Display, Deserialize, Serialize, EnumString, IntoStaticStr,
 )]
 pub enum AdapterCommunication {
-	#[strum(serialize = "Http")]
 	Http,
-	#[strum(serialize = "WebSocketServer")]
 	WebSocketServer,
-	#[strum(serialize = "WebSocketClient")]
 	WebSocketClient,
-	#[strum(serialize = "Grpc")]
 	Grpc,
 	#[default]
-	#[strum(serialize = "Other")]
 	Other,
 }
 
@@ -208,7 +184,7 @@ pub enum AdapterCommunication {
 /// ## 使用 Builder 模式
 ///
 /// ```rust
-/// use puniyu_adapter_core::types::info::{
+/// use puniyu_adapter_types::{
 ///     AdapterInfoBuilder, AdapterPlatform, AdapterProtocol, AdapterCommunication
 /// };
 /// use puniyu_version::Version;
@@ -227,8 +203,8 @@ pub enum AdapterCommunication {
 /// ## 使用宏
 ///
 /// ```rust
-/// use puniyu_adapter_core::adapter_info;
-/// use puniyu_adapter_core::types::info::{AdapterPlatform, AdapterProtocol};
+/// use puniyu_adapter_types::adapter_info;
+/// use puniyu_adapter_types::{AdapterPlatform, AdapterProtocol};
 ///
 /// let info = adapter_info!(
 ///     "my_adapter",
@@ -320,8 +296,8 @@ impl AdapterInfoBuilder {
 /// ## 使用命名字段
 ///
 /// ```rust
-/// use puniyu_adapter_core::adapter_info;
-/// use puniyu_adapter_core::types::info::{AdapterPlatform, AdapterProtocol, AdapterCommunication};
+/// use puniyu_adapter_types::adapter_info;
+/// use puniyu_adapter_types::{AdapterPlatform, AdapterProtocol, AdapterCommunication};
 /// use puniyu_version::Version;
 ///
 /// let info = adapter_info!(
@@ -339,8 +315,8 @@ impl AdapterInfoBuilder {
 /// ## 使用快捷形式
 ///
 /// ```rust
-/// use puniyu_adapter_core::adapter_info;
-/// use puniyu_adapter_core::types::info::{AdapterPlatform, AdapterProtocol};
+/// use puniyu_adapter_types::adapter_info;
+/// use puniyu_adapter_types::{AdapterPlatform, AdapterProtocol};
 ///
 /// let info = adapter_info!(
 ///     "my_adapter",
@@ -356,8 +332,8 @@ impl AdapterInfoBuilder {
 /// ## 完整配置示例
 ///
 /// ```rust
-/// use puniyu_adapter_core::adapter_info;
-/// use puniyu_adapter_core::types::info::{
+/// use puniyu_adapter_types::adapter_info;
+/// use puniyu_adapter_types::{
 ///     AdapterPlatform, AdapterProtocol, AdapterStandard, AdapterCommunication
 /// };
 /// use puniyu_version::Version;
@@ -394,7 +370,7 @@ impl AdapterInfoBuilder {
 #[macro_export]
 macro_rules! adapter_info {
     ( $( $key:ident : $value:expr ),+ $(,)? ) => {{
-        let  mut builder = $crate::types::info::AdapterInfoBuilder::default();
+        let  mut builder = $crate::AdapterInfoBuilder::default();
 		$(
 			builder.$key($value);
 		)*
@@ -408,3 +384,4 @@ macro_rules! adapter_info {
 		)
 	}};
 }
+

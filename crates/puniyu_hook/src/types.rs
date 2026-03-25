@@ -45,7 +45,17 @@ use strum::{Display, IntoStaticStr};
 /// let hook_type = HookType::from_str("status.start").unwrap();
 /// ```
 #[derive(
-	Debug, Clone, Display, IntoStaticStr, Deserialize, Serialize, PartialEq, Eq, PartialOrd, Ord,
+	Debug,
+	Copy,
+	Clone,
+	Display,
+	IntoStaticStr,
+	Deserialize,
+	Serialize,
+	PartialEq,
+	Eq,
+	PartialOrd,
+	Ord,
 )]
 pub enum HookType {
 	/// 事件钩子
@@ -78,6 +88,6 @@ impl FromStr for HookType {
 
 impl Default for HookType {
 	fn default() -> Self {
-		HookType::Event(HookEventType::default())
+		Self::Event(HookEventType::default())
 	}
 }

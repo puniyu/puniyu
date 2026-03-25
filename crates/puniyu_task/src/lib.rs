@@ -120,7 +120,7 @@
 #[cfg(feature = "registry")]
 mod registry;
 #[cfg(feature = "registry")]
-pub use registry::TaskRegistry;
+pub use registry::{TaskRegistry, init};
 mod types;
 #[doc(inline)]
 pub use types::*;

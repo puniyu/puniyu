@@ -22,3 +22,4 @@ puniyu_config.workspace = true
 puniyu_logger.workspace = true
 puniyu_error.workspace = true
 puniyu_server.workspace = true
+puniyu_hook.workspace = true

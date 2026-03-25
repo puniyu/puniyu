@@ -2,6 +2,7 @@ use std::sync::Arc;
 use puniyu_adapter_api::AdapterApi;
 use puniyu_adapter_types::AdapterInfo;
 use puniyu_config::Config;
+use puniyu_hook::Hook;
 
 #[async_trait::async_trait]
 pub trait Adapter: Send + Sync + 'static {

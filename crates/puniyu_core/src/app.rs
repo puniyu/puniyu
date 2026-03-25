@@ -331,6 +331,9 @@ async fn init_app(
 	for dir in &dirs {
 		check_dir(dir).await?;
 	}
+
+	puniyu_task::init().await;
+
 	info!("plugin loading...");
 	for plugin in plugins {
 		if let Err(e) = plugin::init_plugin(plugin).await {

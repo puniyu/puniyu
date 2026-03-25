@@ -1,7 +1,7 @@
 use async_trait::async_trait;
 use puniyu_context::EventContext;
 use puniyu_hook::Hook;
-use puniyu_hook::types::{HookEventType, HookType};
+use puniyu_hook::{HookEventType, HookType};
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, AtomicU32, Ordering};
 

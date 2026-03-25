@@ -56,13 +56,16 @@
 
 #[cfg(feature = "registry")]
 mod registry;
-use crate::types::HookType;
 use async_trait::async_trait;
 use puniyu_context::EventContext;
 #[cfg(feature = "registry")]
+#[doc(inline)]
 pub use registry::HookRegistry;
-
-pub mod types;
+mod types;
+#[doc(inline)]
+pub use types::*;
+#[doc(inline)]
+pub use puniyu_common::source::SourceType;
 
 /// 钩子 Trait
 ///

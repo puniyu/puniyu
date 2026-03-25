@@ -1794,6 +1794,7 @@ dependencies = [
  "puniyu_adapter_types",
  "puniyu_config",
  "puniyu_error",
+ "puniyu_hook",
  "puniyu_logger",
  "puniyu_server",
 ]

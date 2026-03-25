@@ -7,6 +7,12 @@ use store::TaskStore;
 
 static STORE: LazyLock<TaskStore> = LazyLock::new(TaskStore::new);
 
+/// 初始化任务调度器
+#[inline]
+pub async fn init() {
+	store::init_scheduler().await;
+}
+
 /// 任务注册表
 ///
 /// 提供任务的注册、卸载和查询功能。
@@ -50,6 +56,7 @@ static STORE: LazyLock<TaskStore> = LazyLock::new(TaskStore::new);
 /// }
 /// ```
 pub struct TaskRegistry;
+
 
 impl<'t> TaskRegistry {
 	/// 注册任务

@@ -25,6 +25,7 @@ use strum::{Display, IntoStaticStr};
 /// ```
 #[derive(
 	Debug,
+	Copy,
 	Clone,
 	Default,
 	Display,
