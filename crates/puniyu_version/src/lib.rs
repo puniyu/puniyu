@@ -1,7 +1,42 @@
+//! # puniyu_version
+//!
+//! 轻量语义版本类型，主要用于在项目内部共享 `major.minor.patch` 版本信息。
+//!
+//! ## 特性
+//!
+//! - 提供 `Version::new` 构造函数
+//! - 支持 `Display`，格式为 `major.minor.patch`
+//! - 支持 `FromStr` 解析语义化版本字符串
+//! - 支持与 `semver::Version` 双向转换
+//!
+//! ## 设计说明
+//!
+//! `Version` 仅保留语义化版本的核心三段（`major` / `minor` / `patch`）。
+//! 当从 `semver::Version` 转换或解析包含预发布/构建元数据的字符串时，
+//! 这些扩展信息会被忽略。
+//!
+//! ## 示例
+//!
+//! ```rust
+//! use std::str::FromStr;
+//! use puniyu_version::Version;
+//!
+//! let version = Version::new(1, 2, 3);
+//! assert_eq!(version.to_string(), "1.2.3");
+//!
+//! let parsed = Version::from_str("1.2.3-beta.1+build.7");
+//! let parsed = match parsed {
+//!     Ok(value) => value,
+//!     Err(err) => panic!("parse failed: {err}"),
+//! };
+//! assert_eq!(parsed, Version::new(1, 2, 3));
+//! ```
+
 use std::str::FromStr;
 use derive_more::Display;
 use serde::{Deserialize, Serialize};
 
+/// 三段式版本号（`major.minor.patch`）。
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Display)]
 #[display("{major}.{minor}.{patch}")]
 pub struct Version {
@@ -14,6 +49,18 @@ pub struct Version {
 }
 
 impl Version {
+	/// 创建一个新的版本号。
+	///
+	/// # 示例
+	///
+	/// ```rust
+	/// use puniyu_version::Version;
+	///
+	/// let version = Version::new(2, 0, 1);
+	/// assert_eq!(version.major, 2);
+	/// assert_eq!(version.minor, 0);
+	/// assert_eq!(version.patch, 1);
+	/// ```
 	pub const fn new(major: u64, minor: u64, patch: u64) -> Self {
 		Self { major, minor, patch }
 	}
@@ -34,6 +81,24 @@ impl From<Version> for semver::Version {
 impl FromStr for Version {
 	type Err = semver::Error;
 
+	/// 解析版本字符串并提取核心三段。
+	///
+	/// 解析规则遵循 `semver` 规范，但最终只保留 `major.minor.patch`。
+	///
+	/// # 示例
+	///
+	/// ```rust
+	/// use std::str::FromStr;
+	/// use puniyu_version::Version;
+	///
+	/// let version = Version::from_str("1.2.3-alpha.1+build.5");
+	/// let version = match version {
+	///     Ok(value) => value,
+	///     Err(err) => panic!("parse failed: {err}"),
+	/// };
+	///
+	/// assert_eq!(version, Version::new(1, 2, 3));
+	/// ```
 	fn from_str(s: &str) -> Result<Self, Self::Err> {
 		semver::Version::from_str(s).map(Into::into)
 	}

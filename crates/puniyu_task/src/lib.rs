@@ -54,7 +54,7 @@
 //! ## 使用示例
 //!
 //! ```rust, ignore
-//! use puniyu_task::{Task, registry::TaskRegistry};
+//! use puniyu_task::{Task, TaskRegistry};
 //! use async_trait::async_trait;
 //! use std::sync::Arc;
 //!

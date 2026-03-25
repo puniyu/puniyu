@@ -27,7 +27,7 @@ pub async fn init() {
 /// # 示例
 ///
 /// ```rust,ignore
-/// use puniyu_task::{Task, registry::TaskRegistry};
+/// use puniyu_task::{Task, TaskRegistry};
 /// use async_trait::async_trait;
 /// use std::sync::Arc;
 ///
@@ -79,7 +79,7 @@ impl<'t> TaskRegistry {
 	/// # 示例
 	///
 	/// ```rust,ignore
-	/// use puniyu_task::registry::TaskRegistry;
+	/// use puniyu_task::TaskRegistry;
 	/// use std::sync::Arc;
 	///
 	/// let task_id = TaskRegistry::register(1, Arc::new(MyTask)).await?;
@@ -105,7 +105,7 @@ impl<'t> TaskRegistry {
 	/// # 示例
 	///
 	/// ```rust,ignore
-	/// use puniyu_task::registry::TaskRegistry;
+	/// use puniyu_task::TaskRegistry;
 	///
 	/// // 通过 ID 卸载
 	/// TaskRegistry::unregister(123u64).await?;
@@ -206,7 +206,7 @@ impl<'t> TaskRegistry {
 	/// # 示例
 	///
 	/// ```rust,ignore
-	/// use puniyu_task::registry::TaskRegistry;
+	/// use puniyu_task::TaskRegistry;
 	///
 	/// // 通过 ID 查询
 	/// let tasks = TaskRegistry::get(123u64);
@@ -279,7 +279,7 @@ impl<'t> TaskRegistry {
 	/// # 示例
 	///
 	/// ```rust,ignore
-	/// use puniyu_task::registry::TaskRegistry;
+	/// use puniyu_task::TaskRegistry;
 	///
 	/// let all_tasks = TaskRegistry::all();
 	/// println!("共有 {} 个任务", all_tasks.len());

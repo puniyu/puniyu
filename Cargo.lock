@@ -2209,6 +2209,7 @@ dependencies = [
  "derive_more",
  "semver",
  "serde",
+ "serde_json",
 ]
 
 [[package]]
