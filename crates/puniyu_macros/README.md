@@ -70,7 +70,7 @@ pub async fn init() {
 **参数：**
 - `name`（必填）：命令名称
 - `desc`（可选）：命令描述，默认为空
-- `rank`（可选）：命令优先级，默认为 `100`
+- `priority`（可选）：命令优先级，默认为 `100`
 - `args`（可选）：命令参数列表，默认为空数组
 
 **特点：**
@@ -169,7 +169,7 @@ use puniyu_plugin::{BotContext, MessageContext, HandlerResult};
     name = "echo",
     desc = "回显消息",
     args = ["message"],
-    rank = 50
+    priority = 50
 )]
 pub async fn echo_command(bot: &BotContext, ev: &MessageContext) -> HandlerResult {
     // 命令处理逻辑

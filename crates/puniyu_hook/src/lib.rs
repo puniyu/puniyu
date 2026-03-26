@@ -28,7 +28,7 @@
 //!         &HookType::Event(HookEventType::Message)
 //!     }
 //!
-//!     fn rank(&self) -> u32 {
+//!     fn priority(&self) -> u32 {
 //!         100
 //!     }
 //!
@@ -90,7 +90,7 @@ pub use puniyu_common::source::SourceType;
 ///         &HookType::Event(HookEventType::Message)
 ///     }
 ///
-///     fn rank(&self) -> u32 {
+///     fn priority(&self) -> u32 {
 ///         100
 ///     }
 ///
@@ -139,11 +139,11 @@ pub trait Hook: Send + Sync + 'static {
 	/// # 示例
 	///
 	/// ```rust,ignore
-	/// fn rank(&self) -> u32 {
+	/// fn priority(&self) -> u32 {
 	///     50  // 高优先级
 	/// }
 	/// ```
-	fn rank(&self) -> u32;
+	fn priority(&self) -> u32;
 
 	/// 执行钩子逻辑
 	///
@@ -174,6 +174,6 @@ pub trait Hook: Send + Sync + 'static {
 
 impl PartialEq for dyn Hook {
 	fn eq(&self, other: &Self) -> bool {
-		self.name() == other.name() && self.r#type() == other.r#type() && self.rank() == other.rank()
+		self.name() == other.name() && self.r#type() == other.r#type() && self.priority() == other.priority()
 	}
 }

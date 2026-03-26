@@ -45,7 +45,7 @@ pub fn adapter_server(
 /// |------|------|:----:|--------|------|
 /// | `name` | `&str` | | 函数名 | 钩子名称 |
 /// | `type` | `&str` | | `"event"` | 钩子类型 |
-/// | `rank` | `u64` | | `500` | 优先级，数值越小优先级越高 |
+/// | `priority` | `u64` | | `500` | 优先级，数值越小优先级越高 |
 ///
 /// # 钩子类型
 ///
@@ -81,7 +81,7 @@ pub fn adapter_server(
 ///
 /// ## 消息事件钩子
 /// ```rust,ignore
-/// #[hook(type = "event.message", rank = 100)]
+/// #[hook(type = "event.message", priority = 100)]
 /// async fn on_message(ev: Option<&Event>) -> HookResult {
 ///     if let Some(event) = ev {
 ///         println!("Received message: {:?}", event);
@@ -204,7 +204,7 @@ pub fn plugin(
 /// |------|------|:----:|--------|------|
 /// | `name` | `&str` | ✓ | - | 命令名称 |
 /// | `desc` | `&str` | | `None` | 命令描述 |
-/// | `rank` | `u64` | | `500` | 优先级，数值越小优先级越高 |
+/// | `priority` | `u64` | | `500` | 优先级，数值越小优先级越高 |
 /// | `alias` | `[&str]` | | `[]` | 命令别名列表 |
 /// | `permission` | `&str` | | `"all"` | 权限等级：`"all"` 所有人，`"master"` 仅主人 |
 ///
@@ -539,7 +539,7 @@ pub fn server(
 /// |------|------|:----:|--------|------|
 /// | `name` | `&str` | | 函数名 | 钩子名称 |
 /// | `type` | `&str` | | `"event"` | 钩子类型 |
-/// | `rank` | `u64` | | `500` | 优先级，数值越小优先级越高 |
+/// | `priority` | `u64` | | `500` | 优先级，数值越小优先级越高 |
 ///
 /// # 钩子类型
 ///
@@ -577,7 +577,7 @@ pub fn server(
 ///
 /// ## 消息事件钩子
 /// ```rust,ignore
-/// #[hook(type = "event.message", rank = 100)]
+/// #[hook(type = "event.message", priority = 100)]
 /// async fn on_message(ev: Option<&Event>) -> HookResult {
 ///     if let Some(event) = ev {
 ///         println!("Received message: {:?}", event);
@@ -588,7 +588,7 @@ pub fn server(
 ///
 /// ## 自定义名称和优先级
 /// ```rust,ignore
-/// #[hook(name = "message_logger", type = "event.message", rank = 50)]
+/// #[hook(name = "message_logger", type = "event.message", priority = 50)]
 /// async fn log_messages(ev: Option<&Event>) -> HookResult {
 ///     // 高优先级消息日志记录
 ///     Ok(())

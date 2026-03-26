@@ -11,7 +11,7 @@ struct HookArg {
 	name: Option<String>,
 	#[darling(rename = "type")]
 	r#type: Option<String>,
-	rank: Option<u32>,
+	priority: Option<u32>,
 }
 
 pub fn hook(args: TokenStream, item: TokenStream) -> TokenStream {
@@ -205,8 +205,8 @@ pub fn hook(args: TokenStream, item: TokenStream) -> TokenStream {
 		}
 		None => quote! { ::puniyu_plugin::private::HookType::default() },
 	};
-	let hook_rank = match &args.rank {
-		Some(rank) => quote! { #rank },
+	let hook_priority = match &args.priority {
+		Some(priority) => quote! { #priority },
 		None => quote! { 500 },
 	};
 
@@ -226,8 +226,8 @@ pub fn hook(args: TokenStream, item: TokenStream) -> TokenStream {
 				#hook_type
 			}
 
-			fn rank(&self) -> u32 {
-				#hook_rank
+			fn priority(&self) -> u32 {
+				#hook_priority
 			}
 
 			async fn run(

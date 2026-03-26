@@ -119,7 +119,7 @@ impl CommandHandler {
 		let commands = CommandRegistry::all()
 			.into_iter()
 			.filter(|cmd| cmd.builder.name() == command_name)
-			.sorted_by_key(|cmd| cmd.builder.rank());
+			.sorted_by_key(|cmd| cmd.builder.priority());
 
 		for command in commands {
 			let plugin_id = &command.plugin_id;

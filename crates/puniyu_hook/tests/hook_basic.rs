@@ -9,7 +9,7 @@ use std::sync::atomic::{AtomicBool, AtomicU32, Ordering};
 struct TestHook {
 	name: &'static str,
 	hook_type: HookType,
-	rank: u32,
+	priority: u32,
 	executed: Arc<AtomicBool>,
 }
 
@@ -23,8 +23,8 @@ impl Hook for TestHook {
 		&self.hook_type
 	}
 
-	fn rank(&self) -> u32 {
-		self.rank
+	fn priority(&self) -> u32 {
+		self.priority
 	}
 
 	async fn run(&self, _ctx: Option<&EventContext>) -> puniyu_error::Result {
@@ -39,7 +39,7 @@ fn test_hook_name() {
 	let hook = TestHook {
 		name: "test_hook",
 		hook_type: HookType::Event(HookEventType::Message),
-		rank: 100,
+		priority: 100,
 		executed,
 	};
 
@@ -52,7 +52,7 @@ fn test_hook_type() {
 	let hook = TestHook {
 		name: "test_hook",
 		hook_type: HookType::Event(HookEventType::Message),
-		rank: 100,
+		priority: 100,
 		executed,
 	};
 
@@ -60,16 +60,16 @@ fn test_hook_type() {
 }
 
 #[test]
-fn test_hook_rank() {
+fn test_hook_priority() {
 	let executed = Arc::new(AtomicBool::new(false));
 	let hook = TestHook {
 		name: "test_hook",
 		hook_type: HookType::Event(HookEventType::Message),
-		rank: 50,
+		priority: 50,
 		executed,
 	};
 
-	assert_eq!(hook.rank(), 50);
+	assert_eq!(hook.priority(), 50);
 }
 
 #[tokio::test]
@@ -78,7 +78,7 @@ async fn test_hook_run() {
 	let hook = TestHook {
 		name: "test_hook",
 		hook_type: HookType::Event(HookEventType::Message),
-		rank: 100,
+		priority: 100,
 		executed: executed.clone(),
 	};
 
@@ -107,7 +107,7 @@ async fn test_hook_multiple_runs() {
 			&HookType::Event(HookEventType::Message)
 		}
 
-		fn rank(&self) -> u32 {
+		fn priority(&self) -> u32 {
 			100
 		}
 
@@ -145,7 +145,7 @@ async fn test_hook_error_handling() {
 			&HookType::Event(HookEventType::Message)
 		}
 
-		fn rank(&self) -> u32 {
+		fn priority(&self) -> u32 {
 			100
 		}
 
@@ -166,7 +166,7 @@ fn test_hook_priority_comparison() {
 	let hook1 = TestHook {
 		name: "high_priority",
 		hook_type: HookType::Event(HookEventType::Message),
-		rank: 10,
+		priority: 10,
 		executed: executed1,
 	};
 
@@ -174,11 +174,11 @@ fn test_hook_priority_comparison() {
 	let hook2 = TestHook {
 		name: "low_priority",
 		hook_type: HookType::Event(HookEventType::Message),
-		rank: 100,
+		priority: 100,
 		executed: executed2,
 	};
 
-	assert!(hook1.rank() < hook2.rank());
+	assert!(hook1.priority() < hook2.priority());
 }
 
 #[test]
@@ -187,7 +187,7 @@ fn test_hook_different_types() {
 	let hook1 = TestHook {
 		name: "message_hook",
 		hook_type: HookType::Event(HookEventType::Message),
-		rank: 100,
+		priority: 100,
 		executed: executed1,
 	};
 
@@ -195,7 +195,7 @@ fn test_hook_different_types() {
 	let hook2 = TestHook {
 		name: "notion_hook",
 		hook_type: HookType::Event(HookEventType::Notion),
-		rank: 100,
+		priority: 100,
 		executed: executed2,
 	};
 
@@ -220,7 +220,7 @@ async fn test_hook_with_state() {
 			&HookType::Event(HookEventType::Message)
 		}
 
-		fn rank(&self) -> u32 {
+		fn priority(&self) -> u32 {
 			100
 		}
 
@@ -261,7 +261,7 @@ async fn test_hook_async_operation() {
 			&HookType::Event(HookEventType::Message)
 		}
 
-		fn rank(&self) -> u32 {
+		fn priority(&self) -> u32 {
 			100
 		}
 

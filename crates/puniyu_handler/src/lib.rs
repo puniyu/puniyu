@@ -16,7 +16,7 @@ pub trait Handler: Send + Sync + 'static {
     fn name(&self) -> &'static str;
 
     /// 优先级
-    fn rank(&self) -> u32 {
+    fn priority(&self) -> u32 {
         5
     }
 
@@ -30,6 +30,6 @@ pub trait Handler: Send + Sync + 'static {
 
 impl PartialEq for dyn Handler {
     fn eq(&self, other: &Self) -> bool {
-        self.name() == other.name() && self.rank() == other.rank()
+        self.name() == other.name() && self.priority() == other.priority()
     }
 }

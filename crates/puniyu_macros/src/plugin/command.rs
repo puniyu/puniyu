@@ -19,7 +19,7 @@ struct Arg {
 #[derive(Debug, FromMeta, Default)]
 struct CommandArgs {
 	name: String,
-	rank: Option<u32>,
+	priority: Option<u32>,
 	desc: Option<String>,
 	alias: Option<Vec<LitStr>>,
 	permission: Option<String>,
@@ -210,8 +210,8 @@ pub fn command(args: TokenStream, item: TokenStream) -> TokenStream {
 	}
 
 	let command_name = &args.name;
-	let command_rank = match args.rank {
-		Some(rank) => quote! { #rank },
+	let command_priority = match args.priority {
+		Some(priority) => quote! { #priority },
 		None => quote! { 500 },
 	};
 	let command_desc = match &args.desc {
@@ -296,8 +296,8 @@ pub fn command(args: TokenStream, item: TokenStream) -> TokenStream {
 				#command_desc
 			}
 
-			fn rank(&self) -> u32 {
-				#command_rank
+			fn priority(&self) -> u32 {
+				#command_priority
 			}
 
 			fn args(&'_ self) -> Vec<::puniyu_plugin::private::Arg<'static>> {

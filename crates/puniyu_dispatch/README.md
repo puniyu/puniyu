@@ -10,7 +10,7 @@
 
 - 🚀 **高性能** - 基于 tokio 异步运行时，支持高并发事件处理
 - 🔄 **异步分发** - 使用异步通道进行事件传递，避免阻塞
-- 📊 **优先级调度** - 处理器按优先级（rank）顺序执行
+- 📊 **优先级调度** - 处理器按优先级（priority）顺序执行
 - 🌐 **跨线程** - 使用 Arc 包装事件，支持跨线程共享
 - 🛡️ **优雅关闭** - 提供关闭机制，确保事件处理完成
 - 🔌 **全局单例** - 全局事件总线，便于在任何地方发送事件
@@ -105,7 +105,7 @@ event_bus.send_event(event);
 
 ### 事件处理
 
-事件会被分发到所有注册的处理器，处理器按优先级（rank）排序后依次执行：
+事件会被分发到所有注册的处理器，处理器按优先级（priority）排序后依次执行：
 
 ```rust
 // 处理器通过 puniyu_handler 库注册
@@ -149,19 +149,19 @@ HandlerRegistry::register(my_handler)?;
        ▼
 ┌─────────────┐
 │  处理器 1    │
-│  (rank: 0)  │
+│  (priority: 0)  │
 └──────┬──────┘
        │
        ▼
 ┌─────────────┐
 │  处理器 2    │
-│  (rank: 10) │
+│  (priority: 10) │
 └──────┬──────┘
        │
        ▼
 ┌─────────────┐
 │  处理器 N    │
-│  (rank: 99) │
+│  (priority: 99) │
 └─────────────┘
 ```
 
@@ -203,7 +203,7 @@ impl Handler for MyHandler {
         "my_handler"
     }
 
-    fn rank(&self) -> u8 {
+    fn priority(&self) -> u8 {
         10
     }
 
@@ -261,19 +261,19 @@ let event_bus = EventBus::with_capacity(1000);
 
 ```rust
 impl Handler for CriticalHandler {
-    fn rank(&self) -> u8 {
+    fn priority(&self) -> u8 {
         0  // 最高优先级
     }
 }
 
 impl Handler for NormalHandler {
-    fn rank(&self) -> u8 {
+    fn priority(&self) -> u8 {
         50  // 中等优先级
     }
 }
 
 impl Handler for LowPriorityHandler {
-    fn rank(&self) -> u8 {
+    fn priority(&self) -> u8 {
         99  // 最低优先级
     }
 }

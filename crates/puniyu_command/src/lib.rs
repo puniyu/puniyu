@@ -149,11 +149,11 @@ pub trait Command: Send + Sync + 'static {
 	/// # 示例
 	///
 	/// ```rust,ignore
-	/// fn rank(&self) -> u32 {
+	/// fn priority(&self) -> u32 {
 	///     100  // 高优先级
 	/// }
 	/// ```
-	fn rank(&self) -> u32 {
+	fn priority(&self) -> u32 {
 		500
 	}
 
@@ -222,7 +222,7 @@ impl PartialEq for dyn Command {
 		self.name() == other.name()
 			&& self.description() == other.description()
 			&& self.args() == other.args()
-			&& self.rank() == other.rank()
+			&& self.priority() == other.priority()
 			&& self.alias() == other.alias()
 			&& self.permission() == other.permission()
 	}

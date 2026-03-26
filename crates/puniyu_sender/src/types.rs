@@ -82,6 +82,7 @@ impl<T: Sender> Sender for &T {
 	}
 }
 
+
 impl PartialEq for dyn Sender {
 	fn eq(&self, other: &Self) -> bool {
 		self.user_id() == other.user_id()

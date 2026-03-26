@@ -84,7 +84,7 @@ CommandRegistry::register(command_info)?;
 
 - `description()` - 命令描述
 - `args()` - 参数列表
-- `rank()` - 优先级（默认 500）
+- `priority()` - 优先级（默认 500）
 - `alias()` - 命令别名
 - `permission()` - 权限等级（默认 All）
 
@@ -114,7 +114,7 @@ impl Command for SearchCommand {
         ]
     }
 
-    fn rank(&self) -> u32 {
+    fn priority(&self) -> u32 {
         100  // 高优先级
     }
 

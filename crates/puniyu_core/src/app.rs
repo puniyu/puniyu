@@ -379,7 +379,7 @@ async fn execute_hooks(status_type: StatusType) {
 			_ => false,
 		})
 		.collect::<Vec<_>>();
-	hooks.sort_unstable_by_key(|a| a.builder.rank());
+	hooks.sort_unstable_by_key(|a| a.builder.priority());
 
 	for hook in hooks {
 		if let Err(e) = hook.builder.run(None).await {
