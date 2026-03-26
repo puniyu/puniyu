@@ -46,22 +46,22 @@ fn test_event_type_serialization() {
 
 	let event_type = EventType::Message;
 	let json = serde_json::to_string(&event_type).unwrap();
-	assert_eq!(json, r#""Message""#);
+	assert_eq!(json, r#""message""#);
 
 	let event_type = EventType::Notion;
 	let json = serde_json::to_string(&event_type).unwrap();
-	assert_eq!(json, r#""Notion""#);
+	assert_eq!(json, r#""notion""#);
 }
 
 #[test]
 fn test_event_type_deserialization() {
 	use serde_json;
 
-	let json = r#""Message""#;
+	let json = r#""message""#;
 	let event_type: EventType = serde_json::from_str(json).unwrap();
 	assert_eq!(event_type, EventType::Message);
 
-	let json = r#""Request""#;
+	let json = r#""request""#;
 	let event_type: EventType = serde_json::from_str(json).unwrap();
 	assert_eq!(event_type, EventType::Request);
 }

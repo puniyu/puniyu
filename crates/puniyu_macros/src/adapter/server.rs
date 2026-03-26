@@ -67,7 +67,7 @@ pub fn server(item: TokenStream) -> TokenStream {
 		::puniyu_adapter::__private::inventory::submit! {
 			crate::ServerRegistry {
 				adapter_name: #adapter_name,
-				builder: || -> ::puniyu_adapter::__private::ServerFunction { ::std::sync::Arc::new(#fn_name) },
+				builder: || -> ::puniyu_adapter::__private::ServerFunction { ::puniyu_adapter::__private::ServerFunction::new(#fn_name) },
 			}
 		}
 	};

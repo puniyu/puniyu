@@ -92,7 +92,7 @@ let info = adapter_info!(
     name: "my_adapter",
     platform: AdapterPlatform::QQ,
     protocol: AdapterProtocol::Console,
-    version: Version::new(1, 0, 0),
+    VERSION: Version::new(1, 0, 0),
 );
 ```
 
@@ -141,7 +141,7 @@ let info = adapter_info!(
 - `protocol` - 协议类型（Console、HTTP、WebSocket 等）
 - `standard` - 标准类型（OneBot、Satori 等）
 - `communication` - 通信方式（正向、反向）
-- `version` - 版本号
+- `VERSION` - 版本号
 
 ### MessageType - 消息类型
 

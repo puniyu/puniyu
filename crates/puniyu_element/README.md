@@ -31,11 +31,10 @@ puniyu_element = "*"
 
 ```rust
 use puniyu_element::receive::*;
-use puniyu_element::RawMessage;
+use puniyu_element::Element;
 
 // 创建文本元素
 let text = TextElement { text: "Hello, World!" };
-println!("Message: {}", text.raw());
 
 // 创建 @提及元素
 let at = AtElement { target_id: "123456" };

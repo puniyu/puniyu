@@ -1,6 +1,6 @@
 use bytes::Bytes;
 use serde::{Deserialize, Serialize};
-use crate::{ElementType, RawMessage};
+use crate::{Element, ElementType};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FileElement<'f> {
@@ -12,12 +12,8 @@ pub struct FileElement<'f> {
     pub file_name: &'f str,
 }
 
-impl<'f> RawMessage for FileElement<'f> {
+impl<'f> Element for FileElement<'f> {
     fn r#type(&self) -> ElementType {
         ElementType::File
-    }
-
-    fn raw(&self) -> String {
-        self.file_name.to_string()
     }
 }

@@ -149,11 +149,11 @@ pub trait Command: Send + Sync + 'static {
 	/// # 示例
 	///
 	/// ```rust,ignore
-	/// fn rank(&self) -> u32 {
+	/// fn priority(&self) -> u32 {
 	///     100  // 高优先级
 	/// }
 	/// ```
-	fn rank(&self) -> u32 {
+	fn priority(&self) -> u32 {
 		500
 	}
 
@@ -215,4 +215,15 @@ pub trait Command: Send + Sync + 'static {
 	/// }
 	/// ```
 	async fn run(&self, ctx: &MessageContext) -> puniyu_error::Result<CommandAction>;
+}
+
+impl PartialEq for dyn Command {
+	fn eq(&self, other: &Self) -> bool {
+		self.name() == other.name()
+			&& self.description() == other.description()
+			&& self.args() == other.args()
+			&& self.priority() == other.priority()
+			&& self.alias() == other.alias()
+			&& self.permission() == other.permission()
+	}
 }

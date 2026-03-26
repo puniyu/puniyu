@@ -1,17 +1,14 @@
-mod option;
-
-pub use option::GroupOption;
 use puniyu_common::read_config;
-use puniyu_path::CONFIG_DIR;
+use puniyu_path::config_dir;
 use serde::{Deserialize, Serialize};
 use std::{
 	collections::HashMap,
-	sync::{Arc, LazyLock, RwLock},
+	path::PathBuf,
+	sync::LazyLock,
 };
+use crate::GroupOption;
 
-pub(crate) static GROUP_CONFIG: LazyLock<Arc<RwLock<GroupConfig>>> = LazyLock::new(|| {
-	Arc::new(RwLock::new(read_config(CONFIG_DIR.as_path(), "group").unwrap_or_default()))
-});
+static CONFIG_PATH: LazyLock<PathBuf> = LazyLock::new(|| config_dir().join("group.toml"));
 
 /// 群组配置结构
 ///
@@ -52,9 +49,14 @@ impl GroupConfig {
 	///
 	/// # 返回值
 	///
-	/// 返回当前的群组配置副本
+	/// 返回当前的群组配置副本，从注册表获取
 	pub fn get() -> Self {
-		GROUP_CONFIG.read().expect("Failed to read group config").clone()
+		use crate::ConfigRegistry;
+		ConfigRegistry::get(CONFIG_PATH.as_path())
+			.and_then(|v| v.try_into().ok())
+			.unwrap_or_else(|| {
+				read_config::<Self>(config_dir().as_path(), "group").unwrap_or_default()
+			})
 	}
 
 	/// 获取全局群组配置
@@ -102,5 +104,18 @@ impl GroupConfig {
 	/// 返回包含所有群组配置的 Vec，每个配置都已与全局配置合并
 	pub fn list(&self) -> Vec<GroupOption> {
 		self.group.values().map(|specific| specific.merge_with(&self.global)).collect()
+	}
+}
+
+impl crate::Config for GroupConfig {
+	fn config(&self) -> crate::ConfigInfo {
+		crate::ConfigInfo {
+			name: "group".to_string(),
+			path: CONFIG_PATH.clone(),
+			value: toml::to_string(self)
+				.expect("Failed to serialize GroupConfig to TOML string")
+				.parse()
+				.expect("Failed to parse TOML string to Value"),
+		}
 	}
 }

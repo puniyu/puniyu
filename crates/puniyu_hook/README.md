@@ -44,7 +44,7 @@ impl Hook for LogHook {
         &HookType::Event(HookEventType::Message)
     }
 
-    fn rank(&self) -> u32 {
+    fn priority(&self) -> u32 {
         100
     }
 
@@ -78,7 +78,7 @@ async fn execute_hook(hook: &dyn Hook, ctx: &EventContext) {
 | -------- | -------------- | -------------------- | ---- |
 | `name`   | 获取钩子名称   | `&'static str`       | 是   |
 | `r#type` | 获取钩子类型   | `&HookType`          | 是   |
-| `rank`   | 获取钩子优先级 | `u32`                | 是   |
+| `priority`   | 获取钩子优先级 | `u32`                | 是   |
 | `run`    | 执行钩子逻辑   | `Result<()>` (async) | 是   |
 
 ## 钩子类型
@@ -105,7 +105,7 @@ pub enum HookType {
 
 ## 优先级
 
-钩子的优先级由 `rank()` 方法返回的数值决定：
+钩子的优先级由 `priority()` 方法返回的数值决定：
 
 - 数值越小，优先级越高
 - 默认优先级为 100
@@ -113,13 +113,13 @@ pub enum HookType {
 
 ```rust
 impl Hook for HighPriorityHook {
-    fn rank(&self) -> u32 {
+    fn priority(&self) -> u32 {
         10  // 高优先级
     }
 }
 
 impl Hook for LowPriorityHook {
-    fn rank(&self) -> u32 {
+    fn priority(&self) -> u32 {
         200  // 低优先级
     }
 }
@@ -146,7 +146,7 @@ impl Hook for PermissionHook {
         &HookType::Event(HookEventType::Message)
     }
 
-    fn rank(&self) -> u32 {
+    fn priority(&self) -> u32 {
         10  // 高优先级，先执行权限检查
     }
 
@@ -183,7 +183,7 @@ impl Hook for LoggingHook {
         &HookType::Event(HookEventType::All)
     }
 
-    fn rank(&self) -> u32 {
+    fn priority(&self) -> u32 {
         200  // 低优先级，最后记录日志
     }
 
@@ -225,7 +225,7 @@ impl Hook for DataProcessHook {
         &HookType::Event(HookEventType::Message)
     }
 
-    fn rank(&self) -> u32 {
+    fn priority(&self) -> u32 {
         100
     }
 
@@ -248,7 +248,7 @@ impl Hook for DataProcessHook {
 ## 钩子执行流程
 
 1. 根据事件类型筛选匹配的钩子
-2. 按优先级（rank）排序钩子
+2. 按优先级（priority）排序钩子
 3. 依次执行钩子的 `run` 方法
 4. 如果某个钩子返回错误，可以选择中断或继续执行
 
@@ -256,7 +256,7 @@ impl Hook for DataProcessHook {
 async fn execute_hooks(hooks: &[Box<dyn Hook>], ctx: &EventContext) {
     // 按优先级排序
     let mut sorted_hooks: Vec<_> = hooks.iter().collect();
-    sorted_hooks.sort_by_key(|h| h.rank());
+    sorted_hooks.sort_by_key(|h| h.priority());
 
     // 依次执行
     for hook in sorted_hooks {
@@ -280,7 +280,7 @@ async fn execute_hooks(hooks: &[Box<dyn Hook>], ctx: &EventContext) {
 
 ```toml
 [dependencies]
-puniyu_hook = { version = "*", features = ["registry"] }
+puniyu_hook = { VERSION = "*", features = ["registry"] }
 ```
 
 启用后可以使用 `HookRegistry` 来管理多个钩子实例。
@@ -292,17 +292,17 @@ puniyu_hook = { version = "*", features = ["registry"] }
 ```rust
 // 权限检查应该最先执行
 impl Hook for AuthHook {
-    fn rank(&self) -> u32 { 10 }
+    fn priority(&self) -> u32 { 10 }
 }
 
 // 业务逻辑在中间执行
 impl Hook for BusinessHook {
-    fn rank(&self) -> u32 { 100 }
+    fn priority(&self) -> u32 { 100 }
 }
 
 // 日志记录最后执行
 impl Hook for LogHook {
-    fn rank(&self) -> u32 { 200 }
+    fn priority(&self) -> u32 { 200 }
 }
 ```
 

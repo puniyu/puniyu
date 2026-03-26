@@ -14,20 +14,16 @@ rust-version.workspace = true
 workspace = true
 
 [dependencies]
-serde.workspace = true
-strum.workspace = true
-chrono.workspace = true
-derive_builder.workspace = true
-bytes.workspace = true
 async-trait.workspace = true
-thiserror.workspace = true
 
-puniyu_version.workspace = true
-puniyu_contact.workspace = true
-puniyu_sender.workspace = true
-puniyu_element.workspace = true
-puniyu_message.workspace = true
+puniyu_adapter_types.workspace = true
+puniyu_adapter_api.workspace = true
+puniyu_config.workspace = true
+puniyu_logger.workspace = true
 puniyu_error.workspace = true
+puniyu_server.workspace = true
+puniyu_hook.workspace = true
 
-[dev-dependencies]
-serde_json.workspace = true
+[features]
+default = []
+registry = ["puniyu_error/registry"]

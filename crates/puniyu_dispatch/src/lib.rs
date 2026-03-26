@@ -45,7 +45,7 @@
 //! 1. 事件通过 `send_event()` 发送到事件总线
 //! 2. 事件总线使用异步通道接收事件
 //! 3. 事件被分发到所有注册的处理器
-//! 4. 处理器按优先级（rank）顺序执行
+//! 4. 处理器按优先级（priority）顺序执行
 
 use puniyu_event::Event;
 use puniyu_handler::HandlerRegistry;
@@ -174,14 +174,14 @@ impl EventBus {
 
 	/// 分发事件到所有注册的处理器
 	///
-	/// 处理器按优先级（rank）排序后依次执行。
+	/// 处理器按优先级（priority）排序后依次执行。
 	///
 	/// # 参数
 	///
 	/// - `event`: 要分发的事件
 	async fn dispatch_event(event: &Event<'_>) {
 		let mut handlers = HandlerRegistry::all();
-		handlers.sort_unstable_by_key(|a| a.rank());
+		handlers.sort_unstable_by_key(|a| a.priority());
 
 		for handler in handlers {
 			if let Err(e) = handler.handle(event).await {

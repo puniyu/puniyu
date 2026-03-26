@@ -86,7 +86,7 @@ pub enum ArgMode {
 ///     .named()
 ///     .description("详细输出");
 /// ```
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Arg<'a> {
 	/// 参数名
 	pub name: &'a str,

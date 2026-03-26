@@ -107,6 +107,6 @@ pub trait Loader: Send + Sync + 'static {
 
 impl PartialEq for dyn Loader {
 	fn eq(&self, other: &Self) -> bool {
-		self.name() == other.name()
+		self.name() == other.name() && self.plugins() == other.plugins()
 	}
 }

@@ -31,13 +31,14 @@ pub use request::RequestType;
 /// use std::str::FromStr;
 ///
 /// let event_type = HookEventType::Message;
-/// assert_eq!(event_type.to_string(), "Message");
+/// assert_eq!(event_type.to_string(), "message");
 ///
 /// let event_type = HookEventType::from_str("notion").unwrap();
 /// assert_eq!(event_type, HookEventType::Notion);
 /// ```
 #[derive(
 	Debug,
+	Copy,
 	Clone,
 	Default,
 	Display,
@@ -49,6 +50,8 @@ pub use request::RequestType;
 	PartialOrd,
 	Ord,
 )]
+#[serde(rename_all = "lowercase")]
+#[strum(serialize_all = "lowercase")]
 pub enum HookEventType {
 	/// 消息事件
 	Message,

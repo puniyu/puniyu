@@ -201,7 +201,7 @@ impl<'b> BotRegistry {
 	/// # 示例
 	///
 	/// ```rust,ignore
-	/// if let Some(bot) = BotRegistry::get_with_bot_id(("123456") {
+	/// if let Some(bot) = BotRegistry::get_with_bot_id("123456") {
 	///     println!("找到机器人: {}", bot.account().uin);
 	/// }
 	/// ```

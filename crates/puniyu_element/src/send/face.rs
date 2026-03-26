@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use crate::{ElementType, RawMessage};
+use crate::{Element, ElementType};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FaceElement {
@@ -13,12 +13,8 @@ impl FaceElement {
 	}
 }
 
-impl RawMessage for FaceElement {
+impl Element for FaceElement {
 	fn r#type(&self) -> ElementType {
 		ElementType::Face
-	}
-
-	fn raw(&self) -> String {
-		self.id.to_string()
 	}
 }

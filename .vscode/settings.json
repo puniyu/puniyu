@@ -3,5 +3,6 @@
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.patterns": {
     "Cargo.toml": "Cargo.lock, clippy.toml, rustfmt.toml, rust-toolchain.toml"
-  }
+  },
+  "chatgpt.openOnStartup": true
 }

@@ -1,202 +1,106 @@
 //! # puniyu_version
 //!
-//! 版本号定义库，提供语义化版本号的类型系统。
+//! 轻量语义版本类型，主要用于在项目内部共享 `major.minor.patch` 版本信息。
 //!
-//! ## 概述
+//! ## 特性
 //!
-//! `puniyu_version` 提供了符合语义化版本规范的版本号结构定义，用于管理和比较版本信息。
+//! - 提供 `Version::new` 构造函数
+//! - 支持 `Display`，格式为 `major.minor.patch`
+//! - 支持 `FromStr` 解析语义化版本字符串
+//! - 支持与 `semver::Version` 双向转换
+//! - 支持 `serde` 序列化与反序列化
 //!
-//! ## 使用方式
+//! ## 设计说明
 //!
-//! ### 创建版本号
+//! `Version` 仅保留语义化版本的核心三段（`major` / `minor` / `patch`）。
+//! 当从 `semver::Version` 转换或解析包含预发布/构建元数据的字符串时，
+//! 这些扩展信息会被忽略。
 //!
-//! ```rust
-//! use puniyu_version::Version;
+//! 例如：`1.2.3-beta.1+build.7` 会被转换为 `Version::new(1, 2, 3)`。
 //!
-//! // 手动创建
-//! let version = Version {
-//!     major: 1,
-//!     minor: 2,
-//!     patch: 3,
-//! };
-//!
-//! // 从字符串创建
-//! let version: Version = "1.2.3".into();
-//!
-//! // 使用默认版本（0.0.1）
-//! let version = Version::default();
-//! ```
-//!
-//! ### 版本号显示
+//! ## 示例
 //!
 //! ```rust
+//! use std::str::FromStr;
 //! use puniyu_version::Version;
 //!
-//! let version = Version {
-//!     major: 1,
-//!     minor: 2,
-//!     patch: 3,
-//! };
+//! let version = Version::new(1, 2, 3);
+//! assert_eq!(version.to_string(), "1.2.3");
 //!
-//! println!("Version: {}", version); // 输出: Version: 1.2.3
+//! let parsed = Version::from_str("1.2.3-beta.1+build.7").unwrap();
+//! assert_eq!(parsed, Version::new(1, 2, 3));
 //! ```
 
+use std::str::FromStr;
 use derive_more::Display;
 use serde::{Deserialize, Serialize};
-use std::str::FromStr;
 
-/// 版本号
+/// 三段式版本号（`major.minor.patch`）。
 ///
-/// 符合语义化版本规范的版本号结构，包含主版本号、次版本号和补丁版本号。
-///
-/// # 字段
-///
-/// - `major` - 主版本号，当做了不兼容的 API 修改时递增
-/// - `minor` - 次版本号，当做了向下兼容的功能性新增时递增
-/// - `patch` - 补丁版本号，当做了向下兼容的问题修正时递增
-///
-/// # 示例
-///
-/// ```rust
-/// use puniyu_version::Version;
-///
-/// let version = Version {
-///     major: 1,
-///     minor: 2,
-///     patch: 3,
-/// };
-///
-/// assert_eq!(version.to_string(), "1.2.3");
-/// ```
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Display)]
+/// 这是 `semver` 的简化表示，仅保存核心版本信息，不保存预发布和构建元数据。
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Display)]
 #[display("{major}.{minor}.{patch}")]
 pub struct Version {
 	/// 主版本号
-	pub major: u16,
+	pub major: u64,
 	/// 次版本号
-	pub minor: u16,
+	pub minor: u64,
 	/// 补丁版本号
-	pub patch: u16,
+	pub patch: u64,
 }
 
 impl Version {
-	pub const fn new(major: u16, minor: u16, patch: u16) -> Self {
+	/// 创建一个新的版本号。
+	///
+	/// # 示例
+	///
+	/// ```rust
+	/// use puniyu_version::Version;
+	///
+	/// let version = Version::new(2, 0, 1);
+	/// assert_eq!(version.major, 2);
+	/// assert_eq!(version.minor, 0);
+	/// assert_eq!(version.patch, 1);
+	/// ```
+	pub const fn new(major: u64, minor: u64, patch: u64) -> Self {
 		Self { major, minor, patch }
 	}
 }
 
-impl Default for Version {
-	/// 创建默认版本号（0.0.1）
-	///
-	/// # 示例
-	///
-	/// ```rust
-	/// use puniyu_version::Version;
-	///
-	/// let version = Version::default();
-	/// assert_eq!(version.major, 0);
-	/// assert_eq!(version.minor, 0);
-	/// assert_eq!(version.patch, 1);
-	/// ```
-	fn default() -> Self {
-		Self { major: 0, minor: 0, patch: 1 }
+impl From<semver::Version> for Version {
+	fn from(v: semver::Version) -> Self {
+		Self { major: v.major, minor: v.minor, patch: v.patch }
+	}
+}
+
+impl From<Version> for semver::Version {
+	fn from(v: Version) -> Self {
+		semver::Version::new(v.major, v.minor, v.patch)
 	}
 }
 
 impl FromStr for Version {
-	type Err = std::convert::Infallible;
+	type Err = semver::Error;
 
-	/// 从字符串解析版本号
+	/// 解析版本字符串并提取核心三段。
 	///
-	/// 字符串格式应为 `major.minor.patch`。如果解析失败，返回默认版本号（0.0.1）。
+	/// 解析规则遵循 `semver` 规范，但最终只保留 `major.minor.patch`。
+	///
+	/// # 错误
+	///
+	/// 当输入不是合法的语义化版本字符串时，返回 `semver::Error`。
 	///
 	/// # 示例
 	///
 	/// ```rust
-	/// use puniyu_version::Version;
 	/// use std::str::FromStr;
+	/// use puniyu_version::Version;
 	///
-	/// let version = Version::from_str("1.2.3").unwrap();
-	/// assert_eq!(version.major, 1);
-	/// assert_eq!(version.minor, 2);
-	/// assert_eq!(version.patch, 3);
+	/// let version = Version::from_str("1.2.3-alpha.1+build.5").unwrap();
 	///
-	/// // 解析失败返回默认版本
-	/// let version = Version::from_str("invalid").unwrap();
-	/// assert_eq!(version, Version::default());
+	/// assert_eq!(version, Version::new(1, 2, 3));
 	/// ```
 	fn from_str(s: &str) -> Result<Self, Self::Err> {
-		let parts = s.trim().split('.').collect::<Vec<_>>();
-		if parts.len() != 3 {
-			return Ok(Version::default());
-		}
-
-		Ok(Version {
-			major: parts[0].parse().unwrap_or_default(),
-			minor: parts[1].parse().unwrap_or_default(),
-			patch: parts[2].parse().unwrap_or_default(),
-		})
-	}
-}
-
-impl AsRef<Self> for Version {
-	fn as_ref(&self) -> &Self {
-		self
-	}
-}
-
-impl From<&'static str> for Version {
-	/// 从字符串切片创建版本号
-	///
-	/// # 示例
-	///
-	/// ```rust
-	/// use puniyu_version::Version;
-	///
-	/// let version: Version = "1.2.3".into();
-	/// assert_eq!(version.major, 1);
-	/// assert_eq!(version.minor, 2);
-	/// assert_eq!(version.patch, 3);
-	/// ```
-	fn from(s: &'static str) -> Self {
-		Self::from_str(s).unwrap_or_default()
-	}
-}
-
-impl From<String> for Version {
-	/// 从 String 创建版本号
-	///
-	/// # 示例
-	///
-	/// ```rust
-	/// use puniyu_version::Version;
-	///
-	/// let s = String::from("1.2.3");
-	/// let version: Version = s.into();
-	/// assert_eq!(version.major, 1);
-	/// ```
-	fn from(s: String) -> Self {
-		Self::from_str(&s).unwrap_or_default()
-	}
-}
-
-impl From<Version> for String {
-	/// 将版本号转换为 String
-	///
-	/// # 示例
-	///
-	/// ```rust
-	/// use puniyu_version::Version;
-	///
-	/// let version = Version {
-	///     major: 1,
-	///     minor: 2,
-	///     patch: 3,
-	/// };
-	/// let s: String = version.into();
-	/// assert_eq!(s, "1.2.3");
-	/// ```
-	fn from(v: Version) -> Self {
-		v.to_string()
+		semver::Version::from_str(s).map(Into::into)
 	}
 }

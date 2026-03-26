@@ -1,4 +1,3 @@
-use crate::info;
 use actix_web::{
 	Error,
 	dev::{Service, ServiceRequest, ServiceResponse, Transform},
@@ -10,8 +9,13 @@ use std::{
 	future::{Ready, ready},
 	time::Instant,
 };
+use crate::logger::info;
 
 pub struct AccessLog;
+
+pub struct AccessLogMiddleware<S> {
+	service: S,
+}
 
 impl<S, B> Transform<S, ServiceRequest> for AccessLog
 where
@@ -28,10 +32,6 @@ where
 	fn new_transform(&self, service: S) -> Self::Future {
 		ready(Ok(AccessLogMiddleware { service }))
 	}
-}
-
-pub struct AccessLogMiddleware<S> {
-	service: S,
 }
 
 impl<S, B> Service<ServiceRequest> for AccessLogMiddleware<S>
@@ -76,18 +76,10 @@ where
 }
 
 fn parse_ip(req: &HeaderMap) -> Option<String> {
-	let headers = ["X-Forwarded-For", "X-Real-IP", "True-Client-Ip"];
-
-	headers.iter().find_map(|header| {
-		req.get(*header).and_then(|hv| hv.to_str().ok()).and_then(|header_value| {
-			header_value.split(',').map(|ip| ip.trim()).find_map(|ip| {
-				if !ip.is_empty() {
-					ip.parse::<IpAddr>().ok().and_then(|addr| {
-						if let IpAddr::V4(ipv4) = addr { Some(ipv4.to_string()) } else { None }
-					})
-				} else {
-					None
-				}
+	req.get("X-Forwarded-For").and_then(|hv| hv.to_str().ok()).and_then(|header_value| {
+		header_value.split(',').map(|ip| ip.trim()).find_map(|ip| {
+			ip.parse::<IpAddr>().ok().and_then(|addr| {
+				if let IpAddr::V4(ipv4) = addr { Some(ipv4.to_string()) } else { None }
 			})
 		})
 	})

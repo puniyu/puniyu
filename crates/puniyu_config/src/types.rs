@@ -1,108 +1,115 @@
-use std::path::PathBuf;
+mod app;
+#[doc(inline)]
+pub use app::*;
+mod bot;
+#[doc(inline)]
+pub use bot::*;
+mod friend;
+
+#[doc(inline)]
+pub use friend::*;
+mod group;
+
+#[doc(inline)]
+pub use group::*;
+
+use serde_repr::{Deserialize_repr, Serialize_repr};
 use toml::Value;
+use std::path::{Path, PathBuf};
+use serde::{Deserialize, Serialize};
 
-/// 配置 trait
+/// Bot 响应模式枚举
 ///
-/// 定义自定义配置需要实现的接口。
-///
-/// # 使用场景
-///
-/// 当需要为插件或模块添加自定义配置时，实现此 trait 可以将配置
-/// 集成到框架的配置管理系统中。
-///
-/// # 示例
-///
-/// ```rust,ignore
-/// use puniyu_config::types::Config;
-/// use toml::Value;
-///
-/// struct MyPluginConfig {
-///     api_key: String,
-///     timeout: u64,
-/// }
-///
-/// impl Config for MyPluginConfig {
-///     fn name(&self) -> &'static str {
-///         "my_plugin"
-///     }
-///
-///     fn config(&self) -> Value {
-///         toml::toml! {
-///             api_key = self.api_key
-///             timeout = self.timeout
-///         }
-///     }
-/// }
-/// ```
-pub trait Config: Send + Sync + 'static {
-	/// 配置文件名称
-	///
-	/// # 返回值
-	///
-	/// 返回配置文件的名称（不含扩展名），用于标识配置
-	fn name(&self) -> &'static str;
-
-	/// 配置项
-	///
-	/// # 返回值
-	///
-	/// 返回配置的 TOML 值表示
-	fn config(&self) -> Value;
-}
-
-/// 配置信息结构
-///
-/// 存储配置文件的路径和内容。
-///
-/// # 字段
-///
-/// - `path`: 配置文件的完整路径
-/// - `value`: 配置文件的 TOML 值表示
-#[derive(Debug, Clone, PartialEq)]
-pub struct ConfigInfo {
-	/// 配置文件路径
-	pub path: PathBuf,
-	/// 配置内容
-	pub value: Value,
-}
-
-/// 配置标识符枚举
-///
-/// 用于通过索引或路径来标识配置。
-///
-/// # 变体
-///
-/// - `Index`: 通过数字索引标识配置
-/// - `Path`: 通过文件路径标识配置
+/// 定义 Bot 在不同场景下的响应行为。
 ///
 /// # 示例
 ///
 /// ```rust
-/// use puniyu_config::types::ConfigId;
-/// use std::path::PathBuf;
+/// use puniyu_config::ReactiveMode;
 ///
-/// // 通过索引创建
-/// let id1: ConfigId = 0u64.into();
-///
-/// // 通过路径创建
-/// let id2: ConfigId = PathBuf::from("config/app.toml").into();
+/// let mode = ReactiveMode::AtBot;
+/// match mode {
+///     ReactiveMode::All => println!("响应所有消息"),
+///     ReactiveMode::AtBot => println!("仅响应 @ Bot 的消息"),
+///     ReactiveMode::Alias => println!("仅响应使用别名的消息"),
+///     ReactiveMode::AtOrAlias => println!("响应 @ Bot 或使用别名的消息"),
+///     ReactiveMode::Master => println!("仅响应主人的消息"),
+/// }
 /// ```
+#[derive(Debug, Clone, Copy, Serialize_repr, Deserialize_repr)]
+#[repr(u8)]
+pub enum ReactiveMode {
+    /// 响应所有消息
+    ///
+    /// Bot 会响应所有接收到的消息，不做任何过滤
+    All = 0,
+
+    /// 仅响应 @ Bot 的消息
+    ///
+    /// 只有当消息中包含 @ Bot 时才会响应
+    AtBot = 1,
+
+    /// 仅响应使用别名的消息
+    ///
+    /// 只有当消息以配置的别名开头时才会响应
+    Alias = 2,
+
+    /// 响应 @ Bot 或使用别名的消息
+    ///
+    /// 当消息包含 @ Bot 或以别名开头时都会响应
+    AtOrAlias = 3,
+
+    /// 仅响应主人的消息
+    ///
+    /// 只响应配置中定义的主人发送的消息
+    Master = 4,
+}
+
+/// 配置标识符
+///
+/// 用于标识配置的方式，可以通过索引或路径
 #[derive(Debug, Clone, PartialEq)]
 pub enum ConfigId {
-	/// 通过索引标识
-	Index(u64),
-	/// 通过路径标识
-	Path(PathBuf),
+    /// 通过索引标识
+    Index(u64),
+    /// 通过路径标识
+    Path(PathBuf),
 }
 
 impl From<u64> for ConfigId {
-	fn from(index: u64) -> Self {
-		Self::Index(index)
-	}
+    fn from(index: u64) -> Self {
+        Self::Index(index)
+    }
 }
 
 impl From<PathBuf> for ConfigId {
-	fn from(path: PathBuf) -> Self {
-		Self::Path(path)
-	}
+    fn from(path: PathBuf) -> Self {
+        Self::Path(path)
+    }
 }
+
+impl From<&Path> for ConfigId {
+    fn from(path: &Path) -> Self {
+        Self::Path(path.to_path_buf())
+    }
+}
+
+impl From<&str> for ConfigId {
+    fn from(path: &str) -> Self {
+        Self::Path(PathBuf::from(path))
+    }
+}
+
+/// 配置信息
+///
+/// 包含配置的名称、路径和值
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
+pub struct ConfigInfo {
+    /// 配置文件名称
+    pub name: String,
+    /// 配置文件路径
+    pub path: PathBuf,
+    /// 配置内容
+    pub value: Value,
+}
+

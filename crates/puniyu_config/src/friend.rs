@@ -1,15 +1,12 @@
 use puniyu_common::read_config;
-use puniyu_path::CONFIG_DIR;
+use puniyu_path::config_dir;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use std::sync::{Arc, LazyLock, RwLock};
+use std::path::PathBuf;
+use std::sync::LazyLock;
+use crate::FriendOption;
 
-mod option;
-pub use option::FriendOption;
-
-pub(crate) static FRIEND_CONFIG: LazyLock<Arc<RwLock<FriendConfig>>> = LazyLock::new(|| {
-	Arc::new(RwLock::new(read_config(CONFIG_DIR.as_path(), "friend").unwrap_or_default()))
-});
+static CONFIG_PATH: LazyLock<PathBuf> = LazyLock::new(|| config_dir().join("friend.toml"));
 
 /// 好友配置结构
 ///
@@ -48,9 +45,14 @@ impl FriendConfig {
 	///
 	/// # 返回值
 	///
-	/// 返回当前的好友配置副本
-	pub fn get() -> FriendConfig {
-		FRIEND_CONFIG.read().expect("Failed to acquire lock").clone()
+	/// 返回当前的好友配置副本，从注册表获取
+	pub fn get() -> Self {
+		use crate::ConfigRegistry;
+		ConfigRegistry::get(CONFIG_PATH.as_path())
+			.and_then(|v| v.try_into().ok())
+			.unwrap_or_else(|| {
+				read_config::<Self>(config_dir().as_path(), "friend").unwrap_or_default()
+			})
 	}
 
 	/// 获取全局好友配置
@@ -97,5 +99,18 @@ impl FriendConfig {
 	/// 返回包含所有好友配置的 Vec，每个配置都已与全局配置合并
 	pub fn list(&self) -> Vec<FriendOption> {
 		self.friend.values().map(|specific| specific.merge_with(&self.global)).collect()
+	}
+}
+
+impl crate::Config for FriendConfig {
+	fn config(&self) -> crate::ConfigInfo {
+		crate::ConfigInfo {
+			name: "friend".to_string(),
+			path: CONFIG_PATH.clone(),
+			value: toml::to_string(self)
+				.expect("Failed to serialize FriendConfig to TOML string")
+				.parse()
+				.expect("Failed to parse TOML string to Value"),
+		}
 	}
 }

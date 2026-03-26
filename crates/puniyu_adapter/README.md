@@ -45,7 +45,7 @@ impl MyAdapter {
             .name("my_adapter")
             .platform(AdapterPlatform::QQ)
             .protocol(AdapterProtocol::Console)
-            .version(Version::new(1, 0, 0))
+            .VERSION(Version::new(1, 0, 0))
             .build()
             .unwrap();
 
@@ -82,7 +82,7 @@ async fn use_adapter(adapter: &dyn Adapter) {
 
     // 获取适配器信息
     let info = adapter.info();
-    println!("适配器: {} v{}", info.name, info.version);
+    println!("适配器: {} v{}", info.name, info.VERSION);
 
     // 获取 API
     let api = adapter.api();
@@ -215,7 +215,7 @@ impl NapCatAdapter {
         let info = AdapterInfoBuilder::default()
             .name("napcat_adapter")
             .author("Puniyu Team")
-            .version(Version::new(1, 0, 0))
+            .VERSION(Version::new(1, 0, 0))
             .platform(AdapterPlatform::QQ)
             .protocol(AdapterProtocol::NapCat)
             .communication(AdapterCommunication::WebSocketServer)
@@ -261,7 +261,7 @@ async fn main() -> puniyu_error::Result {
 
     // 使用适配器
     let info = adapter.info();
-    println!("适配器: {} v{}", info.name, info.version);
+    println!("适配器: {} v{}", info.name, info.VERSION);
     println!("平台: {}", info.platform);
     println!("协议: {}", info.protocol);
 
@@ -277,7 +277,7 @@ async fn main() -> puniyu_error::Result {
 
 ```toml
 [dependencies]
-puniyu_adapter = { version = "*", features = ["registry"] }
+puniyu_adapter = { VERSION = "*", features = ["registry"] }
 ```
 
 启用后可以使用适配器注册表来管理多个适配器实例。

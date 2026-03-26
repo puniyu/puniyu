@@ -1,6 +1,5 @@
-
 use serde::{Deserialize, Serialize};
-use crate::{ElementType, RawMessage};
+use crate::{Element, ElementType};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AtElement<'a> {
@@ -15,13 +14,9 @@ impl<'a> AtElement<'a> {
 	}
 }
 
-impl<'a> RawMessage for AtElement<'a> {
+impl<'a> Element for AtElement<'a> {
 	fn r#type(&self) -> ElementType {
 		ElementType::At
-	}
-
-	fn raw(&self) -> String {
-		self.target_id.to_string()
 	}
 }
 

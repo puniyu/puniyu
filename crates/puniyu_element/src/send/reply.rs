@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use crate::{ElementType, RawMessage};
+use crate::{Element, ElementType};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ReplyElement<'r> {
@@ -13,12 +13,8 @@ impl<'r> ReplyElement<'r> {
 	}
 }
 
-impl<'r> RawMessage for ReplyElement<'r> {
+impl<'r> Element for ReplyElement<'r> {
 	fn r#type(&self) -> ElementType {
 		ElementType::Reply
-	}
-
-	fn raw(&self) -> String {
-		self.message_id.to_string()
 	}
 }

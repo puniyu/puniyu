@@ -1,7 +1,5 @@
 use bytes::Bytes;
 use puniyu_element::{receive, send};
-use puniyu_element::ElementType;
-use puniyu_element::RawMessage;
 
 
 #[test]
@@ -113,23 +111,6 @@ fn test_mixed_elements_serialization() {
 	assert!(deserialized[2].as_face().is_some());
 }
 
-// ========== RawMessage trait 测试 ==========
-
-#[test]
-fn test_raw_message_trait() {
-	let text = send::TextElement::new("message");
-	assert_eq!(text.r#type(), ElementType::Text);
-	assert_eq!(text.raw(), "message");
-
-	let at = send::AtElement::new("user");
-	assert_eq!(at.r#type(), ElementType::At);
-	assert_eq!(at.raw(), "user");
-
-	let face = send::FaceElement::new(5u64);
-	assert_eq!(face.r#type(), ElementType::Face);
-	assert_eq!(face.raw(), "5");
-}
-
 
 #[test]
 fn test_bytes_handling() {
@@ -190,10 +171,10 @@ fn test_face_element_from_string() {
 #[test]
 fn test_empty_string_elements() {
 	let text = receive::TextElement { text: "" };
-	assert_eq!(text.raw(), "");
+	assert_eq!(text.text, "");
 
 	let json = receive::JsonElement { data: "" };
-	assert_eq!(json.raw(), "");
+	assert_eq!(json.data, "");
 }
 
 #[test]

@@ -1,17 +1,14 @@
-mod option;
-
-use option::BotOption;
 use puniyu_common::read_config;
-use puniyu_path::CONFIG_DIR;
+use puniyu_path::config_dir;
 use serde::{Deserialize, Serialize};
 use std::{
 	collections::HashMap,
-	sync::{Arc, LazyLock, RwLock},
+	path::PathBuf,
+	sync::LazyLock,
 };
+use crate::BotOption;
 
-pub(crate) static BOT_CONFIG: LazyLock<Arc<RwLock<BotConfig>>> = LazyLock::new(|| {
-	Arc::new(RwLock::new(read_config(CONFIG_DIR.as_path(), "bot").unwrap_or_default()))
-});
+static CONFIG_PATH: LazyLock<PathBuf> = LazyLock::new(|| config_dir().join("bot.toml"));
 
 /// Bot 配置结构
 ///
@@ -50,9 +47,14 @@ impl BotConfig {
 	///
 	/// # 返回值
 	///
-	/// 返回当前的 Bot 配置副本
+	/// 返回当前的 Bot 配置副本，从注册表获取
 	pub fn get() -> Self {
-		BOT_CONFIG.read().expect("Failed to acquire lock").clone()
+		use crate::ConfigRegistry;
+		ConfigRegistry::get(CONFIG_PATH.as_path())
+			.and_then(|v| v.try_into().ok())
+			.unwrap_or_else(|| {
+				read_config::<Self>(config_dir().as_path(), "bot").unwrap_or_default()
+			})
 	}
 
 	/// 获取全局 Bot 配置
@@ -102,5 +104,18 @@ impl BotConfig {
 			.iter()
 			.map(|(id, specific)| (id.clone(), specific.merge_with(&self.global)))
 			.collect()
+	}
+}
+
+impl crate::Config for BotConfig {
+	fn config(&self) -> crate::ConfigInfo {
+		crate::ConfigInfo {
+			name: "bot".to_string(),
+			path: CONFIG_PATH.clone(),
+			value: toml::to_string(self)
+				.expect("Failed to serialize BotConfig to TOML string")
+				.parse()
+				.expect("Failed to parse TOML string to Value"),
+		}
 	}
 }

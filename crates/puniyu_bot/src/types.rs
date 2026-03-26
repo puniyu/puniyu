@@ -10,7 +10,7 @@
 /// # 示例
 ///
 /// ```rust
-/// use puniyu_bot::types::BotId;
+/// use puniyu_bot::BotId;
 ///
 /// // 使用索引
 /// let id1: BotId = 123u64.into();
@@ -27,12 +27,32 @@ pub enum BotId<'b> {
 }
 
 impl<'b> From<u64> for BotId<'b> {
+	/// 从 `u64` 索引创建 `BotId`
+	///
+	/// # 示例
+	///
+	/// ```rust
+	/// use puniyu_bot::BotId;
+	///
+	/// let id: BotId = 123u64.into();
+	/// assert_eq!(id, BotId::Index(123));
+	/// ```
 	fn from(index: u64) -> Self {
 		Self::Index(index)
 	}
 }
 
 impl<'b> From<&'b str> for BotId<'b> {
+	/// 从字符串切片创建 `BotId`
+	///
+	/// # 示例
+	///
+	/// ```rust
+	/// use puniyu_bot::BotId;
+	///
+	/// let id: BotId = "123456".into();
+	/// assert_eq!(id, BotId::SelfId("123456"));
+	/// ```
 	fn from(name: &'b str) -> Self {
 		Self::SelfId(name)
 	}

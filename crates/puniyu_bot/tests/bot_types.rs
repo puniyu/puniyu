@@ -1,4 +1,4 @@
-use puniyu_bot::types::BotId;
+use puniyu_bot::BotId;
 
 #[test]
 fn test_bot_id_from_u64() {

@@ -268,11 +268,11 @@ impl Event<'_> {
 	///     _ => {}
 	/// }
 	/// ```
-	pub fn event(&self) -> &EventType {
+	pub fn event_type(&self) -> &EventType {
 		match self {
-			Self::Message(event) => event.event(),
-			Self::Notion(event) => event.event(),
-			Self::Request(event) => event.event(),
+			Self::Message(event) => event.event_type(),
+			Self::Notion(event) => event.event_type(),
+			Self::Request(event) => event.event_type(),
 		}
 	}
 

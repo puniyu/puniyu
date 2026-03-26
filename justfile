@@ -2,11 +2,11 @@ set windows-shell := ["powershell.exe", "-c"]
 set shell := ["bash", "-cu"]
 
 run:
-   just packages/puniyu/run
+   just puniyu/run
 run-server:
-    just packages/puniyu_server/run
+    just crates/puniyu_server/run
 build:
-    just packages/puniyu/build
+    just puniyu/build
 test:
     cargo test
 publish:

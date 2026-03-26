@@ -1,5 +1,5 @@
 use bytes::Bytes;
-use crate::{ElementType, RawMessage};
+use crate::{Element, ElementType};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -18,12 +18,8 @@ impl<'m> ImageElement<'m> {
 	}
 }
 
-impl<'m> RawMessage for ImageElement<'m> {
+impl<'m> Element for ImageElement<'m> {
 	fn r#type(&self) -> ElementType {
 		ElementType::Image
-	}
-
-	fn raw(&self) -> String {
-		self.file_name.to_string()
 	}
 }

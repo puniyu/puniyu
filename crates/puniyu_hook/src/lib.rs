@@ -28,7 +28,7 @@
 //!         &HookType::Event(HookEventType::Message)
 //!     }
 //!
-//!     fn rank(&self) -> u32 {
+//!     fn priority(&self) -> u32 {
 //!         100
 //!     }
 //!
@@ -56,13 +56,16 @@
 
 #[cfg(feature = "registry")]
 mod registry;
-use crate::types::HookType;
 use async_trait::async_trait;
 use puniyu_context::EventContext;
 #[cfg(feature = "registry")]
+#[doc(inline)]
 pub use registry::HookRegistry;
-
-pub mod types;
+mod types;
+#[doc(inline)]
+pub use types::*;
+#[doc(inline)]
+pub use puniyu_common::source::SourceType;
 
 /// 钩子 Trait
 ///
@@ -87,7 +90,7 @@ pub mod types;
 ///         &HookType::Event(HookEventType::Message)
 ///     }
 ///
-///     fn rank(&self) -> u32 {
+///     fn priority(&self) -> u32 {
 ///         100
 ///     }
 ///
@@ -136,11 +139,11 @@ pub trait Hook: Send + Sync + 'static {
 	/// # 示例
 	///
 	/// ```rust,ignore
-	/// fn rank(&self) -> u32 {
+	/// fn priority(&self) -> u32 {
 	///     50  // 高优先级
 	/// }
 	/// ```
-	fn rank(&self) -> u32;
+	fn priority(&self) -> u32;
 
 	/// 执行钩子逻辑
 	///
@@ -166,4 +169,11 @@ pub trait Hook: Send + Sync + 'static {
 	/// }
 	/// ```
 	async fn run(&self, ctx: Option<&EventContext>) -> puniyu_error::Result;
+}
+
+
+impl PartialEq for dyn Hook {
+	fn eq(&self, other: &Self) -> bool {
+		self.name() == other.name() && self.r#type() == other.r#type() && self.priority() == other.priority()
+	}
 }

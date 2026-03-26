@@ -12,27 +12,22 @@ use serde::{Deserialize, Serialize};
 ///
 /// # 字段
 ///
-/// - `scene` - 场景类型，固定为 `SceneType::Group`
 /// - `peer` - 群聊 ID
 /// - `name` - 群名称（可选）
 ///
 /// # 示例
 ///
 /// ```rust
-/// use puniyu_contact::{GroupContact, SceneType};
+/// use puniyu_contact::GroupContact;
 ///
 /// let group = GroupContact {
-///     scene: SceneType::Group,
 ///     peer: "789012",
 ///     name: Some("Dev Team"),
 /// };
 /// ```
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, Builder)]
-#[builder(setter(into))]
+#[builder(setter(into), pattern = "owned")]
 pub struct GroupContact<'c> {
-	/// 事件来源
-	#[builder(setter(skip), default = "SceneType::Group")]
-	pub scene: SceneType,
 	/// 群聊id
 	pub peer: &'c str,
 	/// 群名称
@@ -40,61 +35,10 @@ pub struct GroupContact<'c> {
 	pub name: Option<&'c str>,
 }
 
-impl<'c> GroupContact<'c> {
-	/// 判断当前联系人是否为好友
-	///
-	/// 对于 `GroupContact`，此方法始终返回 `false`。
-	///
-	/// # 返回值
-	///
-	/// 始终返回 `false`，因为 `GroupContact` 的场景固定为 `SceneType::Group`。
-	///
-	/// # 示例
-	///
-	/// ```rust
-	/// use puniyu_contact::{GroupContact, SceneType};
-	///
-	/// let group = GroupContact {
-	///     scene: SceneType::Group,
-	///     peer: "789012",
-	///     name: Some("Dev Team"),
-	/// };
-	///
-	/// assert!(!group.is_friend());
-	/// ```
-	pub fn is_friend(&self) -> bool {
-		matches!(self.scene, SceneType::Friend)
-	}
-
-	/// 判断当前联系人是否为群组
-	///
-	/// 对于 `GroupContact`，此方法始终返回 `true`。
-	///
-	/// # 返回值
-	///
-	/// 始终返回 `true`，因为 `GroupContact` 的场景固定为 `SceneType::Group`。
-	///
-	/// # 示例
-	///
-	/// ```rust
-	/// use puniyu_contact::{GroupContact, SceneType};
-	///
-	/// let group = GroupContact {
-	///     scene: SceneType::Group,
-	///     peer: "789012",
-	///     name: Some("Dev Team"),
-	/// };
-	///
-	/// assert!(group.is_group());
-	/// ```
-	pub fn is_group(&self) -> bool {
-		matches!(self.scene, SceneType::Group)
-	}
-}
 
 impl<'c> Contact for GroupContact<'c> {
 	fn scene(&self) -> &SceneType {
-		&self.scene
+		&SceneType::Group
 	}
 
 	fn peer(&self) -> &str {
@@ -141,23 +85,26 @@ impl<'c> Contact for GroupContact<'c> {
 #[macro_export]
 macro_rules! contact_group {
     ( $( $key:ident : $value:expr ),+ $(,)? ) => {{
-        let mut builder = $crate::GroupContactBuilder::default();
+        $crate::GroupContactBuilder::default()
 		$(
-			builder.$key($value);
+			.$key($value)
 		)*
-		builder.build().expect("Failed to build GroupContact")
+		.build()
+		.expect("Failed to build GroupContact")
     }};
 
     ($peer:expr, $name:expr) => {{
-        let mut builder = $crate::GroupContactBuilder::default();
-        builder.peer($peer);
-        builder.name($name);
-        builder.build().expect("Failed to build GroupContact")
+        $crate::GroupContactBuilder::default()
+            .peer($peer)
+            .name($name)
+            .build()
+            .expect("Failed to build GroupContact")
     }};
 
     ($peer:expr) => {{
-        let mut builder = $crate::GroupContactBuilder::default();
-        builder.peer($peer);
-        builder.build().expect("Failed to build GroupContact")
+        $crate::GroupContactBuilder::default()
+            .peer($peer)
+            .build()
+            .expect("Failed to build GroupContact")
     }};
 }

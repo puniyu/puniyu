@@ -42,7 +42,7 @@ use strum::{Display, EnumString, IntoStaticStr};
 ///
 /// let event_type = EventType::Message;
 /// let json = serde_json::to_string(&event_type).unwrap();
-/// assert_eq!(json, r#""Message""#);
+/// assert_eq!(json, r#""message""#);
 /// ```
 #[derive(
 	Debug,
@@ -58,18 +58,16 @@ use strum::{Display, EnumString, IntoStaticStr};
 	Deserialize,
 	Serialize,
 )]
+#[strum(serialize_all = "lowercase")]
+#[serde(rename_all = "lowercase")]
 pub enum EventType {
 	/// 消息事件
-	#[strum(serialize = "message")]
 	Message,
 	/// 通知事件
-	#[strum(serialize = "notion")]
 	Notion,
 	/// 请求事件
-	#[strum(serialize = "request")]
 	Request,
 	/// 未知事件类型
-	#[strum(serialize = "unknown")]
 	#[default]
 	Unknown,
 }
@@ -213,7 +211,7 @@ pub trait EventBase: Send + Sync {
 	/// # 返回值
 	///
 	/// 返回事件类型的引用，可能是 Message、Notion 或 Request
-	fn event(&self) -> &Self::EventType;
+	fn event_type(&self) -> &Self::EventType;
 
 	/// 获取事件 ID
 	///
@@ -266,7 +264,7 @@ pub trait EventBase: Send + Sync {
 }
 
 
-macro_rules! impl_from_for_content_type {
+macro_rules! codegen_from_for_content_type {
     ($($variant:ident($inner_type:ty)),* $(,)?) => {
         $(
             impl From<$inner_type> for ContentType {
@@ -277,4 +275,44 @@ macro_rules! impl_from_for_content_type {
         )*
     };
 }
-pub(crate) use impl_from_for_content_type;
+pub(crate) use codegen_from_for_content_type;
+
+
+
+
+/// 为事件枚举生成方法委托和类型转换方法
+///
+/// 生成 `as_*` 方法、简单委托方法和类型转换方法。
+macro_rules! codegen_delegate_to_variants {
+	($self:ident, $method:ident, $($variant:ident),+) => {
+		match $self {
+			$(Self::$variant(inner) => inner.$method(),)+
+		}
+	};
+}
+pub(crate) use codegen_delegate_to_variants;
+
+macro_rules! codegen_delegate_to_variants_convert {
+	($self:ident, $method:ident, $convert:ty, $($variant:ident),+) => {
+		match $self {
+			$(Self::$variant(inner) => <$convert>::from(inner.$method().clone()),)+
+		}
+	};
+}
+pub(crate) use codegen_delegate_to_variants_convert;
+
+macro_rules! codegen_impl_as {
+	($enum_name:ident { $($variant:ident($type:ident) => $method_name:ident),* $(,)? }) => {
+		impl $enum_name<'_> {
+			$(
+				pub fn $method_name(&self) -> Option<&$type<'_>> {
+					match self {
+						Self::$variant(inner) => Some(inner),
+						_ => None,
+					}
+				}
+			)*
+		}
+	};
+}
+pub(crate) use codegen_impl_as;

@@ -62,14 +62,13 @@ use strum::{Display, EnumString, IntoStaticStr};
 	PartialOrd,
 	Ord,
 )]
+#[strum(serialize_all = "lowercase")]
+#[serde(rename_all = "lowercase")]
 pub enum MessageSubEventType {
 	/// 好友消息
-	#[strum(serialize = "friend")]
 	Friend,
 	/// 群消息
-	#[strum(serialize = "group")]
 	Group,
 	/// 频道消息
-	#[strum(serialize = "guild")]
 	Guild,
 }

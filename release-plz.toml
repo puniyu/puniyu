@@ -124,11 +124,14 @@ publish = false
 git_tag_enable = true
 git_tag_name = "puniyu-v{{ version }}"
 git_only = true
+version_group = "puniyu"
+changelog_include = ["puniyu_core"]
 
 [[package]]
 name = "puniyu_core"
 git_tag_enable = true
 git_tag_name = "core-v{{ version }}"
+version_group = "puniyu"
 
 [[package]]
 name = "puniyu_build"
@@ -138,9 +141,6 @@ name = "puniyu_error"
 
 [[package]]
 name = "puniyu_common"
-
-[[package]]
-name = "puniyu_version"
 
 [[package]]
 name = "puniyu_path"
@@ -192,11 +192,6 @@ name = "puniyu_task"
 [[package]]
 name = "puniyu_server"
 version_group = "server"
-changelog_include = ["puniyu_server_core"]
-
-[[package]]
-name = "puniyu_server_core"
-version_group = "server"
 
 [[package]]
 name = "puniyu_library"
@@ -204,10 +199,14 @@ name = "puniyu_library"
 [[package]]
 name = "puniyu_adapter"
 version_group = "adapter"
-changelog_include = ["puniyu_adapter_core"]
+changelog_include = ["puniyu_adapter_core", "puniyu_adapter_types"]
 
 [[package]]
 name = "puniyu_adapter_core"
+version_group = "adapter"
+
+[[package]]
+name = "puniyu_adapter_types"
 version_group = "adapter"
 
 [[package]]
@@ -236,3 +235,9 @@ name = "puniyu_plugin"
 
 [[package]]
 name = "puniyu_loader"
+
+[[package]]
+name = "puniyu_api"
+
+[[package]]
+name = "puniyu_macros"

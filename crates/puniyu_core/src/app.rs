@@ -1,27 +1,24 @@
 mod adapter;
-mod config;
 mod hook;
 mod loader;
 mod plugin;
 #[cfg(feature = "server")]
 mod server;
 
-use crate::{
-	VERSION, common,
-	logger::log_init,
-	logger::{OwoColorize, debug, error, info},
-};
+use crate::VERSION;
 use bytes::Bytes;
 use convert_case::{Case, Casing};
 use figlet_rs::FIGfont;
 use puniyu_adapter::Adapter;
-use puniyu_common::APP_NAME;
+use puniyu_common::app::app_name;
+use puniyu_common::uptime;
 use puniyu_handler::Handler;
 use puniyu_hook::types::{HookType, StatusType};
 use puniyu_loader::Loader;
-use puniyu_path::{RESOURCE_DIR, WORKING_DIR};
+use puniyu_logger::owo_colors::OwoColorize;
+use puniyu_logger::{debug, error, info};
 use puniyu_plugin::Plugin;
-use std::path::PathBuf;
+use std::path::Path;
 use std::sync::Arc;
 use std::{env, io};
 use tokio::{fs, signal};
@@ -45,9 +42,9 @@ use tokio::{fs, signal};
 /// app.run().await?;
 /// ```
 pub struct AppBuilder {
-	app_name: String,
-	app_logo: Option<Bytes>,
-	working_dir: PathBuf,
+	name: &'static str,
+	logo: Option<Bytes>,
+	working_dir: &'static Path,
 	plugins: Vec<Arc<dyn Plugin>>,
 	adapters: Vec<Arc<dyn Adapter>>,
 	loaders: Vec<Arc<dyn Loader>>,
@@ -57,9 +54,9 @@ pub struct AppBuilder {
 impl Default for AppBuilder {
 	fn default() -> Self {
 		Self {
-			app_name: String::from("puniyu"),
-			app_logo: None,
-			working_dir: PathBuf::from("."),
+			name: "puniyu",
+			logo: None,
+			working_dir: Path::new("."),
 			plugins: Vec::new(),
 			adapters: Vec::new(),
 			loaders: Vec::new(),
@@ -74,8 +71,8 @@ impl AppBuilder {
 	/// # 参数
 	///
 	/// - `name`: 应用名称
-	pub fn with_app_name(mut self, name: impl Into<String>) -> Self {
-		self.app_name = name.into();
+	pub fn with_app_name(mut self, name: &'static str) -> Self {
+		self.name = name;
 		self
 	}
 
@@ -85,7 +82,7 @@ impl AppBuilder {
 	///
 	/// - `logo`: Logo 图片的字节数据
 	pub fn with_app_logo(mut self, logo: Bytes) -> Self {
-		self.app_logo = Some(logo);
+		self.logo = Some(logo);
 		self
 	}
 
@@ -94,7 +91,7 @@ impl AppBuilder {
 	/// # 参数
 	///
 	/// - `dir`: 工作目录路径
-	pub fn with_working_dir(mut self, dir: impl Into<PathBuf>) -> Self {
+	pub fn with_working_dir(mut self, dir: impl Into<&'static Path>) -> Self {
 		self.working_dir = dir.into();
 		self
 	}
@@ -185,8 +182,8 @@ impl AppBuilder {
 	/// 返回配置好的 `App` 实例
 	pub fn build(self) -> App {
 		App {
-			app_name: self.app_name,
-			app_logo: self.app_logo,
+			name: self.name,
+			logo: self.logo,
 			working_dir: self.working_dir,
 			plugins: self.plugins,
 			adapters: self.adapters,
@@ -197,9 +194,9 @@ impl AppBuilder {
 }
 
 pub struct App {
-	app_name: String,
-	app_logo: Option<Bytes>,
-	working_dir: PathBuf,
+	name: &'static str,
+	logo: Option<Bytes>,
+	working_dir: &'static Path,
 	plugins: Vec<Arc<dyn Plugin>>,
 	adapters: Vec<Arc<dyn Adapter>>,
 	loaders: Vec<Arc<dyn Loader>>,
@@ -225,19 +222,21 @@ impl App {
 	/// app.run().await?;
 	/// ```
 	pub async fn run(self) -> io::Result<()> {
-		use crate::common::time::format_duration;
+		use crate::common::format_duration;
+		use puniyu_common::app::{app_name, set_app_info, AppInfo};
+		use puniyu_path::resource_dir;
 		use puniyu_loader::LoaderRegistry;
 		use std::time::Duration;
 
-		WORKING_DIR.get_or_init(|| self.working_dir);
-		APP_NAME.get_or_init(|| self.app_name.clone());
+		let info = AppInfo::new(self.name, &VERSION, self.working_dir);
+		set_app_info(info);
 
 		print_start_log();
-		config::init_config();
+		puniyu_config::init();
 
 		#[cfg(feature = "logger")]
 		{
-			log_init();
+			crate::logger::log_init();
 		}
 		for handler in self.handlers.into_iter() {
 			if let Err(e) = puniyu_handler::HandlerRegistry::register(handler) {
@@ -259,10 +258,10 @@ impl App {
 		let duration_str = format_duration(start_time.elapsed());
 		execute_hooks(StatusType::Start).await;
 
-		let app_name = APP_NAME.get().unwrap();
+		let app_name = app_name().to_case(Case::Lower);
 		info!(
 			"{} 初始化完成，耗时: {}",
-			app_name.to_case(Case::Lower).fg_rgb::<64, 224, 208>(),
+			app_name.fg_rgb::<64, 224, 208>(),
 			duration_str.fg_rgb::<255, 127, 80>()
 		);
 
@@ -271,16 +270,18 @@ impl App {
 		let event_bus = puniyu_dispatch::get_event_bus();
 		event_bus.run();
 
+		if let Some(logo) = self.logo {
+			let logo_path = resource_dir().join("logo.png");
+			if !logo_path.exists() {
+				fs::write(&logo_path, &logo).await.expect("Failed to write");
+			}
+			#[cfg(feature = "server")]
+			puniyu_server::set_logo(logo)
+		}
 		#[cfg(feature = "server")]
 		{
-			use puniyu_config::Config;
-			if let Some(logo) = self.app_logo.clone() {
-				let logo_path = RESOURCE_DIR.join("logo.png");
-				fs::write(&logo_path, &logo).await.expect("Failed to write");
-				puniyu_server::set_logo(logo)
-			}
-
-			let config = Config::app();
+			use puniyu_config::app_config;
+			let config = app_config();
 			let config = config.server();
 			let host = config.host();
 			let port = config.port();
@@ -293,7 +294,7 @@ impl App {
 		info!(
 			"{} 本次运行时间: {}",
 			app_name.to_case(Case::Lower).fg_rgb::<64, 224, 208>(),
-			format_duration(Duration::from_secs(common::time::uptime())).fg_rgb::<255, 127, 80>()
+			format_duration(Duration::from_secs(uptime())).fg_rgb::<255, 127, 80>()
 		);
 		Ok(())
 	}
@@ -304,6 +305,36 @@ async fn init_app(
 	adapters: Vec<Arc<dyn Adapter>>,
 	loaders: Vec<Arc<dyn Loader>>,
 ) -> io::Result<()> {
+	use puniyu_path::{ADAPTER_DIR, APP_DIR, CONFIG_DIR, DATA_DIR, PLUGIN_DIR, RESOURCE_DIR};
+	async fn check_dir(path: &Path) -> io::Result<()> {
+		if !path.exists() {
+			fs::create_dir_all(path.to_path_buf()).await?;
+		}
+		Ok(())
+	}
+	let dirs = [
+		APP_DIR.as_path(),
+		DATA_DIR.as_path(),
+		CONFIG_DIR.as_path(),
+		RESOURCE_DIR.as_path(),
+		PLUGIN_DIR.as_path(),
+		ADAPTER_DIR.as_path(),
+		puniyu_path::plugin::CONFIG_DIR.as_path(),
+		puniyu_path::plugin::DATA_DIR.as_path(),
+		puniyu_path::plugin::RESOURCE_DIR.as_path(),
+		puniyu_path::plugin::TEMP_DIR.as_path(),
+		puniyu_path::adapter::CONFIG_DIR.as_path(),
+		puniyu_path::adapter::DATA_DIR.as_path(),
+		puniyu_path::adapter::RESOURCE_DIR.as_path(),
+		puniyu_path::adapter::TEMP_DIR.as_path(),
+	];
+	for dir in &dirs {
+		check_dir(dir).await?;
+	}
+
+	puniyu_task::init().await;
+
+	info!("plugin loading...");
 	for plugin in plugins {
 		if let Err(e) = plugin::init_plugin(plugin).await {
 			error!("Failed to register plugin: {}", e);
@@ -324,8 +355,7 @@ async fn init_app(
 }
 
 fn print_start_log() {
-	let app_name = APP_NAME.get().unwrap();
-	let app_name = app_name.to_case(Case::Pascal);
+	let app_name = app_name().to_case(Case::Lower);
 	if let Ok(standard_font) = FIGfont::standard()
 		&& let Some(art_text) = standard_font.convert(app_name.as_str())
 	{
@@ -334,8 +364,9 @@ fn print_start_log() {
 		println!("{}", app_name);
 	}
 
-	println!("{} 启动中...", app_name.to_case(Case::Lower));
-	println!("版本: {}", VERSION);
+	println!("{} starting...", app_name.to_case(Case::Lower));
+	println!("Version: {}", *VERSION);
+	println!("Git SHA: {}", env!("VERGEN_GIT_SHA"));
 	println!("Github: {}", env!("CARGO_PKG_REPOSITORY"));
 }
 
@@ -348,7 +379,7 @@ async fn execute_hooks(status_type: StatusType) {
 			_ => false,
 		})
 		.collect::<Vec<_>>();
-	hooks.sort_unstable_by_key(|a| a.builder.rank());
+	hooks.sort_unstable_by_key(|a| a.builder.priority());
 
 	for hook in hooks {
 		if let Err(e) = hook.builder.run(None).await {

@@ -26,8 +26,8 @@ pub struct TaskInfo {
 }
 
 #[cfg(feature = "registry")]
-impl From<TaskInfo> for tokio_cron_scheduler::Job {
-	fn from(task: TaskInfo) -> Self {
+impl From<&TaskInfo> for tokio_cron_scheduler::Job {
+	fn from(task: &TaskInfo) -> Self {
 		let cron_str = task.builder.cron().to_string();
 		JobBuilder::new()
 			.with_timezone(chrono_tz::Asia::Shanghai)
@@ -58,6 +58,13 @@ impl From<TaskInfo> for tokio_cron_scheduler::Job {
 			}))
 			.build()
 			.expect("Failed to create job")
+	}
+}
+
+#[cfg(feature = "registry")]
+impl From<TaskInfo> for tokio_cron_scheduler::Job {
+	fn from(task: TaskInfo) -> Self {
+		tokio_cron_scheduler::Job::from(&task)
 	}
 }
 

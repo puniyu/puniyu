@@ -60,14 +60,14 @@ fn test_notion_sub_event_serialization() {
 
 	let event = NotionSubEventType::GroupPoke;
 	let json = serde_json::to_string(&event).unwrap();
-	assert_eq!(json, r#""GroupPoke""#);
+	assert_eq!(json, r#""groupPoke""#);
 }
 
 #[test]
 fn test_notion_sub_event_deserialization() {
 	use serde_json;
 
-	let json = r#""GroupPoke""#;
+	let json = r#""groupPoke""#;
 	let event: NotionSubEventType = serde_json::from_str(json).unwrap();
 	assert_eq!(event, NotionSubEventType::GroupPoke);
 }

@@ -6,17 +6,16 @@
 //!
 //! - 包含更多元数据（如图片尺寸、文件大小等）
 //! - 字段通常为只读
-//! - 实现了 `RawMessage` trait，可以获取原始消息内容
+//! - 实现了 `Element` trait
 //!
 //! ## 示例
 //!
 //! ```rust
 //! use puniyu_element::receive::*;
-//! use puniyu_element::RawMessage;
+//! use puniyu_element::Element;
 //!
 //! // 创建文本元素
 //! let text = TextElement { text: "Hello, World!" };
-//! println!("Message: {}", text.raw());
 //!
 //! // 创建 @提及元素
 //! let at = AtElement { target_id: "123456" };
@@ -33,7 +32,7 @@
 //! }
 //! ```
 
-use crate::{ElementType, RawMessage, codegen_reexport};
+use crate::{Element, ElementType, codegen_reexport};
 use serde::{Deserialize, Serialize};
 
 codegen_reexport! {
@@ -136,7 +135,7 @@ impl<'e> Elements<'e> {
 	}
 }
 
-impl<'e> RawMessage for Elements<'e> {
+impl<'e> Element for Elements<'e> {
 	fn r#type(&self) -> ElementType {
 		match self {
 			Elements::Text(element) => element.r#type(),
@@ -149,21 +148,6 @@ impl<'e> RawMessage for Elements<'e> {
 			Elements::Video(element) => element.r#type(),
 			Elements::Xml(element) => element.r#type(),
 			Elements::At(element) => element.r#type(),
-		}
-	}
-
-	fn raw(&self) -> String {
-		match self {
-			Elements::Text(element) => element.raw(),
-			Elements::File(element) => element.raw(),
-			Elements::Face(element) => element.raw(),
-			Elements::Image(element) => element.raw(),
-			Elements::Json(element) => element.raw(),
-			Elements::Record(element) => element.raw(),
-			Elements::Reply(element) => element.raw(),
-			Elements::Video(element) => element.raw(),
-			Elements::Xml(element) => element.raw(),
-			Elements::At(element) => element.raw(),
 		}
 	}
 }

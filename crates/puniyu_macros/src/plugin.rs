@@ -193,8 +193,8 @@ pub fn plugin(
 					.collect();
 
 				if !servers.is_empty() {
-					Some(::std::sync::Arc::new(move |cfg: &mut ::puniyu_plugin::private::ServiceConfig| {
-						servers.iter().for_each(|server| server(cfg));
+					Some(::puniyu_plugin::private::ServerFunction::new(move |cfg: &mut ::puniyu_plugin::private::ServiceConfig| {
+						servers.iter().for_each(|server| server.call(cfg));
 					}))
 				} else {
 					None

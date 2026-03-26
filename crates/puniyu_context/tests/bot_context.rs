@@ -1,7 +1,7 @@
+use bytes::Bytes;
 use puniyu_account::AccountInfo;
-use puniyu_adapter_core::adapter_info;
-use puniyu_adapter_core::api::AdapterApi;
-use puniyu_adapter_core::types::info::{AdapterPlatform, AdapterProtocol};
+use puniyu_adapter_api::AdapterApi;
+use puniyu_adapter_types::{AdapterPlatform, AdapterProtocol, adapter_info};
 use puniyu_bot::Bot;
 use puniyu_context::BotContext;
 
@@ -14,7 +14,7 @@ fn create_mock_bot() -> Bot {
 	let account = AccountInfo {
 		uin: "bot123".to_string(),
 		name: "TestBot".to_string(),
-		avatar: "".to_string(),
+		avatar: Bytes::new(),
 	};
 	let api = AdapterApi::default();
 	Bot::new(adapter_info, api, account)
@@ -60,7 +60,7 @@ fn test_bot_context_clone() {
 #[test]
 fn test_bot_context_with_different_accounts() {
 	let account1 =
-		AccountInfo { uin: "bot123".to_string(), name: "Bot1".to_string(), avatar: "".to_string() };
+		AccountInfo { uin: "bot123".to_string(), name: "Bot1".to_string(), avatar: Bytes::new() };
 	let adapter_info1 = adapter_info!(
 		name: "test-adapter",
 		platform: AdapterPlatform::Other,
@@ -70,7 +70,7 @@ fn test_bot_context_with_different_accounts() {
 	let context1 = BotContext::new(&bot1);
 
 	let account2 =
-		AccountInfo { uin: "bot456".to_string(), name: "Bot2".to_string(), avatar: "".to_string() };
+		AccountInfo { uin: "bot456".to_string(), name: "Bot2".to_string(), avatar: Bytes::new() };
 	let adapter_info2 = adapter_info!(
 		name: "test-adapter",
 		platform: AdapterPlatform::Other,
@@ -88,7 +88,7 @@ fn test_bot_context_with_avatar() {
 	let account = AccountInfo {
 		uin: "bot123".to_string(),
 		name: "TestBot".to_string(),
-		avatar: "https://example.com/avatar.jpg".to_string(),
+		avatar: Bytes::from("https://example.com/avatar.jpg"),
 	};
 	let adapter_info = adapter_info!(
 		name: "test-adapter",
@@ -104,7 +104,7 @@ fn test_bot_context_with_avatar() {
 #[test]
 fn test_bot_context_minimal_account() {
 	let account =
-		AccountInfo { uin: "bot123".to_string(), name: "".to_string(), avatar: "".to_string() };
+		AccountInfo { uin: "bot123".to_string(), name: "".to_string(), avatar: Bytes::new() };
 	let adapter_info = adapter_info!(
 		name: "test-adapter",
 		platform: AdapterPlatform::Other,

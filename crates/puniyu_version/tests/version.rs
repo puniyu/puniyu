@@ -2,164 +2,93 @@ use puniyu_version::Version;
 use std::str::FromStr;
 
 #[test]
-fn test_version_creation() {
-	let version = Version { major: 1, minor: 2, patch: 3 };
-
+fn test_new_sets_fields() {
+	let version = Version::new(1, 2, 3);
 	assert_eq!(version.major, 1);
 	assert_eq!(version.minor, 2);
 	assert_eq!(version.patch, 3);
 }
 
 #[test]
-fn test_version_default() {
-	let version = Version::default();
-
-	assert_eq!(version.major, 0);
-	assert_eq!(version.minor, 0);
-	assert_eq!(version.patch, 1);
+fn test_display_formats_core_version() {
+	let version = Version::new(10, 20, 30);
+	assert_eq!(version.to_string(), "10.20.30");
 }
 
 #[test]
-fn test_version_display() {
-	let version = Version { major: 1, minor: 2, patch: 3 };
-
-	assert_eq!(version.to_string(), "1.2.3");
-	assert_eq!(format!("{}", version), "1.2.3");
+fn test_from_str_core_version() {
+	let parsed = Version::from_str("0.7.8");
+	match parsed {
+		Ok(version) => assert_eq!(version, Version::new(0, 7, 8)),
+		Err(err) => panic!("expected valid version, got error: {err}"),
+	}
 }
 
 #[test]
-fn test_version_from_str() {
-	let version = Version::from_str("1.2.3").unwrap();
-
-	assert_eq!(version.major, 1);
-	assert_eq!(version.minor, 2);
-	assert_eq!(version.patch, 3);
+fn test_from_str_with_metadata_discards_extra_parts() {
+	let parsed = Version::from_str("1.2.3-beta.1+build.9");
+	match parsed {
+		Ok(version) => assert_eq!(version, Version::new(1, 2, 3)),
+		Err(err) => panic!("expected valid version with metadata, got error: {err}"),
+	}
 }
 
 #[test]
-fn test_version_from_str_invalid() {
-	let version = Version::from_str("invalid").unwrap();
-	assert_eq!(version, Version::default());
-
-	let version = Version::from_str("1.2").unwrap();
-	assert_eq!(version, Version::default());
-
-	let version = Version::from_str("1.2.3.4").unwrap();
-	assert_eq!(version, Version::default());
+fn test_from_str_invalid_version_should_fail() {
+	let parsed = Version::from_str("1.2");
+	assert!(parsed.is_err());
 }
 
 #[test]
-fn test_version_from_str_partial_invalid() {
-	let version = Version::from_str("1.a.3").unwrap();
-	assert_eq!(version.major, 1);
-	assert_eq!(version.minor, 0);
-	assert_eq!(version.patch, 3);
+fn test_from_semver_keeps_only_core_fields() {
+	let parsed = semver::Version::parse("3.4.5-alpha.2+meta");
+	let semver_value = match parsed {
+		Ok(value) => value,
+		Err(err) => panic!("failed to parse semver input: {err}"),
+	};
+
+	let version = Version::from(semver_value);
+	assert_eq!(version, Version::new(3, 4, 5));
 }
 
 #[test]
-fn test_version_from_static_str() {
-	let version: Version = "1.2.3".into();
+fn test_into_semver_roundtrip_core_fields() {
+	let parsed = semver::Version::parse("1.2.3-rc.1+build.9");
+	let semver_value = match parsed {
+		Ok(value) => value,
+		Err(err) => panic!("failed to parse semver input: {err}"),
+	};
 
-	assert_eq!(version.major, 1);
-	assert_eq!(version.minor, 2);
-	assert_eq!(version.patch, 3);
+	let version = Version::from(semver_value);
+	let back_to_semver: semver::Version = version.into();
+
+	assert_eq!(back_to_semver.major, 1);
+	assert_eq!(back_to_semver.minor, 2);
+	assert_eq!(back_to_semver.patch, 3);
+	assert!(back_to_semver.pre.is_empty());
+	assert!(back_to_semver.build.is_empty());
 }
 
 #[test]
-fn test_version_from_string() {
-	let s = String::from("1.2.3");
-	let version: Version = s.into();
+fn test_serde_json_roundtrip() {
+	let version = Version::new(5, 6, 7);
 
-	assert_eq!(version.major, 1);
-	assert_eq!(version.minor, 2);
-	assert_eq!(version.patch, 3);
+	let serialized = serde_json::to_string(&version);
+	let serialized = match serialized {
+		Ok(value) => value,
+		Err(err) => panic!("failed to serialize version: {err}"),
+	};
+	assert_eq!(serialized, r#"{"major":5,"minor":6,"patch":7}"#);
+
+	let deserialized = serde_json::from_str::<Version>(&serialized);
+	match deserialized {
+		Ok(value) => assert_eq!(value, version),
+		Err(err) => panic!("failed to deserialize version: {err}"),
+	}
 }
 
 #[test]
-fn test_version_to_string() {
-	let version = Version { major: 1, minor: 2, patch: 3 };
-	let s: String = version.into();
-
-	assert_eq!(s, "1.2.3");
-}
-
-#[test]
-fn test_version_clone() {
-	let version1 = Version { major: 1, minor: 2, patch: 3 };
-	let version2 = version1.clone();
-
-	assert_eq!(version1, version2);
-}
-
-#[test]
-fn test_version_equality() {
-	let version1 = Version { major: 1, minor: 2, patch: 3 };
-	let version2 = Version { major: 1, minor: 2, patch: 3 };
-	let version3 = Version { major: 2, minor: 0, patch: 0 };
-
-	assert_eq!(version1, version2);
-	assert_ne!(version1, version3);
-}
-
-#[test]
-fn test_version_debug() {
-	let version = Version { major: 1, minor: 2, patch: 3 };
-	let debug_str = format!("{:?}", version);
-
-	assert!(debug_str.contains("Version"));
-	assert!(debug_str.contains("major"));
-	assert!(debug_str.contains("1"));
-}
-
-#[test]
-fn test_version_as_ref() {
-	let version = Version { major: 1, minor: 2, patch: 3 };
-	let version_ref: &Version = version.as_ref();
-
-	assert_eq!(version_ref.major, 1);
-}
-
-#[test]
-fn test_version_zero() {
-	let version = Version { major: 0, minor: 0, patch: 0 };
-
-	assert_eq!(version.to_string(), "0.0.0");
-}
-
-#[test]
-fn test_version_large_numbers() {
-	let version = Version { major: 999, minor: 999, patch: 999 };
-
-	assert_eq!(version.to_string(), "999.999.999");
-}
-
-#[test]
-fn test_version_serialization() {
-	let version = Version { major: 1, minor: 2, patch: 3 };
-
-	let json = serde_json::to_string(&version).unwrap();
-	let deserialized: Version = serde_json::from_str(&json).unwrap();
-
-	assert_eq!(version, deserialized);
-}
-
-#[test]
-fn test_version_major_only() {
-	let version = Version { major: 5, minor: 0, patch: 0 };
-
-	assert_eq!(version.to_string(), "5.0.0");
-}
-
-#[test]
-fn test_version_minor_only() {
-	let version = Version { major: 0, minor: 5, patch: 0 };
-
-	assert_eq!(version.to_string(), "0.5.0");
-}
-
-#[test]
-fn test_version_patch_only() {
-	let version = Version { major: 0, minor: 0, patch: 5 };
-
-	assert_eq!(version.to_string(), "0.0.5");
+fn test_serde_json_missing_field_should_fail() {
+	let deserialized = serde_json::from_str::<Version>(r#"{"major":1,"minor":2}"#);
+	assert!(deserialized.is_err());
 }

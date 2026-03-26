@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use crate::{ElementType, RawMessage};
+use crate::{Element, ElementType};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TextElement<'t> {
@@ -7,13 +7,9 @@ pub struct TextElement<'t> {
 	pub text: &'t str,
 }
 
-impl<'t> RawMessage for TextElement<'t> {
+impl<'t> Element for TextElement<'t> {
 	fn r#type(&self) -> ElementType {
 		ElementType::Text
-	}
-
-	fn raw(&self) -> String {
-		self.text.to_string()
 	}
 }
 impl<'t> From<TextElement<'t>> for String {

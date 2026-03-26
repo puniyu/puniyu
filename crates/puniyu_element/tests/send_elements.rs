@@ -1,6 +1,5 @@
 use puniyu_element::send::*;
-use puniyu_element::ElementType;
-use puniyu_element::RawMessage;
+use puniyu_element::{Element, ElementType};
 
 #[test]
 fn test_send_text_element_new() {
@@ -10,11 +9,10 @@ fn test_send_text_element_new() {
 }
 
 #[test]
-fn test_send_text_element_raw_message() {
+fn test_send_text_element_type() {
 	let element = TextElement::new("test");
 
 	assert_eq!(element.r#type(), ElementType::Text);
-	assert_eq!(element.raw(), "test");
 }
 
 #[test]
@@ -25,11 +23,10 @@ fn test_send_at_element_new() {
 }
 
 #[test]
-fn test_send_at_element_raw_message() {
+fn test_send_at_element_type() {
 	let element = AtElement::new("target");
 
 	assert_eq!(element.r#type(), ElementType::At);
-	assert_eq!(element.raw(), "target");
 }
 
 #[test]
@@ -40,11 +37,10 @@ fn test_send_reply_element_new() {
 }
 
 #[test]
-fn test_send_reply_element_raw_message() {
+fn test_send_reply_element_type() {
 	let element = ReplyElement::new("reply_to");
 
 	assert_eq!(element.r#type(), ElementType::Reply);
-	assert_eq!(element.raw(), "reply_to");
 }
 
 #[test]
@@ -55,11 +51,10 @@ fn test_send_face_element_new() {
 }
 
 #[test]
-fn test_send_face_element_raw_message() {
+fn test_send_face_element_type() {
 	let element = FaceElement::new(10u64);
 
 	assert_eq!(element.r#type(), ElementType::Face);
-	assert_eq!(element.raw(), "10");
 }
 
 #[test]
@@ -79,12 +74,11 @@ fn test_send_image_element_new() {
 }
 
 #[test]
-fn test_send_image_element_raw_message() {
+fn test_send_image_element_type() {
 	let file_data = b"test image".to_vec();
 	let element = ImageElement::new(file_data, "test image",  None);
 
 	assert_eq!(element.r#type(), ElementType::Image);
-	assert_eq!(element.raw(), "test image");
 }
 
 #[test]
@@ -97,12 +91,11 @@ fn test_send_file_element_new() {
 }
 
 #[test]
-fn test_send_file_element_raw_message() {
+fn test_send_file_element_type() {
 	let file_data = b"test file".to_vec();
 	let element = FileElement::new(file_data, "file.txt");
 
 	assert_eq!(element.r#type(), ElementType::File);
-	assert_eq!(element.raw(), "file.txt");
 }
 
 #[test]
@@ -115,12 +108,11 @@ fn test_send_video_element_new() {
 }
 
 #[test]
-fn test_send_video_element_raw_message() {
+fn test_send_video_element_type() {
 	let video_data = b"test video".to_vec();
 	let element = VideoElement::new(video_data, "clip.mp4");
 
 	assert_eq!(element.r#type(), ElementType::Video);
-	assert_eq!(element.raw(), "[video:clip.mp4]");
 }
 
 #[test]
@@ -133,12 +125,11 @@ fn test_send_record_element_new() {
 }
 
 #[test]
-fn test_send_record_element_raw_message() {
+fn test_send_record_element_type() {
 	let audio_data = b"test audio".to_vec();
 	let element = RecordElement::new(audio_data, "sound.mp3");
 
 	assert_eq!(element.r#type(), ElementType::Record);
-	assert_eq!(element.raw(), "sound.mp3");
 }
 
 #[test]
@@ -150,11 +141,10 @@ fn test_send_json_element_new() {
 }
 
 #[test]
-fn test_send_json_element_raw_message() {
+fn test_send_json_element_type() {
 	let element = JsonElement::new("{}");
 
 	assert_eq!(element.r#type(), ElementType::Json);
-	assert_eq!(element.raw(), "{}");
 }
 
 #[test]
@@ -166,11 +156,10 @@ fn test_send_xml_element_new() {
 }
 
 #[test]
-fn test_send_xml_element_raw_message() {
+fn test_send_xml_element_type() {
 	let element = XmlElement::new("<xml/>");
 
 	assert_eq!(element.r#type(), ElementType::Xml);
-	assert_eq!(element.raw(), "<xml/>");
 }
 
 #[test]
