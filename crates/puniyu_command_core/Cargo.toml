@@ -1,6 +1,6 @@
 [package]
 name = "puniyu_command_core"
-version = "0.7.8"
+version = "0.7.10"
 description = "puniyu 命令核心库，提供命令参数、权限和动作的类型定义"
 authors.workspace = true
 license.workspace = true

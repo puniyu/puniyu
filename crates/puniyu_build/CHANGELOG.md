@@ -1,4 +1,13 @@
 # 变更日志
+
+## [0.2.6](https://github.com/puniyu/puniyu/compare/puniyu_build-v0.2.5...puniyu_build-v0.2.6)
+
+### 🚜 重构
+
+
+- *(build)* 重构构建系统并添加插件支持功能 - ([d77fb08](https://github.com/puniyu/puniyu/commit/d77fb084b9da1562475845f8b1d7689df098fc8d))
+- *(core)* 重构部分核心实现 ([#150](https://github.com/puniyu/puniyu/pull/150)) - ([e06459e](https://github.com/puniyu/puniyu/commit/e06459e40f1ec37f8e0de7427e6905c9bb295d5e))
+
 ## [0.2.5](https://github.com/puniyu/puniyu/compare/puniyu_build-v0.2.4...puniyu_build-v0.2.5) - 2026-01-11
 
 

@@ -1,4 +1,18 @@
 # 变更日志
+
+## [0.7.8]
+
+### 🚜 重构
+
+
+- *(core)* 重构部分核心实现 ([#150](https://github.com/puniyu/puniyu/pull/150)) - ([e06459e](https://github.com/puniyu/puniyu/commit/e06459e40f1ec37f8e0de7427e6905c9bb295d5e))
+- 优化全局注册表, 减少调用时开销 ([#144](https://github.com/puniyu/puniyu/pull/144)) - ([1447162](https://github.com/puniyu/puniyu/commit/1447162841cbebfba06e12eaad9fea263aa0436f))
+
+### ⚙️ 杂项
+
+
+- *(workspace)* 移除release-please配置文件并优化Cargo.toml结构 - ([db957c3](https://github.com/puniyu/puniyu/commit/db957c3939f38d30da5cc8807aed0e154fe23a52))
+
 ## [0.7.5](https://github.com/puniyu/puniyu/compare/puniyu_common-v0.7.4...puniyu_common-v0.7.5) - 2026-01-11
 
 
