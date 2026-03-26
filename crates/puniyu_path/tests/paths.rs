@@ -25,10 +25,10 @@ fn test_working_dir() {
 }
 
 #[test]
-fn test_base_dir() {
+fn test_app_cwd_dir() {
 	init_test_env();
 
-	let dir = base_dir();
+	let dir = app_cwd_dir();
 	assert_eq!(dir, PathBuf::from("."));
 }
 
@@ -180,7 +180,7 @@ fn test_adapter_temp_dir() {
 fn test_path_exists() {
 	init_test_env();
 
-	let _ = base_dir();
+	let _ = app_cwd_dir();
 	let _ = app_dir();
 	let _ = log_dir();
 	let _ = config_dir();

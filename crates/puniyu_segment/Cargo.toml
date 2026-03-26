@@ -1,7 +1,7 @@
 [package]
 name = "puniyu_segment"
 version = "0.7.8"
-description = "puniyu  crate for segment"
+description = "puniyu 消息段构建库，提供 Segment API 与 segment! 宏"
 authors.workspace = true
 license.workspace = true
 readme = "README.md"
@@ -16,4 +16,3 @@ workspace = true
 [dependencies]
 puniyu_element.workspace = true
 bytes.workspace = true
-

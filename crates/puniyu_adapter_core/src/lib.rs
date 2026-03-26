@@ -1,3 +1,10 @@
+mod registry;
+#[doc(inline)]
+pub use registry::AdapterRegistry;
+mod types;
+#[doc(inline)]
+pub use types::*;
+
 use std::sync::Arc;
 use puniyu_adapter_api::AdapterApi;
 use puniyu_adapter_types::AdapterInfo;

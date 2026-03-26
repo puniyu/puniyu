@@ -1,41 +1,39 @@
 # puniyu_sender
 
-消息发送者类型定义。
+统一的消息发送者类型，覆盖好友和群聊场景。
 
-## 使用
+## 特性
+
+- 👤 **双类型模型**: 提供 `FriendSender` 与 `GroupSender`
+- 🔌 **统一接口**: 通过 `Sender` trait 统一读取发送者信息
+- 🔄 **统一枚举**: 使用 `SenderType` 在两种发送者间切换
+- ⚡ **便捷构建**: 支持 `sender_friend!` 与 `sender_group!` 宏
+
+## 示例
 
 ```rust
-use puniyu_sender::{sender_friend, sender_group, Role, Sex};
+use puniyu_sender::{sender_friend, sender_group, Role, Sender, SenderType, Sex};
 
-// 好友发送者
 let friend = sender_friend!(
     user_id: "123456",
     nick: "Alice",
     sex: Sex::Female,
 );
 
-// 群聊发送者
 let group = sender_group!(
     user_id: "789012",
     nick: "Bob",
     role: Role::Admin,
-    card: "管理员",
 );
 
-// 统一访问
-println!("用户 ID: {}", friend.user_id());
-println!("昵称: {:?}", friend.name());
+let sender = SenderType::from(friend);
+assert_eq!(sender.user_id(), "123456");
+assert!(sender.is_friend());
+
+let sender = SenderType::from(group);
+assert!(sender.is_group());
 ```
-
-## 类型
-
-- `FriendSender` - 好友发送者
-- `GroupSender` - 群聊发送者
-- `SenderType` - 统一发送者枚举
-- `Sender` trait - 统一访问接口
-
-详细文档见 [docs.rs](https://docs.rs/puniyu_sender)
 
 ## 许可证
 
-[LGPL-3.0](../../LICENSE)
+本项目采用 [LGPL-3.0](../../LICENSE) 许可证。

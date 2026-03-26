@@ -82,6 +82,7 @@ puniyu_hook = { version = "0.7.8", path = "./crates/puniyu_hook" }
 puniyu_handler = { version = "0.7.8", path = "./crates/puniyu_handler" }
 
 puniyu_plugin = { version = "0.7.8", path = "./crates/puniyu_plugin" }
+puniyu_plugin_core = { version = "0.7.8", path = "./crates/puniyu_plugin_core" }
 
 puniyu_loader = { version = "0.7.8", path = "./crates/puniyu_loader" }
 puniyu_core = { version = "0.7.8", path = "./crates/puniyu_core" }

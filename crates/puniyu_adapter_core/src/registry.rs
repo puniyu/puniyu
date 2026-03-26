@@ -81,10 +81,10 @@ impl<'a> AdapterRegistry {
 	pub fn unregister_with_adapter_name(name: &str) -> Result<(), Error> {
 		let raw = STORE.raw();
 		let mut map = raw.write().expect("Failed to acquire lock");
-		if !map.values().any(|v| v.name() == name) {
+		if !map.values().any(|v| v.info().name == name) {
 			return Err(Error::NotFound("Adapter".to_string()));
 		}
-		map.retain(|_, v| v.name() != name);
+		map.retain(|_, v| v.info().name != name);
 		Ok(())
 	}
 
@@ -119,7 +119,7 @@ impl<'a> AdapterRegistry {
 	pub fn get_with_adapter_name(name: &str) -> Vec<Arc<dyn Adapter>> {
 		let raw = STORE.raw();
 		let map = raw.read().expect("Failed to acquire lock");
-		map.values().filter(|v| v.name() == name).cloned().collect()
+		map.values().filter(|v| v.info().name == name).cloned().collect()
 	}
 
 	/// 获取所有适配器

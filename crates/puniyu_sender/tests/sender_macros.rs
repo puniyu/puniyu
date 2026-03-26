@@ -1,4 +1,4 @@
-use puniyu_sender::{sender_friend, sender_group, Role, Sender, Sex};
+use puniyu_sender::{Role, Sender, Sex, sender_friend, sender_group};
 
 #[test]
 fn test_friend_macro_full() {

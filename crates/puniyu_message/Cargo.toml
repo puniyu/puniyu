@@ -1,9 +1,10 @@
 [package]
 name = "puniyu_message"
 version = "0.7.8"
+description = "puniyu 消息链封装库，提供 Message 类型与 message! 构建宏"
 authors.workspace = true
 license.workspace = true
-readme.workspace = true
+readme = "README.md"
 homepage.workspace = true
 repository.workspace = true
 edition.workspace = true
@@ -18,4 +19,3 @@ puniyu_element.workspace = true
 
 [dev-dependencies]
 puniyu_element.workspace = true
-
