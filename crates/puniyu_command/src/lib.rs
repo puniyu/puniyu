@@ -216,3 +216,14 @@ pub trait Command: Send + Sync + 'static {
 	/// ```
 	async fn run(&self, ctx: &MessageContext) -> puniyu_error::Result<CommandAction>;
 }
+
+impl PartialEq for dyn Command {
+	fn eq(&self, other: &Self) -> bool {
+		self.name() == other.name()
+			&& self.description() == other.description()
+			&& self.args() == other.args()
+			&& self.rank() == other.rank()
+			&& self.alias() == other.alias()
+			&& self.permission() == other.permission()
+	}
+}

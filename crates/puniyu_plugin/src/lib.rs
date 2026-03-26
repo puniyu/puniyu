@@ -6,16 +6,15 @@ mod registry;
 #[cfg(feature = "registry")]
 pub use registry::PluginRegistry;
 
-use std::sync::Arc;
 use async_trait::async_trait;
 use puniyu_command::Command;
-use puniyu_config::types::Config;
-use puniyu_hook::Hook;
-use puniyu_task::Task;
+use puniyu_config::Config;
 use puniyu_error::Result;
-use puniyu_server_core::ServerFunction;
+use puniyu_hook::Hook;
+use puniyu_server::ServerFunction;
+use puniyu_task::Task;
 use puniyu_version::Version;
-
+use std::sync::Arc;
 
 #[async_trait]
 pub trait Plugin: Send + Sync + 'static {
@@ -66,5 +65,10 @@ pub trait Plugin: Send + Sync + 'static {
 impl PartialEq for dyn Plugin {
 	fn eq(&self, other: &Self) -> bool {
 		self.name() == other.name()
+			&& self.prefix() == other.prefix()
+			&& self.tasks() == other.tasks()
+			&& self.commands() == other.commands()
+			&& self.hooks() == other.hooks()
+			&& self.config() == other.config()
 	}
 }

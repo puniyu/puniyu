@@ -170,3 +170,10 @@ pub trait Hook: Send + Sync + 'static {
 	/// ```
 	async fn run(&self, ctx: Option<&EventContext>) -> puniyu_error::Result;
 }
+
+
+impl PartialEq for dyn Hook {
+	fn eq(&self, other: &Self) -> bool {
+		self.name() == other.name() && self.r#type() == other.r#type() && self.rank() == other.rank()
+	}
+}

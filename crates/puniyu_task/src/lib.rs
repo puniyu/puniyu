@@ -205,3 +205,10 @@ pub trait Task: Send + Sync + 'static {
 	/// 如果任务执行过程中发生错误，应返回相应的错误信息。
 	async fn run(&self) -> Result;
 }
+
+
+impl PartialEq for dyn Task {
+	fn eq(&self, other: &Self) -> bool {
+		self.name() == other.name() && self.cron() == other.cron()
+	}
+}
