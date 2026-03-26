@@ -3,6 +3,7 @@ use puniyu_logger::{debug, error, info};
 use puniyu_path::config_dir;
 use std::thread;
 use std::time::Duration;
+use sugar_path::SugarPath;
 
 pub fn start_config_watcher() {
 	use notify_debouncer_full::{DebounceEventResult, new_debouncer, notify};
@@ -23,7 +24,7 @@ pub fn start_config_watcher() {
 						}
 
 						for path in event.event.paths.iter() {
-							info!("[Config] File changed: {}", path.display());
+							info!("[Config] File changed: {}", path.absolutize().to_slash_lossy());
 
 							use crate::ConfigRegistry;
 							if ConfigRegistry::all().iter().any(|c| c.path == *path)

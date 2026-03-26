@@ -1,6 +1,7 @@
 use puniyu_version::Version;
 use std::path::{Path, PathBuf};
 use std::sync::OnceLock;
+use sugar_path::SugarPath;
 
 /// 应用元信息
 #[derive(Debug)]
@@ -11,12 +12,14 @@ pub struct AppInfo {
 }
 
 impl AppInfo {
-	pub fn new(
-		name: &'static str,
-		version: &'static Version,
-		cwd_dir: impl Into<PathBuf>,
-	) -> Self {
-		Self { name, version, cwd_dir: cwd_dir.into() }
+	pub fn new(name: &'static str, version: &'static Version, cwd_dir: impl Into<PathBuf>) -> Self {
+		let cwd_dir = cwd_dir
+			.into()
+			.to_slash()
+			.expect("Failed to convert path to slash format")
+			.as_path()
+			.to_path_buf();
+		Self { name, version, cwd_dir }
 	}
 
 	pub fn name(&self) -> &'static str {

@@ -13,6 +13,7 @@ rust-version.workspace = true
 [dependencies]
 toml.workspace = true
 serde.workspace = true
+sugar_path.workspace = true
 puniyu_system_info.workspace = true
 puniyu_version.workspace = true
 
