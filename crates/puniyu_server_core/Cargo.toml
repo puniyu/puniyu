@@ -1,6 +1,6 @@
 [package]
 name = "puniyu_server_core"
-version = "0.7.8"
+version = "0.7.9"
 description = "puniyu 服务器核心库，提供服务器配置的基础类型定义"
 authors.workspace = true
 license.workspace = true

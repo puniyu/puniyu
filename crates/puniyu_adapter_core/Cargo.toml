@@ -1,6 +1,6 @@
 [package]
 name = "puniyu_adapter_core"
-version = "0.7.8"
+version = "0.7.9"
 description = "puniyu 适配器核心库，提供适配器 API 接口和类型定义"
 authors.workspace = true
 license.workspace = true

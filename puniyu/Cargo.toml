@@ -1,6 +1,6 @@
 [package]
 name = "puniyu"
-version = "0.7.8"
+version = "0.7.9"
 publish = false
 authors.workspace = true
 license.workspace = true
@@ -12,7 +12,7 @@ rust-version.workspace = true
 
 [dependencies]
 tokio = { workspace = true, features = ["macros"] }
-puniyu_core = { version = "0.7.8", path = "../crates/puniyu_core" }
+puniyu_core = { version = "0.7.9", path = "../crates/puniyu_core" }
 
 [[bin]]
 name = "puniyu"

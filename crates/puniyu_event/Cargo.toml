@@ -1,6 +1,6 @@
 [package]
 name = "puniyu_event"
-version = "0.7.8"
+version = "0.7.9"
 description = "Puniyu 事件类型定义库，提供消息、通知和请求事件的完整类型系统"
 authors.workspace = true
 license.workspace = true
