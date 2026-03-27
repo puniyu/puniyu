@@ -322,9 +322,9 @@ impl Event<'_> {
 	/// ```
 	pub fn sub_event(&self) -> SubEventType {
 		match self {
-			Self::Message(event) => SubEventType::from(event.sub_event().clone()),
-			Self::Notion(event) => SubEventType::from(event.sub_event().clone()),
-			Self::Request(event) => SubEventType::from(event.sub_event().clone()),
+			Self::Message(event) => SubEventType::from(event.sub_event()),
+			Self::Notion(event) => SubEventType::from(event.sub_event()),
+			Self::Request(event) => SubEventType::from(event.sub_event()),
 		}
 	}
 

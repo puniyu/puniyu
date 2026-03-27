@@ -55,6 +55,7 @@ use strum::{Display, EnumString, IntoStaticStr};
 /// ```
 #[derive(
 	Debug,
+	Copy,
 	Clone,
 	EnumString,
 	Display,

@@ -130,7 +130,7 @@ impl<'e> std::fmt::Debug for Event<'e> {
 ///     }
 /// }
 /// ```
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub enum SubEventType {
 	Message(MessageSubEventType),
 	Notion(NotionSubEventType),
@@ -142,14 +142,29 @@ impl From<MessageSubEventType> for SubEventType {
 		Self::Message(sub_event)
 	}
 }
+impl From<&MessageSubEventType> for SubEventType {
+	fn from(sub_event: &MessageSubEventType) -> Self {
+		Self::Message(*sub_event)
+	}
+}
 impl From<NotionSubEventType> for SubEventType {
 	fn from(sub_event: NotionSubEventType) -> Self {
 		Self::Notion(sub_event)
 	}
 }
+impl From<&NotionSubEventType> for SubEventType {
+	fn from(sub_event: &NotionSubEventType) -> Self {
+		Self::Notion(*sub_event)
+	}
+}
 impl From<RequestSubEventType> for SubEventType {
 	fn from(sub_event: RequestSubEventType) -> Self {
 		Self::Request(sub_event)
+	}
+}
+impl From<&RequestSubEventType> for SubEventType {
+	fn from(sub_event: &RequestSubEventType) -> Self {
+		Self::Request(*sub_event)
 	}
 }
 
