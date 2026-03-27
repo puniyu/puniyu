@@ -4,7 +4,7 @@ pub use message::MessageContext;
 
 use crate::BotContext;
 use puniyu_bot::Bot;
-use puniyu_command_core::ArgValue;
+use puniyu_command_types::ArgValue;
 use puniyu_contact::ContactType;
 use puniyu_event::{Event, EventType, SubEventType};
 use puniyu_sender::SenderType;

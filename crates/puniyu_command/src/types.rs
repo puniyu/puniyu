@@ -1,20 +1,15 @@
 #[doc(inline)]
-pub use puniyu_command_core::*;
+pub use puniyu_command_types::*;
 use std::sync::Arc;
 
 /// 命令信息
 ///
-/// 包含命令的元数据和构建器。
-///
-/// # 字段
-///
-/// - `plugin_id` - 所属插件的 ID
-/// - `builder` - 命令构建器（实现了 `Command` trait）
+/// 包含命令的元信息和构建器。
 #[derive(Clone)]
 pub struct CommandInfo {
-	/// 插件 ID
+	/// 所属插件 ID。
 	pub plugin_id: u64,
-	/// 命令构建器
+	/// 命令构建器。
 	pub builder: Arc<dyn crate::Command>,
 }
 
@@ -24,25 +19,11 @@ impl PartialEq for CommandInfo {
 	}
 }
 
-/// 命令 ID
-///
-/// 用于标识命令的枚举类型，支持通过索引或名称来标识。
-///
-/// # 示例
-///
-/// ```rust
-/// use puniyu_command::CommandId;
-///
-/// // 通过索引创建
-/// let id1: CommandId = 0u64.into();
-///
-/// // 通过名称创建
-/// let id2: CommandId = "hello".into();
-/// ```
+/// 命令标识符。
 pub enum CommandId<'c> {
-	/// 通过索引标识
+	/// 通过索引标识。
 	Id(u64),
-	/// 通过名称标识
+	/// 通过名称标识。
 	Name(&'c str),
 }
 

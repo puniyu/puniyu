@@ -77,7 +77,7 @@ fn test_send_face_element_from_u32() {
 #[test]
 fn test_send_image_element_new() {
 	let file_data = b"fake image data".to_vec();
-	let element = ImageElement::new(file_data.clone(), "beautiful scenery");
+	let element = ImageElement::new(file_data.clone(), "beautiful scenery", None);
 
 	assert_eq!(element.file.as_ref(), file_data.as_slice());
 	assert_eq!(element.summary, "beautiful scenery");
@@ -86,7 +86,7 @@ fn test_send_image_element_new() {
 #[test]
 fn test_send_image_element_type() {
 	let file_data = b"test image".to_vec();
-	let element = ImageElement::new(file_data, "test image");
+	let element = ImageElement::new(file_data, "test image", None);
 
 	assert_eq!(element.r#type(), ElementType::Image);
 }
@@ -216,7 +216,7 @@ fn test_send_elements_enum_face() {
 #[test]
 fn test_send_elements_enum_image() {
 	let image_data = b"image".to_vec();
-	let image_elem = ImageElement::new(image_data, "pic.jpg");
+	let image_elem = ImageElement::new(image_data, "pic.jpg", None);
 	let element = Elements::Image(image_elem);
 
 	assert!(element.as_image().is_some());
@@ -299,7 +299,7 @@ fn test_send_bytes_conversion() {
 #[test]
 fn test_send_empty_bytes() {
 	let empty_data: Vec<u8> = vec![];
-	let element = ImageElement::new(empty_data, "empty.png");
+	let element = ImageElement::new(empty_data, "empty.png", None);
 
 	assert_eq!(element.file.len(), 0);
 }
@@ -326,11 +326,19 @@ fn test_send_file_element_from_string() {
 }
 
 #[test]
-fn test_send_image_element_summary_from_string() {
-	let element = ImageElement::with_summary(
+fn test_send_image_element_from_owned_string() {
+	let element = ImageElement::new(vec![1, 2, 3], String::from("photo.png"), None);
+
+	assert_eq!(element.file_name, "photo.png");
+	assert_eq!(element.summary, "photo.png");
+}
+
+#[test]
+fn test_send_image_element_with_summary() {
+	let element = ImageElement::new(
 		vec![1, 2, 3],
 		String::from("photo.png"),
-		String::from("owned summary"),
+		Some(String::from("owned summary")),
 	);
 
 	assert_eq!(element.file_name, "photo.png");

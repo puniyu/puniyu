@@ -176,14 +176,14 @@ name = "puniyu_cooldown"
 [[package]]
 name = "puniyu_command"
 version_group = "command"
-changelog_include = ["puniyu_command_core"]
+changelog_include = ["puniyu_command_types"]
 
 [[package]]
 name = "puniyu_command_parser"
 version_group = "command"
 
 [[package]]
-name = "puniyu_command_core"
+name = "puniyu_command_types"
 version_group = "command"
 
 [[package]]

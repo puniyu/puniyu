@@ -1,3 +1,31 @@
+//! # puniyu_adapter_api
+//!
+//! 统一的 puniyu 适配器 API 库，覆盖消息、群组、好友与账户操作场景。
+//!
+//! ## 特性
+//!
+//! - 提供 [`AdapterApi`] 聚合消息、群组、好友和账户接口
+//! - 提供 [`MessageApi`] 统一消息发送、撤回与历史查询接口
+//! - 提供 [`GroupApi`]、[`FriendApi`]、[`AccountApi`]
+//! - 支持 `AdapterApiBuilder` 自定义各子 API 实现
+//!
+//! ## 示例
+//!
+//! ```rust,ignore
+//! use std::sync::Arc;
+//! use puniyu_adapter_api::{AdapterApiBuilder, MessageApi};
+//!
+//! struct MyMessageApi;
+//! impl MessageApi for MyMessageApi {}
+//!
+//! let api = AdapterApiBuilder::default()
+//!     .message_api(Arc::new(MyMessageApi))
+//!     .build()
+//!     .unwrap();
+//!
+//! let _ = api.message();
+//! ```
+
 #![allow(unused_variables)]
 
 mod group;
@@ -17,61 +45,7 @@ mod inner;
 use derive_builder::Builder;
 use std::sync::Arc;
 
-/// 适配器 API
-///
-/// 提供统一的 API 接口，包含消息、群组、好友和账户管理功能。
-///
-/// # 组成部分
-///
-/// - `MessageApi` - 消息相关操作
-/// - `GroupApi` - 群组管理操作
-/// - `FriendApi` - 好友管理操作
-/// - `AccountApi` - 账户管理操作
-///
-/// # 示例
-///
-/// ## 使用默认实现
-///
-/// ```rust
-/// use puniyu_adapter_core::AdapterApi;
-///
-/// let api = AdapterApi::default();
-/// ```
-///
-/// ## 使用 Builder 模式
-///
-/// ```rust,ignore
-/// use puniyu_adapter_core::{AdapterApi, AdapterApiBuilder};
-/// use std::sync::Arc;
-///
-/// // 全部使用默认实现
-/// let api = AdapterApiBuilder::default().build().unwrap();
-///
-/// // 自定义部分 API
-/// let api = AdapterApiBuilder::default()
-///     .group_api(Arc::new(MyGroupApi))
-///     .build()
-///     .unwrap();
-/// ```
-///
-/// ## 使用消息 API
-///
-/// ```rust,ignore
-/// use puniyu_adapter_core::AdapterApi;
-/// use puniyu_contact::Contact;
-/// use puniyu_message::Message;
-///
-/// async fn send_message(api: &AdapterApi) {
-///     let contact = Contact::friend("123456");
-///     let message = Message::from("Hello!");
-///
-///     let result = api.message().send_msg(&contact, &message).await;
-///     match result {
-///         Ok(info) => println!("消息已发送: {}", info.message_id),
-///         Err(e) => eprintln!("发送失败: {}", e),
-///     }
-/// }
-/// ```
+/// 适配器 API 聚合入口。
 #[derive(Clone, Builder)]
 #[builder(pattern = "owned")]
 pub struct AdapterApi {
@@ -107,28 +81,7 @@ impl PartialEq for AdapterApi {
 }
 
 impl AdapterApi {
-	/// 创建新的 AdapterApi 实例
-	///
-	/// # 参数
-	///
-	/// - `group_api` - 群组 API 实现
-	/// - `friend_api` - 好友 API 实现
-	/// - `account_api` - 账户 API 实现
-	/// - `message_api` - 消息 API 实现
-	///
-	/// # 示例
-	///
-	/// ```rust,ignore
-	/// use puniyu_adapter_core::api::AdapterApi;
-	/// use std::sync::Arc;
-	///
-	/// let api = AdapterApi::new(
-	///     Arc::new(MyGroupApi),
-	///     Arc::new(MyFriendApi),
-	///     Arc::new(MyAccountApi),
-	///     Arc::new(MyMessageApi),
-	/// );
-	/// ```
+	/// 使用指定子 API 创建实例。
 	pub fn new(
 		group_api: Arc<dyn GroupApi>,
 		friend_api: Arc<dyn FriendApi>,
@@ -138,66 +91,22 @@ impl AdapterApi {
 		Self { group_api, friend_api, account_api, message_api }
 	}
 
-	/// 获取群组 API
-	///
-	/// # 返回值
-	///
-	/// 返回群组 API 的引用
-	///
-	/// # 示例
-	///
-	/// ```rust,ignore
-	/// let group_api = api.group();
-	/// let groups = group_api.get_group_list().await?;
-	/// ```
+	/// 获取群组 API。
 	pub fn group(&self) -> &Arc<dyn GroupApi> {
 		&self.group_api
 	}
 
-	/// 获取好友 API
-	///
-	/// # 返回值
-	///
-	/// 返回好友 API 的引用
-	///
-	/// # 示例
-	///
-	/// ```rust,ignore
-	/// let friend_api = api.friend();
-	/// let friends = friend_api.get_friend_list().await?;
-	/// ```
+	/// 获取好友 API。
 	pub fn friend(&self) -> &Arc<dyn FriendApi> {
 		&self.friend_api
 	}
 
-	/// 获取账户 API
-	///
-	/// # 返回值
-	///
-	/// 返回账户 API 的引用
-	///
-	/// # 示例
-	///
-	/// ```rust,ignore
-	/// let account_api = api.account();
-	/// account_api.set_avatar(avatar_data).await?;
-	/// ```
+	/// 获取账户 API。
 	pub fn account(&self) -> &Arc<dyn AccountApi> {
 		&self.account_api
 	}
 
-	/// 获取消息 API
-	///
-	/// # 返回值
-	///
-	/// 返回消息 API 的引用
-	///
-	/// # 示例
-	///
-	/// ```rust,ignore
-	/// let message_api = api.message();
-	/// message_api.send_msg(&contact, message).await?;
-	/// ```
+	/// 获取消息 API。
 	pub fn message(&self) -> &Arc<dyn MessageApi> {
 		&self.message_api
 	}

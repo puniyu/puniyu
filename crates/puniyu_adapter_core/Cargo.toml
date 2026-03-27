@@ -1,10 +1,10 @@
 [package]
 name = "puniyu_adapter_core"
 version = "0.7.8"
-description = "puniyu 适配器核心库，提供适配器 API 接口和类型定义"
+description = "puniyu 适配器核心库，统一适配器定义、API 聚合与注册表管理流程"
 authors.workspace = true
 license.workspace = true
-readme.workspace = true
+readme = "README.md"
 homepage.workspace = true
 repository.workspace = true
 edition.workspace = true
@@ -27,3 +27,8 @@ puniyu_hook.workspace = true
 [features]
 default = []
 registry = ["puniyu_error/registry"]
+
+[dev-dependencies]
+async-trait.workspace = true
+puniyu_adapter_api.workspace = true
+puniyu_adapter_types.workspace = true

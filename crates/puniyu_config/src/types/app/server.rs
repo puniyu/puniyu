@@ -27,11 +27,11 @@ pub struct ServerConfig {
 	port: u16,
 }
 
-fn default_server_host() -> IpAddr {
+const fn default_server_host() -> IpAddr {
 	let addr = Ipv4Addr::new(127, 0, 0, 1);
 	IpAddr::V4(addr)
 }
-fn default_server_port() -> u16 {
+const fn default_server_port() -> u16 {
 	33720
 }
 
@@ -43,20 +43,12 @@ impl Default for ServerConfig {
 }
 
 impl ServerConfig {
-	/// 获取服务器主机地址
-	///
-	/// # 返回值
-	///
-	/// 返回服务器监听的 IP 地址
+	/// 获取服务器监听地址。
 	pub fn host(&self) -> IpAddr {
 		self.host
 	}
 
-	/// 获取服务器端口号
-	///
-	/// # 返回值
-	///
-	/// 返回服务器监听的端口号
+	/// 获取服务器监听端口。
 	pub fn port(&self) -> u16 {
 		self.port
 	}

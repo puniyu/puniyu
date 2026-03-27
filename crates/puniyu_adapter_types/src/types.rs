@@ -1,3 +1,5 @@
+//! 适配器类型模块。
+
 mod message;
 #[doc(inline)]
 pub use message::*;

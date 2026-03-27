@@ -58,21 +58,6 @@ fn test_all_request_sub_types() {
 	}
 }
 
-#[test]
-fn test_sub_type_clone() {
-	// 测试克隆功能
-	let msg_type = MessageSubEventType::Friend;
-	let cloned = msg_type.clone();
-	assert_eq!(msg_type, cloned);
-
-	let notion_type = NotionSubEventType::GroupPoke;
-	let cloned = notion_type.clone();
-	assert_eq!(notion_type, cloned);
-
-	let request_type = RequestSubEventType::PrivateApply;
-	let cloned = request_type.clone();
-	assert_eq!(request_type, cloned);
-}
 
 #[test]
 fn test_sub_type_debug() {

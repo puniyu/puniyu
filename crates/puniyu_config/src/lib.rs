@@ -1,3 +1,28 @@
+//! # puniyu_config
+//!
+//! 统一的 puniyu 配置管理库，覆盖应用、Bot、群聊与好友场景。
+//!
+//! ## 特性
+//!
+//! - 提供 `AppConfig`、`BotConfig`、`GroupConfig`、`FriendConfig`
+//! - 提供 `app_config()`、`bot_config()`、`group_config()`、`friend_config()` 统一访问入口
+//! - 提供 `ConfigRegistry` 管理已注册配置
+//! - 初始化时自动创建配置目录并启动配置监听
+//!
+//! ## 示例
+//!
+//! ```rust,no_run
+//! use puniyu_config::{app_config, bot_config, init};
+//!
+//! init();
+//!
+//! let app = app_config();
+//! let bot = bot_config().bot("bot_001");
+//!
+//! assert_eq!(app.prefix().as_deref(), Some("!"));
+//! let _ = bot.cd();
+//! ```
+
 mod app;
 #[doc(inline)]
 pub use app::AppConfig;
@@ -14,6 +39,7 @@ mod types;
 #[doc(inline)]
 pub use types::*;
 mod config;
+mod common;
 mod registry;
 
 pub use registry::ConfigRegistry;
@@ -24,6 +50,7 @@ use puniyu_path::{config_dir, log_dir};
 
 /// 配置 trait
 pub trait Config: Send + Sync + 'static {
+	/// 返回当前配置的元信息。
 	fn config(&self) -> ConfigInfo;
 }
 
@@ -33,26 +60,31 @@ impl PartialEq for dyn Config {
 	}
 }
 
+/// 获取应用配置。
 #[inline]
 pub fn app_config() -> AppConfig {
 	AppConfig::get()
 }
 
+/// 获取 Bot 配置。
 #[inline]
 pub fn bot_config() -> BotConfig {
 	BotConfig::get()
 }
 
+/// 获取好友配置。
 #[inline]
 pub fn friend_config() -> FriendConfig {
 	FriendConfig::get()
 }
 
+/// 获取群组配置。
 #[inline]
 pub fn group_config() -> GroupConfig {
 	GroupConfig::get()
 }
 
+/// 初始化配置目录、合并默认配置并启动配置监听。
 pub fn init() {
 	if !config_dir().as_path().exists() {
 		std::fs::create_dir_all(config_dir().as_path())

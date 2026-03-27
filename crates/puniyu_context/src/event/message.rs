@@ -2,7 +2,7 @@ use crate::BotContext;
 use bytes::Bytes;
 use puniyu_adapter_types::SendMsgType;
 use puniyu_bot::Bot;
-use puniyu_command_core::ArgValue;
+use puniyu_command_types::ArgValue;
 use puniyu_config::app_config;
 use puniyu_contact::ContactType;
 use puniyu_element::receive::Elements;

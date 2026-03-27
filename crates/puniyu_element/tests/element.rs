@@ -123,7 +123,7 @@ fn test_bytes_handling() {
 #[test]
 fn test_empty_bytes() {
 	let empty_data: Vec<u8> = vec![];
-	let element = send::ImageElement::new(empty_data, "empty.png");
+	let element = send::ImageElement::new(empty_data, "empty.png", None);
 
 	assert_eq!(element.file.len(), 0);
 	assert_eq!(element.summary, "empty.png");

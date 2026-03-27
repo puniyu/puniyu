@@ -1,10 +1,10 @@
 [package]
 name = "puniyu_command"
 version = "0.7.10"
-description = "puniyu 命令库，提供命令定义和注册管理"
+description = "puniyu 命令库，统一命令定义、元信息与注册表管理流程"
 authors.workspace = true
 license.workspace = true
-readme.workspace = true
+readme = "README.md"
 homepage.workspace = true
 repository.workspace = true
 edition.workspace = true
@@ -16,7 +16,7 @@ workspace = true
 [dependencies]
 async-trait.workspace = true
 clap.workspace = true
-puniyu_command_core.workspace = true
+puniyu_command_types.workspace = true
 puniyu_context.workspace = true
 puniyu_error.workspace = true
 

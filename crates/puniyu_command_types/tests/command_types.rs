@@ -1,6 +1,5 @@
-use puniyu_command_core::*;
+use puniyu_command_types::*;
 
-// Arg 测试
 #[test]
 fn test_arg_string() {
 	let arg = Arg::string("name");
@@ -56,7 +55,6 @@ fn test_arg_named() {
 	assert_eq!(arg.mode, ArgMode::Named);
 }
 
-// ArgValue 测试
 #[test]
 fn test_arg_value_string() {
 	let val = ArgValue::from("hello");
@@ -106,7 +104,6 @@ fn test_permission_default() {
 	assert_eq!(perm, Permission::All);
 }
 
-// CommandAction 测试
 #[test]
 fn test_command_action_done() {
 	let action = CommandAction::Done;

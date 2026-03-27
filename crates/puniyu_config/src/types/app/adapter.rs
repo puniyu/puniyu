@@ -31,12 +31,12 @@ pub struct AdapterConfig {
 }
 
 impl AdapterConfig {
-	/// 获取启用的适配器列表
+	/// 获取启用适配器列表。
 	pub fn enable_list(&self) -> &Vec<String> {
 		&self.enable_list
 	}
 
-	/// 获取禁用的适配器列表
+	/// 获取禁用适配器列表。
 	pub fn disable_list(&self) -> &Vec<String> {
 		&self.disable_list
 	}

@@ -1,10 +1,10 @@
-use puniyu_config::group::GroupConfig;
+use puniyu_config::group_config;
 use puniyu_cooldown::{CooldownRegistry, CooldownScope};
 use puniyu_error::registry::Error;
 use std::time::Duration;
 
 pub(crate) fn set_cooldown(group_id: &str, user_id: &str, bot_id: &str) -> Result<(), Error> {
-	let config = GroupConfig::get();
+	let config = group_config();
 	let global_config = config.global();
 	let group_config = config.group(group_id);
 	set_group_cooldown(global_config.cd(), bot_id, group_id)?;

@@ -1835,29 +1835,32 @@ version = "0.7.10"
 dependencies = [
  "async-trait",
  "clap",
- "puniyu_command_core",
+ "puniyu_command_types",
  "puniyu_context",
  "puniyu_error",
-]
-
-[[package]]
-name = "puniyu_command_core"
-version = "0.7.8"
-dependencies = [
- "puniyu_error",
- "serde",
- "strum",
 ]
 
 [[package]]
 name = "puniyu_command_parser"
 version = "0.7.8"
 dependencies = [
+ "async-trait",
  "clap",
  "puniyu_command",
- "puniyu_command_core",
+ "puniyu_command_types",
+ "puniyu_context",
+ "puniyu_error",
  "shlex",
  "thiserror 2.0.18",
+]
+
+[[package]]
+name = "puniyu_command_types"
+version = "0.7.8"
+dependencies = [
+ "puniyu_error",
+ "serde",
+ "strum",
 ]
 
 [[package]]
@@ -1906,7 +1909,7 @@ dependencies = [
  "puniyu_adapter_api",
  "puniyu_adapter_types",
  "puniyu_bot",
- "puniyu_command_core",
+ "puniyu_command_types",
  "puniyu_config",
  "puniyu_contact",
  "puniyu_element",
@@ -2022,7 +2025,7 @@ dependencies = [
  "puniyu_handler",
  "puniyu_logger",
  "puniyu_message",
- "puniyu_plugin",
+ "puniyu_plugin_core",
 ]
 
 [[package]]

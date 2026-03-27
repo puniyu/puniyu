@@ -49,43 +49,12 @@ pub struct ListConfig {
 }
 
 impl ListConfig {
-	/// 获取白名单列表
-	///
-	/// # 返回值
-	///
-	/// 返回白名单 ID 列表的引用。
-	/// 当列表不为空时，只有列表中的项才会被允许。
-	///
-	/// # 示例
-	///
-	/// ```rust,ignore
-	/// let config = ListConfig::default();
-	/// let allowed = config.enable_list();
-	/// if allowed.contains(&group_id) {
-	///     // 处理该群组的消息
-	/// }
-	/// ```
+	/// 获取白名单列表。
 	pub fn enable_list(&self) -> &Vec<String> {
 		&self.enable_list
 	}
 
-	/// 获取黑名单列表
-	///
-	/// # 返回值
-	///
-	/// 返回黑名单 ID 列表的引用。
-	/// 列表中的项将被明确拒绝处理。
-	///
-	/// # 示例
-	///
-	/// ```rust,ignore
-	/// let config = ListConfig::default();
-	/// let blocked = config.disable_list();
-	/// if blocked.contains(&group_id) {
-	///     // 忽略该群组的消息
-	///     return;
-	/// }
-	/// ```
+	/// 获取黑名单列表。
 	pub fn disable_list(&self) -> &Vec<String> {
 		&self.disable_list
 	}

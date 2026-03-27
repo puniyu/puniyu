@@ -1,4 +1,4 @@
-use crate::ReactiveMode;
+use crate::{ReactiveMode, default_cd};
 use serde::{Deserialize, Serialize};
 
 /// Bot 配置选项
@@ -56,62 +56,37 @@ pub struct BotOption {
 impl Default for BotOption {
 	#[inline]
 	fn default() -> Self {
-		Self { cd: default_cd(), mode: default_mode(), alias: default_alias() }
+		Self {
+			cd: Some(default_cd()),
+			mode: Some(Default::default()),
+			alias: Some(Default::default()),
+		}
 	}
 }
 
-fn default_cd() -> Option<u64> {
-	Some(0)
-}
-fn default_mode() -> Option<ReactiveMode> {
-	Some(ReactiveMode::All)
-}
-fn default_alias() -> Option<Vec<String>> {
-	Some(Vec::new())
-}
-
-impl BotOption {
-	/// 与全局配置合并，返回完整的配置
-	///
-	/// # 参数
-	///
-	/// - `global`: 全局配置
-	///
-	/// # 返回值
-	///
-	/// 返回合并后的配置，特定配置会覆盖全局配置
-	pub fn merge_with(&self, global: &BotOption) -> Self {
+impl crate::common::MergeWith for BotOption {
+	fn merge_with(&self, global: &Self) -> Self {
 		Self {
 			cd: self.cd.or(global.cd),
 			mode: self.mode.or(global.mode),
 			alias: self.alias.clone().or(global.alias.clone()),
 		}
 	}
+}
 
-	/// 获取消息冷却时间
-	///
-	/// # 返回值
-	///
-	/// 返回冷却时间（秒），0 表示无冷却
+impl BotOption {
+	/// 获取消息冷却时间，单位为秒。
 	pub fn cd(&self) -> u64 {
-		self.cd.unwrap_or(0)
+		self.cd.unwrap_or(default_cd())
 	}
 
-	/// 获取 Bot 别名列表
-	///
-	/// # 返回值
-	///
-	/// 返回别名列表的副本
+	/// 获取 Bot 别名列表的副本。
 	pub fn alias(&self) -> Vec<String> {
 		self.alias.clone().unwrap_or_default()
 	}
 
-	/// 获取响应模式
-	///
-	/// # 返回值
-	///
-	/// 返回当前的响应模式
+	/// 获取响应模式。
 	pub fn mode(&self) -> ReactiveMode {
-		self.mode.unwrap_or(ReactiveMode::All)
+		self.mode.unwrap_or_default()
 	}
 }

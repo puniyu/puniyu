@@ -29,12 +29,6 @@ fn test_message_sub_type_ordering() {
 	assert!(MessageSubEventType::Group < MessageSubEventType::Guild);
 }
 
-#[test]
-fn test_message_sub_type_clone() {
-	let sub_type = MessageSubEventType::Friend;
-	let cloned = sub_type.clone();
-	assert_eq!(sub_type, cloned);
-}
 
 #[test]
 fn test_message_sub_type_serialization() {

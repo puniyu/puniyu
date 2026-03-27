@@ -77,11 +77,7 @@ impl Default for AppConfig {
 }
 
 impl AppConfig {
-	/// 获取应用配置实例
-	///
-	/// # 返回值
-	///
-	/// 返回当前的应用配置副本，从注册表获取
+	/// 获取当前应用配置。
 	pub fn get() -> Self {
 		use crate::ConfigRegistry;
 		ConfigRegistry::get(CONFIG_PATH.as_path()).and_then(|v| v.try_into().ok()).unwrap_or_else(
@@ -89,65 +85,37 @@ impl AppConfig {
 		)
 	}
 
-	/// 获取日志配置
-	///
-	/// # 返回值
-	///
-	/// 返回日志配置的引用，包括日志级别、文件记录等设置
+	/// 获取日志配置。
 	pub fn logger(&self) -> &LoggerConfig {
 		&self.logger
 	}
 
-	/// 获取服务器配置
-	///
-	/// # 返回值
-	///
-	/// 返回服务器配置的引用，包括主机地址和端口号
+	/// 获取服务配置。
 	pub fn server(&self) -> &ServerConfig {
 		&self.server
 	}
 
-	/// 获取适配器配置
-	///
-	/// # 返回值
-	///
-	/// 返回适配器配置的引用，控制启用哪些适配器
+	/// 获取适配器配置。
 	pub fn adapter(&self) -> &AdapterConfig {
 		&self.adapter
 	}
 
-	/// 获取应用级群组配置
-	///
-	/// # 返回值
-	///
-	/// 返回应用级群组配置的引用，包含群聊黑白名单等全局设置
+	/// 获取应用级群组名单配置。
 	pub fn group(&self) -> &ListConfig {
 		&self.group
 	}
 
-	/// 获取应用级好友配置
-	///
-	/// # 返回值
-	///
-	/// 返回应用级好友配置的引用，包含好友黑白名单等全局设置
+	/// 获取应用级好友名单配置。
 	pub fn friend(&self) -> &ListConfig {
 		&self.friend
 	}
 
-	/// 获取 Bot 主人列表
-	///
-	/// # 返回值
-	///
-	/// 返回主人用户 ID 列表的引用
+	/// 获取 Bot 主人列表的副本。
 	pub fn masters(&self) -> Vec<String> {
 		self.masters.clone()
 	}
 
-	/// 获取全局命令前缀
-	///
-	/// # 返回值
-	///
-	/// 返回命令前缀字符串的引用，默认为 "!", 为空时返回为[`None`]
+	/// 获取全局命令前缀的副本。
 	pub fn prefix(&self) -> Option<String> {
 		self.prefix.clone()
 	}

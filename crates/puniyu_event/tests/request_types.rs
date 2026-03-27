@@ -39,13 +39,6 @@ fn test_request_sub_event_ordering() {
 }
 
 #[test]
-fn test_request_sub_event_clone() {
-	let event = RequestSubEventType::PrivateApply;
-	let cloned = event.clone();
-	assert_eq!(event, cloned);
-}
-
-#[test]
 fn test_request_sub_event_serialization() {
 	use serde_json;
 

@@ -15,12 +15,12 @@ static STORE: LazyLock<ConfigStore> = LazyLock::new(ConfigStore::new);
 pub struct ConfigRegistry;
 
 impl ConfigRegistry {
-	/// 注册配置
+	/// 注册一份配置，并返回其内部索引。
 	pub fn register(config: ConfigInfo) -> Result<u64, Error> {
 		STORE.insert(config)
 	}
 
-	/// 获取配置
+	/// 按索引或路径获取配置值。
 	pub fn get<C>(id: C) -> Option<Value>
 	where
 		C: Into<ConfigId>,
@@ -32,14 +32,14 @@ impl ConfigRegistry {
 		}
 	}
 
-	/// 通过索引获取配置
+	/// 通过内部索引获取配置值。
 	pub fn get_with_index(id: u64) -> Option<Value> {
 		let raw = STORE.raw();
 		let map = raw.read().expect("Failed to acquire lock");
 		Some(map.get(&id).cloned()?.value)
 	}
 
-	/// 通过路径获取配置
+	/// 通过配置文件路径获取配置值。
 	pub fn get_with_path<P>(path: P) -> Option<Value>
 	where
 		P: AsRef<Path>,
@@ -49,7 +49,7 @@ impl ConfigRegistry {
 		Some(map.values().find(|v| v.path == path.as_ref())?.value.clone())
 	}
 
-	/// 更新配置
+	/// 按索引或路径更新配置值。
 	pub fn update<C>(id: C, value: Value) -> Result<(), Error>
 	where
 		C: Into<ConfigId>,
@@ -61,7 +61,7 @@ impl ConfigRegistry {
 		}
 	}
 
-	/// 通过索引更新配置
+	/// 通过内部索引更新配置值。
 	pub fn update_with_index(id: u64, value: Value) -> Result<(), Error> {
 		let raw = STORE.raw();
 		let mut map = raw.write().expect("Failed to acquire lock");
@@ -70,7 +70,7 @@ impl ConfigRegistry {
 		Ok(())
 	}
 
-	/// 通过路径更新配置
+	/// 通过配置文件路径更新所有匹配配置的值。
 	pub fn update_with_path<P>(path: P, value: Value) -> Result<(), Error>
 	where
 		P: AsRef<Path>,
@@ -83,7 +83,7 @@ impl ConfigRegistry {
 		Ok(())
 	}
 
-	/// 获取所有配置
+	/// 获取所有已注册配置。
 	pub fn all() -> Vec<ConfigInfo> {
 		STORE.all()
 	}

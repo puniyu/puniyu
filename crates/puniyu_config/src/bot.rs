@@ -39,11 +39,7 @@ pub struct BotConfig {
 }
 
 impl BotConfig {
-	/// 获取 Bot 配置实例
-	///
-	/// # 返回值
-	///
-	/// 返回当前的 Bot 配置副本，从注册表获取
+	/// 获取当前 Bot 配置。
 	pub fn get() -> Self {
 		use crate::ConfigRegistry;
 		ConfigRegistry::get(CONFIG_PATH.as_path()).and_then(|v| v.try_into().ok()).unwrap_or_else(
@@ -51,52 +47,26 @@ impl BotConfig {
 		)
 	}
 
-	/// 获取全局 Bot 配置
-	///
-	/// # 返回值
-	///
-	/// 返回全局 Bot 配置的引用，作为所有 Bot 的默认配置
+	/// 获取全局 Bot 配置。
 	pub fn global(&self) -> &BotOption {
 		&self.global
 	}
 
-	/// 获取指定 Bot 的配置
-	///
-	/// # 参数
-	///
-	/// - `bot_id`: Bot 的唯一标识符
-	///
-	/// # 返回值
-	///
-	/// 返回对应 Bot 的配置。特定 Bot 配置会自动继承全局配置，
-	/// 只有显式设置的字段会覆盖全局配置
-	///
-	/// # 示例
-	///
-	/// ```rust,ignore
-	/// use puniyu_config::Config;
-	///
-	/// let bot_config = Config::bot();
-	/// // 如果 bot_001 只设置了 cd，其他字段会继承全局配置
-	/// let bot_option = bot_config.bot("bot_001");
-	/// println!("Bot CD: {}", bot_option.cd());
-	/// ```
+	/// 获取指定 Bot 的配置，并自动与全局配置合并。
 	pub fn bot(&self, bot_id: &str) -> BotOption {
 		self.bot
 			.get(bot_id)
-			.map(|specific| specific.merge_with(&self.global))
+			.map(|specific| crate::common::MergeWith::merge_with(specific, &self.global))
 			.unwrap_or_else(|| self.global.clone())
 	}
 
-	/// 获取所有 Bot 配置列表
-	///
-	/// # 返回值
-	///
-	/// 返回包含所有 Bot ID 和对应配置的 HashMap，每个配置都已与全局配置合并
+	/// 获取所有按 Bot ID 定义的配置，并自动与全局配置合并。
 	pub fn list(&self) -> HashMap<String, BotOption> {
 		self.bot
 			.iter()
-			.map(|(id, specific)| (id.clone(), specific.merge_with(&self.global)))
+			.map(|(id, specific)| {
+				(id.clone(), crate::common::MergeWith::merge_with(specific, &self.global))
+			})
 			.collect()
 	}
 }

@@ -13,18 +13,13 @@ pub struct ImageElement {
 }
 
 impl ImageElement {
-	pub fn new(file: impl Into<Bytes>, file_name: impl Into<String>) -> Self {
-		let file_name = file_name.into();
-		Self { file: file.into(), file_name: file_name.clone(), summary: file_name }
-	}
-
-	pub fn with_summary(
+	pub fn new(
 		file: impl Into<Bytes>,
 		file_name: impl Into<String>,
-		summary: impl Into<String>,
+		summary: Option<String>,
 	) -> Self {
 		let file_name = file_name.into();
-		let summary = summary.into();
+		let summary = summary.unwrap_or_else(|| file_name.clone());
 		Self { file: file.into(), file_name, summary }
 	}
 }

@@ -1,4 +1,4 @@
-use crate::ReactiveMode;
+use crate::{ReactiveMode, default_cd};
 use serde::{Deserialize, Serialize};
 
 /// 群组配置选项
@@ -66,25 +66,16 @@ impl Default for GroupOption {
 	#[inline]
 	fn default() -> Self {
 		Self {
-			cd: Some(0),
-			user_cd: Some(0),
-			mode: Some(ReactiveMode::All),
-			alias: Some(Vec::new()),
+			cd: Some(default_cd()),
+			user_cd: Some(default_cd()),
+			mode: Some(Default::default()),
+			alias: Some(Default::default()),
 		}
 	}
 }
 
-impl GroupOption {
-	/// 与全局配置合并，返回完整的配置
-	///
-	/// # 参数
-	///
-	/// - `global`: 全局配置
-	///
-	/// # 返回值
-	///
-	/// 返回合并后的配置，特定配置会覆盖全局配置
-	pub fn merge_with(&self, global: &GroupOption) -> GroupOption {
+impl crate::common::MergeWith for GroupOption {
+	fn merge_with(&self, global: &GroupOption) -> GroupOption {
 		GroupOption {
 			cd: self.cd.or(global.cd),
 			user_cd: self.user_cd.or(global.user_cd),
@@ -92,39 +83,25 @@ impl GroupOption {
 			alias: self.alias.clone().or(global.alias.clone()),
 		}
 	}
+}
 
-	/// 获取群组级冷却时间
-	///
-	/// # 返回值
-	///
-	/// 返回群组级冷却时间（秒），0 表示无冷却
+impl GroupOption {
+	/// 获取群组级冷却时间，单位为秒。
 	pub fn cd(&self) -> u64 {
-		self.cd.unwrap_or(0)
+		self.cd.unwrap_or(default_cd())
 	}
 
-	/// 获取用户级冷却时间
-	///
-	/// # 返回值
-	///
-	/// 返回用户级冷却时间（秒），0 表示无冷却
+	/// 获取用户级冷却时间，单位为秒。
 	pub fn user_cd(&self) -> u64 {
-		self.user_cd.unwrap_or(0)
+		self.user_cd.unwrap_or(default_cd())
 	}
 
-	/// 获取响应模式
-	///
-	/// # 返回值
-	///
-	/// 返回当前的响应模式
+	/// 获取响应模式。
 	pub fn mode(&self) -> ReactiveMode {
-		self.mode.unwrap_or(ReactiveMode::All)
+		self.mode.unwrap_or_default()
 	}
 
-	/// 获取 Bot 别名列表
-	///
-	/// # 返回值
-	///
-	/// 返回别名列表的副本
+	/// 获取 Bot 别名列表的副本。
 	pub fn alias(&self) -> Vec<String> {
 		self.alias.clone().unwrap_or_default()
 	}

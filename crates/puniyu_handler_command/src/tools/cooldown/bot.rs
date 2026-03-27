@@ -1,10 +1,10 @@
-use puniyu_config::bot::BotConfig;
+use puniyu_config::bot_config;
 use puniyu_cooldown::{CooldownRegistry, CooldownScope};
 use puniyu_error::registry::Error;
 use std::time::Duration;
 
 pub(crate) fn set_cooldown(bot_id: &str) -> Result<(), Error> {
-	let config = BotConfig::get();
+	let config = bot_config();
 
 	let global_cd = config.global().cd();
 	if global_cd > 0 {

@@ -112,30 +112,24 @@ pub trait MessageBase: Send + Sync + EventBase {
 	///
 	/// # 返回值
 	///
-	/// 如果消息包含图片，返回 `Some(Bytes)`，否则返回 `None`
-	fn get_image(&self) -> Option<Bytes> {
-		self.elements()
-			.iter()
-			.filter_map(|e| match e {
-				Elements::Image(image) => Some(image.file.clone()),
-				_ => None,
-			})
-			.next()
+	/// 如果消息包含图片，返回 `Some(&Bytes)`，否则返回 `None`
+	fn get_image(&self) -> Option<&Bytes> {
+		self.elements().iter().find_map(|e| match e {
+			Elements::Image(image) => Some(&image.file),
+			_ => None,
+		})
 	}
 
 	/// 获取第一个语音元素
 	///
 	/// # 返回值
 	///
-	/// 如果消息包含语音，返回 `Some(Bytes)`，否则返回 `None`
-	fn get_record(&self) -> Option<Bytes> {
-		self.elements()
-			.iter()
-			.filter_map(|e| match e {
-				Elements::Record(record) => Some(record.file.clone()),
-				_ => None,
-			})
-			.next()
+	/// 如果消息包含语音，返回 `Some(&Bytes)`，否则返回 `None`
+	fn get_record(&self) -> Option<&Bytes> {
+		self.elements().iter().find_map(|e| match e {
+			Elements::Record(record) => Some(&record.file),
+			_ => None,
+		})
 	}
 
 	/// 获取回复消息的 ID

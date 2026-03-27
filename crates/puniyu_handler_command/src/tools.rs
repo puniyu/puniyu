@@ -1,4 +1,4 @@
-use puniyu_config::{Config, ReactiveMode};
+use puniyu_config::{ReactiveMode, app_config};
 use puniyu_context::MessageContext;
 
 pub mod cooldown;
@@ -15,15 +15,15 @@ fn check_list(id: &str, enable_list: &[String], disable_list: &[String]) -> bool
 
 /// 检查消息权限
 pub fn check_perm(event: &MessageContext) -> bool {
-	let config = Config::app();
+	let config = app_config();
 	if let Some(event) = event.as_group() {
 		let group_id = event.group_id();
 		let config = config.group();
-		check_list(&group_id, &config.enable_list(), config.disable_list())
+		check_list(group_id, config.enable_list(), config.disable_list())
 	} else {
 		let user_id = event.user_id();
 		let config = config.friend();
-		check_list(&user_id, &config.enable_list(), config.disable_list())
+		check_list(user_id, config.enable_list(), config.disable_list())
 	}
 }
 

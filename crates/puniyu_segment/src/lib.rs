@@ -60,7 +60,7 @@ impl Segment {
 
 	/// 创建不带摘要的图片元素。
 	pub fn image_without_summary(image: impl Into<Bytes>, name: impl Into<String>) -> Elements {
-		let elem = ImageElement::new(image.into(), name);
+		let elem = ImageElement::new(image, name, None);
 		Elements::Image(elem)
 	}
 
@@ -70,12 +70,7 @@ impl Segment {
 		N: Into<String>,
 		S: Into<String>,
 	{
-		let image = image.into();
-		let name = name.into();
-		let elem = match summary {
-			Some(summary) => ImageElement::with_summary(image, name, summary),
-			None => ImageElement::new(image, name),
-		};
+		let elem = ImageElement::new(image, name, summary.map(Into::into));
 		Elements::Image(elem)
 	}
 

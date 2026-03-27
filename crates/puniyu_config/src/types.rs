@@ -5,13 +5,15 @@ mod bot;
 #[doc(inline)]
 pub use bot::*;
 mod friend;
-
 #[doc(inline)]
 pub use friend::*;
 mod group;
-
 #[doc(inline)]
 pub use group::*;
+
+pub(crate) const fn default_cd() -> u64 {
+	0
+}
 
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
@@ -36,12 +38,13 @@ use toml::Value;
 ///     ReactiveMode::Master => println!("仅响应主人的消息"),
 /// }
 /// ```
-#[derive(Debug, Clone, Copy, Serialize_repr, Deserialize_repr)]
+#[derive(Debug, Default, Clone, Copy, Serialize_repr, Deserialize_repr)]
 #[repr(u8)]
 pub enum ReactiveMode {
 	/// 响应所有消息
 	///
 	/// Bot 会响应所有接收到的消息，不做任何过滤
+	#[default]
 	All = 0,
 
 	/// 仅响应 @ Bot 的消息

@@ -4,13 +4,13 @@ use async_trait::async_trait;
 use itertools::Itertools as _;
 use puniyu_command::{CommandAction, CommandRegistry, Permission};
 use puniyu_command_parser::CommandParser;
-use puniyu_config::Config;
+use puniyu_config::app_config;
 use puniyu_context::MessageContext;
 use puniyu_event::Event;
 use puniyu_handler::Handler;
 use puniyu_logger::info;
 use puniyu_logger::owo_colors::OwoColorize;
-use puniyu_plugin::PluginRegistry;
+use puniyu_plugin_core::PluginRegistry;
 use std::collections::HashMap;
 
 #[derive(Default)]
@@ -24,7 +24,7 @@ impl CommandHandler {
 
 	/// 构建前缀列表
 	fn build_prefix() -> Vec<String> {
-		let global = Config::app().prefix();
+		let global = app_config().prefix();
 		let mut prefixes: Vec<String> = global.iter().cloned().collect();
 
 		prefixes.extend(PluginRegistry::all().iter().filter_map(|p| p.prefix()).flat_map(|pp| {

@@ -1,10 +1,10 @@
 [package]
-name = "puniyu_command_core"
+name = "puniyu_command_types"
 version = "0.7.8"
-description = "puniyu 命令核心库，提供命令参数、权限和动作的类型定义"
+description = "puniyu 命令类型库，统一命令参数、参数值、权限与执行动作模型"
 authors.workspace = true
 license.workspace = true
-readme.workspace = true
+readme = "README.md"
 homepage.workspace = true
 repository.workspace = true
 edition.workspace = true

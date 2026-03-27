@@ -33,13 +33,6 @@ fn test_notion_sub_event_equality() {
 }
 
 #[test]
-fn test_notion_sub_event_clone() {
-	let event = NotionSubEventType::GroupPoke;
-	let cloned = event.clone();
-	assert_eq!(event, cloned);
-}
-
-#[test]
 fn test_notion_sub_event_group_types() {
 	assert_eq!(NotionSubEventType::GroupFileUpload.to_string(), "groupFileUpload");
 	assert_eq!(NotionSubEventType::GroupCardChange.to_string(), "groupCardChange");

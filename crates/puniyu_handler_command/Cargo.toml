@@ -23,6 +23,6 @@ puniyu_handler.workspace = true
 
 puniyu_cooldown = { version = "0.7.8", path = "../puniyu_cooldown" }
 puniyu_error = { workspace = true, features = ["registry"] }
-puniyu_plugin = { workspace = true, features = ["registry"] }
+puniyu_plugin_core = { workspace = true, features = ["registry"] }
 puniyu_command = { workspace = true, features = ["registry"] }
 puniyu_command_parser = { path = "../puniyu_command_parser" }
