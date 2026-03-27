@@ -91,7 +91,7 @@ impl<'c> MessageContext<'c> {
 
 	pub async fn reply<M>(&self, message: M) -> puniyu_error::Result<SendMsgType>
 	where
-		M: Into<Message<'c>>,
+		M: Into<Message>,
 	{
 		self.bot.api().message().send_msg(&self.contact(), &message.into()).await
 	}

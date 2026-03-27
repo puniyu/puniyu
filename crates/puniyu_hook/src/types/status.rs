@@ -2,27 +2,7 @@ use serde::{Deserialize, Serialize};
 use std::str::FromStr;
 use strum::{Display, IntoStaticStr};
 
-/// 钩子状态类型枚举
-///
-/// 定义钩子可以监听的状态变化类型。
-///
-/// # 变体
-///
-/// - `Start` - 启动状态（默认）
-/// - `Stop` - 停止状态
-///
-/// # 示例
-///
-/// ```rust
-/// use puniyu_hook::types::StatusType;
-/// use std::str::FromStr;
-///
-/// let status = StatusType::Start;
-/// assert_eq!(status.to_string(), "Start");
-///
-/// let status = StatusType::from_str("stop").unwrap();
-/// assert_eq!(status, StatusType::Stop);
-/// ```
+/// 状态钩子类型。
 #[derive(
 	Debug,
 	Copy,
@@ -38,10 +18,10 @@ use strum::{Display, IntoStaticStr};
 	Ord,
 )]
 pub enum StatusType {
-	/// 启动状态（默认）
+	/// 启动状态。
 	#[default]
 	Start,
-	/// 停止状态
+	/// 停止状态。
 	Stop,
 }
 

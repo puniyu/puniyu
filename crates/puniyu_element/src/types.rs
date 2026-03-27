@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 use strum::{Display, EnumString, IntoStaticStr};
 
+/// 元素类型枚举。
 #[derive(
 	Debug, Copy, Clone, PartialEq, EnumString, Display, IntoStaticStr, Deserialize, Serialize,
 )]
@@ -29,9 +30,9 @@ pub enum ElementType {
 	Xml,
 }
 
-/// 元素
+/// 元素统一接口。
 pub trait Element: Send + Sync {
-	/// 元素类型
+	/// 获取元素类型。
 	fn r#type(&self) -> ElementType;
 }
 

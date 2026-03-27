@@ -22,14 +22,13 @@ mod macros;
 
 use puniyu_element::send::{Elements, TextElement};
 use serde::{Deserialize, Serialize};
-use std::fmt;
+use std::{borrow::Cow, fmt};
 
 /// 消息链类型。
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(bound(deserialize = "'de: 'm"))]
-pub struct Message<'m>(Vec<Elements<'m>>);
+pub struct Message(Vec<Elements>);
 
-impl<'m> fmt::Display for Message<'m> {
+impl fmt::Display for Message {
 	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
 		if f.alternate() {
 			let segments: Vec<String> = self.0.iter().map(|s| format!("{:#}", s)).collect();
@@ -41,26 +40,38 @@ impl<'m> fmt::Display for Message<'m> {
 	}
 }
 
-impl<'m> From<Vec<Elements<'m>>> for Message<'m> {
-	fn from(message: Vec<Elements<'m>>) -> Self {
+impl From<Vec<Elements>> for Message {
+	fn from(message: Vec<Elements>) -> Self {
 		Message(message)
 	}
 }
 
-impl<'e> From<Elements<'e>> for Message<'e> {
-	fn from(elements: Elements<'e>) -> Self {
+impl From<Elements> for Message {
+	fn from(elements: Elements) -> Self {
 		Message(vec![elements])
 	}
 }
 
-impl<'m> From<Message<'m>> for Vec<Elements<'m>> {
-	fn from(message: Message<'m>) -> Self {
+impl From<Message> for Vec<Elements> {
+	fn from(message: Message) -> Self {
 		message.0
 	}
 }
 
-impl<'m> From<&'m str> for Message<'m> {
-	fn from(v: &'m str) -> Self {
-		Self(vec![Elements::Text(TextElement::new(v))])
+impl From<&str> for Message {
+	fn from(value: &str) -> Self {
+		Self(vec![Elements::Text(TextElement::new(value))])
+	}
+}
+
+impl<'m> From<Cow<'m, str>> for Message {
+	fn from(value: Cow<'m, str>) -> Self {
+		Self(vec![Elements::Text(TextElement::new(value.into_owned()))])
+	}
+}
+
+impl From<String> for Message {
+	fn from(value: String) -> Self {
+		Self(vec![Elements::Text(TextElement::new(value))])
 	}
 }

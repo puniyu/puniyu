@@ -7,67 +7,42 @@ use store::BotStore;
 
 static STORE: LazyLock<BotStore> = LazyLock::new(BotStore::new);
 
-/// 机器人注册表
-///
-/// 提供全局的机器人实例管理功能，支持注册、注销和查询机器人。
+/// 全局机器人注册表。
 ///
 /// # 示例
 ///
-/// ```rust,ignore
+/// ```rust
+/// use puniyu_account::AccountInfo;
+/// use puniyu_adapter_api::AdapterApi;
+/// use puniyu_adapter_types::{AdapterInfo, AdapterPlatform, AdapterProtocol};
 /// use puniyu_bot::{Bot, BotRegistry};
 ///
-/// // 注册机器人
-/// let index = BotRegistry::register(bot)?;
+/// let mut adapter = AdapterInfo::default();
+/// adapter.name = "console".to_string();
+/// adapter.platform = AdapterPlatform::QQ;
+/// adapter.protocol = AdapterProtocol::Console;
 ///
-/// // 通过索引获取
-/// let bot = BotRegistry::get_with_index(index);
+/// let account = AccountInfo {
+///     uin: "123456789".to_string(),
+///     name: "Puniyu".to_string(),
+///     avatar: Default::default(),
+/// };
 ///
-/// // 通过 UIN 获取
-/// let bots = BotRegistry::get_with_bot_id("123456");
+/// let bot = Bot::new(adapter, AdapterApi::default(), account);
+/// let index = BotRegistry::register(bot.clone()).unwrap();
 ///
-/// // 注销机器人
-/// BotRegistry::unregister(index)?;
+/// assert_eq!(BotRegistry::get(index), Some(bot));
+/// BotRegistry::unregister(index).unwrap();
 /// ```
 pub struct BotRegistry;
 
 impl<'b> BotRegistry {
-	/// 注册机器人到注册表
-	///
-	/// # 参数
-	///
-	/// - `bot` - 要注册的机器人实例
-	///
-	/// # 返回值
-	///
-	/// 返回分配的索引号，失败时返回错误
-	///
-	/// # 示例
-	///
-	/// ```rust,ignore
-	/// let index = BotRegistry::register(bot)?;
-	/// println!("机器人已注册，索引: {}", index);
-	/// ```
+	/// 将机器人注册到全局注册表，并返回分配的索引。
 	pub fn register(bot: Bot) -> Result<u64, Error> {
 		STORE.insert(bot)
 	}
 
-	/// 从注册表注销机器人
-	///
-	/// 支持使用索引或 UIN 注销机器人。
-	///
-	/// # 参数
-	///
-	/// - `bot_id` - 机器人标识符（索引或 UIN）
-	///
-	/// # 示例
-	///
-	/// ```rust,ignore
-	/// // 使用索引注销
-	/// BotRegistry::unregister(123u64)?;
-	///
-	/// // 使用 UIN 注销
-	/// BotRegistry::unregister("123456")?;
-	/// ```
+	/// 按索引或 UIN 从注册表移除机器人。
 	pub fn unregister<B>(bot_id: B) -> Result<(), Error>
 	where
 		B: Into<BotId<'b>>,
@@ -79,17 +54,7 @@ impl<'b> BotRegistry {
 		}
 	}
 
-	/// 使用索引注销机器人
-	///
-	/// # 参数
-	///
-	/// - `index` - 机器人的注册表索引
-	///
-	/// # 示例
-	///
-	/// ```rust,ignore
-	/// BotRegistry::unregister_with_index(123)?;
-	/// ```
+	/// 按注册表索引移除机器人。
 	pub fn unregister_with_index(index: u64) -> Result<(), Error> {
 		let raw = STORE.raw();
 		let mut map = raw.write().expect("Failed to acquire lock");
@@ -99,19 +64,7 @@ impl<'b> BotRegistry {
 		Ok(())
 	}
 
-	/// 使用 UIN 注销机器人
-	///
-	/// 会注销所有匹配该 UIN 的机器人实例。
-	///
-	/// # 参数
-	///
-	/// - `bot_id` - 机器人的 UIN
-	///
-	/// # 示例
-	///
-	/// ```rust,ignore
-	/// BotRegistry::unregister_with_bot_id("123456")?;
-	/// ```
+	/// 按机器人 UIN 移除所有匹配的机器人。
 	pub fn unregister_with_bot_id(bot_id: &str) -> Result<(), Error> {
 		let raw = STORE.raw();
 		let mut map = raw.write().expect("Failed to acquire lock");
@@ -131,27 +84,7 @@ impl<'b> BotRegistry {
 		Ok(())
 	}
 
-	/// 获取机器人实例
-	///
-	/// 支持使用索引或 UIN 查询。
-	///
-	/// # 参数
-	///
-	/// - `bot_id` - 机器人标识符（索引或 UIN）
-	///
-	/// # 返回值
-	///
-	/// 返回匹配的机器人实例列表
-	///
-	/// # 示例
-	///
-	/// ```rust,ignore
-	/// // 使用索引查询
-	/// let bots = BotRegistry::get(123u64);
-	///
-	/// // 使用 UIN 查询
-	/// let bots = BotRegistry::get("123456");
-	/// ```
+	/// 按索引或 UIN 查询机器人。
 	pub fn get<T>(bot_id: T) -> Option<Bot>
 	where
 		T: Into<BotId<'b>>,
@@ -163,66 +96,21 @@ impl<'b> BotRegistry {
 		}
 	}
 
-	/// 使用索引获取机器人
-	///
-	/// # 参数
-	///
-	/// - `index` - 机器人的注册表索引
-	///
-	/// # 返回值
-	///
-	/// 返回机器人实例，如果不存在则返回 [`None`]
-	///
-	/// # 示例
-	///
-	/// ```rust,ignore
-	/// if let Some(bot) = BotRegistry::get_with_index(123) {
-	///     println!("找到机器人: {}", bot.account().uin);
-	/// }
-	/// ```
+	/// 按注册表索引查询机器人。
 	pub fn get_with_index(index: u64) -> Option<Bot> {
 		let raw = STORE.raw();
 		let map = raw.read().expect("Failed to acquire lock");
 		map.get(&index).cloned()
 	}
 
-	/// 使用 UIN 获取机器人
-	///
-	/// 返回所有匹配该 UIN 的机器人实例。
-	///
-	/// # 参数
-	///
-	/// - `self_id` - 机器人的 UIN
-	///
-	/// # 返回值
-	///
-	/// 返回机器人实例，如果不存在则返回 [`None`]
-	///
-	/// # 示例
-	///
-	/// ```rust,ignore
-	/// if let Some(bot) = BotRegistry::get_with_bot_id("123456") {
-	///     println!("找到机器人: {}", bot.account().uin);
-	/// }
-	/// ```
+	/// 按机器人 UIN 查询第一个匹配的机器人。
 	pub fn get_with_bot_id(self_id: &str) -> Option<Bot> {
 		let raw = STORE.raw();
 		let map = raw.read().expect("Failed to acquire lock");
 		map.values().find(|bot| bot.account().uin == self_id).cloned()
 	}
 
-	/// 获取所有已注册的机器人
-	///
-	/// # 返回值
-	///
-	/// 返回所有机器人实例的列表
-	///
-	/// # 示例
-	///
-	/// ```rust,ignore
-	/// let all_bots = BotRegistry::all();
-	/// println!("共有 {} 个机器人", all_bots.len());
-	/// ```
+	/// 返回所有已注册的机器人副本。
 	pub fn all() -> Vec<Bot> {
 		STORE.all()
 	}

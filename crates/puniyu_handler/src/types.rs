@@ -1,5 +1,8 @@
+/// 处理器标识符。
 pub enum HandlerId<'h> {
+	/// 注册索引。
 	Index(u64),
+	/// 处理器名称。
 	Name(&'h str),
 }
 

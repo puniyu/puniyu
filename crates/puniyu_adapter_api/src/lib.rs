@@ -63,9 +63,9 @@ use std::sync::Arc;
 ///
 /// async fn send_message(api: &AdapterApi) {
 ///     let contact = Contact::friend("123456");
-///     let message = Message::text("Hello!");
+///     let message = Message::from("Hello!");
 ///
-///     let result = api.message().send_msg(&contact, message).await;
+///     let result = api.message().send_msg(&contact, &message).await;
 ///     match result {
 ///         Ok(info) => println!("消息已发送: {}", info.message_id),
 ///         Err(e) => eprintln!("发送失败: {}", e),

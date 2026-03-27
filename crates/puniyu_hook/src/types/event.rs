@@ -13,29 +13,7 @@ mod request;
 #[doc(inline)]
 pub use request::RequestType;
 
-/// 钩子事件类型枚举
-///
-/// 定义钩子可以监听的事件类型。
-///
-/// # 变体
-///
-/// - `Message` - 消息事件钩子
-/// - `Notion` - 通知事件钩子
-/// - `Request` - 请求事件钩子
-/// - `All` - 所有事件钩子（默认）
-///
-/// # 示例
-///
-/// ```rust
-/// use puniyu_hook::types::HookEventType;
-/// use std::str::FromStr;
-///
-/// let event_type = HookEventType::Message;
-/// assert_eq!(event_type.to_string(), "message");
-///
-/// let event_type = HookEventType::from_str("notion").unwrap();
-/// assert_eq!(event_type, HookEventType::Notion);
-/// ```
+/// 事件钩子类型。
 #[derive(
 	Debug,
 	Copy,
@@ -53,13 +31,13 @@ pub use request::RequestType;
 #[serde(rename_all = "lowercase")]
 #[strum(serialize_all = "lowercase")]
 pub enum HookEventType {
-	/// 消息事件
+	/// 消息事件。
 	Message,
-	/// 通知事件
+	/// 通知事件。
 	Notion,
-	/// 请求事件
+	/// 请求事件。
 	Request,
-	/// 所有事件（默认）
+	/// 所有事件。
 	#[default]
 	All,
 }

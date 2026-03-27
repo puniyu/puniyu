@@ -24,11 +24,7 @@ use puniyu_message::Message;
 ///
 /// #[async_trait]
 /// impl MessageApi for MyMessageApi {
-///     async fn send_msg<'m>(
-///         &self,
-///         contact: &'m ContactType,
-///         message: &'m Message<'m>,
-///     ) -> Result<SendMsgType> {
+///     async fn send_msg(&self, contact: &ContactType, message: &Message) -> Result<SendMsgType> {
 ///         // 实现发送消息逻辑
 ///         Ok(SendMsgType {
 ///             message_id: "12345".to_string(),
@@ -47,7 +43,7 @@ use puniyu_message::Message;
 ///
 /// async fn send_text_message(api: &dyn MessageApi) {
 ///     let contact = Contact::friend("123456");
-///     let message = Message::text("Hello, World!");
+///     let message = Message::from("Hello, World!");
 ///     
 ///     match api.send_msg(&contact, &message).await {
 ///         Ok(info) => println!("消息已发送，ID: {}", info.message_id),
@@ -81,15 +77,11 @@ pub trait MessageApi: Send + Sync {
 	/// use puniyu_message::Message;
 	///
 	/// let contact = Contact::friend("123456");
-	/// let message = Message::text("Hello!");
+	/// let message = Message::from("Hello!");
 	/// let result = api.send_msg(&contact, &message).await?;
 	/// println!("消息 ID: {}", result.message_id);
 	/// ```
-	async fn send_msg<'m>(
-		&self,
-		contact: &'m ContactType,
-		message: &'m Message<'m>,
-	) -> Result<SendMsgType> {
+	async fn send_msg(&self, contact: &ContactType, message: &Message) -> Result<SendMsgType> {
 		Err(Error::NotImpl.into())
 	}
 

@@ -1,7 +1,7 @@
 [package]
 name = "puniyu_error"
 version = "0.7.8"
-description = "Puniyu 错误类型定义库，提供配置和注册表相关的统一错误处理"
+description = "puniyu 错误类型库，提供配置与注册表场景的统一错误定义"
 authors.workspace = true
 license.workspace = true
 readme = "README.md"
@@ -16,7 +16,6 @@ workspace = true
 [dependencies]
 thiserror = { workspace = true, optional = true }
 toml = { workspace = true, optional = true }
-
 
 [features]
 default = ["full"]

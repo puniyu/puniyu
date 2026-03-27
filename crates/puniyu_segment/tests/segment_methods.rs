@@ -45,7 +45,7 @@ fn test_segment_reply() {
 #[test]
 fn test_segment_image_without_summary() {
 	let image_data = Bytes::from("fake image data");
-	let element = Segment::image(image_data.clone(), "photo.jpg", None);
+	let element = Segment::image_without_summary(image_data.clone(), "photo.jpg");
 	let image_elem = element.as_image().expect("Expected Image element");
 
 	assert_eq!(image_elem.file, image_data);
@@ -119,7 +119,7 @@ fn test_segment_empty_text() {
 #[test]
 fn test_segment_empty_bytes() {
 	let empty_data = Bytes::new();
-	let element = Segment::image(empty_data, "empty.png", None);
+	let element = Segment::image_without_summary(empty_data, "empty.png");
 	let image_elem = element.as_image().expect("Expected Image element");
 
 	assert_eq!(image_elem.file.len(), 0);
@@ -144,6 +144,27 @@ fn test_segment_unicode_text() {
 fn test_segment_special_characters() {
 	let element = Segment::text("Special chars: \n\t\r\\\"'");
 	assert_eq!(element.as_text(), Some("Special chars: \n\t\r\\\"'"));
+}
+
+#[test]
+fn test_segment_text_from_string() {
+	let element = Segment::text(String::from("owned text"));
+	let text_elem = element.as_text();
+
+	assert_eq!(text_elem, Some("owned text"));
+}
+
+#[test]
+fn test_segment_image_from_owned_strings() {
+	let element = Segment::image(
+		Bytes::from_static(b"image"),
+		String::from("owned.png"),
+		Some(String::from("owned summary")),
+	);
+	let image_elem = element.as_image().expect("Expected Image element");
+
+	assert_eq!(image_elem.file_name, "owned.png");
+	assert_eq!(image_elem.summary, "owned summary");
 }
 
 #[test]

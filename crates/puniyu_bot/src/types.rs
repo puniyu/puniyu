@@ -1,22 +1,17 @@
-/// 机器人标识符
+/// 机器人标识符。
 ///
-/// 用于在注册表中标识机器人的枚举类型。
-///
-/// # 变体
-///
-/// - `Index` - 使用注册表索引标识
-/// - `SelfId` - 使用机器人自身 ID（UIN）标识
+/// 用于在 [`BotRegistry`](crate::BotRegistry) 中按注册索引或机器人 UIN 定位实例。
 ///
 /// # 示例
 ///
 /// ```rust
 /// use puniyu_bot::BotId;
 ///
-/// // 使用索引
-/// let id1: BotId = 123u64.into();
+/// let index: BotId = 123u64.into();
+/// let self_id: BotId = "123456".into();
 ///
-/// // 使用 UIN
-/// let id2: BotId = "123456".into();
+/// assert_eq!(index, BotId::Index(123));
+/// assert_eq!(self_id, BotId::SelfId("123456"));
 /// ```
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum BotId<'b> {
@@ -27,32 +22,12 @@ pub enum BotId<'b> {
 }
 
 impl<'b> From<u64> for BotId<'b> {
-	/// 从 `u64` 索引创建 `BotId`
-	///
-	/// # 示例
-	///
-	/// ```rust
-	/// use puniyu_bot::BotId;
-	///
-	/// let id: BotId = 123u64.into();
-	/// assert_eq!(id, BotId::Index(123));
-	/// ```
 	fn from(index: u64) -> Self {
 		Self::Index(index)
 	}
 }
 
 impl<'b> From<&'b str> for BotId<'b> {
-	/// 从字符串切片创建 `BotId`
-	///
-	/// # 示例
-	///
-	/// ```rust
-	/// use puniyu_bot::BotId;
-	///
-	/// let id: BotId = "123456".into();
-	/// assert_eq!(id, BotId::SelfId("123456"));
-	/// ```
 	fn from(name: &'b str) -> Self {
 		Self::SelfId(name)
 	}

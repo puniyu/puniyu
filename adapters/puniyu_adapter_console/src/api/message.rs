@@ -8,11 +8,7 @@ pub struct ConsoleMessageApi;
 
 #[async_trait]
 impl MessageApi for ConsoleMessageApi {
-	async fn send_msg<'m>(
-		&self,
-		contact: &'m ContactType,
-		message: &'m Message,
-	) -> Result<SendMsgType> {
+	async fn send_msg(&self, contact: &ContactType, message: &Message) -> Result<SendMsgType> {
 		let (msg_type, source) = match &contact {
 			ContactType::Friend(friend) => ("私聊消息", &friend.scene),
 			ContactType::Group(group) => ("群聊消息", &group.scene),

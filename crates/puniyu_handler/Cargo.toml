@@ -1,9 +1,10 @@
 [package]
 name = "puniyu_handler"
 version = "0.7.8"
+description = "puniyu 事件处理器库，提供 Handler trait 与可选注册表管理"
 authors.workspace = true
 license.workspace = true
-readme.workspace = true
+readme = "README.md"
 homepage.workspace = true
 repository.workspace = true
 edition.workspace = true
@@ -20,4 +21,3 @@ puniyu_error.workspace = true
 [features]
 default = []
 registry = ["puniyu_error/registry"]
-

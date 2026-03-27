@@ -1,10 +1,10 @@
 [package]
 name = "puniyu_hook"
 version = "0.7.8"
-description = "Puniyu 钩子系统库，提供事件钩子的定义和管理"
+description = "puniyu 钩子系统库，提供 Hook trait 与事件/状态钩子类型"
 authors.workspace = true
 license.workspace = true
-readme.workspace = true
+readme = "README.md"
 homepage.workspace = true
 repository.workspace = true
 edition.workspace = true
