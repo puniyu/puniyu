@@ -28,21 +28,21 @@ use thiserror::Error;
 /// ```
 #[derive(Error, Debug)]
 pub enum Error {
-    /// I/O 操作错误
-    ///
-    /// 当文件读写操作失败时返回此错误。
-    #[error("IO error: {0}")]
-    Io(#[from] io::Error),
+	/// I/O 操作错误
+	///
+	/// 当文件读写操作失败时返回此错误。
+	#[error("IO error: {0}")]
+	Io(#[from] io::Error),
 
-    /// TOML 反序列化错误
-    ///
-    /// 当 TOML 配置文件解析失败时返回此错误。
-    #[error("TOML parse error: {0}")]
-    Deserialize(#[from] toml::de::Error),
+	/// TOML 反序列化错误
+	///
+	/// 当 TOML 配置文件解析失败时返回此错误。
+	#[error("TOML parse error: {0}")]
+	Deserialize(#[from] toml::de::Error),
 
-    /// TOML 序列化错误
-    ///
-    /// 当将配置序列化为 TOML 格式失败时返回此错误。
-    #[error("TOML serialize error: {0}")]
-    Serialize(#[from] toml::ser::Error),
+	/// TOML 序列化错误
+	///
+	/// 当将配置序列化为 TOML 格式失败时返回此错误。
+	#[error("TOML serialize error: {0}")]
+	Serialize(#[from] toml::ser::Error),
 }

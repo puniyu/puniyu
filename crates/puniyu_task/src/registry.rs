@@ -57,7 +57,6 @@ pub async fn init() {
 /// ```
 pub struct TaskRegistry;
 
-
 impl<'t> TaskRegistry {
 	/// 注册任务
 	///

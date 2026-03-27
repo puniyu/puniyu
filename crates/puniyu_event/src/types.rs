@@ -263,7 +263,6 @@ pub trait EventBase: Send + Sync {
 	fn sender(&self) -> &Self::Sender;
 }
 
-
 macro_rules! codegen_from_for_content_type {
     ($($variant:ident($inner_type:ty)),* $(,)?) => {
         $(
@@ -276,9 +275,6 @@ macro_rules! codegen_from_for_content_type {
     };
 }
 pub(crate) use codegen_from_for_content_type;
-
-
-
 
 /// 为事件枚举生成方法委托和类型转换方法
 ///

@@ -1933,6 +1933,7 @@ dependencies = [
  "chrono",
  "puniyu_error",
  "serde",
+ "serde_json",
  "strum",
 ]
 
@@ -2061,7 +2062,7 @@ name = "puniyu_loader"
 version = "0.7.8"
 dependencies = [
  "puniyu_error",
- "puniyu_plugin",
+ "puniyu_plugin_core",
 ]
 
 [[package]]

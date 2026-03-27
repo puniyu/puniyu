@@ -18,7 +18,6 @@ pub use types::*;
 use super::EventBase;
 use puniyu_bot::Bot;
 
-
 /// 请求基础 trait
 ///
 /// 定义所有请求事件的通用接口。
@@ -79,7 +78,6 @@ where
 	/// 请求内容
 	pub content: &'r Content,
 }
-
 
 /// 生成请求事件结构体及其 EventBase、RequestBase 实现
 ///

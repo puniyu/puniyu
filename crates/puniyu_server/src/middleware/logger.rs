@@ -1,3 +1,4 @@
+use crate::logger::info;
 use actix_web::{
 	Error,
 	dev::{Service, ServiceRequest, ServiceResponse, Transform},
@@ -9,7 +10,6 @@ use std::{
 	future::{Ready, ready},
 	time::Instant,
 };
-use crate::logger::info;
 
 pub struct AccessLog;
 

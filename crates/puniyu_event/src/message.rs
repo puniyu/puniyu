@@ -15,12 +15,10 @@ mod types;
 #[doc(inline)]
 pub use types::*;
 
-
 use super::EventBase;
 use bytes::Bytes;
-use puniyu_element::receive::Elements;
 use puniyu_bot::Bot;
-
+use puniyu_element::receive::Elements;
 
 /// 消息基础 trait
 ///

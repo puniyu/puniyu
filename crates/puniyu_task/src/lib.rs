@@ -98,7 +98,6 @@ pub trait Task: Send + Sync + 'static {
 	async fn run(&self) -> Result;
 }
 
-
 impl PartialEq for dyn Task {
 	fn eq(&self, other: &Self) -> bool {
 		self.name() == other.name() && self.cron() == other.cron()

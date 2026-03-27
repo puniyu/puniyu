@@ -31,9 +31,9 @@
 //! assert_eq!(parsed, Version::new(1, 2, 3));
 //! ```
 
-use std::str::FromStr;
 use derive_more::Display;
 use serde::{Deserialize, Serialize};
+use std::str::FromStr;
 
 /// 三段式版本号（`major.minor.patch`）。
 ///

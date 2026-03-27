@@ -1,5 +1,5 @@
 use puniyu_context::MessageContext;
-use puniyu_element::receive::Elements as Elements;
+use puniyu_element::receive::Elements;
 use puniyu_event::EventBase;
 use puniyu_logger::info;
 pub fn log(event: &MessageContext) {

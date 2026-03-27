@@ -76,7 +76,7 @@ fn test_send_image_element_new() {
 #[test]
 fn test_send_image_element_type() {
 	let file_data = b"test image".to_vec();
-	let element = ImageElement::new(file_data, "test image",  None);
+	let element = ImageElement::new(file_data, "test image", None);
 
 	assert_eq!(element.r#type(), ElementType::Image);
 }

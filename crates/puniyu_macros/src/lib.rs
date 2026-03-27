@@ -1,6 +1,6 @@
 mod adapter;
-mod plugin;
 mod common;
+mod plugin;
 
 #[cfg(feature = "config")]
 #[proc_macro_attribute]

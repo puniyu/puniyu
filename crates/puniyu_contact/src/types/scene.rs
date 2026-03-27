@@ -14,6 +14,7 @@ use strum::{Display, EnumString, IntoStaticStr};
 ///
 /// ```rust
 /// use puniyu_contact::SceneType;
+/// use std::str::FromStr;
 ///
 /// let scene = SceneType::Friend;
 /// assert_eq!(scene.to_string(), "friend");

@@ -13,7 +13,10 @@ pub(crate) fn set_cooldown(bot_id: &str) -> Result<(), Error> {
 
 	let bot_cd = config.bot(bot_id).cd();
 	if bot_cd > 0 {
-		CooldownRegistry::set_cooldown(&CooldownScope::Bot { bot_id }, Duration::from_millis(bot_cd))?;
+		CooldownRegistry::set_cooldown(
+			&CooldownScope::Bot { bot_id },
+			Duration::from_millis(bot_cd),
+		)?;
 	}
 
 	Ok(())

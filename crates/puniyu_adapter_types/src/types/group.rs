@@ -1,6 +1,6 @@
-use serde::{Deserialize, Serialize};
 use puniyu_sender::Role;
 use puniyu_sender::Sex;
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct GroupInfo {

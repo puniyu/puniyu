@@ -1,10 +1,10 @@
+use crate::FriendOption;
 use puniyu_common::read_config;
 use puniyu_path::config_dir;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::LazyLock;
-use crate::FriendOption;
 
 static CONFIG_PATH: LazyLock<PathBuf> = LazyLock::new(|| config_dir().join("friend.toml"));
 
@@ -48,11 +48,9 @@ impl FriendConfig {
 	/// 返回当前的好友配置副本，从注册表获取
 	pub fn get() -> Self {
 		use crate::ConfigRegistry;
-		ConfigRegistry::get(CONFIG_PATH.as_path())
-			.and_then(|v| v.try_into().ok())
-			.unwrap_or_else(|| {
-				read_config::<Self>(config_dir().as_path(), "friend").unwrap_or_default()
-			})
+		ConfigRegistry::get(CONFIG_PATH.as_path()).and_then(|v| v.try_into().ok()).unwrap_or_else(
+			|| read_config::<Self>(config_dir().as_path(), "friend").unwrap_or_default(),
+		)
 	}
 
 	/// 获取全局好友配置

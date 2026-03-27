@@ -2,10 +2,7 @@ use super::friend::FriendMessage;
 use super::group::GroupMessage;
 use super::{MessageBase, MessageSubEventType};
 use crate::{
-	EventBase,
-	EventType,
-	codegen_delegate_to_variants,
-	codegen_delegate_to_variants_convert,
+	EventBase, EventType, codegen_delegate_to_variants, codegen_delegate_to_variants_convert,
 	codegen_impl_as,
 };
 use puniyu_bot::Bot;

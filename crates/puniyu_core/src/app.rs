@@ -223,9 +223,9 @@ impl App {
 	/// ```
 	pub async fn run(self) -> io::Result<()> {
 		use crate::common::format_duration;
-		use puniyu_common::app::{app_name, set_app_info, AppInfo};
-		use puniyu_path::resource_dir;
+		use puniyu_common::app::{AppInfo, app_name, set_app_info};
 		use puniyu_loader::LoaderRegistry;
+		use puniyu_path::resource_dir;
 		use std::time::Duration;
 
 		let info = AppInfo::new(self.name, &VERSION, self.working_dir);

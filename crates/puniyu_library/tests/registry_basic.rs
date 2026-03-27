@@ -1,6 +1,5 @@
 use puniyu_library::LibraryRegistry;
 
-
 #[test]
 fn test_registry_contains_nonexistent() {
 	let exists = LibraryRegistry::contains("definitely_not_exists_12345.dll");

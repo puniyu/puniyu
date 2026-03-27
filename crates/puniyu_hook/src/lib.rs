@@ -63,9 +63,9 @@ use puniyu_context::EventContext;
 pub use registry::HookRegistry;
 mod types;
 #[doc(inline)]
-pub use types::*;
-#[doc(inline)]
 pub use puniyu_common::source::SourceType;
+#[doc(inline)]
+pub use types::*;
 
 /// 钩子 Trait
 ///
@@ -171,9 +171,10 @@ pub trait Hook: Send + Sync + 'static {
 	async fn run(&self, ctx: Option<&EventContext>) -> puniyu_error::Result;
 }
 
-
 impl PartialEq for dyn Hook {
 	fn eq(&self, other: &Self) -> bool {
-		self.name() == other.name() && self.r#type() == other.r#type() && self.priority() == other.priority()
+		self.name() == other.name()
+			&& self.r#type() == other.r#type()
+			&& self.priority() == other.priority()
 	}
 }

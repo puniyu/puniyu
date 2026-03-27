@@ -1,19 +1,28 @@
 //! # puniyu_contact
 //!
-//! 联系人类型定义。
+//! 统一的联系人类型，覆盖好友与群聊场景。
 //!
-//! ## 使用
+//! ## 特性
+//!
+//! - 提供 `FriendContact` 与 `GroupContact`
+//! - 提供统一接口 `Contact`
+//! - 提供统一枚举 `ContactType`
+//! - 提供构建宏 `contact!`、`contact_friend!` 与 `contact_group!`
+//!
+//! ## 示例
 //!
 //! ```rust
-//! use puniyu_contact::{contact, contact_friend, contact_group};
+//! use puniyu_contact::{contact, Contact, ContactType};
 //!
-//! // 使用统一的 contact 宏
 //! let friend = contact!(Friend, peer: "123456", name: "Alice");
 //! let group = contact!(Group, peer: "789012", name: "Dev Team");
 //!
-//! // 或使用专用宏
-//! let friend = contact_friend!("123456", "Alice");
-//! let group = contact_group!("789012", "Dev Team");
+//! let contact = ContactType::from(friend);
+//! assert!(contact.is_friend());
+//! assert_eq!(contact.peer(), "123456");
+//!
+//! let contact = ContactType::from(group);
+//! assert!(contact.is_group());
 //! ```
 
 mod friend;

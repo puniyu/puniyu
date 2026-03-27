@@ -12,16 +12,18 @@ mod server;
 #[cfg(feature = "server")]
 pub use server::server;
 
-
 use crate::common::{validate_async, validate_return_type};
 
 #[cfg(feature = "adapter")]
-pub fn adapter(attr: proc_macro::TokenStream, item: proc_macro::TokenStream) -> proc_macro::TokenStream {
+pub fn adapter(
+	attr: proc_macro::TokenStream,
+	item: proc_macro::TokenStream,
+) -> proc_macro::TokenStream {
+	use darling::FromMeta;
+	use darling::ast::NestedMeta;
 	use proc_macro2::Ident;
 	use quote::quote;
 	use syn::{ItemFn, parse_macro_input};
-	use darling::FromMeta;
-	use darling::ast::NestedMeta;
 
 	#[derive(Debug, FromMeta)]
 	struct AdapterArgs {

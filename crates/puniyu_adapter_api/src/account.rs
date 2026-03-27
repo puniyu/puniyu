@@ -1,7 +1,7 @@
 use super::inner::Error;
 use async_trait::async_trait;
-use puniyu_error::Result;
 use puniyu_adapter_types::Avatar;
+use puniyu_error::Result;
 
 #[async_trait]
 pub trait AccountApi: Send + Sync {

@@ -1,7 +1,6 @@
 use bytes::Bytes;
 use puniyu_element::{receive, send};
 
-
 #[test]
 fn test_receive_text_serialization() {
 	let element = receive::TextElement { text: "test text" };
@@ -39,7 +38,6 @@ fn test_receive_json_serialization() {
 	assert!(json.contains("key"));
 }
 
-
 #[test]
 fn test_send_text_serialization() {
 	let element = send::TextElement::new("send test");
@@ -66,7 +64,6 @@ fn test_send_face_serialization() {
 	let deserialized: send::FaceElement = serde_json::from_str(&json).unwrap();
 	assert_eq!(deserialized.id, 99);
 }
-
 
 #[test]
 fn test_receive_elements_enum_serialization() {
@@ -111,7 +108,6 @@ fn test_mixed_elements_serialization() {
 	assert!(deserialized[2].as_face().is_some());
 }
 
-
 #[test]
 fn test_bytes_handling() {
 	let data = vec![1, 2, 3, 4, 5];
@@ -132,7 +128,6 @@ fn test_empty_bytes() {
 	assert_eq!(element.file.len(), 0);
 	assert_eq!(element.summary, "empty.png");
 }
-
 
 #[test]
 fn test_text_element_conversions() {
@@ -166,7 +161,6 @@ fn test_face_element_from_string() {
 	let invalid = receive::FaceElement::from("invalid");
 	assert_eq!(invalid.id, 0);
 }
-
 
 #[test]
 fn test_empty_string_elements() {

@@ -1,10 +1,10 @@
 use puniyu_command::Command;
 use puniyu_common::source::SourceType;
 use puniyu_error::registry::Error;
+use puniyu_logger::error;
 use puniyu_plugin::Plugin;
 use puniyu_task::Task;
 use std::sync::Arc;
-use puniyu_logger::error;
 
 pub async fn init_plugin(plugin: Arc<dyn Plugin>) -> Result<(), Error> {
 	use puniyu_plugin::PluginRegistry;

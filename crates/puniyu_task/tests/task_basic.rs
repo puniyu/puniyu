@@ -23,11 +23,7 @@ impl Task for TestTask {
 	}
 
 	async fn run(&self) -> Result {
-		if self.should_fail {
-			Err(io::Error::other("task failed").into())
-		} else {
-			Ok(())
-		}
+		if self.should_fail { Err(io::Error::other("task failed").into()) } else { Ok(()) }
 	}
 }
 
@@ -70,7 +66,8 @@ async fn test_task_execution_error() {
 
 #[test]
 fn test_task_arc() {
-	let task = Arc::new(TestTask { name: "arc_task", cron_expr: "0 * * * * *", should_fail: false });
+	let task =
+		Arc::new(TestTask { name: "arc_task", cron_expr: "0 * * * * *", should_fail: false });
 
 	assert_eq!(task.name(), "arc_task");
 }

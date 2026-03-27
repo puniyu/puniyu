@@ -1,8 +1,7 @@
-
 #[derive(thiserror::Error, Debug)]
 pub(crate) enum Error {
-    #[error("not implemented")]
-    NotImpl
+	#[error("not implemented")]
+	NotImpl,
 }
 
 mod account;

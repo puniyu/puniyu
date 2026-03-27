@@ -1,4 +1,4 @@
-use crate::types::{ServerInfo, ServerId};
+use crate::types::{ServerId, ServerInfo};
 use puniyu_error::registry::Error;
 use std::{
 	collections::HashMap,

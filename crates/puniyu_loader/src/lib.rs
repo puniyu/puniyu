@@ -57,14 +57,14 @@
 #[cfg(feature = "registry")]
 mod registry;
 
-use std::sync::Arc;
 #[cfg(feature = "registry")]
 pub use registry::LoaderRegistry;
+use std::sync::Arc;
 mod types;
 #[doc(inline)]
 pub use types::*;
 
-use puniyu_plugin::Plugin;
+use puniyu_plugin_core::Plugin;
 
 /// 加载器 trait
 ///

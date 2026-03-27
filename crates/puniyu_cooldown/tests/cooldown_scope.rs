@@ -1,4 +1,5 @@
 use puniyu_cooldown::CooldownScope;
+use std::str::FromStr;
 
 #[test]
 fn test_scope_display_global() {
@@ -74,4 +75,22 @@ fn test_different_scope_types() {
 	assert_ne!(global, bot);
 	assert_ne!(bot, friend);
 	assert_ne!(global, friend);
+}
+
+#[test]
+fn test_scope_from_str() {
+	let global = CooldownScope::from_str("global").unwrap();
+	assert_eq!(global, CooldownScope::Global);
+
+	assert!(CooldownScope::from_str("bot:123456").is_err());
+	assert!(CooldownScope::from_str("bot:123:groupId:456:userId:789").is_err());
+}
+
+#[test]
+fn test_scope_serde_roundtrip() {
+	let scope = CooldownScope::GroupMember { bot_id: "123", group_id: "456", user_id: "789" };
+	let json = serde_json::to_string(&scope).unwrap();
+	let decoded: CooldownScope = serde_json::from_str(&json).unwrap();
+
+	assert_eq!(scope, decoded);
 }

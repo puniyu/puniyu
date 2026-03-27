@@ -1,6 +1,6 @@
 use super::inner::Error;
-use puniyu_adapter_types::{UserInfo, SetFriendApplyType, Avatar, AvatarSize};
 use async_trait::async_trait;
+use puniyu_adapter_types::{Avatar, AvatarSize, SetFriendApplyType, UserInfo};
 use puniyu_error::Result;
 
 #[async_trait]

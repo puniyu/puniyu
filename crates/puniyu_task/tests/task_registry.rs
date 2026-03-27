@@ -82,10 +82,14 @@ async fn test_registry_lifecycle_and_error_paths() {
 	assert!(by_plugin_a.iter().any(|task| task.builder.name() == shared_name));
 	assert!(by_plugin_a.iter().any(|task| task.builder.name() == extra_name));
 
-	TaskRegistry::unregister(id_extra).await.unwrap_or_else(|err| panic!("unregister by index failed: {err}"));
+	TaskRegistry::unregister(id_extra)
+		.await
+		.unwrap_or_else(|err| panic!("unregister by index failed: {err}"));
 	assert!(TaskRegistry::get(id_extra).is_empty());
 
-	TaskRegistry::unregister(shared_name).await.unwrap_or_else(|err| panic!("unregister by name failed: {err}"));
+	TaskRegistry::unregister(shared_name)
+		.await
+		.unwrap_or_else(|err| panic!("unregister by name failed: {err}"));
 	assert!(TaskRegistry::get(shared_name).is_empty());
 	assert!(TaskRegistry::get_with_plugin_id(plugin_b).is_empty());
 

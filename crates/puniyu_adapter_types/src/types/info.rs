@@ -384,4 +384,3 @@ macro_rules! adapter_info {
 		)
 	}};
 }
-

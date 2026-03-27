@@ -104,6 +104,15 @@ fn test_clear_cooldown() {
 }
 
 #[test]
+fn test_clear_missing_cooldown() {
+	let scope = CooldownScope::Friend { bot_id: "missing_bot", user_id: "missing_user" };
+
+	// 清除不存在的冷却记录不应失败
+	CooldownRegistry::clear_cooldown(&scope).unwrap();
+	assert!(!CooldownRegistry::is_cooling_down(&scope));
+}
+
+#[test]
 fn test_multiple_scopes() {
 	let scope1 = CooldownScope::Friend { bot_id: "bot_1", user_id: "user_1" };
 	let scope2 = CooldownScope::Friend { bot_id: "bot_1", user_id: "user_2" };

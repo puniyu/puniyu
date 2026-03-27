@@ -43,16 +43,16 @@ pub fn server(item: TokenStream) -> TokenStream {
 						quote::quote! { #ty }
 					),
 				)
-					.to_compile_error()
-					.into();
+				.to_compile_error()
+				.into();
 			}
 		} else {
 			return syn::Error::new_spanned(
 				first_param,
 				format!("function `{}` parameter must be a typed parameter", fn_name),
 			)
-				.to_compile_error()
-				.into();
+			.to_compile_error()
+			.into();
 		}
 	} else {
 		return syn::Error::new_spanned(fn_sig, "function signature has no parameters")

@@ -2,10 +2,7 @@ use crate::request::{
 	ContentType, GroupApply, GroupInvite, PrivateApply, RequestBase, RequestSubEventType,
 };
 use crate::{
-	EventBase,
-	EventType,
-	codegen_delegate_to_variants,
-	codegen_delegate_to_variants_convert,
+	EventBase, EventType, codegen_delegate_to_variants, codegen_delegate_to_variants_convert,
 	codegen_impl_as,
 };
 use puniyu_bot::Bot;
@@ -63,11 +60,25 @@ impl RequestEvent<'_> {
 	}
 
 	pub fn contact(&self) -> ContactType<'_> {
-		codegen_delegate_to_variants_convert!(self, contact, ContactType, PrivateApply, GroupApply, GroupInvite)
+		codegen_delegate_to_variants_convert!(
+			self,
+			contact,
+			ContactType,
+			PrivateApply,
+			GroupApply,
+			GroupInvite
+		)
 	}
 
 	pub fn sender(&self) -> SenderType<'_> {
-		codegen_delegate_to_variants_convert!(self, sender, SenderType, PrivateApply, GroupApply, GroupInvite)
+		codegen_delegate_to_variants_convert!(
+			self,
+			sender,
+			SenderType,
+			PrivateApply,
+			GroupApply,
+			GroupInvite
+		)
 	}
 }
 
@@ -77,8 +88,13 @@ impl RequestEvent<'_> {
 	}
 
 	pub fn content(&self) -> ContentType {
-		codegen_delegate_to_variants_convert!(self, content, ContentType, PrivateApply, GroupApply, GroupInvite)
+		codegen_delegate_to_variants_convert!(
+			self,
+			content,
+			ContentType,
+			PrivateApply,
+			GroupApply,
+			GroupInvite
+		)
 	}
 }
-
-

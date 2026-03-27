@@ -1,5 +1,5 @@
 use crate::Response;
-use actix_web::{get, Responder};
+use actix_web::{Responder, get};
 use serde::Serialize;
 
 #[derive(Debug, Serialize)]
@@ -12,10 +12,7 @@ struct AppInfo<'a> {
 pub async fn info() -> impl Responder {
 	let version = puniyu_common::app::app_version();
 	let app_name = puniyu_common::app::app_name();
-	let info = AppInfo {
-		name: app_name,
-		version: version.to_string(),
-	};
+	let info = AppInfo { name: app_name, version: version.to_string() };
 
 	Response::success(info).pretty()
 }

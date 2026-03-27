@@ -1,8 +1,8 @@
 mod store;
-use std::sync::{Arc, LazyLock};
-use store::HandlerStore;
 use crate::{Handler, HandlerId};
 use puniyu_error::registry::Error;
+use std::sync::{Arc, LazyLock};
+use store::HandlerStore;
 
 static STORE: LazyLock<HandlerStore> = LazyLock::new(HandlerStore::new);
 

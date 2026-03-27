@@ -35,7 +35,6 @@ pub struct GroupContact<'c> {
 	pub name: Option<&'c str>,
 }
 
-
 impl<'c> Contact for GroupContact<'c> {
 	fn scene(&self) -> &SceneType {
 		&SceneType::Group

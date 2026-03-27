@@ -121,8 +121,8 @@
 
 mod registry;
 pub use registry::BotRegistry;
-mod types;
 mod macros;
+mod types;
 
 #[doc(inline)]
 pub use types::*;
@@ -182,7 +182,6 @@ impl Debug for Bot {
 		f.debug_tuple("Bot").field(&self.adapter).field(&self.account).finish()
 	}
 }
-
 
 impl Bot {
 	/// 创建新的机器人实例

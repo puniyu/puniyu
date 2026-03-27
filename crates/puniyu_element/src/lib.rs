@@ -69,8 +69,7 @@ pub mod receive;
 pub mod send;
 mod types;
 #[doc(inline)]
-pub use types::{ElementType, Element};
-
+pub use types::{Element, ElementType};
 
 macro_rules! codegen_reexport {
     ($($module:ident => $type:ident),*) => {

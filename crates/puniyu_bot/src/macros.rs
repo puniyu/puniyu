@@ -27,10 +27,10 @@
 /// 返回分配的索引号，失败时返回错误
 #[macro_export]
 macro_rules! register_bot {
-    (adapter: $adapter:expr, api: $api:expr, account: $account:expr) => {
-        let bot = Bot::new($adapter, $api, $account);
-        $crate::BotRegistry::register(bot)
-    };
+	(adapter: $adapter:expr, api: $api:expr, account: $account:expr) => {
+		let bot = Bot::new($adapter, $api, $account);
+		$crate::BotRegistry::register(bot)
+	};
 }
 
 /// 注销机器人宏
@@ -66,13 +66,13 @@ macro_rules! register_bot {
 /// - `bot_id: &str` - 机器人的 UIN
 #[macro_export]
 macro_rules! unregister_bot {
-    ($index:expr) => {
-        $crate::BotRegistry::unregister_with_index($index)
-    };
-    (index: $index:expr) => {
-        $crate::BotRegistry::unregister_with_index($index)
-    };
-    (bot_id: $bot_id:expr) => {
-        $crate::BotRegistry::unregister_with_bot_id($bot_id)
-    };
+	($index:expr) => {
+		$crate::BotRegistry::unregister_with_index($index)
+	};
+	(index: $index:expr) => {
+		$crate::BotRegistry::unregister_with_index($index)
+	};
+	(bot_id: $bot_id:expr) => {
+		$crate::BotRegistry::unregister_with_bot_id($bot_id)
+	};
 }

@@ -19,7 +19,6 @@ use super::EventBase;
 use puniyu_bot::Bot;
 use serde::Deserialize;
 
-
 /// 通知基础 trait
 ///
 /// 定义所有通知事件的通用接口。
@@ -81,7 +80,6 @@ where
 	/// 通知内容
 	pub content: &'n Content,
 }
-
 
 /// 生成通知事件结构体及其 EventBase、NotionBase 实现
 ///

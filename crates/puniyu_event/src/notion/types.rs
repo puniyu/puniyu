@@ -203,4 +203,3 @@ codegen_from_for_content_type! {
 	GroupLuckKing(GroupLuckKingType),
 	GroupHonorChange(GroupHonorChangeType),
 }
-

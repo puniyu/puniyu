@@ -1,7 +1,7 @@
 use crate::request::{GroupApplyType, GroupInviteType, PrivateApplyType};
+use crate::types::codegen_from_for_content_type;
 use serde::{Deserialize, Serialize};
 use strum::{Display, EnumString, IntoStaticStr};
-use crate::types::codegen_from_for_content_type;
 
 /// 请求子类型枚举
 ///
@@ -92,11 +92,8 @@ pub enum ContentType {
 	GroupInvite(GroupInviteType),
 }
 
-
-
 codegen_from_for_content_type! {
 	PrivateApply(PrivateApplyType),
 	GroupApply(GroupApplyType),
 	GroupInvite(GroupInviteType)
 }
-

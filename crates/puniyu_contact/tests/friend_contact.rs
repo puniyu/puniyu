@@ -1,11 +1,8 @@
-use puniyu_contact::{contact_friend, Contact, FriendContact};
+use puniyu_contact::{Contact, FriendContact, contact_friend};
 
 #[test]
 fn test_creation() {
-	let friend = FriendContact {
-		peer: "123456",
-		name: Some("Alice"),
-	};
+	let friend = FriendContact { peer: "123456", name: Some("Alice") };
 
 	assert_eq!(friend.peer, "123456");
 	assert_eq!(friend.name, Some("Alice"));
@@ -13,10 +10,7 @@ fn test_creation() {
 
 #[test]
 fn test_trait_methods() {
-	let friend = FriendContact {
-		peer: "123456",
-		name: Some("Alice"),
-	};
+	let friend = FriendContact { peer: "123456", name: Some("Alice") };
 
 	assert_eq!(friend.peer(), "123456");
 	assert_eq!(friend.name(), Some("Alice"));
@@ -24,10 +18,7 @@ fn test_trait_methods() {
 
 #[test]
 fn test_clone_and_equality() {
-	let friend1 = FriendContact {
-		peer: "123456",
-		name: Some("Alice"),
-	};
+	let friend1 = FriendContact { peer: "123456", name: Some("Alice") };
 	let friend2 = friend1.clone();
 
 	assert_eq!(friend1, friend2);

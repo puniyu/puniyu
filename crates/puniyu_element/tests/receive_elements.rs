@@ -1,6 +1,6 @@
 use bytes::Bytes;
-use puniyu_element::{Element, ElementType};
 use puniyu_element::receive::*;
+use puniyu_element::{Element, ElementType};
 
 #[test]
 fn test_text_element_creation() {

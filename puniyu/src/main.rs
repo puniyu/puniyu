@@ -1,8 +1,8 @@
 mod logger;
 
-use puniyu_core::App;
-use bytes::Bytes;
 use crate::logger::log_init;
+use bytes::Bytes;
+use puniyu_core::App;
 
 #[tokio::main]
 async fn main() -> std::io::Result<()> {

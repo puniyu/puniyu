@@ -2,7 +2,7 @@
 
 macro_rules! server_info {
     ($($arg:tt)*) => {
-        {   
+        {
             #[cfg(feature = "cli")]
             {
                 ::puniyu_logger::info!("{}", format!($($arg)*))

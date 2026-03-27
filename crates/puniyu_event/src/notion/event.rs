@@ -4,10 +4,7 @@ use crate::notion::{
 	PrivateFileUpload, PrivatePoke, PrivateRecall, ReceiveLike,
 };
 use crate::{
-	EventBase,
-	EventType,
-	codegen_delegate_to_variants,
-	codegen_delegate_to_variants_convert,
+	EventBase, EventType, codegen_delegate_to_variants, codegen_delegate_to_variants_convert,
 	codegen_impl_as,
 };
 use puniyu_bot::Bot;
@@ -61,83 +58,205 @@ codegen_impl_as! {
 
 impl NotionEvent<'_> {
 	pub fn time(&self) -> u64 {
-		codegen_delegate_to_variants!(self, time,
-			ReceiveLike, FriendAdd, FriendDecrease, PrivatePoke, PrivateRecall,
-			PrivateFileUpload, GroupPoke, GroupRecall, GroupFileUpload,
-			GroupCardChange, GroupMemberTitleChange)
+		codegen_delegate_to_variants!(
+			self,
+			time,
+			ReceiveLike,
+			FriendAdd,
+			FriendDecrease,
+			PrivatePoke,
+			PrivateRecall,
+			PrivateFileUpload,
+			GroupPoke,
+			GroupRecall,
+			GroupFileUpload,
+			GroupCardChange,
+			GroupMemberTitleChange
+		)
 	}
 
 	pub fn event_type(&self) -> &EventType {
-		codegen_delegate_to_variants!(self, event_type,
-			ReceiveLike, FriendAdd, FriendDecrease, PrivatePoke, PrivateRecall,
-			PrivateFileUpload, GroupPoke, GroupRecall, GroupFileUpload,
-			GroupCardChange, GroupMemberTitleChange)
+		codegen_delegate_to_variants!(
+			self,
+			event_type,
+			ReceiveLike,
+			FriendAdd,
+			FriendDecrease,
+			PrivatePoke,
+			PrivateRecall,
+			PrivateFileUpload,
+			GroupPoke,
+			GroupRecall,
+			GroupFileUpload,
+			GroupCardChange,
+			GroupMemberTitleChange
+		)
 	}
 
 	pub fn event_id(&self) -> &str {
-		codegen_delegate_to_variants!(self, event_id,
-			ReceiveLike, FriendAdd, FriendDecrease, PrivatePoke, PrivateRecall,
-			PrivateFileUpload, GroupPoke, GroupRecall, GroupFileUpload,
-			GroupCardChange, GroupMemberTitleChange)
+		codegen_delegate_to_variants!(
+			self,
+			event_id,
+			ReceiveLike,
+			FriendAdd,
+			FriendDecrease,
+			PrivatePoke,
+			PrivateRecall,
+			PrivateFileUpload,
+			GroupPoke,
+			GroupRecall,
+			GroupFileUpload,
+			GroupCardChange,
+			GroupMemberTitleChange
+		)
 	}
 
 	pub fn sub_event(&self) -> &NotionSubEventType {
-		codegen_delegate_to_variants!(self, sub_event,
-			ReceiveLike, FriendAdd, FriendDecrease, PrivatePoke, PrivateRecall,
-			PrivateFileUpload, GroupPoke, GroupRecall, GroupFileUpload,
-			GroupCardChange, GroupMemberTitleChange)
+		codegen_delegate_to_variants!(
+			self,
+			sub_event,
+			ReceiveLike,
+			FriendAdd,
+			FriendDecrease,
+			PrivatePoke,
+			PrivateRecall,
+			PrivateFileUpload,
+			GroupPoke,
+			GroupRecall,
+			GroupFileUpload,
+			GroupCardChange,
+			GroupMemberTitleChange
+		)
 	}
 
 	pub fn bot(&self) -> &Bot {
-		codegen_delegate_to_variants!(self, bot,
-			ReceiveLike, FriendAdd, FriendDecrease, PrivatePoke, PrivateRecall,
-			PrivateFileUpload, GroupPoke, GroupRecall, GroupFileUpload,
-			GroupCardChange, GroupMemberTitleChange)
+		codegen_delegate_to_variants!(
+			self,
+			bot,
+			ReceiveLike,
+			FriendAdd,
+			FriendDecrease,
+			PrivatePoke,
+			PrivateRecall,
+			PrivateFileUpload,
+			GroupPoke,
+			GroupRecall,
+			GroupFileUpload,
+			GroupCardChange,
+			GroupMemberTitleChange
+		)
 	}
 
 	pub fn self_id(&self) -> &str {
-		codegen_delegate_to_variants!(self, self_id,
-			ReceiveLike, FriendAdd, FriendDecrease, PrivatePoke, PrivateRecall,
-			PrivateFileUpload, GroupPoke, GroupRecall, GroupFileUpload,
-			GroupCardChange, GroupMemberTitleChange)
+		codegen_delegate_to_variants!(
+			self,
+			self_id,
+			ReceiveLike,
+			FriendAdd,
+			FriendDecrease,
+			PrivatePoke,
+			PrivateRecall,
+			PrivateFileUpload,
+			GroupPoke,
+			GroupRecall,
+			GroupFileUpload,
+			GroupCardChange,
+			GroupMemberTitleChange
+		)
 	}
 
 	pub fn user_id(&self) -> &str {
-		codegen_delegate_to_variants!(self, user_id,
-			ReceiveLike, FriendAdd, FriendDecrease, PrivatePoke, PrivateRecall,
-			PrivateFileUpload, GroupPoke, GroupRecall, GroupFileUpload,
-			GroupCardChange, GroupMemberTitleChange)
+		codegen_delegate_to_variants!(
+			self,
+			user_id,
+			ReceiveLike,
+			FriendAdd,
+			FriendDecrease,
+			PrivatePoke,
+			PrivateRecall,
+			PrivateFileUpload,
+			GroupPoke,
+			GroupRecall,
+			GroupFileUpload,
+			GroupCardChange,
+			GroupMemberTitleChange
+		)
 	}
 
 	pub fn contact(&self) -> ContactType<'_> {
-		codegen_delegate_to_variants_convert!(self, contact, ContactType,
-			ReceiveLike, FriendAdd, FriendDecrease, PrivatePoke, PrivateRecall,
-			PrivateFileUpload, GroupPoke, GroupRecall, GroupFileUpload,
-			GroupCardChange, GroupMemberTitleChange)
+		codegen_delegate_to_variants_convert!(
+			self,
+			contact,
+			ContactType,
+			ReceiveLike,
+			FriendAdd,
+			FriendDecrease,
+			PrivatePoke,
+			PrivateRecall,
+			PrivateFileUpload,
+			GroupPoke,
+			GroupRecall,
+			GroupFileUpload,
+			GroupCardChange,
+			GroupMemberTitleChange
+		)
 	}
 
 	pub fn sender(&self) -> SenderType<'_> {
-		codegen_delegate_to_variants_convert!(self, sender, SenderType,
-			ReceiveLike, FriendAdd, FriendDecrease, PrivatePoke, PrivateRecall,
-			PrivateFileUpload, GroupPoke, GroupRecall, GroupFileUpload,
-			GroupCardChange, GroupMemberTitleChange)
+		codegen_delegate_to_variants_convert!(
+			self,
+			sender,
+			SenderType,
+			ReceiveLike,
+			FriendAdd,
+			FriendDecrease,
+			PrivatePoke,
+			PrivateRecall,
+			PrivateFileUpload,
+			GroupPoke,
+			GroupRecall,
+			GroupFileUpload,
+			GroupCardChange,
+			GroupMemberTitleChange
+		)
 	}
 }
 
 impl NotionEvent<'_> {
 	pub fn notion(&self) -> &str {
-		codegen_delegate_to_variants!(self, notion,
-			ReceiveLike, FriendAdd, FriendDecrease, PrivatePoke, PrivateRecall,
-			PrivateFileUpload, GroupPoke, GroupRecall, GroupFileUpload,
-			GroupCardChange, GroupMemberTitleChange)
+		codegen_delegate_to_variants!(
+			self,
+			notion,
+			ReceiveLike,
+			FriendAdd,
+			FriendDecrease,
+			PrivatePoke,
+			PrivateRecall,
+			PrivateFileUpload,
+			GroupPoke,
+			GroupRecall,
+			GroupFileUpload,
+			GroupCardChange,
+			GroupMemberTitleChange
+		)
 	}
 
 	pub fn content(&self) -> ContentType {
-		codegen_delegate_to_variants_convert!(self, content, ContentType,
-			ReceiveLike, FriendAdd, FriendDecrease, PrivatePoke, PrivateRecall,
-			PrivateFileUpload, GroupPoke, GroupRecall, GroupFileUpload,
-			GroupCardChange, GroupMemberTitleChange)
+		codegen_delegate_to_variants_convert!(
+			self,
+			content,
+			ContentType,
+			ReceiveLike,
+			FriendAdd,
+			FriendDecrease,
+			PrivatePoke,
+			PrivateRecall,
+			PrivateFileUpload,
+			GroupPoke,
+			GroupRecall,
+			GroupFileUpload,
+			GroupCardChange,
+			GroupMemberTitleChange
+		)
 	}
 }
-
-
