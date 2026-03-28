@@ -1,5 +1,5 @@
-use puniyu_config::bot_config;
 use puniyu_config::ReactiveMode;
+use puniyu_config::bot_config;
 
 pub fn get_bot_alias(bot_id: &str) -> Vec<String> {
 	let bot_config = bot_config();

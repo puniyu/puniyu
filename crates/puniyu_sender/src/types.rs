@@ -1,4 +1,6 @@
 mod sex;
+use std::fmt::Debug;
+
 #[doc(inline)]
 pub use sex::Sex;
 mod role;
@@ -44,5 +46,16 @@ impl PartialEq for dyn Sender {
 			&& self.name() == other.name()
 			&& self.sex() == other.sex()
 			&& self.age() == other.age()
+	}
+}
+
+impl Debug for dyn Sender {
+	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+		f.debug_struct("Sender")
+			.field("user_id", &self.user_id())
+			.field("name", &self.name())
+			.field("sex", &self.sex())
+			.field("age", &self.age())
+			.finish()
 	}
 }

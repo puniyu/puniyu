@@ -13,6 +13,7 @@ use puniyu_logger::owo_colors::OwoColorize;
 use puniyu_plugin_core::PluginRegistry;
 use std::collections::HashMap;
 
+/// 命令处理器。
 #[derive(Default)]
 pub struct CommandHandler;
 

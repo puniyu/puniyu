@@ -30,33 +30,103 @@ codegen_impl_as! {
 	}
 }
 
-impl RequestEvent<'_> {
-	pub fn time(&self) -> u64 {
+impl<'r> EventBase for RequestEvent<'r> {
+	type EventType = EventType;
+	type SubEventType = RequestSubEventType;
+	type Contact = dyn puniyu_contact::Contact + 'r;
+	type Sender = dyn puniyu_sender::Sender + 'r;
+
+	fn time(&self) -> u64 {
 		codegen_delegate_to_variants!(self, time, PrivateApply, GroupApply, GroupInvite)
 	}
 
-	pub fn event_type(&self) -> &EventType {
+	fn event_type(&self) -> &Self::EventType {
 		codegen_delegate_to_variants!(self, event_type, PrivateApply, GroupApply, GroupInvite)
 	}
 
-	pub fn event_id(&self) -> &str {
+	fn event_id(&self) -> &str {
 		codegen_delegate_to_variants!(self, event_id, PrivateApply, GroupApply, GroupInvite)
 	}
 
-	pub fn sub_event(&self) -> &RequestSubEventType {
+	fn sub_event(&self) -> &Self::SubEventType {
 		codegen_delegate_to_variants!(self, sub_event, PrivateApply, GroupApply, GroupInvite)
 	}
 
-	pub fn bot(&self) -> &Bot {
+	fn bot(&self) -> &Bot {
 		codegen_delegate_to_variants!(self, bot, PrivateApply, GroupApply, GroupInvite)
 	}
 
-	pub fn self_id(&self) -> &str {
+	fn self_id(&self) -> &str {
 		codegen_delegate_to_variants!(self, self_id, PrivateApply, GroupApply, GroupInvite)
 	}
 
-	pub fn user_id(&self) -> &str {
+	fn user_id(&self) -> &str {
 		codegen_delegate_to_variants!(self, user_id, PrivateApply, GroupApply, GroupInvite)
+	}
+
+	fn contact(&self) -> &Self::Contact {
+		match self {
+			Self::PrivateApply(inner) => inner.contact(),
+			Self::GroupApply(inner) => inner.contact(),
+			Self::GroupInvite(inner) => inner.contact(),
+		}
+	}
+
+	fn sender(&self) -> &Self::Sender {
+		match self {
+			Self::PrivateApply(inner) => inner.sender(),
+			Self::GroupApply(inner) => inner.sender(),
+			Self::GroupInvite(inner) => inner.sender(),
+		}
+	}
+}
+
+impl<'r> RequestBase for RequestEvent<'r> {
+	type Content = ContentType;
+
+	fn request(&self) -> &str {
+		codegen_delegate_to_variants!(self, request, PrivateApply, GroupApply, GroupInvite)
+	}
+
+	fn content(&self) -> Self::Content {
+		codegen_delegate_to_variants_convert!(
+			self,
+			content,
+			ContentType,
+			PrivateApply,
+			GroupApply,
+			GroupInvite
+		)
+	}
+}
+
+impl RequestEvent<'_> {
+	pub fn time(&self) -> u64 {
+		EventBase::time(self)
+	}
+
+	pub fn event_type(&self) -> &EventType {
+		EventBase::event_type(self)
+	}
+
+	pub fn event_id(&self) -> &str {
+		EventBase::event_id(self)
+	}
+
+	pub fn sub_event(&self) -> &RequestSubEventType {
+		EventBase::sub_event(self)
+	}
+
+	pub fn bot(&self) -> &Bot {
+		EventBase::bot(self)
+	}
+
+	pub fn self_id(&self) -> &str {
+		EventBase::self_id(self)
+	}
+
+	pub fn user_id(&self) -> &str {
+		EventBase::user_id(self)
 	}
 
 	pub fn contact(&self) -> ContactType<'_> {
@@ -84,17 +154,10 @@ impl RequestEvent<'_> {
 
 impl RequestEvent<'_> {
 	pub fn request(&self) -> &str {
-		codegen_delegate_to_variants!(self, request, PrivateApply, GroupApply, GroupInvite)
+		RequestBase::request(self)
 	}
 
 	pub fn content(&self) -> ContentType {
-		codegen_delegate_to_variants_convert!(
-			self,
-			content,
-			ContentType,
-			PrivateApply,
-			GroupApply,
-			GroupInvite
-		)
+		RequestBase::content(self)
 	}
 }

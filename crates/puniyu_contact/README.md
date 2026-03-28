@@ -12,17 +12,15 @@
 ## 示例
 
 ```rust
-use puniyu_contact::{contact, Contact, ContactType};
+use puniyu_contact::{contact, Contact};
 
 let friend = contact!(Friend, peer: "123456", name: "Alice");
 let group = contact!(Group, peer: "789012", name: "Dev Team");
 
-let contact = ContactType::from(friend);
-assert!(contact.is_friend());
-assert_eq!(contact.peer(), "123456");
+assert!(friend.is_friend());
+assert_eq!(friend.peer(), "123456");
 
-let contact = ContactType::from(group);
-assert!(contact.is_group());
+assert!(group.is_group());
 ```
 
 ## 许可证

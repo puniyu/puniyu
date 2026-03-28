@@ -1990,6 +1990,9 @@ name = "puniyu_event"
 version = "0.7.8"
 dependencies = [
  "bytes",
+ "puniyu_account",
+ "puniyu_adapter_api",
+ "puniyu_adapter_types",
  "puniyu_bot",
  "puniyu_contact",
  "puniyu_element",
@@ -2013,10 +2016,16 @@ name = "puniyu_handler_command"
 version = "0.7.9"
 dependencies = [
  "async-trait",
+ "bytes",
  "itertools",
+ "puniyu_account",
+ "puniyu_adapter_api",
+ "puniyu_adapter_types",
+ "puniyu_bot",
  "puniyu_command",
  "puniyu_command_parser",
  "puniyu_config",
+ "puniyu_contact",
  "puniyu_context",
  "puniyu_cooldown",
  "puniyu_element",
@@ -2026,6 +2035,8 @@ dependencies = [
  "puniyu_logger",
  "puniyu_message",
  "puniyu_plugin_core",
+ "puniyu_sender",
+ "tokio",
 ]
 
 [[package]]

@@ -1,6 +1,7 @@
 mod scene;
 #[doc(inline)]
 pub use scene::SceneType;
+use std::fmt::{self, Debug, Formatter};
 
 /// 联系人 Trait
 ///
@@ -20,8 +21,8 @@ pub use scene::SceneType;
 /// use puniyu_contact::{Contact, FriendContact};
 ///
 /// let friend = FriendContact {
-///     peer: "123456",
-///     name: Some("Alice"),
+///     peer: "123456".into(),
+///     name: Some("Alice".into()),
 /// };
 ///
 /// // 使用 Contact trait 方法
@@ -47,14 +48,14 @@ pub use scene::SceneType;
 /// }
 ///
 /// let friend = FriendContact {
-///     peer: "123456",
-///     name: Some("Alice"),
+///     peer: "123456".into(),
+///     name: Some("Alice".into()),
 /// };
 /// print_contact_info(&friend);
 ///
 /// let group = GroupContact {
-///     peer: "789012",
-///     name: Some("Dev Team"),
+///     peer: "789012".into(),
+///     name: Some("Dev Team".into()),
 /// };
 /// print_contact_info(&group);
 /// ```
@@ -63,14 +64,14 @@ pub trait Contact: Send + Sync {
 	///
 	/// # 返回值
 	///
-	/// 返回联系人所属的场景类型 &[`SceneType`]。
+	/// 返回联系人所属的场景类型 [`SceneType`]。
 	fn scene(&self) -> &SceneType;
 
 	/// 获取联系人 ID
 	///
 	/// # 返回值
 	///
-	/// 返回联系人的唯一标识符 [`&str`]。
+	/// 返回联系人的唯一标识符 [`str`]。
 	fn peer(&self) -> &str;
 
 	/// 获取联系人名称
@@ -102,6 +103,12 @@ pub trait Contact: Send + Sync {
 impl PartialEq for dyn Contact {
 	fn eq(&self, other: &Self) -> bool {
 		self.scene() == other.scene() && self.peer() == other.peer() && self.name() == other.name()
+	}
+}
+
+impl Debug for dyn Contact {
+	fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+		f.debug_struct("Contact").field("peer", &self.peer()).field("name", &self.name()).finish()
 	}
 }
 

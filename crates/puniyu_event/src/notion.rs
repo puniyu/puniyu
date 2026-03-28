@@ -23,24 +23,23 @@ use serde::Deserialize;
 ///
 /// 定义所有通知事件的通用接口。
 ///
-/// # 泛型参数
-///
-/// - `Content`: 通知内容的具体类型
-///
 /// # 示例
 ///
 /// ```rust,ignore
 /// use puniyu_event::notion::NotionBase;
 ///
-/// fn process_notion<N, C>(notion: &N)
+/// fn process_notion<N>(notion: &N)
 /// where
-///     N: NotionBase<C>,
+///     N: NotionBase,
 /// {
 ///     println!("通知消息: {}", notion.notion());
 ///     println!("事件 ID: {}", notion.event_id());
 /// }
 /// ```
-pub trait NotionBase<Content>: Send + Sync + EventBase {
+pub trait NotionBase: Send + Sync + EventBase {
+	/// 通知内容类型
+	type Content;
+
 	/// 获取通知消息
 	///
 	/// # 返回值
@@ -52,8 +51,8 @@ pub trait NotionBase<Content>: Send + Sync + EventBase {
 	///
 	/// # 返回值
 	///
-	/// 获取通知的详细内容对象引用
-	fn content(&self) -> &Content;
+	/// 获取通知的详细内容对象
+	fn content(&self) -> Self::Content;
 }
 
 /// 通知构建器
@@ -140,9 +139,10 @@ macro_rules! codegen_notion {
 			fn sender(&self) -> &Self::Sender { self.sender }
 		}
 
-		impl $crate::notion::NotionBase<$content> for $name<'_> {
+		impl<'n> $crate::notion::NotionBase for $name<'n> {
+			type Content = &'n $content;
 			fn notion(&self) -> &str { $notion_str }
-			fn content(&self) -> &$content { self.content }
+			fn content(&self) -> Self::Content { self.content }
 		}
 	};
 }

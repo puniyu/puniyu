@@ -12,17 +12,15 @@
 //! ## 示例
 //!
 //! ```rust
-//! use puniyu_contact::{contact, Contact, ContactType};
+//! use puniyu_contact::{contact, Contact};
 //!
 //! let friend = contact!(Friend, peer: "123456", name: "Alice");
 //! let group = contact!(Group, peer: "789012", name: "Dev Team");
 //!
-//! let contact = ContactType::from(friend);
-//! assert!(contact.is_friend());
-//! assert_eq!(contact.peer(), "123456");
+//! assert!(friend.is_friend());
+//! assert_eq!(friend.peer(), "123456");
 //!
-//! let contact = ContactType::from(group);
-//! assert!(contact.is_group());
+//! assert!(group.is_group());
 //! ```
 
 mod friend;
@@ -36,6 +34,7 @@ mod types;
 pub use types::*;
 
 use serde::{Deserialize, Serialize};
+use std::borrow::Cow;
 use std::fmt::Debug;
 use strum::{Display, IntoStaticStr};
 
@@ -50,15 +49,15 @@ use strum::{Display, IntoStaticStr};
 ///
 /// // 创建好友联系人
 /// let friend = FriendContact {
-///     peer: "123456",
-///     name: Some("Alice"),
+///     peer: "123456".into(),
+///     name: Some("Alice".into()),
 /// };
 /// let contact = ContactType::Friend(friend);
 ///
 /// // 创建群聊联系人
 /// let group = GroupContact {
-///     peer: "789012",
-///     name: Some("Dev Team"),
+///     peer: "789012".into(),
+///     name: Some("Dev Team".into()),
 /// };
 /// let contact = ContactType::Group(group);
 /// ```
@@ -94,10 +93,17 @@ impl<'c> ContactType<'c> {
 	/// // 创建群聊联系人
 	/// let group = ContactType::new(SceneType::Group, "789012", Some("Dev Team"));
 	/// ```
-	pub fn new(scene: SceneType, peer: &'c str, name: Option<&'c str>) -> Self {
+	pub fn new<P, N>(scene: SceneType, peer: P, name: Option<N>) -> Self
+	where
+		P: Into<Cow<'c, str>>,
+		N: Into<Cow<'c, str>>,
+	{
+		let peer = peer.into();
+		let name = name.map(Into::into);
+
 		match scene {
-			SceneType::Friend => ContactType::Friend(contact_friend!(peer, name)),
-			SceneType::Group => ContactType::Group(contact_group!(peer, name)),
+			SceneType::Friend => ContactType::Friend(FriendContact { peer, name }),
+			SceneType::Group => ContactType::Group(GroupContact { peer, name }),
 		}
 	}
 
@@ -111,8 +117,8 @@ impl<'c> ContactType<'c> {
 	/// use puniyu_contact::{ContactType, FriendContact, Contact};
 	///
 	/// let friend = FriendContact {
-	///     peer: "123456",
-	///     name: Some("Alice"),
+	///     peer: "123456".into(),
+	///     name: Some("Alice".into()),
 	/// };
 	/// let contact = ContactType::Friend(friend);
 	///
@@ -137,8 +143,8 @@ impl<'c> ContactType<'c> {
 	/// use puniyu_contact::{ContactType, GroupContact, Contact};
 	///
 	/// let group = GroupContact {
-	///     peer: "789012",
-	///     name: Some("Dev Team"),
+	///     peer: "789012".into(),
+	///     name: Some("Dev Team".into()),
 	/// };
 	/// let contact = ContactType::Group(group);
 	///
@@ -161,8 +167,8 @@ impl<'c> ContactType<'c> {
 	/// use puniyu_contact::{ContactType, FriendContact};
 	///
 	/// let friend = FriendContact {
-	///     peer: "123456",
-	///     name: Some("Alice"),
+	///     peer: "123456".into(),
+	///     name: Some("Alice".into()),
 	/// };
 	/// let contact = ContactType::Friend(friend);
 	///
@@ -180,8 +186,8 @@ impl<'c> ContactType<'c> {
 	/// use puniyu_contact::{ContactType, GroupContact};
 	///
 	/// let group = GroupContact {
-	///     peer: "789012",
-	///     name: Some("Dev Team"),
+	///     peer: "789012".into(),
+	///     name: Some("Dev Team".into()),
 	/// };
 	/// let contact = ContactType::Group(group);
 	///
@@ -230,7 +236,8 @@ impl<'c> From<GroupContact<'c>> for ContactType<'c> {
 /// 统一的联系人构建宏
 ///
 /// 根据联系人类型（Friend 或 Group）创建相应的联系人对象。
-/// 这是一个便捷宏，内部会调用 [`contact_friend!`] 或 [`contact_group!`]。
+/// 这是一个便捷宏，内部会调用 [`contact_friend!`] 或 [`contact_group!`]，
+/// 并返回统一类型 [`ContactType`]。
 ///
 /// # 语法
 ///
@@ -275,13 +282,15 @@ impl<'c> From<GroupContact<'c>> for ContactType<'c> {
 /// ## 与专用宏的对比
 ///
 /// ```rust
-/// use puniyu_contact::{contact, contact_friend, contact_group};
+/// use puniyu_contact::{contact, contact_friend, contact_group, ContactType};
 ///
 /// // 使用统一宏
 /// let friend = contact!(Friend, peer: "123456", name: "Alice");
 /// let group = contact!(Group, peer: "789012", name: "Dev Team");
+/// assert!(matches!(friend, ContactType::Friend(_)));
+/// assert!(matches!(group, ContactType::Group(_)));
 ///
-/// // 使用专用宏（效果相同）
+/// // 使用专用宏（返回具体联系人类型）
 /// let friend = contact_friend!(peer: "123456", name: "Alice");
 /// let group = contact_group!(peer: "789012", name: "Dev Team");
 /// ```
@@ -293,10 +302,10 @@ impl<'c> From<GroupContact<'c>> for ContactType<'c> {
 #[macro_export]
 macro_rules! contact {
     (Friend, $( $key:ident : $value:expr ),+ $(,)?) => {
-        $crate::contact_friend!( $( $key : $value ),+ )
+        $crate::ContactType::Friend($crate::contact_friend!( $( $key : $value ),+ ))
     };
 
     (Group, $( $key:ident : $value:expr ),+ $(,)?) => {
-        $crate::contact_group!( $( $key : $value ),+ )
+        $crate::ContactType::Group($crate::contact_group!( $( $key : $value ),+ ))
     };
 }

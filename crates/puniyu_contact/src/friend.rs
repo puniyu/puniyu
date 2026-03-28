@@ -5,6 +5,7 @@
 use crate::{Contact, SceneType};
 use derive_builder::Builder;
 use serde::{Deserialize, Serialize};
+use std::borrow::Cow;
 
 /// 好友联系人
 ///
@@ -21,8 +22,8 @@ use serde::{Deserialize, Serialize};
 /// use puniyu_contact::FriendContact;
 ///
 /// let friend = FriendContact {
-///     peer: "123456",
-///     name: Some("Alice"),
+///     peer: "123456".into(),
+///     name: Some("Alice".into()),
 /// };
 /// ```
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, Builder)]
@@ -30,10 +31,12 @@ use serde::{Deserialize, Serialize};
 #[builder(setter(into), pattern = "owned")]
 pub struct FriendContact<'c> {
 	/// 好友ID
-	pub peer: &'c str,
+	#[serde(borrow)]
+	pub peer: Cow<'c, str>,
 	/// 好友名称
-	#[builder(default)]
-	pub name: Option<&'c str>,
+	#[builder(default, setter(into, strip_option))]
+	#[serde(borrow)]
+	pub name: Option<Cow<'c, str>>,
 }
 
 impl<'c> Contact for FriendContact<'c> {
@@ -42,11 +45,11 @@ impl<'c> Contact for FriendContact<'c> {
 	}
 
 	fn peer(&self) -> &str {
-		self.peer
+		self.peer.as_ref()
 	}
 
 	fn name(&self) -> Option<&str> {
-		self.name
+		self.name.as_deref()
 	}
 }
 

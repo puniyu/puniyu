@@ -56,8 +56,13 @@ codegen_impl_as! {
 	}
 }
 
-impl NotionEvent<'_> {
-	pub fn time(&self) -> u64 {
+impl<'n> EventBase for NotionEvent<'n> {
+	type EventType = EventType;
+	type SubEventType = NotionSubEventType;
+	type Contact = dyn puniyu_contact::Contact + 'n;
+	type Sender = dyn puniyu_sender::Sender + 'n;
+
+	fn time(&self) -> u64 {
 		codegen_delegate_to_variants!(
 			self,
 			time,
@@ -75,7 +80,7 @@ impl NotionEvent<'_> {
 		)
 	}
 
-	pub fn event_type(&self) -> &EventType {
+	fn event_type(&self) -> &Self::EventType {
 		codegen_delegate_to_variants!(
 			self,
 			event_type,
@@ -93,7 +98,7 @@ impl NotionEvent<'_> {
 		)
 	}
 
-	pub fn event_id(&self) -> &str {
+	fn event_id(&self) -> &str {
 		codegen_delegate_to_variants!(
 			self,
 			event_id,
@@ -111,7 +116,7 @@ impl NotionEvent<'_> {
 		)
 	}
 
-	pub fn sub_event(&self) -> &NotionSubEventType {
+	fn sub_event(&self) -> &Self::SubEventType {
 		codegen_delegate_to_variants!(
 			self,
 			sub_event,
@@ -129,7 +134,7 @@ impl NotionEvent<'_> {
 		)
 	}
 
-	pub fn bot(&self) -> &Bot {
+	fn bot(&self) -> &Bot {
 		codegen_delegate_to_variants!(
 			self,
 			bot,
@@ -147,7 +152,7 @@ impl NotionEvent<'_> {
 		)
 	}
 
-	pub fn self_id(&self) -> &str {
+	fn self_id(&self) -> &str {
 		codegen_delegate_to_variants!(
 			self,
 			self_id,
@@ -165,7 +170,7 @@ impl NotionEvent<'_> {
 		)
 	}
 
-	pub fn user_id(&self) -> &str {
+	fn user_id(&self) -> &str {
 		codegen_delegate_to_variants!(
 			self,
 			user_id,
@@ -181,6 +186,109 @@ impl NotionEvent<'_> {
 			GroupCardChange,
 			GroupMemberTitleChange
 		)
+	}
+
+	fn contact(&self) -> &Self::Contact {
+		match self {
+			Self::ReceiveLike(inner) => inner.contact(),
+			Self::FriendAdd(inner) => inner.contact(),
+			Self::FriendDecrease(inner) => inner.contact(),
+			Self::PrivatePoke(inner) => inner.contact(),
+			Self::PrivateRecall(inner) => inner.contact(),
+			Self::PrivateFileUpload(inner) => inner.contact(),
+			Self::GroupPoke(inner) => inner.contact(),
+			Self::GroupRecall(inner) => inner.contact(),
+			Self::GroupFileUpload(inner) => inner.contact(),
+			Self::GroupCardChange(inner) => inner.contact(),
+			Self::GroupMemberTitleChange(inner) => inner.contact(),
+		}
+	}
+
+	fn sender(&self) -> &Self::Sender {
+		match self {
+			Self::ReceiveLike(inner) => inner.sender(),
+			Self::FriendAdd(inner) => inner.sender(),
+			Self::FriendDecrease(inner) => inner.sender(),
+			Self::PrivatePoke(inner) => inner.sender(),
+			Self::PrivateRecall(inner) => inner.sender(),
+			Self::PrivateFileUpload(inner) => inner.sender(),
+			Self::GroupPoke(inner) => inner.sender(),
+			Self::GroupRecall(inner) => inner.sender(),
+			Self::GroupFileUpload(inner) => inner.sender(),
+			Self::GroupCardChange(inner) => inner.sender(),
+			Self::GroupMemberTitleChange(inner) => inner.sender(),
+		}
+	}
+}
+
+impl<'n> NotionBase for NotionEvent<'n> {
+	type Content = ContentType;
+
+	fn notion(&self) -> &str {
+		codegen_delegate_to_variants!(
+			self,
+			notion,
+			ReceiveLike,
+			FriendAdd,
+			FriendDecrease,
+			PrivatePoke,
+			PrivateRecall,
+			PrivateFileUpload,
+			GroupPoke,
+			GroupRecall,
+			GroupFileUpload,
+			GroupCardChange,
+			GroupMemberTitleChange
+		)
+	}
+
+	fn content(&self) -> Self::Content {
+		codegen_delegate_to_variants_convert!(
+			self,
+			content,
+			ContentType,
+			ReceiveLike,
+			FriendAdd,
+			FriendDecrease,
+			PrivatePoke,
+			PrivateRecall,
+			PrivateFileUpload,
+			GroupPoke,
+			GroupRecall,
+			GroupFileUpload,
+			GroupCardChange,
+			GroupMemberTitleChange
+		)
+	}
+}
+
+impl NotionEvent<'_> {
+	pub fn time(&self) -> u64 {
+		EventBase::time(self)
+	}
+
+	pub fn event_type(&self) -> &EventType {
+		EventBase::event_type(self)
+	}
+
+	pub fn event_id(&self) -> &str {
+		EventBase::event_id(self)
+	}
+
+	pub fn sub_event(&self) -> &NotionSubEventType {
+		EventBase::sub_event(self)
+	}
+
+	pub fn bot(&self) -> &Bot {
+		EventBase::bot(self)
+	}
+
+	pub fn self_id(&self) -> &str {
+		EventBase::self_id(self)
+	}
+
+	pub fn user_id(&self) -> &str {
+		EventBase::user_id(self)
 	}
 
 	pub fn contact(&self) -> ContactType<'_> {
@@ -224,39 +332,10 @@ impl NotionEvent<'_> {
 
 impl NotionEvent<'_> {
 	pub fn notion(&self) -> &str {
-		codegen_delegate_to_variants!(
-			self,
-			notion,
-			ReceiveLike,
-			FriendAdd,
-			FriendDecrease,
-			PrivatePoke,
-			PrivateRecall,
-			PrivateFileUpload,
-			GroupPoke,
-			GroupRecall,
-			GroupFileUpload,
-			GroupCardChange,
-			GroupMemberTitleChange
-		)
+		NotionBase::notion(self)
 	}
 
 	pub fn content(&self) -> ContentType {
-		codegen_delegate_to_variants_convert!(
-			self,
-			content,
-			ContentType,
-			ReceiveLike,
-			FriendAdd,
-			FriendDecrease,
-			PrivatePoke,
-			PrivateRecall,
-			PrivateFileUpload,
-			GroupPoke,
-			GroupRecall,
-			GroupFileUpload,
-			GroupCardChange,
-			GroupMemberTitleChange
-		)
+		NotionBase::content(self)
 	}
 }

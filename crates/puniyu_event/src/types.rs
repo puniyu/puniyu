@@ -210,9 +210,9 @@ pub trait EventBase: Send + Sync {
 	/// 事件子类型枚举
 	type SubEventType: PartialEq;
 	/// 联系人类型
-	type Contact: Contact;
+	type Contact: Contact + ?Sized;
 	/// 发送者类型
-	type Sender: Sender;
+	type Sender: Sender + ?Sized;
 
 	/// 获取事件触发时间戳（秒）
 	///

@@ -5,16 +5,20 @@
 use crate::{Role, Sender, Sex};
 use derive_builder::Builder;
 use serde::{Deserialize, Serialize};
+use std::borrow::Cow;
 
 /// 群聊发送者信息。
 #[derive(Debug, Default, Clone, PartialEq, Deserialize, Serialize, Builder)]
+#[serde(bound(deserialize = "'de: 's"))]
 #[builder(setter(into), pattern = "owned")]
 pub struct GroupSender<'s> {
 	/// 发送者id
-	pub user_id: &'s str,
+	#[serde(borrow)]
+	pub user_id: Cow<'s, str>,
 	/// 用户昵称
-	#[builder(default)]
-	pub nick: Option<&'s str>,
+	#[builder(default, setter(into, strip_option))]
+	#[serde(borrow)]
+	pub nick: Option<Cow<'s, str>>,
 	/// 性别
 	#[builder(default)]
 	pub sex: Sex,
@@ -25,14 +29,16 @@ pub struct GroupSender<'s> {
 	#[builder(default)]
 	pub role: Role,
 	/// 群名片
-	#[builder(default)]
-	pub card: Option<&'s str>,
+	#[builder(default, setter(into, strip_option))]
+	#[serde(borrow)]
+	pub card: Option<Cow<'s, str>>,
 	/// 等级
 	#[builder(default)]
 	pub level: Option<u32>,
 	/// 专属头衔
-	#[builder(default)]
-	pub title: Option<&'s str>,
+	#[builder(default, setter(into, strip_option))]
+	#[serde(borrow)]
+	pub title: Option<Cow<'s, str>>,
 }
 
 impl<'s> GroupSender<'s> {
@@ -43,7 +49,7 @@ impl<'s> GroupSender<'s> {
 
 	/// 获取群名片。
 	pub fn card(&self) -> Option<&str> {
-		self.card
+		self.card.as_deref()
 	}
 
 	/// 获取等级。
@@ -53,16 +59,16 @@ impl<'s> GroupSender<'s> {
 
 	/// 获取专属头衔。
 	pub fn title(&self) -> Option<&str> {
-		self.title
+		self.title.as_deref()
 	}
 }
 
 impl<'s> Sender for GroupSender<'s> {
 	fn user_id(&self) -> &str {
-		self.user_id
+		self.user_id.as_ref()
 	}
 	fn name(&self) -> Option<&str> {
-		self.nick
+		self.nick.as_deref()
 	}
 	fn sex(&self) -> &Sex {
 		&self.sex

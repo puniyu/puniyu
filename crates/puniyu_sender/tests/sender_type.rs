@@ -2,8 +2,12 @@ use puniyu_sender::{FriendSender, GroupSender, Role, Sender, SenderType, Sex};
 
 #[test]
 fn test_from_friend() {
-	let friend =
-		FriendSender { user_id: "123456", nick: Some("Alice"), sex: Sex::Female, age: Some(25) };
+	let friend = FriendSender {
+		user_id: "123456".into(),
+		nick: Some("Alice".into()),
+		sex: Sex::Female,
+		age: Some(25),
+	};
 	let sender = SenderType::from(friend);
 
 	assert!(sender.is_friend());
@@ -14,14 +18,14 @@ fn test_from_friend() {
 #[test]
 fn test_from_group() {
 	let group = GroupSender {
-		user_id: "123456",
-		nick: Some("Alice"),
+		user_id: "123456".into(),
+		nick: Some("Alice".into()),
 		sex: Sex::Female,
 		age: Some(25),
 		role: Role::Admin,
-		card: Some("管理员"),
+		card: Some("管理员".into()),
 		level: Some(10),
-		title: Some("活跃成员"),
+		title: Some("活跃成员".into()),
 	};
 	let sender = SenderType::from(group);
 
@@ -32,8 +36,12 @@ fn test_from_group() {
 
 #[test]
 fn test_as_friend() {
-	let friend =
-		FriendSender { user_id: "123456", nick: Some("Alice"), sex: Sex::Female, age: Some(25) };
+	let friend = FriendSender {
+		user_id: "123456".into(),
+		nick: Some("Alice".into()),
+		sex: Sex::Female,
+		age: Some(25),
+	};
 	let sender = SenderType::Friend(friend);
 
 	assert!(sender.as_friend().is_some());
@@ -44,14 +52,14 @@ fn test_as_friend() {
 #[test]
 fn test_as_group() {
 	let group = GroupSender {
-		user_id: "123456",
-		nick: Some("Alice"),
+		user_id: "123456".into(),
+		nick: Some("Alice".into()),
 		sex: Sex::Female,
 		age: Some(25),
 		role: Role::Admin,
-		card: Some("管理员"),
+		card: Some("管理员".into()),
 		level: Some(10),
-		title: Some("活跃成员"),
+		title: Some("活跃成员".into()),
 	};
 	let sender = SenderType::Group(group);
 
@@ -66,8 +74,12 @@ fn test_as_group() {
 
 #[test]
 fn test_trait_methods() {
-	let friend =
-		FriendSender { user_id: "123456", nick: Some("Alice"), sex: Sex::Female, age: Some(25) };
+	let friend = FriendSender {
+		user_id: "123456".into(),
+		nick: Some("Alice".into()),
+		sex: Sex::Female,
+		age: Some(25),
+	};
 	let sender = SenderType::Friend(friend);
 
 	assert_eq!(sender.user_id(), "123456");

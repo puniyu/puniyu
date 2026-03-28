@@ -5,6 +5,7 @@
 use crate::{Contact, SceneType};
 use derive_builder::Builder;
 use serde::{Deserialize, Serialize};
+use std::borrow::Cow;
 
 /// 群聊联系人
 ///
@@ -21,18 +22,21 @@ use serde::{Deserialize, Serialize};
 /// use puniyu_contact::GroupContact;
 ///
 /// let group = GroupContact {
-///     peer: "789012",
-///     name: Some("Dev Team"),
+///     peer: "789012".into(),
+///     name: Some("Dev Team".into()),
 /// };
 /// ```
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, Builder)]
+#[serde(bound(deserialize = "'de: 'c"))]
 #[builder(setter(into), pattern = "owned")]
 pub struct GroupContact<'c> {
 	/// 群聊id
-	pub peer: &'c str,
+	#[serde(borrow)]
+	pub peer: Cow<'c, str>,
 	/// 群名称
-	#[builder(default)]
-	pub name: Option<&'c str>,
+	#[builder(default, setter(into, strip_option))]
+	#[serde(borrow)]
+	pub name: Option<Cow<'c, str>>,
 }
 
 impl<'c> Contact for GroupContact<'c> {
@@ -41,11 +45,11 @@ impl<'c> Contact for GroupContact<'c> {
 	}
 
 	fn peer(&self) -> &str {
-		self.peer
+		self.peer.as_ref()
 	}
 
 	fn name(&self) -> Option<&str> {
-		self.name
+		self.name.as_deref()
 	}
 }
 

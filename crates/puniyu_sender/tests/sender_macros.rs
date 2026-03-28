@@ -22,6 +22,14 @@ fn test_friend_macro_minimal() {
 }
 
 #[test]
+fn test_friend_macro_owned_strings() {
+	let sender = sender_friend!(user_id: String::from("123456"), nick: String::from("Alice"));
+
+	assert_eq!(sender.user_id(), "123456");
+	assert_eq!(sender.name(), Some("Alice"));
+}
+
+#[test]
 fn test_group_macro_full() {
 	let sender = sender_group!(
 		user_id: "123456",
@@ -44,6 +52,21 @@ fn test_group_macro_full() {
 fn test_group_macro_minimal() {
 	let sender = sender_group!("123456");
 	assert_eq!(sender.user_id(), "123456");
+}
+
+#[test]
+fn test_group_macro_owned_strings() {
+	let sender = sender_group!(
+		user_id: String::from("123456"),
+		nick: String::from("Alice"),
+		card: String::from("管理员"),
+		title: String::from("活跃成员"),
+	);
+
+	assert_eq!(sender.user_id(), "123456");
+	assert_eq!(sender.name(), Some("Alice"));
+	assert_eq!(sender.card(), Some("管理员"));
+	assert_eq!(sender.title(), Some("活跃成员"));
 }
 
 #[test]

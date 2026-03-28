@@ -13,7 +13,7 @@ super::codegen_message! {
 impl GroupMessage<'_> {
 	/// 获取群 ID
 	pub fn group_id(&self) -> &str {
-		self.contact.peer
+		self.contact.peer.as_ref()
 	}
 
 	/// 判断发送者是否为管理员

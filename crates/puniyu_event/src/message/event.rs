@@ -28,33 +28,92 @@ codegen_impl_as! {
 	}
 }
 
-impl MessageEvent<'_> {
-	pub fn time(&self) -> u64 {
+impl<'m> EventBase for MessageEvent<'m> {
+	type EventType = EventType;
+	type SubEventType = MessageSubEventType;
+	type Contact = dyn puniyu_contact::Contact + 'm;
+	type Sender = dyn puniyu_sender::Sender + 'm;
+
+	fn time(&self) -> u64 {
 		codegen_delegate_to_variants!(self, time, Friend, Group)
 	}
 
-	pub fn event_type(&self) -> &EventType {
+	fn event_type(&self) -> &Self::EventType {
 		codegen_delegate_to_variants!(self, event_type, Friend, Group)
 	}
 
-	pub fn event_id(&self) -> &str {
+	fn event_id(&self) -> &str {
 		codegen_delegate_to_variants!(self, event_id, Friend, Group)
 	}
 
-	pub fn sub_event(&self) -> &MessageSubEventType {
+	fn sub_event(&self) -> &Self::SubEventType {
 		codegen_delegate_to_variants!(self, sub_event, Friend, Group)
 	}
 
-	pub fn bot(&self) -> &Bot {
+	fn bot(&self) -> &Bot {
 		codegen_delegate_to_variants!(self, bot, Friend, Group)
 	}
 
-	pub fn self_id(&self) -> &str {
+	fn self_id(&self) -> &str {
 		codegen_delegate_to_variants!(self, self_id, Friend, Group)
 	}
 
-	pub fn user_id(&self) -> &str {
+	fn user_id(&self) -> &str {
 		codegen_delegate_to_variants!(self, user_id, Friend, Group)
+	}
+
+	fn contact(&self) -> &Self::Contact {
+		match self {
+			Self::Friend(inner) => inner.contact(),
+			Self::Group(inner) => inner.contact(),
+		}
+	}
+
+	fn sender(&self) -> &Self::Sender {
+		match self {
+			Self::Friend(inner) => inner.sender(),
+			Self::Group(inner) => inner.sender(),
+		}
+	}
+}
+
+impl<'m> MessageBase for MessageEvent<'m> {
+	fn message_id(&self) -> &str {
+		codegen_delegate_to_variants!(self, message_id, Friend, Group)
+	}
+
+	fn elements(&self) -> &Vec<Elements<'_>> {
+		codegen_delegate_to_variants!(self, elements, Friend, Group)
+	}
+}
+
+impl MessageEvent<'_> {
+	pub fn time(&self) -> u64 {
+		EventBase::time(self)
+	}
+
+	pub fn event_type(&self) -> &EventType {
+		EventBase::event_type(self)
+	}
+
+	pub fn event_id(&self) -> &str {
+		EventBase::event_id(self)
+	}
+
+	pub fn sub_event(&self) -> &MessageSubEventType {
+		EventBase::sub_event(self)
+	}
+
+	pub fn bot(&self) -> &Bot {
+		EventBase::bot(self)
+	}
+
+	pub fn self_id(&self) -> &str {
+		EventBase::self_id(self)
+	}
+
+	pub fn user_id(&self) -> &str {
+		EventBase::user_id(self)
 	}
 
 	pub fn contact(&self) -> ContactType<'_> {
@@ -68,10 +127,10 @@ impl MessageEvent<'_> {
 
 impl MessageEvent<'_> {
 	pub fn message_id(&self) -> &str {
-		codegen_delegate_to_variants!(self, message_id, Friend, Group)
+		MessageBase::message_id(self)
 	}
 
 	pub fn elements(&self) -> &Vec<Elements<'_>> {
-		codegen_delegate_to_variants!(self, elements, Friend, Group)
+		MessageBase::elements(self)
 	}
 }

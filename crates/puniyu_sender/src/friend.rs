@@ -6,16 +6,20 @@ use crate::Sender;
 use crate::Sex;
 use derive_builder::Builder;
 use serde::{Deserialize, Serialize};
+use std::borrow::Cow;
 
 /// 好友发送者信息。
 #[derive(Debug, Default, Clone, PartialEq, Deserialize, Serialize, Builder)]
+#[serde(bound(deserialize = "'de: 's"))]
 #[builder(setter(into), pattern = "owned")]
 pub struct FriendSender<'s> {
 	/// 发送者id
-	pub user_id: &'s str,
+	#[serde(borrow)]
+	pub user_id: Cow<'s, str>,
 	/// 用户昵称
-	#[builder(default)]
-	pub nick: Option<&'s str>,
+	#[builder(default, setter(into, strip_option))]
+	#[serde(borrow)]
+	pub nick: Option<Cow<'s, str>>,
 	/// 性别
 	#[builder(default)]
 	pub sex: Sex,
@@ -26,10 +30,10 @@ pub struct FriendSender<'s> {
 
 impl<'s> Sender for FriendSender<'s> {
 	fn user_id(&self) -> &str {
-		self.user_id
+		self.user_id.as_ref()
 	}
 	fn name(&self) -> Option<&str> {
-		self.nick
+		self.nick.as_deref()
 	}
 	fn sex(&self) -> &Sex {
 		&self.sex

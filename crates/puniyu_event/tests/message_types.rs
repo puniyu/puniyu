@@ -29,7 +29,6 @@ fn test_message_sub_type_ordering() {
 	assert!(MessageSubEventType::Group < MessageSubEventType::Guild);
 }
 
-
 #[test]
 fn test_message_sub_type_serialization() {
 	use serde_json;

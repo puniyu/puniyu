@@ -58,7 +58,6 @@ fn test_all_request_sub_types() {
 	}
 }
 
-
 #[test]
 fn test_sub_type_debug() {
 	// 测试 Debug 输出

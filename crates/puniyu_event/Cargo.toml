@@ -25,3 +25,6 @@ puniyu_element.workspace = true
 
 [dev-dependencies]
 serde_json.workspace = true
+puniyu_account.workspace = true
+puniyu_adapter_api.workspace = true
+puniyu_adapter_types.workspace = true

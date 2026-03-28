@@ -38,8 +38,8 @@ pub use group::GroupConfig;
 mod types;
 #[doc(inline)]
 pub use types::*;
-mod config;
 mod common;
+mod config;
 mod registry;
 
 pub use registry::ConfigRegistry;
