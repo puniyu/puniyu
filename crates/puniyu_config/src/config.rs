@@ -25,10 +25,18 @@ pub fn start_config_watcher() {
 						}
 
 						for path in event.event.paths.iter() {
-							info!("[Config] File changed: {}", path.absolutize().to_slash_lossy());
+							match std::env::current_dir() {
+								Ok(cwd) => info!(
+									"[Config] File changed: {}",
+									path.relative(&cwd).to_slash_lossy()
+								),
+								Err(_) => info!("[Config] File changed: {}", path.to_slash_lossy()),
+							}
 
 							use crate::ConfigRegistry;
-							if ConfigRegistry::all().iter().any(|c| c.path == *path)
+							if ConfigRegistry::all()
+								.iter()
+								.any(|c| c.path.to_slash_lossy() == *path.to_slash_lossy())
 								&& let Some(name) = path.file_stem().and_then(|s| s.to_str())
 								&& let Some(dir) = path.parent()
 								&& let Ok(value) = read_config::<toml::Value>(dir, name)
