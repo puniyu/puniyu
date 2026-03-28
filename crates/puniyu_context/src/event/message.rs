@@ -1,15 +1,14 @@
 use crate::BotContext;
-use bytes::Bytes;
 use puniyu_adapter_types::SendMsgType;
 use puniyu_bot::Bot;
 use puniyu_command_types::ArgValue;
 use puniyu_config::app_config;
-use puniyu_contact::ContactType;
 use puniyu_element::receive::Elements;
-use puniyu_event::EventType;
-use puniyu_event::message::{FriendMessage, GroupMessage, MessageEvent, MessageSubEventType};
+use puniyu_event::message::{
+	FriendMessage, GroupMessage, MessageBase, MessageEvent, MessageSubEventType,
+};
+use puniyu_event::{EventBase, EventType};
 use puniyu_message::Message;
-use puniyu_sender::SenderType;
 use std::collections::HashMap;
 
 /// 消息上下文
@@ -21,7 +20,7 @@ use std::collections::HashMap;
 /// ```rust,ignore
 /// use puniyu_context::MessageContext;
 ///
-/// async fn handle_message(ctx: &MessageContext) {
+/// async fn handle_message(ctx: &MessageContext<'_>) {
 ///     // 回复消息
 ///     ctx.reply("Hello!").await?;
 ///
@@ -52,14 +51,13 @@ impl<'c> MessageContext<'c> {
 	///
 	/// # 参数
 	///
-	/// - `bot` - 机器人上下文的引用
 	/// - `event` - 消息事件的引用
-	/// - `args` - 命令参数映射的引用
+	/// - `args` - 命令参数映射
 	///
 	/// # 示例
 	///
 	/// ```rust,ignore
-	/// let msg_context = MessageContext::new(&bot_context, &message_event, &args);
+	/// let msg_context = MessageContext::new(&message_event, args);
 	/// ```
 	pub fn new(event: &'c MessageEvent, args: HashMap<String, ArgValue>) -> Self {
 		Self { event, bot: BotContext::new(event.bot()), args }
@@ -70,30 +68,44 @@ impl<'c> MessageContext<'c> {
 		self.event
 	}
 
+	/// 判断当前消息是否为好友消息。
 	pub fn is_friend(&self) -> bool {
 		matches!(self.event, MessageEvent::Friend(_))
 	}
 
+	/// 判断当前消息是否为群消息。
 	pub fn is_group(&self) -> bool {
 		matches!(self.event, MessageEvent::Group(_))
 	}
 
+	/// 获取当前消息关联的机器人上下文。
 	pub fn as_bot(&self) -> &BotContext<'_> {
 		&self.bot
 	}
+
+	/// 获取好友消息引用。
+	///
+	/// 如果当前消息为好友消息则返回 [`Some`]，否则返回 [`None`]。
 	pub fn as_friend(&self) -> Option<&FriendMessage<'_>> {
 		self.event.as_friend()
 	}
 
+	/// 获取群消息引用。
+	///
+	/// 如果当前消息为群消息则返回 [`Some`]，否则返回 [`None`]。
 	pub fn as_group(&self) -> Option<&GroupMessage<'_>> {
 		self.event.as_group()
 	}
 
+	/// 向当前消息对应的联系人发送回复消息。
+	///
+	/// 参数 `message` 支持任意可转换为 [`Message`] 的类型。
 	pub async fn reply<M>(&self, message: M) -> puniyu_error::Result<SendMsgType>
 	where
 		M: Into<Message>,
 	{
-		self.bot.api().message().send_msg(&self.contact(), &message.into()).await
+		let contact = self.event.contact();
+		self.bot.api().message().send_msg(&contact, &message.into()).await
 	}
 
 	/// 获取命令参数值
@@ -125,7 +137,7 @@ impl<'c> MessageContext<'c> {
 		self.args.get(name)
 	}
 
-	/// 判断用户是否为Bot Master
+	/// 判断当前消息发送者是否为 Bot Master。
 	pub fn is_master(&self) -> bool {
 		let config = app_config();
 		let masters = config.masters();
@@ -133,130 +145,66 @@ impl<'c> MessageContext<'c> {
 	}
 }
 
-impl<'c> MessageContext<'c> {
-	/// 获取消息触发时间戳
-	///
-	/// # 返回值
-	///
-	/// 返回 Unix 时间戳（秒）
-	pub fn time(&self) -> u64 {
+impl<'c> EventBase for MessageContext<'c> {
+	type EventType = EventType;
+	type SubEventType = MessageSubEventType;
+	type Contact = dyn puniyu_contact::Contact + 'c;
+	type Sender = dyn puniyu_sender::Sender + 'c;
+
+	fn time(&self) -> u64 {
 		self.event.time()
 	}
 
-	/// 获取事件类型
-	///
-	/// # 返回值
-	///
-	/// 返回 `EventType::Message`
-	pub fn event_type(&self) -> &EventType {
+	fn event_type(&self) -> &Self::EventType {
 		self.event.event_type()
 	}
-
-	/// 获取事件 ID
-	///
-	/// # 返回值
-	///
-	/// 返回事件的唯一标识符
-	pub fn event_id(&self) -> &str {
+	fn event_id(&self) -> &str {
 		self.event.event_id()
 	}
 
-	/// 获取消息子类型
-	///
-	/// # 返回值
-	///
-	/// 返回消息子类型（Friend 或 Group）
-	pub fn sub_event(&self) -> &MessageSubEventType {
+	fn sub_event(&self) -> &Self::SubEventType {
 		self.event.sub_event()
 	}
 
-	/// 获取机器人实例
-	///
-	/// # 返回值
-	///
-	/// 返回处理该消息的机器人实例引用
-	pub fn bot(&self) -> &Bot {
+	fn bot(&self) -> &Bot {
 		self.event.bot()
 	}
 
-	/// 获取机器人 ID
-	///
-	/// # 返回值
-	///
-	/// 返回机器人的唯一标识符
-	pub fn self_id(&self) -> &str {
+	fn self_id(&self) -> &str {
 		self.event.self_id()
 	}
 
-	/// 获取用户 ID
-	///
-	/// # 返回值
-	///
-	/// 返回发送消息的用户 ID
-	pub fn user_id(&self) -> &str {
+	fn user_id(&self) -> &str {
 		self.event.user_id()
 	}
 
-	/// 获取联系人信息
-	///
-	/// # 返回值
-	///
-	/// 返回消息发生的联系人信息（好友或群聊）
-	pub fn contact(&self) -> ContactType<'_> {
-		self.event.contact()
+	fn contact(&self) -> &Self::Contact {
+		EventBase::contact(self.event)
 	}
 
-	/// 获取发送者信息
-	///
-	/// # 返回值
-	///
-	/// 返回发送消息的用户详细信息
-	pub fn sender(&self) -> SenderType<'_> {
-		self.event.sender()
+	fn sender(&self) -> &Self::Sender {
+		EventBase::sender(self.event)
+	}
+}
+
+impl<'c> MessageBase for MessageContext<'c> {
+	fn message_id(&self) -> &str {
+		self.event.message_id()
+	}
+
+	fn elements(&self) -> &Vec<Elements<'_>> {
+		self.event.elements()
 	}
 }
 
 impl<'c> MessageContext<'c> {
-	pub fn message_id(&self) -> &str {
-		self.event.message_id()
-	}
-
-	pub fn elements(&self) -> &Vec<Elements<'_>> {
-		self.event.elements()
-	}
-
-	pub fn get_at(&self) -> Vec<&str> {
-		self.elements()
-			.iter()
-			.filter_map(|e| match e {
-				Elements::At(at) => Some(at.target_id),
-				_ => None,
-			})
-			.collect()
-	}
-
+	/// 判断消息内容是否艾特了当前机器人。
 	pub fn mentions_bot(&self) -> bool {
 		self.get_at().contains(&self.self_id())
 	}
 
+	/// 判断消息内容是否包含 `@全体成员`。
 	pub fn mentions_everyone(&self) -> bool {
 		self.elements().iter().any(|e| matches!(e, Elements::At(at) if at.is_everyone()))
-	}
-
-	pub fn get_image(&self) -> Vec<&Bytes> {
-		self.elements()
-			.iter()
-			.filter_map(|e| match e {
-				Elements::Image(image) => Some(&image.file),
-				_ => None,
-			})
-			.collect()
-	}
-
-	pub fn get_reply_id(&self) -> Option<&str> {
-		self.elements().iter().find_map(|e| match e {
-			Elements::Reply(reply) => Some(reply.message_id),
-			_ => None,
-		})
 	}
 }

@@ -1,67 +1,57 @@
-//! 事件集成测试
-//!
-//! 测试事件的完整功能和交互
+use puniyu_contact::Contact;
+use puniyu_event::{
+	EventType, SubEventType,
+	message::MessageSubEventType,
+	notion::NotionSubEventType,
+	request::RequestSubEventType,
+};
+use puniyu_sender::Sender;
 
-use puniyu_event::EventType;
+mod common;
 
 #[test]
-fn test_event_type_conversion() {
-	// 测试 EventType 的转换
-	assert_eq!(EventType::Message.to_string(), "message");
-	assert_eq!(EventType::Notion.to_string(), "notion");
-	assert_eq!(EventType::Request.to_string(), "request");
+fn root_event_message_helpers_work() {
+	let event = common::make_event_message();
+
+	assert!(event.as_message().is_some());
+	assert!(event.as_notion().is_none());
+	assert!(event.as_request().is_none());
+	assert_eq!(event.event_type(), &EventType::Message);
+	assert_eq!(event.sub_event(), SubEventType::Message(MessageSubEventType::Friend));
+	assert_eq!(
+		common::event_snapshot(&event),
+		(
+			1,
+			"msg-event-1".to_string(),
+			"123456".to_string(),
+			"123456".to_string(),
+			"123456".to_string(),
+		)
+	);
 }
 
 #[test]
-fn test_event_type_parsing() {
-	use std::str::FromStr;
+fn root_event_notion_helpers_work() {
+	let event = common::make_event_notion();
 
-	// 测试从字符串解析
-	let msg_type = EventType::from_str("message").unwrap();
-	assert_eq!(msg_type, EventType::Message);
-
-	let notion_type = EventType::from_str("notion").unwrap();
-	assert_eq!(notion_type, EventType::Notion);
-
-	let request_type = EventType::from_str("request").unwrap();
-	assert_eq!(request_type, EventType::Request);
+	assert!(event.as_message().is_none());
+	assert!(event.as_notion().is_some());
+	assert!(event.as_request().is_none());
+	assert_eq!(event.event_type(), &EventType::Notion);
+	assert_eq!(event.sub_event(), SubEventType::Notion(NotionSubEventType::ReceiveLike));
+	assert_eq!(event.contact().peer(), "123456");
+	assert_eq!(event.sender().user_id(), "123456");
 }
 
 #[test]
-fn test_event_type_default() {
-	let default_type = EventType::default();
-	assert_eq!(default_type, EventType::Unknown);
-}
+fn root_event_request_helpers_work() {
+	let event = common::make_event_request();
 
-#[test]
-fn test_event_type_comparison() {
-	assert!(EventType::Message < EventType::Notion);
-	assert!(EventType::Notion < EventType::Request);
-	assert!(EventType::Request < EventType::Unknown);
-}
-
-#[test]
-fn test_event_type_serialization() {
-	use serde_json;
-
-	let event_type = EventType::Message;
-	let json = serde_json::to_string(&event_type).unwrap();
-	assert_eq!(json, r#""message""#);
-
-	let event_type = EventType::Notion;
-	let json = serde_json::to_string(&event_type).unwrap();
-	assert_eq!(json, r#""notion""#);
-}
-
-#[test]
-fn test_event_type_deserialization() {
-	use serde_json;
-
-	let json = r#""message""#;
-	let event_type: EventType = serde_json::from_str(json).unwrap();
-	assert_eq!(event_type, EventType::Message);
-
-	let json = r#""request""#;
-	let event_type: EventType = serde_json::from_str(json).unwrap();
-	assert_eq!(event_type, EventType::Request);
+	assert!(event.as_message().is_none());
+	assert!(event.as_notion().is_none());
+	assert!(event.as_request().is_some());
+	assert_eq!(event.event_type(), &EventType::Request);
+	assert_eq!(event.sub_event(), SubEventType::Request(RequestSubEventType::PrivateApply));
+	assert_eq!(event.contact().peer(), "123456");
+	assert_eq!(event.sender().user_id(), "123456");
 }

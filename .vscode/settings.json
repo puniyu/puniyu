@@ -5,5 +5,8 @@
   "explorer.fileNesting.patterns": {
     "Cargo.toml": "Cargo.lock, clippy.toml, rustfmt.toml, rust-toolchain.toml"
   },
-  "chatgpt.openOnStartup": true
+  "chatgpt.openOnStartup": true,
+  "[toml]": {
+    "editor.defaultFormatter": "tamasfe.even-better-toml"
+  }
 }

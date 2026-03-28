@@ -1,7 +1,7 @@
 [package]
 name = "puniyu_context"
 version = "0.7.8"
-description = "Puniyu 上下文管理库，提供机器人和事件处理的统一上下文系统"
+description = "puniyu 上下文类型库，统一机器人、事件与消息处理上下文模型"
 authors.workspace = true
 license.workspace = true
 readme.workspace = true
@@ -27,4 +27,3 @@ puniyu_command_types.workspace = true
 puniyu_event.workspace = true
 puniyu_message.workspace = true
 puniyu_config.workspace = true
-

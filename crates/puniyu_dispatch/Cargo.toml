@@ -15,10 +15,11 @@ workspace = true
 
 [dependencies]
 puniyu_logger.workspace = true
+thiserror.workspace = true
 puniyu_event.workspace = true
 puniyu_handler = { workspace = true, features = ["registry"] }
 tokio = { workspace = true, features = ["rt", "sync", "macros"] }
+rs-event-emitter = { version = "3.0.3", features = ["async", "tokio_runtime"] }
 
 [dev-dependencies]
 tokio = { workspace = true, features = ["rt", "sync", "macros", "time"] }
-

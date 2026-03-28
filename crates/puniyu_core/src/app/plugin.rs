@@ -2,20 +2,25 @@ use puniyu_command::Command;
 use puniyu_common::source::SourceType;
 use puniyu_error::registry::Error;
 use puniyu_logger::error;
-use puniyu_plugin::Plugin;
+use puniyu_plugin_core::Plugin;
 use puniyu_task::Task;
 use std::sync::Arc;
 
 pub async fn init_plugin(plugin: Arc<dyn Plugin>) -> Result<(), Error> {
-	use puniyu_plugin::PluginRegistry;
-	let index = PluginRegistry::register(plugin.clone())?;
+	use puniyu_plugin_core::PluginRegistry;
+	let hooks = plugin.hooks();
+	let commands = plugin.commands();
+	let tasks = plugin.tasks();
+	#[cfg(feature = "server")]
+	let servers = plugin.server();
+	let index = PluginRegistry::register(plugin)?;
 	let source = SourceType::Plugin(index);
-	super::hook::init_hook(source, plugin.hooks())?;
-	init_command(index, plugin.commands())?;
-	init_task(index, plugin.tasks()).await?;
+	super::hook::init_hook(source, hooks)?;
+	init_command(index, commands)?;
+	init_task(index, tasks).await?;
 	#[cfg(feature = "server")]
 	{
-		if let Some(server) = plugin.server() {
+		if let Some(server) = servers {
 			super::server::init_server(source, server)?;
 		}
 	}

@@ -32,7 +32,7 @@ use puniyu_bot::Bot;
 /// use puniyu_event::request::RequestBase;
 ///
 /// fn process_request<R: RequestBase>(request: &R) {
-///     println!("请求消息: {}", request.notion());
+///     println!("请求消息: {}", request.request());
 ///     println!("事件 ID: {}", request.event_id());
 /// }
 /// ```
@@ -108,6 +108,7 @@ macro_rules! codegen_request {
 		}
 
 		impl<'n> $name<'n> {
+			#[doc = concat!("使用 [`crate::request::RequestBuilder`] 构建 [`", stringify!($name), "`]。")]
 			pub fn new(builder: $crate::request::RequestBuilder<'n, $contact<'n>, $sender<'n>, $content>) -> Self {
 				Self {
 					bot: builder.bot,

@@ -316,6 +316,9 @@ macro_rules! codegen_impl_as {
 	($enum_name:ident { $($variant:ident($type:ident) => $method_name:ident),* $(,)? }) => {
 		impl $enum_name<'_> {
 			$(
+				#[doc = concat!("尝试获取内部的 [`", stringify!($type), "`] 引用。")]
+				#[doc = ""]
+				#[doc = "如果当前事件变体匹配则返回 [`Some`]，否则返回 [`None`]。"]
 				pub fn $method_name(&self) -> Option<&$type<'_>> {
 					match self {
 						Self::$variant(inner) => Some(inner),

@@ -1,5 +1,6 @@
 use puniyu_config::{ReactiveMode, app_config};
 use puniyu_context::MessageContext;
+use puniyu_event::EventBase;
 
 pub mod cooldown;
 

@@ -6,7 +6,7 @@ use puniyu_command::{CommandAction, CommandRegistry, Permission};
 use puniyu_command_parser::CommandParser;
 use puniyu_config::app_config;
 use puniyu_context::MessageContext;
-use puniyu_event::Event;
+use puniyu_event::{Event, EventBase, message::MessageBase};
 use puniyu_handler::Handler;
 use puniyu_logger::info;
 use puniyu_logger::owo_colors::OwoColorize;

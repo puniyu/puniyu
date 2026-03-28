@@ -109,6 +109,7 @@ macro_rules! codegen_notion {
 		}
 
 		impl<'n> $name<'n> {
+			#[doc = concat!("使用 [`crate::notion::NotionBuilder`] 构建 [`", stringify!($name), "`]。")]
 			pub fn new(builder: $crate::notion::NotionBuilder<'n, $contact<'n>, $sender<'n>, $content>) -> Self {
 				Self {
 					bot: builder.bot,

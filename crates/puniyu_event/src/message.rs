@@ -40,10 +40,10 @@ use puniyu_element::receive::Elements;
 ///     // 获取文本内容
 ///     let texts = msg.get_text();
 ///     println!("消息内容: {}", texts.join(" "));
-///     
-///     // 判断是否为主人
-///     if msg.is_master() {
-///         println!("主人发送的消息");
+///
+///     // 获取回复消息 ID
+///     if let Some(reply_id) = msg.get_reply_id() {
+///         println!("回复消息 ID: {}", reply_id);
 ///     }
 /// }
 /// ```
@@ -202,6 +202,7 @@ macro_rules! codegen_message {
 		}
 
 		impl<'m> $name<'m> {
+			#[doc = concat!("使用 [`crate::message::MessageBuilder`] 构建 [`", stringify!($name), "`]。")]
 			pub fn new(builder: super::MessageBuilder<'m, $contact<'m>, $sender<'m>>) -> Self {
 				Self {
 					bot: builder.bot,

@@ -11,9 +11,8 @@ use puniyu_bot::Bot;
 ///
 /// ```rust,ignore
 /// use puniyu_context::BotContext;
-/// use std::sync::Arc;
 ///
-/// let bot_context = BotContext::new(Arc::new(bot));
+/// let bot_context = BotContext::new(&bot);
 ///
 /// // 访问 API
 /// let api = bot_context.api();
@@ -31,14 +30,12 @@ impl<'c> BotContext<'c> {
 	///
 	/// # 参数
 	///
-	/// - `bot` - 机器人实例的 `Arc` 智能指针
+	/// - `bot` - 机器人实例的引用
 	///
 	/// # 示例
 	///
 	/// ```rust,ignore
-	/// use std::sync::Arc;
-	///
-	/// let bot_context = BotContext::new(Arc::new(bot));
+	/// let bot_context = BotContext::new(&bot);
 	/// ```
 	pub fn new(bot: &'c Bot) -> Self {
 		Self { inner: bot }

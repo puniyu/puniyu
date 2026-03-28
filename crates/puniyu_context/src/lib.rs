@@ -1,6 +1,6 @@
 //! # puniyu_context
 //!
-//! 上下文管理库，提供机器人和事件处理的统一上下文系统。
+//! 统一的上下文类型，覆盖机器人、事件与消息处理场景。
 //!
 //! ## 概述
 //!
@@ -17,9 +17,8 @@
 //!
 //! ```rust,ignore
 //! use puniyu_context::BotContext;
-//! use std::sync::Arc;
 //!
-//! let bot_context = BotContext::new(Arc::new(bot));
+//! let bot_context = BotContext::new(&bot);
 //!
 //! // 访问 API
 //! let api = bot_context.api();
@@ -33,7 +32,8 @@
 //! ```rust,ignore
 //! use puniyu_context::{BotContext, EventContext};
 //!
-//! let event_context = EventContext::new(&bot_context, &event, Some(args));
+//! let bot_context = BotContext::new(&bot);
+//! let event_context = EventContext::new(&event, Some(args));
 //!
 //! // 判断事件类型
 //! if event_context.is_message() {
@@ -48,7 +48,7 @@
 //! ```rust,ignore
 //! use puniyu_context::MessageContext;
 //!
-//! async fn handle_message(ctx: &MessageContext) {
+//! async fn handle_message(ctx: &MessageContext<'_>) {
 //!     // 回复消息
 //!     ctx.reply("Hello!").await.unwrap();
 //!

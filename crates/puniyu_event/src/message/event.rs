@@ -88,48 +88,59 @@ impl<'m> MessageBase for MessageEvent<'m> {
 }
 
 impl MessageEvent<'_> {
+	/// 获取消息事件时间戳。
 	pub fn time(&self) -> u64 {
 		EventBase::time(self)
 	}
 
+	/// 获取事件类型。
 	pub fn event_type(&self) -> &EventType {
 		EventBase::event_type(self)
 	}
 
+	/// 获取事件 ID。
 	pub fn event_id(&self) -> &str {
 		EventBase::event_id(self)
 	}
 
+	/// 获取消息子类型。
 	pub fn sub_event(&self) -> &MessageSubEventType {
 		EventBase::sub_event(self)
 	}
 
+	/// 获取关联的机器人实例。
 	pub fn bot(&self) -> &Bot {
 		EventBase::bot(self)
 	}
 
+	/// 获取机器人自身 ID。
 	pub fn self_id(&self) -> &str {
 		EventBase::self_id(self)
 	}
 
+	/// 获取触发事件的用户 ID。
 	pub fn user_id(&self) -> &str {
 		EventBase::user_id(self)
 	}
 
+	/// 获取消息对应的联系人信息。
 	pub fn contact(&self) -> ContactType<'_> {
 		codegen_delegate_to_variants_convert!(self, contact, ContactType, Friend, Group)
 	}
 
+	/// 获取消息发送者信息。
 	pub fn sender(&self) -> SenderType<'_> {
 		codegen_delegate_to_variants_convert!(self, sender, SenderType, Friend, Group)
 	}
 }
 
 impl MessageEvent<'_> {
+	/// 获取消息 ID。
 	pub fn message_id(&self) -> &str {
 		MessageBase::message_id(self)
 	}
 
+	/// 获取消息元素列表。
 	pub fn elements(&self) -> &Vec<Elements<'_>> {
 		MessageBase::elements(self)
 	}

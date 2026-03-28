@@ -76,10 +76,10 @@ impl crate::Config for GroupConfig {
 		crate::ConfigInfo {
 			name: "group".to_string(),
 			path: CONFIG_PATH.clone(),
-			value: toml::to_string(self)
-				.expect("Failed to serialize GroupConfig to TOML string")
-				.parse()
-				.expect("Failed to parse TOML string to Value"),
+            value: toml::from_str(
+                &toml::to_string(self).expect("Failed to serialize GroupConfig to TOML string"),
+            )
+            .expect("Failed to parse TOML string to Value"),
 		}
 	}
 }

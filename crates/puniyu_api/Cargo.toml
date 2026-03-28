@@ -14,7 +14,12 @@ workspace = true
 
 [dependencies]
 puniyu_config.workspace = true
+puniyu_bot.workspace = true
+puniyu_version.workspace = true
+puniyu_account.workspace = true
+puniyu_path.workspace = true
 
+puniyu_plugin_core = { workspace = true, features = ["registry"] }
 
 [features]
 

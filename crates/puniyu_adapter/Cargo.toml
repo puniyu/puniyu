@@ -21,6 +21,7 @@ puniyu_server.workspace = true
 puniyu_hook.workspace = true
 puniyu_error.workspace = true
 puniyu_adapter_core.workspace = true
+puniyu_api.workspace = true
 
 [dev-dependencies]
 tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }

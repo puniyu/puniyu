@@ -1,6 +1,6 @@
 use puniyu_context::MessageContext;
 use puniyu_element::receive::Elements;
-use puniyu_event::EventBase;
+use puniyu_event::{EventBase, message::MessageBase};
 use puniyu_logger::info;
 pub fn log(event: &MessageContext) {
 	let raw_message = event
@@ -28,7 +28,6 @@ pub fn log(event: &MessageContext) {
 			event.user_id(),
 			raw_message
 		);
-	} else {
-		info!("[Bot:{}] [好友消息:{}] {}", event.self_id(), event.user_id(), raw_message);
 	}
+	info!("[Bot:{}] [好友消息:{}] {}", event.self_id(), event.user_id(), raw_message);
 }

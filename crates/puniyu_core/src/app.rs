@@ -9,15 +9,15 @@ use crate::VERSION;
 use bytes::Bytes;
 use convert_case::{Case, Casing};
 use figlet_rs::FIGfont;
-use puniyu_adapter::Adapter;
+use puniyu_adapter_core::Adapter;
 use puniyu_common::app::app_name;
 use puniyu_common::uptime;
 use puniyu_handler::Handler;
-use puniyu_hook::types::{HookType, StatusType};
+use puniyu_hook::{HookType, StatusType};
 use puniyu_loader::Loader;
 use puniyu_logger::owo_colors::OwoColorize;
 use puniyu_logger::{debug, error, info};
-use puniyu_plugin::Plugin;
+use puniyu_plugin_core::Plugin;
 use std::path::Path;
 use std::sync::Arc;
 use std::{env, io};
@@ -265,10 +265,9 @@ impl App {
 			duration_str.fg_rgb::<255, 127, 80>()
 		);
 
-		let event_bus = puniyu_dispatch::EventBus::new();
-		puniyu_dispatch::setup_event_bus(event_bus);
-		let event_bus = puniyu_dispatch::get_event_bus();
-		event_bus.run();
+		if let Err(e) = puniyu_dispatch::EventEmitter::run() {
+			error!("Failed to start event emitter: {}", e);
+		}
 
 		if let Some(logo) = self.logo {
 			let logo_path = resource_dir().join("logo.png");
@@ -305,7 +304,7 @@ async fn init_app(
 	adapters: Vec<Arc<dyn Adapter>>,
 	loaders: Vec<Arc<dyn Loader>>,
 ) -> io::Result<()> {
-	use puniyu_path::{ADAPTER_DIR, APP_DIR, CONFIG_DIR, DATA_DIR, PLUGIN_DIR, RESOURCE_DIR};
+	use puniyu_path::{adapter_dir, app_dir, config_dir, data_dir, plugin_dir, resource_dir};
 	async fn check_dir(path: &Path) -> io::Result<()> {
 		if !path.exists() {
 			fs::create_dir_all(path.to_path_buf()).await?;
@@ -313,20 +312,21 @@ async fn init_app(
 		Ok(())
 	}
 	let dirs = [
-		APP_DIR.as_path(),
-		DATA_DIR.as_path(),
-		CONFIG_DIR.as_path(),
-		RESOURCE_DIR.as_path(),
-		PLUGIN_DIR.as_path(),
-		ADAPTER_DIR.as_path(),
-		puniyu_path::plugin::CONFIG_DIR.as_path(),
-		puniyu_path::plugin::DATA_DIR.as_path(),
-		puniyu_path::plugin::RESOURCE_DIR.as_path(),
-		puniyu_path::plugin::TEMP_DIR.as_path(),
-		puniyu_path::adapter::CONFIG_DIR.as_path(),
-		puniyu_path::adapter::DATA_DIR.as_path(),
-		puniyu_path::adapter::RESOURCE_DIR.as_path(),
-		puniyu_path::adapter::TEMP_DIR.as_path(),
+		app_dir(),
+		adapter_dir(),
+		data_dir(),
+		config_dir(),
+		resource_dir(),
+		plugin_dir(),
+		adapter_dir(),
+		puniyu_path::plugin::config_dir(),
+		puniyu_path::plugin::data_dir(),
+		puniyu_path::plugin::resource_dir(),
+		puniyu_path::plugin::temp_dir(),
+		puniyu_path::adapter::config_dir(),
+		puniyu_path::adapter::data_dir(),
+		puniyu_path::adapter::resource_dir(),
+		puniyu_path::adapter::temp_dir(),
 	];
 	for dir in &dirs {
 		check_dir(dir).await?;

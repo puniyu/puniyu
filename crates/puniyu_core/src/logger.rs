@@ -3,7 +3,7 @@ use puniyu_logger::LoggerOptions;
 use std::env;
 
 /// 初始化日志系统
-pub(crate) fn log_init() {
+pub fn log_init() {
 	use puniyu_path::log_dir;
 	let config = app_config();
 	let logger = config.logger();

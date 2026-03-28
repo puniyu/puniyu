@@ -11,9 +11,6 @@ edition.workspace = true
 rust-version.workspace = true
 
 [dependencies]
-puniyu_path.workspace = true
-puniyu_config.workspace = true
-puniyu_logger.workspace = true
 bytes.workspace = true
 puniyu_core.workspace = true
 

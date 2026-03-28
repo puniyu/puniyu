@@ -1,6 +1,6 @@
 //! # puniyu_event
 //!
-//! 事件类型定义库，提供聊天机器人中的各类事件类型系统。
+//! 统一的事件类型，覆盖消息、通知与请求场景。
 //!
 //! ## 概述
 //!
@@ -58,11 +58,6 @@
 //!     // 获取发送者信息
 //!     let sender = msg.sender();
 //!     println!("发送者: {}", sender.user_id());
-//!     
-//!     // 判断是否为主人
-//!     if msg.is_master() {
-//!         println!("这是主人发送的消息");
-//!     }
 //! }
 //! ```
 //!
@@ -261,7 +256,7 @@ impl Event<'_> {
 	/// ```rust,ignore
 	/// use puniyu_event::EventType;
 	///
-	/// match event.event() {
+	/// match event.event_type() {
 	///     EventType::Message => println!("消息事件"),
 	///     EventType::Notion => println!("通知事件"),
 	///     EventType::Request => println!("请求事件"),

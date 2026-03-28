@@ -263,34 +263,42 @@ impl<'n> NotionBase for NotionEvent<'n> {
 }
 
 impl NotionEvent<'_> {
+	/// 获取通知事件时间戳。
 	pub fn time(&self) -> u64 {
 		EventBase::time(self)
 	}
 
+	/// 获取事件类型。
 	pub fn event_type(&self) -> &EventType {
 		EventBase::event_type(self)
 	}
 
+	/// 获取事件 ID。
 	pub fn event_id(&self) -> &str {
 		EventBase::event_id(self)
 	}
 
+	/// 获取通知子类型。
 	pub fn sub_event(&self) -> &NotionSubEventType {
 		EventBase::sub_event(self)
 	}
 
+	/// 获取关联的机器人实例。
 	pub fn bot(&self) -> &Bot {
 		EventBase::bot(self)
 	}
 
+	/// 获取机器人自身 ID。
 	pub fn self_id(&self) -> &str {
 		EventBase::self_id(self)
 	}
 
+	/// 获取触发事件的用户 ID。
 	pub fn user_id(&self) -> &str {
 		EventBase::user_id(self)
 	}
 
+	/// 获取通知对应的联系人信息。
 	pub fn contact(&self) -> ContactType<'_> {
 		codegen_delegate_to_variants_convert!(
 			self,
@@ -310,6 +318,7 @@ impl NotionEvent<'_> {
 		)
 	}
 
+	/// 获取通知发送者信息。
 	pub fn sender(&self) -> SenderType<'_> {
 		codegen_delegate_to_variants_convert!(
 			self,
@@ -331,10 +340,12 @@ impl NotionEvent<'_> {
 }
 
 impl NotionEvent<'_> {
+	/// 获取通知描述文本。
 	pub fn notion(&self) -> &str {
 		NotionBase::notion(self)
 	}
 
+	/// 获取统一的通知内容枚举。
 	pub fn content(&self) -> ContentType {
 		NotionBase::content(self)
 	}
