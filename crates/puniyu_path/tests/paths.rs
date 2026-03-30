@@ -73,7 +73,7 @@ fn test_plugin_dir() {
 	init_test_env();
 
 	let dir = plugin_dir();
-	let expected = app_dir().join("plugins");
+	let expected = app_cwd_dir().join("plugins");
 	assert_eq!(dir, expected);
 }
 
@@ -82,7 +82,7 @@ fn test_adapter_dir() {
 	init_test_env();
 
 	let dir = adapter_dir();
-	let expected = app_dir().join("adapters");
+	let expected = app_cwd_dir().join("adapters");
 	assert_eq!(dir, expected);
 }
 
