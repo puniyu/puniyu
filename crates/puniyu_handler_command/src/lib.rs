@@ -24,4 +24,5 @@ mod handler;
 mod message;
 mod tools;
 
+#[doc(inline)]
 pub use handler::CommandHandler as Handler;

@@ -123,7 +123,7 @@ impl CommandParser {
 
 		let cmd = Self::build_command(&command_name, &aliases, &arg_defs);
 		let matches =
-			cmd.try_get_matches_from(&args).map_err(|e| Self::convert_error(e, &arg_defs))?;
+			cmd.try_get_matches_from(&args[1..]).map_err(|e| Self::convert_error(e, &arg_defs))?;
 
 		let mut parsed_args = HashMap::new();
 		for arg_def in &arg_defs {

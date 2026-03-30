@@ -76,6 +76,6 @@ pub trait Adapter: Send + Sync + 'static {
 
 impl PartialEq for dyn Adapter {
 	fn eq(&self, other: &Self) -> bool {
-		self.info() == other.info() && self.api() == other.api()
+		self.info() == other.info()
 	}
 }

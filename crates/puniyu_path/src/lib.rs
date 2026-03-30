@@ -40,14 +40,14 @@ pub fn temp_dir() -> PathBuf {
 	app_dir().join("temp")
 }
 
-/// 获取插件目录，格式为 `{app_dir}/plugins`。
+/// 获取插件目录，格式为 `{app_cwd_dir}/plugins`。
 pub fn plugin_dir() -> PathBuf {
-	app_dir().join("plugins")
+	app_cwd_dir().join("plugins")
 }
 
-/// 获取适配器目录，格式为 `{app_dir}/adapters`。
+/// 获取适配器目录，格式为 `{app_cwd_dir}/adapters`。
 pub fn adapter_dir() -> PathBuf {
-	app_dir().join("adapters")
+	app_cwd_dir().join("adapters")
 }
 
 /// 获取数据目录，格式为 `{app_dir}/data`。

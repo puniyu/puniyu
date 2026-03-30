@@ -1747,6 +1747,7 @@ dependencies = [
  "puniyu_segment",
  "puniyu_sender",
  "puniyu_server",
+ "puniyu_version",
  "toml",
 ]
 
@@ -1772,7 +1773,6 @@ dependencies = [
  "log",
  "puniyu_adapter",
  "rand 0.10.0",
- "serde",
  "tokio",
 ]
 

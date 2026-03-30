@@ -253,8 +253,6 @@ impl App {
 		if let Err(e) = init_app(self.plugins, self.adapters, LoaderRegistry::all()).await {
 			error!("Failed to init app: {}", e);
 		}
-
-		info!("hooks: {}", puniyu_hook::HookRegistry::all().len());
 		let duration_str = format_duration(start_time.elapsed());
 		execute_hooks(StatusType::Start).await;
 
@@ -318,7 +316,6 @@ async fn init_app(
 		config_dir(),
 		resource_dir(),
 		plugin_dir(),
-		adapter_dir(),
 		puniyu_path::plugin::config_dir(),
 		puniyu_path::plugin::data_dir(),
 		puniyu_path::plugin::resource_dir(),
@@ -334,23 +331,31 @@ async fn init_app(
 
 	puniyu_task::init().await;
 
-	info!("plugin loading...");
-	for plugin in plugins {
-		if let Err(e) = plugin::init_plugin(plugin).await {
-			error!("Failed to register plugin: {}", e);
-		}
-	}
-	for loader in loaders {
-		if let Err(e) = loader::init_loader(loader).await {
-			error!("Failed to register loader: {}", e);
-		}
-	}
+	debug!("adapter loading...");
 	for adapter in adapters {
 		if let Err(e) = adapter::init_adapter(adapter).await {
 			error!("Failed to register adapter: {}", e);
 		}
 	}
-
+	debug!("adapter loaded!");
+	debug!("plugin loading...");
+	for plugin in plugins {
+		if let Err(e) = plugin::init_plugin(plugin).await {
+			error!("Failed to register plugin: {}", e);
+		}
+	}
+	debug!("plugin loaded!");
+	debug!("loader loading...");
+	for loader in loaders {
+		if let Err(e) = loader::init_loader(loader).await {
+			error!("Failed to register loader: {}", e);
+		}
+	}
+	debug!("loader loaded!");
+	info!("adapters: {}", puniyu_adapter_core::AdapterRegistry::all().len());
+	info!("plugins: {}", puniyu_plugin_core::PluginRegistry::all().len());
+	info!("handlers: {}", puniyu_handler::HandlerRegistry::all().len());
+	info!("hooks: {}", puniyu_hook::HookRegistry::all().len());
 	Ok(())
 }
 
@@ -365,7 +370,7 @@ fn print_start_log() {
 	}
 
 	println!("{} starting...", app_name.to_case(Case::Lower));
-	println!("Version: {}", *VERSION);
+	println!("Version: {}", VERSION);
 	println!("Git SHA: {}", env!("VERGEN_GIT_SHA"));
 	println!("Github: {}", env!("CARGO_PKG_REPOSITORY"));
 }

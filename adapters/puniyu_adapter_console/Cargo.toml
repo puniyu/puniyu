@@ -17,5 +17,5 @@ bytes.workspace = true
 puniyu_adapter.workspace = true
 tokio = { version = "1", features = ["signal", "sync"] }
 rand = "0.10.0"
-serde = { version = "1.0.228", features = ["derive"] }
+
 

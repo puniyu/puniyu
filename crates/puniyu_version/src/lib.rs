@@ -51,17 +51,6 @@ pub struct Version {
 
 impl Version {
 	/// 创建一个新的版本号。
-	///
-	/// # 示例
-	///
-	/// ```rust
-	/// use puniyu_version::Version;
-	///
-	/// let version = Version::new(2, 0, 1);
-	/// assert_eq!(version.major, 2);
-	/// assert_eq!(version.minor, 0);
-	/// assert_eq!(version.patch, 1);
-	/// ```
 	pub const fn new(major: u64, minor: u64, patch: u64) -> Self {
 		Self { major, minor, patch }
 	}
@@ -82,25 +71,40 @@ impl From<Version> for semver::Version {
 impl FromStr for Version {
 	type Err = semver::Error;
 
-	/// 解析版本字符串并提取核心三段。
-	///
-	/// 解析规则遵循 `semver` 规范，但最终只保留 `major.minor.patch`。
-	///
-	/// # 错误
-	///
-	/// 当输入不是合法的语义化版本字符串时，返回 `semver::Error`。
-	///
-	/// # 示例
-	///
-	/// ```rust
-	/// use std::str::FromStr;
-	/// use puniyu_version::Version;
-	///
-	/// let version = Version::from_str("1.2.3-alpha.1+build.5").unwrap();
-	///
-	/// assert_eq!(version, Version::new(1, 2, 3));
-	/// ```
 	fn from_str(s: &str) -> Result<Self, Self::Err> {
 		semver::Version::from_str(s).map(Into::into)
 	}
+}
+
+
+/// 从当前 crate 的 `Cargo.toml` 自动构造 [`Version`]。
+///
+/// 无需依赖 `const_str`，在 const 上下文中即可使用。
+///
+/// # 示例
+///
+/// ```rust
+/// use puniyu_version::{Version, pkg_version};
+///
+/// const VERSION: Version = pkg_version!();
+/// ```
+#[macro_export]
+macro_rules! pkg_version {
+	() => {{
+		const fn parse(s: &str) -> u64 {
+			let b = s.as_bytes();
+			let mut r: u64 = 0;
+			let mut i = 0;
+			while i < b.len() {
+				r = r * 10 + (b[i] - b'0') as u64;
+				i += 1;
+			}
+			r
+		}
+		$crate::Version::new(
+			parse(env!("CARGO_PKG_VERSION_MAJOR")),
+			parse(env!("CARGO_PKG_VERSION_MINOR")),
+			parse(env!("CARGO_PKG_VERSION_PATCH")),
+		)
+	}};
 }

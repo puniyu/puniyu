@@ -91,7 +91,7 @@ pub enum AdapterCommunication {
 }
 
 /// 适配器元信息。
-#[derive(Debug, Clone, PartialEq, Eq, Builder, Deserialize, Serialize)]
+#[derive(Debug, Clone, Builder, Deserialize, Serialize)]
 #[builder(setter(into))]
 pub struct AdapterInfo {
 	/// 适配器名称。
@@ -126,6 +126,23 @@ pub struct AdapterInfo {
 	pub secret: Option<String>,
 }
 
+impl PartialEq for AdapterInfo {
+	fn eq(&self, other: &Self) -> bool {
+		self.name == other.name
+			&& self.author == other.author
+			&& self.version == other.version
+			&& self.platform == other.platform
+			&& self.standard == other.standard
+			&& self.protocol == other.protocol
+			&& self.communication == other.communication
+			&& self.address == other.address
+			&& self.secret == other.secret
+			&& self.connect_time == other.connect_time
+	}
+}
+
+impl Eq for AdapterInfo {}
+
 impl Default for AdapterInfo {
 	fn default() -> Self {
 		AdapterInfoBuilder::default().build().expect("Failed to build AdapterInfo")
@@ -133,11 +150,11 @@ impl Default for AdapterInfo {
 }
 
 impl AdapterInfoBuilder {
-	fn default_version() -> Version {
+	const fn default_version() -> Version {
 		Version::new(0, 1, 0)
 	}
 	fn default_connect_time() -> DateTime<Utc> {
-		Utc::now()
+		DateTime::<Utc>::default()
 	}
 }
 

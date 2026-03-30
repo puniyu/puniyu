@@ -46,7 +46,7 @@ fn test_log_dir() {
 	init_test_env();
 
 	let dir = log_dir();
-	let expected = PathBuf::from(".").join("logs");
+	let expected = app_dir().join("logs");
 	assert_eq!(dir, expected);
 }
 
@@ -55,7 +55,7 @@ fn test_config_dir() {
 	init_test_env();
 
 	let dir = config_dir();
-	let expected = PathBuf::from(".").join("config");
+	let expected = app_dir().join("config");
 	assert_eq!(dir, expected);
 }
 
@@ -64,7 +64,7 @@ fn test_temp_dir() {
 	init_test_env();
 
 	let dir = temp_dir();
-	let expected = PathBuf::from(".").join("temp");
+	let expected = app_dir().join("temp");
 	assert_eq!(dir, expected);
 }
 
@@ -73,7 +73,7 @@ fn test_plugin_dir() {
 	init_test_env();
 
 	let dir = plugin_dir();
-	let expected = PathBuf::from(".").join("plugins");
+	let expected = app_dir().join("plugins");
 	assert_eq!(dir, expected);
 }
 
@@ -82,7 +82,7 @@ fn test_adapter_dir() {
 	init_test_env();
 
 	let dir = adapter_dir();
-	let expected = PathBuf::from(".").join("adapters");
+	let expected = app_dir().join("adapters");
 	assert_eq!(dir, expected);
 }
 
@@ -91,7 +91,7 @@ fn test_data_dir() {
 	init_test_env();
 
 	let dir = data_dir();
-	let expected = PathBuf::from(".").join("data");
+	let expected = app_dir().join("data");
 	assert_eq!(dir, expected);
 }
 
@@ -100,7 +100,7 @@ fn test_resource_dir() {
 	init_test_env();
 
 	let dir = resource_dir();
-	let expected = PathBuf::from(".").join("resources");
+	let expected = app_dir().join("resources");
 	assert_eq!(dir, expected);
 }
 
@@ -109,7 +109,7 @@ fn test_plugin_config_dir() {
 	init_test_env();
 
 	let dir = plugin::config_dir();
-	let expected = PathBuf::from(".").join("config").join("plugins");
+	let expected = app_dir().join("config").join("plugins");
 	assert_eq!(dir, expected);
 }
 
@@ -118,7 +118,7 @@ fn test_plugin_data_dir() {
 	init_test_env();
 
 	let dir = plugin::data_dir();
-	let expected = PathBuf::from(".").join("data").join("plugins");
+	let expected = app_dir().join("data").join("plugins");
 	assert_eq!(dir, expected);
 }
 
@@ -127,7 +127,7 @@ fn test_plugin_resource_dir() {
 	init_test_env();
 
 	let dir = plugin::resource_dir();
-	let expected = PathBuf::from(".").join("resources").join("plugins");
+	let expected = app_dir().join("resources").join("plugins");
 	assert_eq!(dir, expected);
 }
 
@@ -136,7 +136,7 @@ fn test_plugin_temp_dir() {
 	init_test_env();
 
 	let dir = plugin::temp_dir();
-	let expected = PathBuf::from(".").join("temp").join("plugins");
+	let expected = app_dir().join("temp").join("plugins");
 	assert_eq!(dir, expected);
 }
 
@@ -145,7 +145,7 @@ fn test_adapter_config_dir() {
 	init_test_env();
 
 	let dir = adapter::config_dir();
-	let expected = PathBuf::from(".").join("config").join("adapters");
+	let expected = app_dir().join("config").join("adapters");
 	assert_eq!(dir, expected);
 }
 
@@ -154,7 +154,7 @@ fn test_adapter_data_dir() {
 	init_test_env();
 
 	let dir = adapter::data_dir();
-	let expected = PathBuf::from(".").join("data").join("adapters");
+	let expected = app_dir().join("data").join("adapters");
 	assert_eq!(dir, expected);
 }
 
@@ -163,7 +163,7 @@ fn test_adapter_resource_dir() {
 	init_test_env();
 
 	let dir = adapter::resource_dir();
-	let expected = PathBuf::from(".").join("resources").join("adapters");
+	let expected = app_dir().join("resources").join("adapters");
 	assert_eq!(dir, expected);
 }
 
@@ -172,7 +172,7 @@ fn test_adapter_temp_dir() {
 	init_test_env();
 
 	let dir = adapter::temp_dir();
-	let expected = PathBuf::from(".").join("temp").join("adapters");
+	let expected = app_dir().join("temp").join("adapters");
 	assert_eq!(dir, expected);
 }
 

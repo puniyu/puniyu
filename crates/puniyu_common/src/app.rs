@@ -21,11 +21,11 @@ impl AppInfo {
 		Self { name, version, cwd_dir }
 	}
 
-	pub fn name(&self) -> &'static str {
+	pub const fn name(&self) -> &'static str {
 		self.name
 	}
 
-	pub fn version(&self) -> &'static Version {
+	pub const fn version(&self) -> &'static Version {
 		self.version
 	}
 

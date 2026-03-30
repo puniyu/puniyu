@@ -11,9 +11,13 @@ use puniyu_adapter::macros::*;
 use puniyu_adapter::sender::{Role, Sex};
 use puniyu_adapter::types::*;
 
+const VERSION: puniyu_adapter::Version = pkg_version!();
+
+#[inline]
 fn info() -> AdapterInfo {
 	adapter_info!(
 		name: env!("CARGO_PKG_NAME"),
+		version: VERSION,
 		platform: AdapterPlatform::Other,
 		standard: AdapterStandard::Other,
 		protocol: AdapterProtocol::Console,
@@ -43,7 +47,9 @@ async fn main() -> puniyu_adapter::Result {
 		let stdin = std::io::stdin();
 		for line in stdin.lock().lines() {
 			match line {
-				Ok(s) => { let _ = tx.send(s); }
+				Ok(s) => {
+					let _ = tx.send(s);
+				}
 				Err(_) => break,
 			}
 		}

@@ -8,6 +8,7 @@ use puniyu_hook::HookRegistry;
 use puniyu_hook::HookType;
 use puniyu_logger::error;
 
+/// Hook 处理器，将事件按优先级分发到所有匹配的已注册 Hook。
 pub struct HookHandler;
 
 #[async_trait]

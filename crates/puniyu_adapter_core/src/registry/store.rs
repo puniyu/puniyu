@@ -22,7 +22,7 @@ impl AdapterStore {
 	/// 插入适配器并返回内部索引。
 	pub fn insert(&self, adapter: Arc<dyn Adapter>) -> Result<u64, Error> {
 		let mut map = self.0.write().expect("Failed to acquire lock");
-		if map.values().any(|v| v == &adapter) {
+		if map.values().any(|v| v.as_ref() == adapter.as_ref()) {
 			return Err(Error::Exists("Adapter".to_string()));
 		}
 		let index = ADAPTER_INDEX.fetch_add(1, Ordering::SeqCst);
