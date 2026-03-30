@@ -21,14 +21,11 @@
 
 use bytes::Bytes;
 use puniyu_element::send::{
-	AtElement, FaceElement, FileElement, JsonElement, RecordElement, ReplyElement, TextElement,
-	VideoElement, XmlElement,
+	AtElement, Elements, FaceElement, FileElement, ImageElement, JsonElement, RecordElement,
+	ReplyElement, TextElement, VideoElement, XmlElement,
 };
 
 mod macros;
-
-#[doc(hidden)]
-pub use puniyu_element::send::{Elements, ImageElement};
 
 /// 消息段构建器。
 pub struct Segment;
@@ -65,12 +62,12 @@ impl Segment {
 	}
 
 	/// 创建图片元素。
-	pub fn image<N, S>(image: impl Into<Bytes>, name: N, summary: Option<S>) -> Elements
+	pub fn image<N, S>(image: impl Into<Bytes>, name: N, summary: S) -> Elements
 	where
 		N: Into<String>,
 		S: Into<String>,
 	{
-		let elem = ImageElement::new(image, name, summary.map(Into::into));
+		let elem = ImageElement::new(image, name, Some(summary.into()));
 		Elements::Image(elem)
 	}
 

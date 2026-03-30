@@ -23,7 +23,7 @@ impl<'h> HandlerRegistry {
 		let handler = handler.into();
 		match handler {
 			HandlerId::Index(index) => Self::unregister_with_index(index),
-			HandlerId::Name(name) => Self::unregister_with_handler_name(name),
+			HandlerId::Name(name) => Self::unregister_with_handler_name(name.as_ref()),
 		}
 	}
 	/// 按索引卸载处理器。
@@ -50,7 +50,7 @@ impl<'h> HandlerRegistry {
 		let handler = handler.into();
 		match handler {
 			HandlerId::Index(index) => Self::get_with_index(index),
-			HandlerId::Name(name) => Self::get_with_handler_name(name),
+			HandlerId::Name(name) => Self::get_with_handler_name(name.as_ref()),
 		}
 	}
 	/// 按索引获取处理器。

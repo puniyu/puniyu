@@ -5,9 +5,9 @@ use puniyu_adapter_types::{AdapterPlatform, AdapterProtocol, adapter_info};
 use puniyu_bot::Bot;
 use puniyu_contact::contact_friend;
 use puniyu_event::Event;
-use puniyu_event::request::{PrivateApply, PrivateApplyType, RequestBuilder, RequestEvent};
+use puniyu_event::request::{PrivateApply, PrivateApplyType, RequestEvent};
 use puniyu_handler::Handler;
-use puniyu_handler_command::CommandHandler;
+use puniyu_handler_command::Handler as CommandHandler;
 use puniyu_sender::{FriendSender, sender_friend};
 
 fn make_request_event() -> Event<'static> {
@@ -21,15 +21,7 @@ fn make_request_event() -> Event<'static> {
 		Box::leak(Box::new(sender_friend!(user_id: "123456", nick: "Alice")));
 	let content = Box::leak(Box::new(PrivateApplyType { message: "hello".to_string() }));
 
-	let request = PrivateApply::new(RequestBuilder {
-		bot,
-		event_id: "evt-1",
-		time: 0,
-		user_id: "123456",
-		contact,
-		sender,
-		content,
-	});
+	let request = PrivateApply::new(bot, "evt-1", "123456", contact, sender, 0, content);
 
 	Event::Request(Box::new(RequestEvent::PrivateApply(request)))
 }

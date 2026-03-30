@@ -1,6 +1,4 @@
-use proc_macro::TokenStream;
-use quote::quote;
-use syn::{ItemFn, parse_macro_input};
+
 
 pub fn server(item: TokenStream) -> TokenStream {
 	let item = parse_macro_input!(item as ItemFn);
@@ -34,18 +32,18 @@ pub fn server(item: TokenStream) -> TokenStream {
 						)
 			);
 
-			if !is_valid_type {
-				return syn::Error::new_spanned(
-					pat_type,
-					format!(
-						"function `{}` parameter must be of type `&mut ServiceConfig`, found `{}`",
-						fn_name,
-						quote::quote! { #ty }
-					),
-				)
-				.to_compile_error()
-				.into();
-			}
+			// if !is_valid_type {
+			// 	return syn::Error::new_spanned(
+			// 		pat_type,
+			// 		format!(
+			// 			"function `{}` parameter must be of type `&mut ServiceConfig`, found `{}`",
+			// 			fn_name,
+			// 			// quote::quote! { #ty }
+			// 		),
+			// 	)
+			// 	.to_compile_error()
+			// 	.into();
+			// }
 		} else {
 			return syn::Error::new_spanned(
 				first_param,

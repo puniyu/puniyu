@@ -1,4 +1,4 @@
-use crate::BotContext;
+use crate::{BotContext, EventArg};
 use puniyu_adapter_types::SendMsgType;
 use puniyu_bot::Bot;
 use puniyu_command_types::ArgValue;
@@ -9,7 +9,7 @@ use puniyu_event::message::{
 };
 use puniyu_event::{EventBase, EventType};
 use puniyu_message::Message;
-use std::collections::HashMap;
+
 
 /// 消息上下文
 ///
@@ -41,9 +41,9 @@ use std::collections::HashMap;
 /// ```
 #[derive(Clone)]
 pub struct MessageContext<'c> {
-	event: &'c MessageEvent<'c>,
-	bot: BotContext<'c>,
-	args: HashMap<String, ArgValue>,
+	_event: &'c MessageEvent<'c>,
+	_bot: BotContext<'c>,
+	_args: EventArg,
 }
 
 impl<'c> MessageContext<'c> {
@@ -59,42 +59,42 @@ impl<'c> MessageContext<'c> {
 	/// ```rust,ignore
 	/// let msg_context = MessageContext::new(&message_event, args);
 	/// ```
-	pub fn new(event: &'c MessageEvent, args: HashMap<String, ArgValue>) -> Self {
-		Self { event, bot: BotContext::new(event.bot()), args }
+	pub fn new(event: &'c MessageEvent, args: EventArg) -> Self {
+		Self { _event: event, _bot: BotContext::new(event.bot()), _args: args }
 	}
 
 	/// 获取内部消息事件
 	pub fn event(&self) -> &'c MessageEvent<'c> {
-		self.event
+		self._event
 	}
 
 	/// 判断当前消息是否为好友消息。
 	pub fn is_friend(&self) -> bool {
-		matches!(self.event, MessageEvent::Friend(_))
+		matches!(self._event, MessageEvent::Friend(_))
 	}
 
 	/// 判断当前消息是否为群消息。
 	pub fn is_group(&self) -> bool {
-		matches!(self.event, MessageEvent::Group(_))
+		matches!(self._event, MessageEvent::Group(_))
 	}
 
 	/// 获取当前消息关联的机器人上下文。
 	pub fn as_bot(&self) -> &BotContext<'_> {
-		&self.bot
+		&self._bot
 	}
 
 	/// 获取好友消息引用。
 	///
 	/// 如果当前消息为好友消息则返回 [`Some`]，否则返回 [`None`]。
 	pub fn as_friend(&self) -> Option<&FriendMessage<'_>> {
-		self.event.as_friend()
+		self._event.as_friend()
 	}
 
 	/// 获取群消息引用。
 	///
 	/// 如果当前消息为群消息则返回 [`Some`]，否则返回 [`None`]。
 	pub fn as_group(&self) -> Option<&GroupMessage<'_>> {
-		self.event.as_group()
+		self._event.as_group()
 	}
 
 	/// 向当前消息对应的联系人发送回复消息。
@@ -104,8 +104,8 @@ impl<'c> MessageContext<'c> {
 	where
 		M: Into<Message>,
 	{
-		let contact = self.event.contact();
-		self.bot.api().message().send_msg(&contact, &message.into()).await
+		let contact = self._event.contact();
+		self._bot.api().message().send_msg(&contact, &message.into()).await
 	}
 
 	/// 获取命令参数值
@@ -133,8 +133,8 @@ impl<'c> MessageContext<'c> {
 	///     println!("Count: {}", count);
 	/// }
 	/// ```
-	pub fn arg(&self, name: &str) -> Option<&ArgValue> {
-		self.args.get(name)
+	pub fn arg(&self, name: impl Into<String>) -> Option<&ArgValue> {
+		self._args.get(&name.into())
 	}
 
 	/// 判断当前消息发送者是否为 Bot Master。
@@ -152,48 +152,48 @@ impl<'c> EventBase for MessageContext<'c> {
 	type Sender = dyn puniyu_sender::Sender + 'c;
 
 	fn time(&self) -> u64 {
-		self.event.time()
+		self._event.time()
 	}
 
 	fn event_type(&self) -> &Self::EventType {
-		self.event.event_type()
+		self._event.event_type()
 	}
 	fn event_id(&self) -> &str {
-		self.event.event_id()
+		self._event.event_id()
 	}
 
 	fn sub_event(&self) -> &Self::SubEventType {
-		self.event.sub_event()
+		self._event.sub_event()
 	}
 
 	fn bot(&self) -> &Bot {
-		self.event.bot()
+		self._event.bot()
 	}
 
 	fn self_id(&self) -> &str {
-		self.event.self_id()
+		self._event.self_id()
 	}
 
 	fn user_id(&self) -> &str {
-		self.event.user_id()
+		self._event.user_id()
 	}
 
 	fn contact(&self) -> &Self::Contact {
-		EventBase::contact(self.event)
+		EventBase::contact(self._event)
 	}
 
 	fn sender(&self) -> &Self::Sender {
-		EventBase::sender(self.event)
+		EventBase::sender(self._event)
 	}
 }
 
 impl<'c> MessageBase for MessageContext<'c> {
 	fn message_id(&self) -> &str {
-		self.event.message_id()
+		self._event.message_id()
 	}
 
 	fn elements(&self) -> &Vec<Elements<'_>> {
-		self.event.elements()
+		self._event.elements()
 	}
 }
 

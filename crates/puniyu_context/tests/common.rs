@@ -11,7 +11,7 @@ use puniyu_context::{EventContext, MessageContext};
 use puniyu_element::receive::{AtElement, Elements, ReplyElement, TextElement};
 use puniyu_event::{
 	Event, EventBase,
-	message::{FriendMessage, MessageBase, MessageBuilder, MessageEvent},
+	message::{FriendMessage, MessageBase, MessageEvent},
 };
 use puniyu_sender::{Sender, sender_friend};
 use std::collections::HashMap;
@@ -76,16 +76,16 @@ pub fn leak_message_elements() -> &'static Vec<Elements<'static>> {
 }
 
 pub fn make_message_event(elements: &'static Vec<Elements<'static>>) -> MessageEvent<'static> {
-	MessageEvent::Friend(FriendMessage::new(MessageBuilder {
-		bot: leak_bot(),
-		event_id: "msg-event-1",
-		user_id: "123456",
-		contact: leak_contact(),
-		sender: leak_sender(),
-		time: 1,
-		message_id: "msg-1",
+	MessageEvent::Friend(FriendMessage::new(
+		leak_bot(),
+		"msg-event-1",
+		"123456",
+		leak_contact(),
+		leak_sender(),
+		1,
+		"msg-1",
 		elements,
-	}))
+	))
 }
 
 pub fn make_message_context() -> MessageContext<'static> {
@@ -98,5 +98,5 @@ pub fn make_event_context() -> EventContext<'static> {
 		leak_empty_elements(),
 	)))));
 
-	EventContext::new(event, Some(HashMap::<String, ArgValue>::new()))
+	EventContext::new(event)
 }

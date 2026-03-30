@@ -72,3 +72,9 @@ pub use bot::BotContext;
 mod event;
 #[doc(inline)]
 pub use event::*;
+
+use std::collections::HashMap;
+use puniyu_command_types::ArgValue;
+
+/// 命令参数映射类型。
+pub type EventArg = HashMap<String, ArgValue>;

@@ -119,7 +119,7 @@ impl<'t> TaskRegistry {
 		let task = task.into();
 		match task {
 			TaskId::Index(id) => Self::unregister_with_index(id).await,
-			TaskId::Name(name) => Self::unregister_with_task_name(name).await,
+			TaskId::Name(name) => Self::unregister_with_task_name(name.as_ref()).await,
 		}
 	}
 
@@ -220,7 +220,7 @@ impl<'t> TaskRegistry {
 		let task = task.into();
 		match task {
 			TaskId::Index(id) => Self::get_with_index(id).into_iter().collect(),
-			TaskId::Name(name) => Self::get_with_task_name(name),
+			TaskId::Name(name) => Self::get_with_task_name(name.as_ref()),
 		}
 	}
 

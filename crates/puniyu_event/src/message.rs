@@ -14,10 +14,8 @@ pub use event::MessageEvent;
 mod types;
 #[doc(inline)]
 pub use types::*;
-
 use super::EventBase;
 use bytes::Bytes;
-use puniyu_bot::Bot;
 use puniyu_element::receive::Elements;
 
 /// 消息基础 trait
@@ -148,31 +146,67 @@ pub trait MessageBase: Send + Sync + EventBase {
 	}
 }
 
-/// 消息构建器
-///
-/// 用于构建消息事件的辅助结构。
-#[derive(Debug)]
-pub struct MessageBuilder<'m, Contact, Sender>
-where
-	Contact: puniyu_contact::Contact,
-	Sender: puniyu_sender::Sender,
-{
-	/// 机器人实例
-	pub bot: &'m Bot,
-	/// 事件 ID
-	pub event_id: &'m str,
-	/// 用户 ID
-	pub user_id: &'m str,
-	/// 联系人信息
-	pub contact: &'m Contact,
-	/// 发送者信息
-	pub sender: &'m Sender,
-	/// 时间戳
-	pub time: u64,
-	/// 消息 ID
-	pub message_id: &'m str,
-	/// 消息元素列表
-	pub elements: &'m Vec<Elements<'m>>,
+/// 快速构建好友消息事件。
+#[macro_export]
+macro_rules! crate_friend_message {
+	(
+		bot: $bot:expr,
+		event_id: $event_id:expr,
+		user_id: $user_id:expr,
+		contact: $contact:expr,
+		sender: $sender:expr,
+		time: $time:expr,
+		message_id: $message_id:expr,
+		elements: $elements:expr $(,)?
+	) => {
+		$crate::message::FriendMessage::new(
+			$bot,
+			$event_id,
+			$user_id,
+			$contact,
+			$sender,
+			$time,
+			$message_id,
+			$elements,
+		)
+	};
+}
+
+/// 快速构建群消息事件。
+#[macro_export]
+macro_rules! crate_group_message {
+	(
+		bot: $bot:expr,
+		event_id: $event_id:expr,
+		user_id: $user_id:expr,
+		contact: $contact:expr,
+		sender: $sender:expr,
+		time: $time:expr,
+		message_id: $message_id:expr,
+		elements: $elements:expr $(,)?
+	) => {
+		$crate::message::GroupMessage::new(
+			$bot,
+			$event_id,
+			$user_id,
+			$contact,
+			$sender,
+			$time,
+			$message_id,
+			$elements,
+		)
+	};
+}
+
+/// 快速构建消息事件枚举。
+#[macro_export]
+macro_rules! create_message {
+	(Friend, $message:expr $(,)?) => {
+		$crate::message::MessageEvent::Friend($message)
+	};
+	(Group, $message:expr $(,)?) => {
+		$crate::message::MessageEvent::Group($message)
+	};	
 }
 
 /// 生成消息事件结构体及其 EventBase、MessageBase 实现
@@ -202,17 +236,27 @@ macro_rules! codegen_message {
 		}
 
 		impl<'m> $name<'m> {
-			#[doc = concat!("使用 [`crate::message::MessageBuilder`] 构建 [`", stringify!($name), "`]。")]
-			pub fn new(builder: super::MessageBuilder<'m, $contact<'m>, $sender<'m>>) -> Self {
+			#[doc = concat!("使用完整参数构建 [`", stringify!($name), "`]。")]
+			#[allow(clippy::too_many_arguments)]
+			pub fn new(
+				bot: &'m puniyu_bot::Bot,
+				event_id: &'m str,
+				user_id: &'m str,
+				contact: &'m $contact<'m>,
+				sender: &'m $sender<'m>,
+				time: u64,
+				message_id: &'m str,
+				elements: &'m Vec<puniyu_element::receive::Elements<'m>>,
+			) -> Self {
 				Self {
-					bot: builder.bot,
-					event_id: builder.event_id,
-					time: builder.time,
-					user_id: builder.user_id,
-					message_id: builder.message_id,
-					elements: builder.elements,
-					contact: builder.contact,
-					sender: builder.sender,
+					bot,
+					event_id,
+					time,
+					user_id,
+					message_id,
+					elements,
+					contact,
+					sender,
 				}
 			}
 		}

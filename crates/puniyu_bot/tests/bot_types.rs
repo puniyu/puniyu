@@ -9,7 +9,7 @@ fn test_bot_id_from_u64() {
 #[test]
 fn test_bot_id_from_str() {
 	let id: BotId = "123456".into();
-	assert!(matches!(id, BotId::SelfId("123456")));
+	assert_eq!(id, BotId::SelfId("123456".into()));
 }
 
 #[test]

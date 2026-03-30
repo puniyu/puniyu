@@ -16,7 +16,6 @@ mod types;
 pub use types::*;
 
 use super::EventBase;
-use puniyu_bot::Bot;
 
 /// 请求基础 trait
 ///
@@ -54,31 +53,6 @@ pub trait RequestBase: Send + Sync + EventBase {
 	fn content(&self) -> Self::Content;
 }
 
-/// 请求构建器
-///
-/// 用于构建请求事件的辅助结构。
-#[derive(Debug, Clone)]
-pub struct RequestBuilder<'r, Contact, Sender, Content>
-where
-	Contact: puniyu_contact::Contact,
-	Sender: puniyu_sender::Sender,
-{
-	/// 机器人实例
-	pub bot: &'r Bot,
-	/// 事件 ID
-	pub event_id: &'r str,
-	/// 时间戳
-	pub time: u64,
-	/// 用户 ID
-	pub user_id: &'r str,
-	/// 联系人信息
-	pub contact: &'r Contact,
-	/// 发送者信息
-	pub sender: &'r Sender,
-	/// 请求内容
-	pub content: &'r Content,
-}
-
 /// 生成请求事件结构体及其 EventBase、RequestBase 实现
 ///
 /// # 参数
@@ -108,17 +82,18 @@ macro_rules! codegen_request {
 		}
 
 		impl<'n> $name<'n> {
-			#[doc = concat!("使用 [`crate::request::RequestBuilder`] 构建 [`", stringify!($name), "`]。")]
-			pub fn new(builder: $crate::request::RequestBuilder<'n, $contact<'n>, $sender<'n>, $content>) -> Self {
-				Self {
-					bot: builder.bot,
-					event_id: builder.event_id,
-					time: builder.time,
-					user_id: builder.user_id,
-					contact: builder.contact,
-					sender: builder.sender,
-					content: builder.content,
-				}
+			#[doc = concat!("使用完整参数构建 [`", stringify!($name), "`]。")]
+			#[allow(clippy::too_many_arguments)]
+			pub fn new(
+				bot: &'n puniyu_bot::Bot,
+				event_id: &'n str,
+				user_id: &'n str,
+				contact: &'n $contact<'n>,
+				sender: &'n $sender<'n>,
+				time: u64,
+				content: &'n $content,
+			) -> Self {
+				Self { bot, event_id, time, user_id, contact, sender, content }
 			}
 		}
 

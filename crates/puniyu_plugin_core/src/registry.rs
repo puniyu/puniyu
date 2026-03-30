@@ -23,7 +23,7 @@ impl<'p> PluginRegistry {
 		let plugin_id = plugin.into();
 		match plugin_id {
 			PluginId::Index(index) => Self::unregister_with_index(index),
-			PluginId::Name(name) => Self::unregister_with_plugin_name(name),
+			PluginId::Name(name) => Self::unregister_with_plugin_name(name.as_ref()),
 		}
 	}
 
@@ -54,7 +54,7 @@ impl<'p> PluginRegistry {
 		let plugin_id = plugin.into();
 		match plugin_id {
 			PluginId::Index(index) => Self::get_with_index(index),
-			PluginId::Name(name) => Self::get_with_plugin_name(name),
+			PluginId::Name(name) => Self::get_with_plugin_name(name.as_ref()),
 		}
 	}
 

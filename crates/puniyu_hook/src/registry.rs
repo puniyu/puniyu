@@ -22,7 +22,7 @@ impl<'h> HookRegistry {
 		let hook = hook.into();
 		match hook {
 			HookId::Index(index) => Self::unregister_with_index(index),
-			HookId::Name(name) => Self::unregister_with_hook_name(name),
+			HookId::Name(name) => Self::unregister_with_hook_name(name.as_ref()),
 			HookId::Source(source) => Self::unregister_with_source(source),
 		}
 	}
@@ -53,7 +53,7 @@ impl<'h> HookRegistry {
 		let hook = hook.into();
 		match hook {
 			HookId::Index(index) => Self::get_with_index(index).into_iter().collect(),
-			HookId::Name(name) => Self::get_with_hook_name(name),
+			HookId::Name(name) => Self::get_with_hook_name(name.as_ref()),
 			HookId::Source(source) => Self::get_with_source(source),
 		}
 	}

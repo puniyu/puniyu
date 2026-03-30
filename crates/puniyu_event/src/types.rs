@@ -47,6 +47,7 @@ use strum::{Display, EnumString, IntoStaticStr};
 #[derive(
 	Debug,
 	Default,
+	Copy,
 	Clone,
 	EnumString,
 	Display,

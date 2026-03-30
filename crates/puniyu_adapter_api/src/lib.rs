@@ -81,6 +81,10 @@ impl PartialEq for AdapterApi {
 }
 
 impl AdapterApi {
+	pub fn builder() -> AdapterApiBuilder {
+		AdapterApiBuilder::default()
+	}
+
 	/// 使用指定子 API 创建实例。
 	pub fn new(
 		group_api: Arc<dyn GroupApi>,

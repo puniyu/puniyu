@@ -19,6 +19,7 @@ edition = "2024"
 rust-version = "1.88.0"
 
 [workspace.dependencies]
+log = { version = "0.4.28" }
 chrono = { version = "0.4.42", features = ["serde"] }
 tokio = { version = "1.47.1" }
 serde = { version = "1.0.228", features = ["derive"] }
@@ -80,7 +81,7 @@ puniyu_server = { version = "0.7.8", path = "./crates/puniyu_server", default-fe
 puniyu_task = { version = "0.7.8", path = "./crates/puniyu_task" }
 puniyu_hook = { version = "0.7.8", path = "./crates/puniyu_hook" }
 puniyu_handler = { version = "0.7.8", path = "./crates/puniyu_handler" }
-
+puniyu_handler_command = { version = "0.7.8", path = "./crates/puniyu_handler_command" }
 puniyu_plugin = { version = "0.7.8", path = "./crates/puniyu_plugin" }
 puniyu_plugin_core = { version = "0.7.8", path = "./crates/puniyu_plugin_core" }
 
@@ -89,6 +90,7 @@ puniyu_core = { version = "0.7.8", path = "./crates/puniyu_core" }
 puniyu_api = { version = "0.7.8", path = "./crates/puniyu_api" }
 puniyu_macros = { version = "0.7.8", path = "./crates/puniyu_macros", default-features = true }
 
+puniyu_adapter_console = { version = "0.7.8", path = "./adapters/puniyu_adapter_console" }
 
 [profile.release]
 lto = "thin"

@@ -58,7 +58,7 @@ pub trait Adapter: Send + Sync + 'static {
 	}
 
 	/// 获取钩子列表。
-	fn hooks(&self) -> Vec<Arc<dyn Hook>> {
+	fn hook(&self) -> Vec<Arc<dyn Hook>> {
 		Vec::new()
 	}
 

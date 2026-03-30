@@ -22,12 +22,12 @@ pub fn log(event: &MessageContext) {
 		.join("");
 	if let Some(event) = event.as_group() {
 		info!(
-			"[Bot:{}] [群消息:{}-{}] {}",
+			"[Bot:{}][群消息:{}-{}]: {}",
 			event.self_id(),
 			event.group_id(),
 			event.user_id(),
 			raw_message
 		);
 	}
-	info!("[Bot:{}] [好友消息:{}] {}", event.self_id(), event.user_id(), raw_message);
+	info!("[Bot:{}][好友消息:{}]: {}", event.self_id(), event.user_id(), raw_message);
 }

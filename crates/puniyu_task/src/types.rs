@@ -1,4 +1,5 @@
 use crate::Task;
+use std::borrow::Cow;
 #[cfg(feature = "registry")]
 use puniyu_logger::owo_colors::OwoColorize;
 #[cfg(feature = "registry")]
@@ -93,7 +94,7 @@ pub enum TaskId<'t> {
 	/// 任务索引 ID
 	Index(u64),
 	/// 任务名称
-	Name(&'t str),
+	Name(Cow<'t, str>),
 }
 
 impl From<u64> for TaskId<'_> {
@@ -104,6 +105,12 @@ impl From<u64> for TaskId<'_> {
 
 impl<'t> From<&'t str> for TaskId<'t> {
 	fn from(value: &'t str) -> Self {
-		Self::Name(value)
+		Self::Name(Cow::Borrowed(value))
+	}
+}
+
+impl From<String> for TaskId<'_> {
+	fn from(value: String) -> Self {
+		Self::Name(Cow::Owned(value))
 	}
 }

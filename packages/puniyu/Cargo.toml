@@ -13,8 +13,11 @@ rust-version.workspace = true
 [dependencies]
 bytes.workspace = true
 puniyu_core.workspace = true
+puniyu_adapter_console.workspace = true
+puniyu_handler_command.workspace = true
 
 tokio = { workspace = true, features = ["macros"] }
+
 [[bin]]
 name = "puniyu"
 path = "src/main.rs"

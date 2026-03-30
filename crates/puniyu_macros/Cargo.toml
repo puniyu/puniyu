@@ -14,20 +14,5 @@ rust-version.workspace = true
 proc-macro = true
 
 [dependencies]
-syn = { version = "2.0.106", features = ["full"] }
-proc-macro2 = { version = "1.0.101" }
-quote = { version = "1.0.40" }
 croner = { version = "3.0.0" }
-convert_case.workspace = true
-darling = "0.23.0"
-
-
-[features]
-default = ["plugin"]
-adapter = ["config", "hook", "server"]
-plugin = ["task", "command", "server", "config", "hook"]
-command = []
-task = []
-server = []
-config = []
-hook = []
+zyn = { version = "0.5.4",  features = ["pretty", "diagnostics"] }

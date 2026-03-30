@@ -6,7 +6,7 @@ pub fn get_bot<'b>(bot_id: impl Into<BotId<'b>>) -> Option<Bot> {
     let bot_id = bot_id.into();
     match bot_id {
         BotId::Index(id) => BotRegistry::get_with_index(id),
-        BotId::SelfId(name) => BotRegistry::get_with_bot_id(name),
+        BotId::SelfId(name) => BotRegistry::get_with_bot_id(name.as_ref()),
     }
 }
 

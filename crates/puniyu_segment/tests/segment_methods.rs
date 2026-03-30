@@ -56,7 +56,7 @@ fn test_segment_image_without_summary() {
 #[test]
 fn test_segment_image_with_summary() {
 	let image_data = Bytes::from("fake image data");
-	let element = Segment::image(image_data.clone(), "photo.jpg", Some("Beautiful scenery"));
+	let element = Segment::image(image_data.clone(), "photo.jpg", "Beautiful scenery");
 	let image_elem = element.as_image().expect("Expected Image element");
 
 	assert_eq!(image_elem.file, image_data);
@@ -159,7 +159,7 @@ fn test_segment_image_from_owned_strings() {
 	let element = Segment::image(
 		Bytes::from_static(b"image"),
 		String::from("owned.png"),
-		Some(String::from("owned summary")),
+		String::from("owned summary"),
 	);
 	let image_elem = element.as_image().expect("Expected Image element");
 

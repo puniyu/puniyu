@@ -1,56 +1,46 @@
+use zyn::{
+	ToTokens,
+	syn::{self, spanned::Spanned},
+};
+
+pub(crate) fn validate_async(fn_sig: &syn::Signature) -> syn::Result<()> {
+	if fn_sig.asyncness.is_none() {
+		return Err(syn::Error::new(fn_sig.span(), "function must be async"));
+	}
+
+	Ok(())
+}
+
 pub(crate) fn validate_return_type(
 	fn_sig: &syn::Signature,
-	expected_type: &str,
-) -> proc_macro2::TokenStream {
-	match &fn_sig.output {
-		syn::ReturnType::Type(_, return_type) => {
-			let type_matches = check_simple_type_match(return_type, expected_type);
+	expected: &str,
+) -> syn::Result<()> {
+	let expected = expected.replace(' ', "");
 
-			if !type_matches {
-				return syn::Error::new_spanned(
-					return_type,
-					format!("Function must return `{}` type", expected_type),
-				)
-				.to_compile_error();
+	match &fn_sig.output {
+		syn::ReturnType::Type(_, ty) => {
+			let is_expected = match ty.as_ref() {
+				syn::Type::Path(type_path) => {
+					let actual = type_path.path.to_token_stream().to_string().replace(' ', "");
+
+					actual == expected
+						|| actual == format!("::{expected}")
+				}
+				_ => false,
+			};
+
+			if is_expected {
+				Ok(())
+			} else {
+				Err(syn::Error::new(
+					ty.span(),
+					format!("function must return `{expected}`"),
+				))
 			}
 		}
-		syn::ReturnType::Default => {
-			return syn::Error::new_spanned(fn_sig, "Function must have an explicit return type")
-				.to_compile_error();
-		}
+		syn::ReturnType::Default => Err(syn::Error::new(
+			fn_sig.span(),
+			format!("function must return `{expected}`"),
+		)),
 	}
-
-	quote::quote! {}
-}
-
-fn check_simple_type_match(return_type: &syn::Type, expected_type: &str) -> bool {
-	if let syn::Type::Path(type_path) = return_type {
-		if let Some(segment) = type_path.path.segments.last()
-			&& segment.ident == expected_type
-		{
-			return true;
-		}
-
-		let full_path = type_path
-			.path
-			.segments
-			.iter()
-			.map(|seg| seg.ident.to_string())
-			.collect::<Vec<_>>()
-			.join("::");
-
-		if full_path.ends_with(expected_type) {
-			return true;
-		}
-	}
-
-	false
-}
-
-pub(crate) fn validate_async(fn_sig: &syn::Signature) -> proc_macro2::TokenStream {
-	if fn_sig.asyncness.is_none() {
-		return syn::Error::new_spanned(fn_sig, "Function must be async").to_compile_error();
-	}
-
-	quote::quote! {}
 }

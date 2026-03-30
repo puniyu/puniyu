@@ -25,7 +25,7 @@ impl<'a> AdapterRegistry {
 		let adapter = adapter.into();
 		match adapter {
 			AdapterId::Index(index) => Self::unregister_with_index(index),
-			AdapterId::Name(name) => Self::unregister_with_adapter_name(name),
+			AdapterId::Name(name) => Self::unregister_with_adapter_name(name.as_ref()),
 		}
 	}
 
@@ -59,7 +59,7 @@ impl<'a> AdapterRegistry {
 		let adapter = adapter.into();
 		match adapter {
 			AdapterId::Index(index) => Self::get_with_index(index).into_iter().collect(),
-			AdapterId::Name(name) => Self::get_with_adapter_name(name),
+			AdapterId::Name(name) => Self::get_with_adapter_name(name.as_ref()),
 		}
 	}
 

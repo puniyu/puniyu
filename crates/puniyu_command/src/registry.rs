@@ -28,7 +28,7 @@ impl<'c> CommandRegistry {
 		let command = command.into();
 		match command {
 			CommandId::Id(v) => Self::unregister_with_index(v),
-			CommandId::Name(v) => Self::unregister_with_command_name(v),
+			CommandId::Name(v) => Self::unregister_with_command_name(v.as_ref()),
 		}
 	}
 
@@ -73,7 +73,7 @@ impl<'c> CommandRegistry {
 		let command = command.into();
 		match command {
 			CommandId::Id(v) => Self::get_with_command_id(v).into_iter().collect(),
-			CommandId::Name(v) => Self::get_with_command_name(v),
+			CommandId::Name(v) => Self::get_with_command_name(v.as_ref()),
 		}
 	}
 

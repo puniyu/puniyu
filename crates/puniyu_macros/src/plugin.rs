@@ -1,42 +1,31 @@
-#[cfg(feature = "command")]
 mod command;
 
-#[cfg(feature = "command")]
 pub use command::command;
-#[cfg(feature = "task")]
+
 mod task;
-#[cfg(feature = "task")]
 pub use task::task;
-#[cfg(feature = "config")]
 mod config;
-#[cfg(feature = "config")]
 pub use config::config;
-#[cfg(feature = "server")]
 mod server;
-#[cfg(feature = "server")]
 pub use server::server;
-#[cfg(feature = "hook")]
 mod hook;
-#[cfg(feature = "hook")]
 pub use hook::hook;
 
-#[cfg(feature = "plugin")]
-#[derive(Debug, Default, darling::FromMeta)]
+// #[derive(Debug, Default, darling::FromMeta)]
 struct PluginArg {
 	pub desc: Option<String>,
 	pub prefix: Option<String>,
 }
 
-#[cfg(feature = "plugin")]
 pub fn plugin(
 	args: proc_macro::TokenStream,
 	item: proc_macro::TokenStream,
 ) -> proc_macro::TokenStream {
-	use darling::ast::NestedMeta;
-	use darling::{Error, FromMeta};
-	use proc_macro2::Ident;
-	use quote::quote;
-	use syn::{ItemFn, parse_macro_input};
+	// use darling::ast::NestedMeta;
+	// use darling::{Error, FromMeta};
+	// use proc_macro2::Ident;
+	// use quote::quote;
+	// use syn::{ItemFn, parse_macro_input};
 	let attr_args = match NestedMeta::parse_meta_list(args.into()) {
 		Ok(v) => v,
 		Err(e) => return proc_macro::TokenStream::from(Error::from(e).write_errors()),

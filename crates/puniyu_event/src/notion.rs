@@ -16,8 +16,6 @@ mod types;
 pub use types::*;
 
 use super::EventBase;
-use puniyu_bot::Bot;
-use serde::Deserialize;
 
 /// 通知基础 trait
 ///
@@ -55,31 +53,6 @@ pub trait NotionBase: Send + Sync + EventBase {
 	fn content(&self) -> Self::Content;
 }
 
-/// 通知构建器
-///
-/// 用于构建通知事件的辅助结构。
-pub struct NotionBuilder<'n, Contact, Sender, Content>
-where
-	Contact: puniyu_contact::Contact,
-	Sender: puniyu_sender::Sender,
-	Content: Deserialize<'n>,
-{
-	/// 机器人实例
-	pub bot: &'n Bot,
-	/// 事件 ID
-	pub event_id: &'n str,
-	/// 时间戳
-	pub time: u64,
-	/// 用户 ID
-	pub user_id: &'n str,
-	/// 联系人信息
-	pub contact: &'n Contact,
-	/// 发送者信息
-	pub sender: &'n Sender,
-	/// 通知内容
-	pub content: &'n Content,
-}
-
 /// 生成通知事件结构体及其 EventBase、NotionBase 实现
 ///
 /// # 参数
@@ -109,17 +82,18 @@ macro_rules! codegen_notion {
 		}
 
 		impl<'n> $name<'n> {
-			#[doc = concat!("使用 [`crate::notion::NotionBuilder`] 构建 [`", stringify!($name), "`]。")]
-			pub fn new(builder: $crate::notion::NotionBuilder<'n, $contact<'n>, $sender<'n>, $content>) -> Self {
-				Self {
-					bot: builder.bot,
-					event_id: builder.event_id,
-					time: builder.time,
-					user_id: builder.user_id,
-					contact: builder.contact,
-					sender: builder.sender,
-					content: builder.content,
-				}
+			#[doc = concat!("使用完整参数构建 [`", stringify!($name), "`]。")]
+			#[allow(clippy::too_many_arguments)]
+			pub fn new(
+				bot: &'n puniyu_bot::Bot,
+				event_id: &'n str,
+				user_id: &'n str,
+				contact: &'n $contact<'n>,
+				sender: &'n $sender<'n>,
+				time: u64,
+				content: &'n $content,
+			) -> Self {
+				Self { bot, event_id, time, user_id, contact, sender, content }
 			}
 		}
 

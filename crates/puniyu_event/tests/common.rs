@@ -9,9 +9,9 @@ use puniyu_contact::{Contact, contact_friend};
 use puniyu_element::receive::Elements;
 use puniyu_event::{
 	Event, EventBase,
-	message::{FriendMessage, MessageBase, MessageBuilder, MessageEvent},
-	notion::{NotionBase, NotionBuilder, NotionEvent, ReceiveLike, ReceiveLikeType},
-	request::{PrivateApply, PrivateApplyType, RequestBase, RequestBuilder, RequestEvent},
+	message::{FriendMessage, MessageBase, MessageEvent},
+	notion::{NotionBase, NotionEvent, ReceiveLike, ReceiveLikeType},
+	request::{PrivateApply, PrivateApplyType, RequestBase, RequestEvent},
 };
 use puniyu_sender::{Sender, sender_friend};
 
@@ -19,7 +19,6 @@ pub fn make_bot() -> Bot {
 	let adapter = adapter_info!("console", AdapterPlatform::QQ, AdapterProtocol::Console);
 	let account =
 		AccountInfo { uin: "10000".to_string(), name: "Puniyu".to_string(), avatar: Bytes::new() };
-
 	Bot::new(adapter, AdapterApi::default(), account)
 }
 
@@ -84,44 +83,44 @@ pub fn leak_empty_elements() -> &'static Vec<Elements<'static>> {
 }
 
 pub fn make_message_event() -> MessageEvent<'static> {
-	MessageEvent::Friend(FriendMessage::new(MessageBuilder {
-		bot: leak_bot(),
-		event_id: "msg-event-1",
-		user_id: "123456",
-		contact: leak_contact(),
-		sender: leak_sender(),
-		time: 1,
-		message_id: "msg-1",
-		elements: leak_empty_elements(),
-	}))
+	MessageEvent::Friend(FriendMessage::new(
+		leak_bot(),
+		"msg-event-1",
+		"123456",
+		leak_contact(),
+		leak_sender(),
+		1,
+		"msg-1",
+		leak_empty_elements(),
+	))
 }
 
 pub fn make_notion_event() -> NotionEvent<'static> {
 	let content = Box::leak(Box::new(ReceiveLikeType { count: 1 }));
 
-	NotionEvent::ReceiveLike(ReceiveLike::new(NotionBuilder {
-		bot: leak_bot(),
-		event_id: "notion-event-1",
-		time: 2,
-		user_id: "123456",
-		contact: leak_contact(),
-		sender: leak_sender(),
+	NotionEvent::ReceiveLike(ReceiveLike::new(
+		leak_bot(),
+		"notion-event-1",
+		"123456",
+		leak_contact(),
+		leak_sender(),
+		2,
 		content,
-	}))
+	))
 }
 
 pub fn make_request_event() -> RequestEvent<'static> {
 	let content = Box::leak(Box::new(PrivateApplyType { message: "hello".to_string() }));
 
-	RequestEvent::PrivateApply(PrivateApply::new(RequestBuilder {
-		bot: leak_bot(),
-		event_id: "request-event-1",
-		time: 3,
-		user_id: "123456",
-		contact: leak_contact(),
-		sender: leak_sender(),
+	RequestEvent::PrivateApply(PrivateApply::new(
+		leak_bot(),
+		"request-event-1",
+		"123456",
+		leak_contact(),
+		leak_sender(),
+		3,
 		content,
-	}))
+	))
 }
 
 pub fn make_event_message() -> Event<'static> {

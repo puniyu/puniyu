@@ -1,8 +1,8 @@
-use darling::ast::NestedMeta;
-use darling::{Error, FromMeta};
-use proc_macro::TokenStream;
-use quote::quote;
-use syn::{ItemStruct, parse_macro_input};
+// use darling::ast::NestedMeta;
+// use darling::{Error, FromMeta};
+// use proc_macro::TokenStream;
+// use quote::quote;
+// use syn::{ItemStruct, parse_macro_input};
 
 #[derive(Debug, FromMeta)]
 struct ConfigArgs {
@@ -25,7 +25,7 @@ pub fn config(args: TokenStream, item: TokenStream) -> TokenStream {
 	let config_name = match args.name {
 		Some(name) => quote! { #name },
 		None => {
-			use convert_case::{Case, Casing};
+			// use convert_case::{Case, Casing};
 			let name = struct_name.to_string().to_case(Case::Lower);
 			quote! { #name }
 		}

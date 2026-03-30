@@ -1,10 +1,10 @@
-use convert_case::{Case, Casing};
-use darling::ast::NestedMeta;
-use darling::{Error, FromMeta};
-use proc_macro::TokenStream;
-use proc_macro2::Ident;
-use quote::quote;
-use syn::{ItemFn, parse_macro_input};
+// use convert_case::{Case, Casing};
+// use darling::ast::NestedMeta;
+// use darling::{Error, FromMeta};
+// use proc_macro::TokenStream;
+// use proc_macro2::Ident;
+// use quote::quote;
+// use syn::{ItemFn, parse_macro_input};
 
 #[derive(FromMeta)]
 struct HookArg {
@@ -86,18 +86,18 @@ pub fn hook(args: TokenStream, item: TokenStream) -> TokenStream {
 			_ => false,
 		};
 
-		if !is_valid_type {
-			return syn::Error::new_spanned(
-				pat_type,
-				format!(
-					"function `{}` parameter must be of type `Option<&Event>`, found `{}`",
-					fn_name,
-					quote::quote! { #ty }
-				),
-			)
-			.to_compile_error()
-			.into();
-		}
+		// if !is_valid_type {
+		// 	return syn::Error::new_spanned(
+		// 		pat_type,
+		// 		format!(
+		// 			"function `{}` parameter must be of type `Option<&Event>`, found `{}`",
+		// 			fn_name,
+		// 			quote::quote! { #ty }
+		// 		),
+		// 	)
+		// 	.to_compile_error()
+		// 	.into();
+		// }
 	} else {
 		return syn::Error::new_spanned(
 			first_param,

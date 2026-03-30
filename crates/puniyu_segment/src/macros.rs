@@ -24,10 +24,10 @@ macro_rules! segment {
         $crate::Segment::text($text)
     };
     (image, $file:expr, $file_name:expr) => {
-        $crate::Elements::Image($crate::ImageElement::new($file, $file_name, None))
+        $crate::Segment::image_without_summary($file, $file_name)
     };
     (image, $file:expr, $file_name:expr, $summary:expr) => {
-        $crate::Segment::image($file, $file_name, Some($summary))
+        $crate::Segment::image($file, $file_name, $summary)
     };
     (reply, $message_id:expr) => {
         $crate::Segment::reply($message_id)
