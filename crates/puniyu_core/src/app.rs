@@ -333,16 +333,12 @@ async fn init_app(
 
 	debug!("adapter loading...");
 	for adapter in adapters {
-		if let Err(e) = adapter::init_adapter(adapter).await {
-			error!("Failed to register adapter: {}", e);
-		}
+		adapter::init_adapter(adapter).await
 	}
 	debug!("adapter loaded!");
 	debug!("plugin loading...");
 	for plugin in plugins {
-		if let Err(e) = plugin::init_plugin(plugin).await {
-			error!("Failed to register plugin: {}", e);
-		}
+		plugin::init_plugin(plugin).await
 	}
 	debug!("plugin loaded!");
 	debug!("loader loading...");

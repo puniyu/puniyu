@@ -123,7 +123,6 @@ impl CommandHandler {
 			.sorted_by_key(|cmd| cmd.builder.priority());
 
 		for command in commands {
-			let plugin_id = &command.plugin_id;
 			let start_time = std::time::Instant::now();
 			info!("[{}] 开始执行", format!("command:{}", command_name).yellow());
 
@@ -131,7 +130,7 @@ impl CommandHandler {
 
 			info!(
 				"[{}] 执行完毕, 耗时{}ms",
-				format!("command:{}:{}", plugin_id, command_name).yellow(),
+				format!("command:{}", command_name).yellow(),
 				start_time.elapsed().as_millis()
 			);
 

@@ -14,7 +14,7 @@ pub fn adapter(item: zyn::syn::ItemFn, cfg: AdapterArgs) -> zyn::TokenStream {
 		return err.to_compile_error();
 	}
 
-	let adapter_name = zyn! { ::std::env!("CARGO_PKG_NAME") };
+	let adapter_name = zyn! { env!("CARGO_PKG_NAME") };
 	let fn_name = &item.sig.ident;
 	let init_impl = if item.block.stmts.is_empty() {
 		zyn! {}

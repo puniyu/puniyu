@@ -24,3 +24,41 @@ pub(crate) struct HookArgs {
 	#[zyn(default = "500")]
 	pub priority: Option<u32>,
 }
+
+#[derive(zyn::Attribute)]
+#[zyn("plugin")]
+pub(crate) struct PluginArg {
+	pub desc: Option<String>,
+	pub prefix: Option<String>,
+	pub server: Option<zyn::syn::Expr>	
+}
+
+#[derive(zyn::Attribute)]
+#[zyn("task")]
+pub(crate) struct TaskArgs {
+	pub name: Option<String>,
+	pub cron: String,
+}
+
+
+#[derive(zyn::Attribute)]
+#[zyn("arg")]
+pub(crate) struct ArgType {
+	pub name: String,
+	#[zyn("type")]
+	pub arg_type: Option<String>,
+	pub mode: Option<String>,
+	pub required: Option<bool>,
+	pub desc: Option<String>,
+}
+
+#[derive(zyn::Attribute)]
+#[zyn("command")]
+pub(crate) struct CommandArgs {
+	pub name: String,
+	pub priority: Option<u32>,
+	pub desc: Option<String>,
+	pub alias: Option<Vec<zyn::syn::LitStr>>,
+	#[zyn(default = "all")]
+	pub permission: Option<String>,
+}

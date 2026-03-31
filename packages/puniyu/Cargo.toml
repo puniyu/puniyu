@@ -15,7 +15,7 @@ bytes.workspace = true
 puniyu_core.workspace = true
 puniyu_adapter_console.workspace = true
 puniyu_handler_command.workspace = true
-
+puniyu_plugin_basic.workspace = true
 tokio = { workspace = true, features = ["macros"] }
 
 [[bin]]

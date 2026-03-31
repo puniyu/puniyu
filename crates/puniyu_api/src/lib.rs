@@ -8,7 +8,6 @@ pub mod event;
 pub mod hook;
 pub mod message;
 pub mod path;
-pub mod plugin;
 pub mod segment;
 pub mod sender;
 pub mod server;

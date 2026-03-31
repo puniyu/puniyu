@@ -1,6 +1,6 @@
 use crate::{
 	HookArgs,
-	common::{validate_async, validate_return_type},
+	common::{validate_async, validate_hook_args, validate_return_type},
 };
 use zyn::{ToTokens, syn::spanned::Spanned, zyn};
 
@@ -9,13 +9,16 @@ pub fn hook(item: zyn::syn::ItemFn, cfg: HookArgs) -> zyn::TokenStream {
 	if let Err(err) = validate_async(&fn_sig) {
 		return err.to_compile_error();
 	}
+	if let Err(err) = validate_hook_args(&fn_sig) {
+		return err.to_compile_error();
+	}
 	if let Err(err) = validate_return_type(&fn_sig, "puniyu_adapter::Result") {
 		return err.to_compile_error();
 	}
 
 	let fn_name = &fn_sig.ident;
 	let struct_name = zyn! {{ fn_name | fmt: "{}Hook" | pascal }};
-	let adapter_name = zyn! { ::std::env!("CARGO_PKG_NAME") };
+	let adapter_name = zyn! { env!("CARGO_PKG_NAME") };
 	let hook_name = match &cfg.name {
 		Some(name) => zyn! { {{ name | str }} },
 		_ => zyn! { {{ fn_name | lower | str }} },
@@ -114,7 +117,7 @@ pub fn hook(item: zyn::syn::ItemFn, cfg: HookArgs) -> zyn::TokenStream {
 	};
 
 	zyn! {
-		#item
+		{{ item }}
 
 		struct {{ struct_name }};
 
@@ -137,7 +140,7 @@ pub fn hook(item: zyn::syn::ItemFn, cfg: HookArgs) -> zyn::TokenStream {
 				&self,
 				event: Option<&Event>,
 			) -> ::puniyu_adapter::Result {
-				#fn_name(event).await
+				{{ fn_name }}(event).await
 			}
 		}
 
@@ -145,7 +148,7 @@ pub fn hook(item: zyn::syn::ItemFn, cfg: HookArgs) -> zyn::TokenStream {
 			crate::HookRegistry {
 				adapter_name: {{ adapter_name }},
 				builder: || -> ::std::sync::Arc<dyn ::puniyu_adapter::__private::Hook> {
-					::std::sync::Arc::new(#struct_name {})
+					::std::sync::Arc::new({{ struct_name }} {})
 				}
 			}
 		}

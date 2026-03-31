@@ -16,20 +16,10 @@ pub fn config(item: zyn::syn::ItemStruct, cfg: ConfigArgs) -> zyn::TokenStream {
 		None => zyn! { {{ struct_name | snake | fmt: "Failed to serialize {} to TOML string" }}},
 	};
 
-	let adapter_name = zyn! { ::std::env!("CARGO_PKG_NAME") };
+	let adapter_name = zyn! { env!("CARGO_PKG_NAME") };
 
 	zyn! {
 		{{ item }}
-
-		const _: () = {
-			fn assert_config_traits<T>()
-			where
-				T: ::std::default::Default,
-			{
-			}
-
-			let _ = assert_config_traits::<{{ struct_name }}>;
-		};
 
 		impl ::puniyu_adapter::__private::Config for {{ struct_name }} {
 			fn config(&self) -> ::puniyu_adapter::__private::ConfigInfo {

@@ -1,10 +1,10 @@
 mod adapter;
 mod common;
-// mod plugin;
+mod plugin;
 mod types;
 pub(crate) use types::*;
 
-use zyn::syn::spanned::Spanned;
+use zyn::{ToTokens, syn::spanned::Spanned};
 
 #[zyn::attribute]
 pub fn adapter_config(
@@ -102,30 +102,35 @@ pub fn adapter(#[zyn(input)] item: zyn::syn::ItemFn, args: zyn::Args) -> proc_ma
 	adapter::adapter(item, cfg)
 }
 
-// #[proc_macro_attribute]
-// pub fn plugin_config(
-// 	args: proc_macro::TokenStream,
-// 	item: proc_macro::TokenStream,
-// ) -> proc_macro::TokenStream {
-// 	// plugin::config(args, item)
-// 	item
-// }
+#[zyn::attribute(debug(pretty))]
+pub fn plugin(#[zyn(input)] item: zyn::syn::ItemFn, args: zyn::Args) -> proc_macro::TokenStream {
+	let cfg = match PluginArg::from_args(&args) {
+		Ok(cfg) => cfg,
+		Err(err) => bail!("{err}"),
+	};
+	plugin::plugin(item, cfg)
+}
 
-// #[proc_macro_attribute]
-// pub fn plugin(
-// 	args: proc_macro::TokenStream,
-// 	item: proc_macro::TokenStream,
-// ) -> proc_macro::TokenStream {
-// 	plugin::plugin(args, item)
-// }
+#[zyn::attribute(debug(pretty))]
+pub fn plugin_config(
+	#[zyn(input)] item: zyn::syn::ItemStruct,
+	args: zyn::Args,
+) -> proc_macro::TokenStream {
+	let cfg = match ConfigArgs::from_args(&args) {
+		Ok(cfg) => cfg,
+		Err(err) => bail!("{err}"),
+	};
+	plugin::config(item, cfg)
+}
 
-// #[proc_macro_attribute]
-// pub fn command(
-// 	args: proc_macro::TokenStream,
-// 	item: proc_macro::TokenStream,
-// ) -> proc_macro::TokenStream {
-// 	plugin::command(args, item)
-// }
+#[zyn::attribute(debug(pretty))]
+pub fn command(#[zyn(input)] item: zyn::syn::ItemFn, cfg: zyn::Args) -> proc_macro::TokenStream {
+	let cfg = match CommandArgs::from_args(&cfg) {
+		Ok(cfg) => cfg,
+		Err(err) => bail!("{err}"),
+	};
+	plugin::command(item, cfg)
+}
 
 /// 命令参数宏
 ///
@@ -243,34 +248,28 @@ pub fn adapter(#[zyn(input)] item: zyn::syn::ItemFn, args: zyn::Args) -> proc_ma
 ///     Ok(().into())
 /// }
 /// ```
-#[proc_macro_attribute]
-pub fn arg(
-	_args: proc_macro::TokenStream,
-	item: proc_macro::TokenStream,
-) -> proc_macro::TokenStream {
-	item
+#[zyn::attribute(debug(pretty))]
+pub fn arg(#[zyn(input)] item: zyn::syn::ItemFn) -> proc_macro::TokenStream {
+	item.to_token_stream()
 }
 
-// #[proc_macro_attribute]
-// pub fn task(
-// 	args: proc_macro::TokenStream,
-// 	item: proc_macro::TokenStream,
-// ) -> proc_macro::TokenStream {
-// 	plugin::task(args, item)
-// }
+#[zyn::attribute(debug(pretty))]
+pub fn task(#[zyn(input)] item: zyn::syn::ItemFn, args: zyn::Args) -> proc_macro::TokenStream {
+	let cfg = match TaskArgs::from_args(&args) {
+		Ok(cfg) => cfg,
+		Err(err) => bail!("{err}"),
+	};
+	plugin::task(item, cfg)
+}
 
-// #[proc_macro_attribute]
-// pub fn server(
-// 	_args: proc_macro::TokenStream,
-// 	item: proc_macro::TokenStream,
-// ) -> proc_macro::TokenStream {
-// 	plugin::server(item)
-// }
-
-// #[proc_macro_attribute]
-// pub fn plugin_hook(
-// 	args: proc_macro::TokenStream,
-// 	item: proc_macro::TokenStream,
-// ) -> proc_macro::TokenStream {
-// 	plugin::hook(args, item)
-// }
+#[zyn::attribute(debug(pretty))]
+pub fn plugin_hook(
+	#[zyn(input)] item: zyn::syn::ItemFn,
+	args: zyn::Args,
+) -> proc_macro::TokenStream {
+	let cfg = match HookArgs::from_args(&args) {
+		Ok(cfg) => cfg,
+		Err(err) => bail!("{err}"),
+	};
+	plugin::hook(item, cfg)
+}

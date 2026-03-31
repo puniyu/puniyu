@@ -1,10 +1,10 @@
-use puniyu_plugin_core::PluginId;
+pub use puniyu_plugin_core::PluginId;
 use puniyu_version::Version;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct PluginInfo<'p> {
 	pub name: &'p str,
-	pub author: Option<&'p str>,
+	pub author: Vec<&'p str>,
 	pub description: Option<&'p str>,
 	pub version: Version,
 }

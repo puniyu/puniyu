@@ -1712,6 +1712,7 @@ dependencies = [
  "puniyu_adapter_console",
  "puniyu_core",
  "puniyu_handler_command",
+ "puniyu_plugin_basic",
  "tokio",
 ]
 
@@ -2140,8 +2141,34 @@ dependencies = [
 name = "puniyu_plugin"
 version = "0.7.8"
 dependencies = [
+ "actix-web",
+ "async-trait",
+ "puniyu_account",
  "puniyu_api",
+ "puniyu_command",
+ "puniyu_command_types",
+ "puniyu_config",
+ "puniyu_contact",
  "puniyu_error",
+ "puniyu_hook",
+ "puniyu_macros",
+ "puniyu_message",
+ "puniyu_plugin_core",
+ "puniyu_segment",
+ "puniyu_sender",
+ "puniyu_server",
+ "puniyu_task",
+ "puniyu_version",
+ "toml",
+]
+
+[[package]]
+name = "puniyu_plugin_basic"
+version = "0.7.8"
+dependencies = [
+ "puniyu_common",
+ "puniyu_plugin",
+ "puniyu_system_info",
 ]
 
 [[package]]
@@ -2150,6 +2177,7 @@ version = "0.7.8"
 dependencies = [
  "async-trait",
  "puniyu_command",
+ "puniyu_common",
  "puniyu_config",
  "puniyu_error",
  "puniyu_hook",

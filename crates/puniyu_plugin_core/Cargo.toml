@@ -18,6 +18,7 @@ puniyu_error.workspace = true
 puniyu_version.workspace = true
 puniyu_hook.workspace = true
 puniyu_config.workspace = true
+puniyu_common.workspace = true
 puniyu_command.workspace = true
 puniyu_task.workspace = true
 puniyu_server.workspace = true

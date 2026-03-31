@@ -54,6 +54,10 @@ impl Version {
 	pub const fn new(major: u64, minor: u64, patch: u64) -> Self {
 		Self { major, minor, patch }
 	}
+
+	pub fn parse(s: &str) -> Result<Self, semver::Error> {
+		Ok(Self::from(semver::Version::parse(s)?))
+	}
 }
 
 impl From<semver::Version> for Version {

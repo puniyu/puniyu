@@ -22,11 +22,16 @@ pub trait Plugin: Send + Sync + 'static {
 	fn name(&self) -> &'static str;
 	/// 插件版本
 	fn version(&self) -> Version;
+
+	/// 插件 ABI 版本
+	fn abi_version(&self) -> Version {
+		*puniyu_common::app::app_version()
+	}
 	/// 插件描述
 	fn description(&self) -> Option<&'static str>;
 	/// 插件作者
-	fn author(&self) -> Option<&'static str> {
-		None
+	fn author(&self) -> Vec<&'static str> {
+		vec![]
 	}
 
 	/// 插件命令前缀

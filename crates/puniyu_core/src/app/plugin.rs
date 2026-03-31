@@ -5,27 +5,55 @@ use puniyu_logger::error;
 use puniyu_plugin_core::Plugin;
 use puniyu_task::Task;
 use std::sync::Arc;
+use tokio::fs::create_dir_all;
+use puniyu_path::plugin::*;
 
-pub async fn init_plugin(plugin: Arc<dyn Plugin>) -> Result<(), Error> {
+pub async fn init_plugin(plugin: Arc<dyn Plugin>) {
 	use puniyu_plugin_core::PluginRegistry;
+	let name = plugin.name();
 	let hooks = plugin.hooks();
 	let commands = plugin.commands();
 	let tasks = plugin.tasks();
 	#[cfg(feature = "server")]
 	let servers = plugin.server();
-	let index = PluginRegistry::register(plugin)?;
+	let index = match PluginRegistry::register(Arc::clone(&plugin)) {
+		Ok(index) => index,
+		Err(e) => {
+			return error!("Failed to register plugin: {:?}", e);
+		}
+	};
 	let source = SourceType::Plugin(index);
-	super::hook::init_hook(source, hooks)?;
-	init_command(index, commands)?;
-	init_task(index, tasks).await?;
+	if let Err(e) = super::hook::init_hook(source, hooks) {
+		error!("Failed to register hook for plugin: {:?}", e);
+	}
+	if let Err(e) = init_command(index, commands) {
+		error!("Failed to register command for plugin: {:?}", e);
+	};
+	if let Err(e) = init_task(index, tasks).await {
+		error!("Failed to register task for plugin: {:?}", e);
+	};
 	#[cfg(feature = "server")]
 	{
-		if let Some(server) = servers {
-			super::server::init_server(source, server)?;
-		}
+		if let Some(server) = servers
+			&& let Err(e) = super::server::init_server(source, server) {
+				error!("Failed to register server for plugin: {:?}", e);
+			}
 	}
-
-	Ok(())
+	if !config_dir().join(name).exists() {
+		let _ = create_dir_all(config_dir().join(name)).await;
+	}
+	if !data_dir().join(name).exists() {
+		let _ = create_dir_all(data_dir().join(name)).await;
+	}
+	if !resource_dir().join(name).exists() {
+		let _ = create_dir_all(resource_dir().join(name)).await;
+	}
+	if !temp_dir().join(name).exists() {
+		let _ = create_dir_all(temp_dir().join(name)).await;
+	}
+	if let Err(e) = plugin.init().await {
+		error!("Failed to init plugin: {:?}", e);
+	}
 }
 
 fn init_command(plugin_id: u64, commands: Vec<Arc<dyn Command>>) -> Result<(), Error> {

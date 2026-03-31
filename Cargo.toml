@@ -2,6 +2,7 @@
 members = [
     "crates/*",
     "adapters/*",
+    "plugins/*",
     "packages/*"
 ]
 resolver = "2"
@@ -92,6 +93,8 @@ puniyu_api = { version = "0.7.8", path = "./crates/puniyu_api" }
 puniyu_macros = { version = "0.7.8", path = "./crates/puniyu_macros", default-features = true }
 
 puniyu_adapter_console = { version = "0.7.8", path = "./adapters/puniyu_adapter_console" }
+
+puniyu_plugin_basic = { version = "0.7.8", path = "./plugins/puniyu_plugin_basic" }
 
 [profile.release]
 lto = "fat"
