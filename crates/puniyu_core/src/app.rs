@@ -8,7 +8,7 @@ mod server;
 use crate::VERSION;
 use bytes::Bytes;
 use convert_case::{Case, Casing};
-use figlet_rs::FIGfont;
+use figlet_rs::FIGlet;
 use puniyu_adapter_core::Adapter;
 use puniyu_common::app::app_name;
 use puniyu_common::uptime;
@@ -357,7 +357,7 @@ async fn init_app(
 
 fn print_start_log() {
 	let app_name = app_name().to_case(Case::Lower);
-	if let Ok(standard_font) = FIGfont::standard()
+	if let Ok(standard_font) = FIGlet::standard()
 		&& let Some(art_text) = standard_font.convert(app_name.as_str())
 	{
 		println!("{}", art_text);
