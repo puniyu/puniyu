@@ -38,7 +38,7 @@ jobs:
 
       - name: 运行 release-plz
         id: release-plz
-        uses: release-plz/action@52440b50d383aa252927de395c8b2c1e0a9cf8e9 # v0.5
+        uses: release-plz/action@1528104d2ca23787631a1c1f022abb64b34c1e11 # v0.5
         with:
           command: release-pr
         env:
@@ -68,7 +68,7 @@ jobs:
 
       - name: 运行 release-plz
         id: release-plz
-        uses: release-plz/action@52440b50d383aa252927de395c8b2c1e0a9cf8e9 # v0.5
+        uses: release-plz/action@1528104d2ca23787631a1c1f022abb64b34c1e11 # v0.5
         with:
           command: release
         env:
@@ -130,7 +130,7 @@ jobs:
 
       - name: 上传主程序 Release
         if: ${{ steps.get-tag.outputs.puniyu_tag }}
-        uses: softprops/action-gh-release@a06a81a03ee405af7f2048a818ed3f03bbf83c7b # v2.5.0
+        uses: softprops/action-gh-release@153bb8e04406b158c6c84fc1615b65b24149a1fe # v2.6.1
         with:
           token: ${{ steps.app-token.outputs.token }}
           files: ${{ env.APP_NAME }}-*
