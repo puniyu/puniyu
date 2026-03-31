@@ -4,7 +4,7 @@ use std::collections::HashMap;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Arc, RwLock};
 
-static COMMAND_ID: AtomicU64 = AtomicU64::new(1);
+static COMMAND_ID: AtomicU64 = AtomicU64::new(0);
 
 #[derive(Default)]
 pub(crate) struct CommandStore(Arc<RwLock<HashMap<u64, CommandInfo>>>);
