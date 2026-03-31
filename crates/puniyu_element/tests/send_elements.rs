@@ -1,6 +1,5 @@
 use puniyu_element::send::*;
-use puniyu_element::ElementType;
-use puniyu_element::RawMessage;
+use puniyu_element::{Element, ElementType};
 
 #[test]
 fn test_send_text_element_new() {
@@ -10,11 +9,10 @@ fn test_send_text_element_new() {
 }
 
 #[test]
-fn test_send_text_element_raw_message() {
+fn test_send_text_element_type() {
 	let element = TextElement::new("test");
 
 	assert_eq!(element.r#type(), ElementType::Text);
-	assert_eq!(element.raw(), "test");
 }
 
 #[test]
@@ -25,11 +23,20 @@ fn test_send_at_element_new() {
 }
 
 #[test]
-fn test_send_at_element_raw_message() {
+fn test_send_at_element_everyone_helpers() {
+	let everyone = AtElement::everyone();
+	let specific = AtElement::new("user123");
+
+	assert!(everyone.is_everyone());
+	assert!(!specific.is_everyone());
+	assert_eq!(everyone.target_id, "all");
+}
+
+#[test]
+fn test_send_at_element_type() {
 	let element = AtElement::new("target");
 
 	assert_eq!(element.r#type(), ElementType::At);
-	assert_eq!(element.raw(), "target");
 }
 
 #[test]
@@ -40,11 +47,10 @@ fn test_send_reply_element_new() {
 }
 
 #[test]
-fn test_send_reply_element_raw_message() {
+fn test_send_reply_element_type() {
 	let element = ReplyElement::new("reply_to");
 
 	assert_eq!(element.r#type(), ElementType::Reply);
-	assert_eq!(element.raw(), "reply_to");
 }
 
 #[test]
@@ -55,11 +61,10 @@ fn test_send_face_element_new() {
 }
 
 #[test]
-fn test_send_face_element_raw_message() {
+fn test_send_face_element_type() {
 	let element = FaceElement::new(10u64);
 
 	assert_eq!(element.r#type(), ElementType::Face);
-	assert_eq!(element.raw(), "10");
 }
 
 #[test]
@@ -79,12 +84,11 @@ fn test_send_image_element_new() {
 }
 
 #[test]
-fn test_send_image_element_raw_message() {
+fn test_send_image_element_type() {
 	let file_data = b"test image".to_vec();
-	let element = ImageElement::new(file_data, "test image",  None);
+	let element = ImageElement::new(file_data, "test image", None);
 
 	assert_eq!(element.r#type(), ElementType::Image);
-	assert_eq!(element.raw(), "test image");
 }
 
 #[test]
@@ -97,12 +101,11 @@ fn test_send_file_element_new() {
 }
 
 #[test]
-fn test_send_file_element_raw_message() {
+fn test_send_file_element_type() {
 	let file_data = b"test file".to_vec();
 	let element = FileElement::new(file_data, "file.txt");
 
 	assert_eq!(element.r#type(), ElementType::File);
-	assert_eq!(element.raw(), "file.txt");
 }
 
 #[test]
@@ -115,12 +118,11 @@ fn test_send_video_element_new() {
 }
 
 #[test]
-fn test_send_video_element_raw_message() {
+fn test_send_video_element_type() {
 	let video_data = b"test video".to_vec();
 	let element = VideoElement::new(video_data, "clip.mp4");
 
 	assert_eq!(element.r#type(), ElementType::Video);
-	assert_eq!(element.raw(), "[video:clip.mp4]");
 }
 
 #[test]
@@ -133,12 +135,11 @@ fn test_send_record_element_new() {
 }
 
 #[test]
-fn test_send_record_element_raw_message() {
+fn test_send_record_element_type() {
 	let audio_data = b"test audio".to_vec();
 	let element = RecordElement::new(audio_data, "sound.mp3");
 
 	assert_eq!(element.r#type(), ElementType::Record);
-	assert_eq!(element.raw(), "sound.mp3");
 }
 
 #[test]
@@ -150,11 +151,10 @@ fn test_send_json_element_new() {
 }
 
 #[test]
-fn test_send_json_element_raw_message() {
+fn test_send_json_element_type() {
 	let element = JsonElement::new("{}");
 
 	assert_eq!(element.r#type(), ElementType::Json);
-	assert_eq!(element.raw(), "{}");
 }
 
 #[test]
@@ -166,11 +166,10 @@ fn test_send_xml_element_new() {
 }
 
 #[test]
-fn test_send_xml_element_raw_message() {
+fn test_send_xml_element_type() {
 	let element = XmlElement::new("<xml/>");
 
 	assert_eq!(element.r#type(), ElementType::Xml);
-	assert_eq!(element.raw(), "<xml/>");
 }
 
 #[test]
@@ -180,6 +179,7 @@ fn test_send_elements_enum_text() {
 
 	assert_eq!(element.as_text(), Some("message"));
 	assert!(element.as_at().is_none());
+	assert_eq!(element.r#type(), ElementType::Text);
 }
 
 #[test]
@@ -190,6 +190,7 @@ fn test_send_elements_enum_at() {
 	assert!(element.as_text().is_none());
 	assert!(element.as_at().is_some());
 	assert_eq!(element.as_at().unwrap().target_id, "user");
+	assert_eq!(element.r#type(), ElementType::At);
 }
 
 #[test]
@@ -199,6 +200,7 @@ fn test_send_elements_enum_reply() {
 
 	assert!(element.as_reply().is_some());
 	assert_eq!(element.as_reply().unwrap().message_id, "msg");
+	assert_eq!(element.r#type(), ElementType::Reply);
 }
 
 #[test]
@@ -208,6 +210,7 @@ fn test_send_elements_enum_face() {
 
 	assert!(element.as_face().is_some());
 	assert_eq!(element.as_face().unwrap().id, 3);
+	assert_eq!(element.r#type(), ElementType::Face);
 }
 
 #[test]
@@ -218,6 +221,7 @@ fn test_send_elements_enum_image() {
 
 	assert!(element.as_image().is_some());
 	assert_eq!(element.as_image().unwrap().summary, "pic.jpg");
+	assert_eq!(element.r#type(), ElementType::Image);
 }
 
 #[test]
@@ -228,6 +232,7 @@ fn test_send_elements_enum_file() {
 
 	assert!(element.as_file().is_some());
 	assert_eq!(element.as_file().unwrap().file_name, "data.txt");
+	assert_eq!(element.r#type(), ElementType::File);
 }
 
 #[test]
@@ -238,6 +243,7 @@ fn test_send_elements_enum_video() {
 
 	assert!(element.as_video().is_some());
 	assert_eq!(element.as_video().unwrap().file_name, "clip.mp4");
+	assert_eq!(element.r#type(), ElementType::Video);
 }
 
 #[test]
@@ -248,6 +254,7 @@ fn test_send_elements_enum_record() {
 
 	assert!(element.as_record().is_some());
 	assert_eq!(element.as_record().unwrap().file_name, "voice.mp3");
+	assert_eq!(element.r#type(), ElementType::Record);
 }
 
 #[test]
@@ -257,6 +264,7 @@ fn test_send_elements_enum_json() {
 
 	assert!(element.as_json().is_some());
 	assert_eq!(element.as_json().unwrap().data, "{}");
+	assert_eq!(element.r#type(), ElementType::Json);
 }
 
 #[test]
@@ -266,6 +274,7 @@ fn test_send_elements_enum_xml() {
 
 	assert!(element.as_xml().is_some());
 	assert_eq!(element.as_xml().unwrap().data, "<xml/>");
+	assert_eq!(element.r#type(), ElementType::Xml);
 }
 
 #[test]
@@ -293,4 +302,67 @@ fn test_send_empty_bytes() {
 	let element = ImageElement::new(empty_data, "empty.png", None);
 
 	assert_eq!(element.file.len(), 0);
+}
+
+#[test]
+fn test_send_text_element_from_string() {
+	let element = TextElement::new(String::from("owned text"));
+
+	assert_eq!(element.text, "owned text");
+}
+
+#[test]
+fn test_send_text_element_from_str() {
+	let element = TextElement::from("borrowed text");
+
+	assert_eq!(element.as_ref(), "borrowed text");
+}
+
+#[test]
+fn test_send_file_element_from_string() {
+	let element = FileElement::new(vec![1, 2, 3], String::from("owned.bin"));
+
+	assert_eq!(element.file_name, "owned.bin");
+}
+
+#[test]
+fn test_send_image_element_from_owned_string() {
+	let element = ImageElement::new(vec![1, 2, 3], String::from("photo.png"), None);
+
+	assert_eq!(element.file_name, "photo.png");
+	assert_eq!(element.summary, "photo.png");
+}
+
+#[test]
+fn test_send_image_element_with_summary() {
+	let element = ImageElement::new(
+		vec![1, 2, 3],
+		String::from("photo.png"),
+		Some(String::from("owned summary")),
+	);
+
+	assert_eq!(element.file_name, "photo.png");
+	assert_eq!(element.summary, "owned summary");
+}
+
+#[test]
+fn test_send_reply_element_from_string_round_trips() {
+	let element = ReplyElement::from(String::from("reply-owned"));
+
+	assert_eq!(String::from(element), "reply-owned");
+}
+
+#[test]
+fn test_send_json_element_from_string_round_trips() {
+	let element = JsonElement::from(String::from("{\"owned\":true}"));
+
+	assert_eq!(element.as_ref(), "{\"owned\":true}");
+}
+
+#[test]
+fn test_send_elements_from_text_element() {
+	let element = Elements::from(TextElement::new("from text"));
+
+	assert_eq!(element.as_text(), Some("from text"));
+	assert_eq!(element.r#type(), ElementType::Text);
 }

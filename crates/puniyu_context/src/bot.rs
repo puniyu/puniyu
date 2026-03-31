@@ -1,21 +1,18 @@
 use puniyu_account::AccountInfo;
-use puniyu_adapter_core::api::AdapterApi;
-use puniyu_adapter_core::types::info::AdapterInfo;
+use puniyu_adapter_api::AdapterApi;
+use puniyu_adapter_types::AdapterInfo;
 use puniyu_bot::Bot;
 
 /// 机器人上下文
 ///
 /// 提供对机器人实例的访问，包括 API 和账号信息。
 ///
-/// 使用 `Arc<dyn Bot>` 实现动态分发，支持任意实现了 `Bot` trait 的类型。
-///
 /// # 示例
 ///
 /// ```rust,ignore
 /// use puniyu_context::BotContext;
-/// use std::sync::Arc;
 ///
-/// let bot_context = BotContext::new(Arc::new(bot));
+/// let bot_context = BotContext::new(&bot);
 ///
 /// // 访问 API
 /// let api = bot_context.api();
@@ -33,14 +30,12 @@ impl<'c> BotContext<'c> {
 	///
 	/// # 参数
 	///
-	/// - `bot` - 机器人实例的 `Arc` 智能指针
+	/// - `bot` - 机器人实例的引用
 	///
 	/// # 示例
 	///
 	/// ```rust,ignore
-	/// use std::sync::Arc;
-	///
-	/// let bot_context = BotContext::new(Arc::new(bot));
+	/// let bot_context = BotContext::new(&bot);
 	/// ```
 	pub fn new(bot: &'c Bot) -> Self {
 		Self { inner: bot }

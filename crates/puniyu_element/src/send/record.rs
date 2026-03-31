@@ -1,27 +1,23 @@
 use bytes::Bytes;
+use crate::{Element, ElementType};
 use serde::{Deserialize, Serialize};
-use crate::{ElementType, RawMessage};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct RecordElement<'r> {
+pub struct RecordElement {
 	/// 语音元素
 	pub file: Bytes,
 	/// 语音文件名
-	pub file_name: &'r str,
+	pub file_name: String,
 }
 
-impl<'r> RecordElement<'r> {
-	pub fn new(file: impl Into<Bytes>, file_name: &'r str) -> Self {
-		Self { file: file.into(), file_name }
+impl RecordElement {
+	pub fn new(file: impl Into<Bytes>, file_name: impl Into<String>) -> Self {
+		Self { file: file.into(), file_name: file_name.into() }
 	}
 }
 
-impl<'r> RawMessage for RecordElement<'r> {
+impl Element for RecordElement {
 	fn r#type(&self) -> ElementType {
 		ElementType::Record
-	}
-
-	fn raw(&self) -> String {
-		self.file_name.to_string()
 	}
 }

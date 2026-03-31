@@ -1,6 +1,6 @@
 //! # puniyu_event
 //!
-//! 事件类型定义库，提供聊天机器人中的各类事件类型系统。
+//! 统一的事件类型，覆盖消息、通知与请求场景。
 //!
 //! ## 概述
 //!
@@ -58,11 +58,6 @@
 //!     // 获取发送者信息
 //!     let sender = msg.sender();
 //!     println!("发送者: {}", sender.user_id());
-//!     
-//!     // 判断是否为主人
-//!     if msg.is_master() {
-//!         println!("这是主人发送的消息");
-//!     }
 //! }
 //! ```
 //!
@@ -261,18 +256,18 @@ impl Event<'_> {
 	/// ```rust,ignore
 	/// use puniyu_event::EventType;
 	///
-	/// match event.event() {
+	/// match event.event_type() {
 	///     EventType::Message => println!("消息事件"),
 	///     EventType::Notion => println!("通知事件"),
 	///     EventType::Request => println!("请求事件"),
 	///     _ => {}
 	/// }
 	/// ```
-	pub fn event(&self) -> &EventType {
+	pub fn event_type(&self) -> &EventType {
 		match self {
-			Self::Message(event) => event.event(),
-			Self::Notion(event) => event.event(),
-			Self::Request(event) => event.event(),
+			Self::Message(event) => event.event_type(),
+			Self::Notion(event) => event.event_type(),
+			Self::Request(event) => event.event_type(),
 		}
 	}
 
@@ -322,9 +317,9 @@ impl Event<'_> {
 	/// ```
 	pub fn sub_event(&self) -> SubEventType {
 		match self {
-			Self::Message(event) => SubEventType::from(event.sub_event().clone()),
-			Self::Notion(event) => SubEventType::from(event.sub_event().clone()),
-			Self::Request(event) => SubEventType::from(event.sub_event().clone()),
+			Self::Message(event) => SubEventType::from(event.sub_event()),
+			Self::Notion(event) => SubEventType::from(event.sub_event()),
+			Self::Request(event) => SubEventType::from(event.sub_event()),
 		}
 	}
 
@@ -445,4 +440,12 @@ impl Event<'_> {
 			Self::Request(event) => event.sender(),
 		}
 	}
+}
+
+/// 快速构建顶层消息事件。
+#[macro_export]
+macro_rules! create_event {
+	(Message, $message:expr $(,)?) => {
+		$crate::Event::Message(Box::new($message))
+	};
 }

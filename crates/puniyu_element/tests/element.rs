@@ -1,8 +1,5 @@
 use bytes::Bytes;
 use puniyu_element::{receive, send};
-use puniyu_element::ElementType;
-use puniyu_element::RawMessage;
-
 
 #[test]
 fn test_receive_text_serialization() {
@@ -41,7 +38,6 @@ fn test_receive_json_serialization() {
 	assert!(json.contains("key"));
 }
 
-
 #[test]
 fn test_send_text_serialization() {
 	let element = send::TextElement::new("send test");
@@ -68,7 +64,6 @@ fn test_send_face_serialization() {
 	let deserialized: send::FaceElement = serde_json::from_str(&json).unwrap();
 	assert_eq!(deserialized.id, 99);
 }
-
 
 #[test]
 fn test_receive_elements_enum_serialization() {
@@ -113,24 +108,6 @@ fn test_mixed_elements_serialization() {
 	assert!(deserialized[2].as_face().is_some());
 }
 
-// ========== RawMessage trait 测试 ==========
-
-#[test]
-fn test_raw_message_trait() {
-	let text = send::TextElement::new("message");
-	assert_eq!(text.r#type(), ElementType::Text);
-	assert_eq!(text.raw(), "message");
-
-	let at = send::AtElement::new("user");
-	assert_eq!(at.r#type(), ElementType::At);
-	assert_eq!(at.raw(), "user");
-
-	let face = send::FaceElement::new(5u64);
-	assert_eq!(face.r#type(), ElementType::Face);
-	assert_eq!(face.raw(), "5");
-}
-
-
 #[test]
 fn test_bytes_handling() {
 	let data = vec![1, 2, 3, 4, 5];
@@ -151,7 +128,6 @@ fn test_empty_bytes() {
 	assert_eq!(element.file.len(), 0);
 	assert_eq!(element.summary, "empty.png");
 }
-
 
 #[test]
 fn test_text_element_conversions() {
@@ -186,14 +162,13 @@ fn test_face_element_from_string() {
 	assert_eq!(invalid.id, 0);
 }
 
-
 #[test]
 fn test_empty_string_elements() {
 	let text = receive::TextElement { text: "" };
-	assert_eq!(text.raw(), "");
+	assert_eq!(text.text, "");
 
 	let json = receive::JsonElement { data: "" };
-	assert_eq!(json.raw(), "");
+	assert_eq!(json.data, "");
 }
 
 #[test]

@@ -1,293 +1,93 @@
-use convert_case::{Case, Casing};
-use darling::ast::NestedMeta;
-use darling::{Error, FromMeta};
-use proc_macro::TokenStream;
-use quote::quote;
-use syn::{Ident, LitStr};
-use syn::{ItemFn, parse_macro_input};
+use crate::{CommandArgs, ArgType, common::validate_async};
+use zyn::{ToTokens, zyn};
 
-#[derive(Debug, FromMeta, Default)]
-struct Arg {
-	name: String,
-	#[darling(rename = "type")]
-	r#type: Option<String>,
-	mode: Option<String>,
-	required: Option<bool>,
-	desc: Option<String>,
-}
-
-#[derive(Debug, FromMeta, Default)]
-struct CommandArgs {
-	name: String,
-	rank: Option<u32>,
-	desc: Option<String>,
-	alias: Option<Vec<LitStr>>,
-	permission: Option<String>,
-}
-pub fn command(args: TokenStream, item: TokenStream) -> TokenStream {
-	let attr_args = match NestedMeta::parse_meta_list(args.into()) {
-		Ok(v) => v,
-		Err(e) => return TokenStream::from(Error::from(e).write_errors()),
-	};
-	let item = parse_macro_input!(item as ItemFn);
-	let fn_sig = &item.sig;
-	let fn_name = &fn_sig.ident;
-	let fn_inputs = &fn_sig.inputs;
-
-	if fn_inputs.len() != 1 {
-		return syn::Error::new_spanned(
-			fn_sig,
-			format!(
-				"function `{}` must have exactly 1 parameters, found {}",
-				fn_name,
-				fn_inputs.len()
-			),
-		)
-		.to_compile_error()
-		.into();
+pub fn command(item: zyn::syn::ItemFn, cfg: CommandArgs) -> zyn::TokenStream {
+	let fn_sig = item.sig.clone();
+	if let Err(err) = validate_async(&fn_sig) {
+		return err.to_compile_error();
+	}
+	if let Err(err) = validate_command_args(&fn_sig) {
+		return err.to_compile_error();
+	}
+	if let Err(err) = validate_command_return_type(&fn_sig) {
+		return err.to_compile_error();
 	}
 
-	// 检查参数类型是否为 &MessageContext
-	let first_param = fn_inputs.first().unwrap();
-	if let syn::FnArg::Typed(pat_type) = first_param {
-		let ty = &*pat_type.ty;
-		let is_valid_type = match ty {
-			syn::Type::Reference(type_ref) => {
-				if let syn::Type::Path(type_path) = &*type_ref.elem {
-					type_path
-						.path
-						.segments
-						.last()
-						.map(|seg| seg.ident == "MessageContext")
-						.unwrap_or(false)
-				} else {
-					false
-				}
-			}
-			_ => false,
-		};
-
-		if !is_valid_type {
-			return syn::Error::new_spanned(
-				pat_type,
-				format!(
-					"function `{}` parameter must be of type `&MessageContext`, found `{}`",
-					fn_name,
-					quote::quote! { #ty }
-				),
-			)
-			.to_compile_error()
-			.into();
-		}
-	} else {
-		return syn::Error::new_spanned(
-			first_param,
-			format!("function `{}` parameter must be a typed parameter", fn_name),
-		)
-		.to_compile_error()
-		.into();
-	}
-
-	// 检查返回值类型是否为 HandlerResult<CommandAction>
-	if let syn::ReturnType::Type(_, return_ty) = &fn_sig.output {
-		let is_valid_return = match &**return_ty {
-			syn::Type::Path(type_path) => {
-				let Some(segment) = type_path.path.segments.last() else {
-					return syn::Error::new_spanned(
-						return_ty,
-						format!(
-							"function `{}` must return `HandlerResult<CommandAction>`, found `{}`",
-							fn_name,
-							quote::quote! { #return_ty }
-						),
-					)
-					.to_compile_error()
-					.into();
-				};
-
-				if segment.ident != "HandlerResult" {
-					return syn::Error::new_spanned(
-						return_ty,
-						format!(
-							"function `{}` must return `HandlerResult<CommandAction>`, found `{}`",
-							fn_name,
-							quote::quote! { #return_ty }
-						),
-					)
-					.to_compile_error()
-					.into();
-				}
-
-				let syn::PathArguments::AngleBracketed(args) = &segment.arguments else {
-					return syn::Error::new_spanned(
-						return_ty,
-						format!(
-							"function `{}` must return `HandlerResult<CommandAction>`, found `{}`",
-							fn_name,
-							quote::quote! { #return_ty }
-						),
-					)
-					.to_compile_error()
-					.into();
-				};
-
-				let Some(syn::GenericArgument::Type(syn::Type::Path(inner_path))) =
-					args.args.first()
-				else {
-					return syn::Error::new_spanned(
-						return_ty,
-						format!(
-							"function `{}` must return `HandlerResult<CommandAction>`, found `{}`",
-							fn_name,
-							quote::quote! { #return_ty }
-						),
-					)
-					.to_compile_error()
-					.into();
-				};
-
-				inner_path
-					.path
-					.segments
-					.last()
-					.map(|seg| seg.ident == "CommandAction")
-					.unwrap_or(false)
-			}
-			_ => false,
-		};
-
-		if !is_valid_return {
-			return syn::Error::new_spanned(
-				return_ty,
-				format!(
-					"function `{}` must return `HandlerResult<CommandAction>`, found `{}`",
-					fn_name,
-					quote::quote! { #return_ty }
-				),
-			)
-			.to_compile_error()
-			.into();
-		}
-	} else {
-		return syn::Error::new_spanned(
-			&fn_sig.output,
-			format!(
-				"function `{}` must have a return type of `HandlerResult<CommandAction>`",
-				fn_name
-			),
-		)
-		.to_compile_error()
-		.into();
-	}
-
-	let struct_name_str = {
-		let fn_name_str = fn_name.to_string();
-		let pascal_case_name = fn_name_str.to_case(Case::Pascal);
-		format!("{}Command", pascal_case_name)
+	let fn_name = &item.sig.ident;
+	let struct_name = zyn!{ {{ fn_name | pascal | ident: "{}Command" }} };
+	let plugin_name = zyn! { env!("CARGO_PKG_NAME") };
+	let command_name = zyn! { {{ cfg.name | str }} };
+	let command_priority = match cfg.priority {
+		Some(p) => zyn! { {{ p }} },
+		None => zyn! { 500u32 },
 	};
-
-	let args = match CommandArgs::from_list(&attr_args) {
-		Ok(v) => v,
-		Err(e) => return TokenStream::from(e.write_errors()),
+	let command_desc = match &cfg.desc {
+		Some(desc) => zyn! { Some({{ desc | str }}) },
+		None => zyn! { None },
 	};
-
-	let mut command_arg_list = Vec::<Arg>::new();
-
-	for attr in &item.attrs {
-		if attr.path().is_ident("arg") {
-			let meta_list: Vec<NestedMeta> = match attr.parse_args_with(
-				syn::punctuated::Punctuated::<NestedMeta, syn::Token![,]>::parse_terminated,
-			) {
-				Ok(punctuated) => punctuated.into_iter().collect(),
-				Err(e) => return TokenStream::from(Error::from(e).write_errors()),
-			};
-
-			match Arg::from_list(&meta_list) {
-				Ok(arg) => command_arg_list.push(arg),
-				Err(e) => return TokenStream::from(e.write_errors()),
-			}
-		}
-	}
-
-	let command_name = &args.name;
-	let command_rank = match args.rank {
-		Some(rank) => quote! { #rank },
-		None => quote! { 500 },
+	let command_permission = match cfg.permission.as_deref().unwrap_or("all") {
+		"admin" => zyn! { ::puniyu_plugin::command::Permission::Admin },
+		_ => zyn! { ::puniyu_plugin::command::Permission::All },
 	};
-	let command_desc = match &args.desc {
-		Some(desc) => quote! { Some(#desc) },
-		None => quote! { None },
-	};
-	let command_permission = match &args.permission {
-		Some(perm) => quote! { #perm.parse().unwrap_or(::puniyu_plugin::private::Permission::All) },
-		None => quote! { ::puniyu_plugin::private::Permission::All },
-	};
-	let command_alias = match &args.alias {
-		Some(aliases) if !aliases.is_empty() => {
-			quote! { vec![#(#aliases),*] }
-		}
-		_ => quote! { Vec::new() },
-	};
-	let plugin_name = quote! { env!("CARGO_PKG_NAME") };
-	let struct_name = Ident::new(&struct_name_str, fn_name.span());
-
-	let mut args_construction = Vec::new();
-
-	for arg in &command_arg_list {
-		let arg_name = &arg.name;
-		let arg_type = arg.r#type.as_deref().unwrap_or("string");
-		let arg_mode = arg.mode.as_deref().unwrap_or("positional");
-		let arg_required = arg.required.unwrap_or(false);
-
-		let constructor = match arg_type {
-			"string" => quote! { ::puniyu_plugin::private::Arg::string(#arg_name) },
-			"int" => quote! { ::puniyu_plugin::private::Arg::int(#arg_name) },
-			"float" => quote! { ::puniyu_plugin::private::Arg::float(#arg_name) },
-			"bool" => quote! { ::puniyu_plugin::private::Arg::bool(#arg_name) },
-			_ => {
-				return TokenStream::from(
-					Error::custom(format!(
-						"Unsupported argument type '{}'. Supported types: string, int, float, bool",
-						arg_type
-					))
-					.write_errors(),
-				);
-			}
-		};
-
-		let mode_method = match arg_mode {
-			"named" => quote! { .named() },
-			"positional" => quote! { .positional() },
-			_ => {
-				return TokenStream::from(
-					Error::custom(format!(
-						"Invalid arg mode '{}'. Must be 'positional' or 'named'",
-						arg_mode
-					))
-					.write_errors(),
-				);
-			}
-		};
-
-		let required_method = if arg_required {
-			quote! { .required() }
+	let command_alias = {
+		let aliases = cfg.alias.as_deref().unwrap_or(&[]);
+		if aliases.is_empty() {
+			zyn! { ::std::vec![] }
 		} else {
-			quote! { .optional() }
-		};
+			let mut ts = zyn::TokenStream::new();
+			for alias in aliases {
+				ts.extend(zyn! { {{ alias }}, }.to_token_stream());
+			}
+			zyn! { ::std::vec![{{ ts }}] }
+		}
+	};
+	let args_tokens = {
+		let mut ts = zyn::TokenStream::new();
+		for attr in &item.attrs {
+			if !attr.path().is_ident("arg") { continue; }
+			let list = match attr.meta.require_list() {
+				Ok(l) => l,
+				Err(e) => return e.to_compile_error(),
+			};
+			let args: zyn::meta::Args = match zyn::syn::parse2(list.tokens.clone()) {
+				Ok(a) => a,
+				Err(e) => return e.to_compile_error(),
+			};
+			let arg = match ArgType::from_args(&args) {
+				Ok(a) => a,
+				Err(e) => return e.emit_as_item_tokens(),
+			};
+			let arg_name = &arg.name;
+			let constructor = match arg.arg_type.as_deref().unwrap_or("string") {
+				"integer" => zyn! { ::puniyu_plugin::command::Arg::integer({{ arg_name | str }}) },
+				"boolean" => zyn! { ::puniyu_plugin::command::Arg::boolean({{ arg_name | str }}) },
+				_ => zyn! { ::puniyu_plugin::command::Arg::string({{ arg_name | str }}) },
+			};
+			let mode_method = match arg.mode.as_deref().unwrap_or("positional") {
+				"optional" => zyn! { .optional() },
+				_ => zyn! { .positional() },
+			};
+			let required_method = if arg.required.unwrap_or(false) {
+				zyn! { .required() }.to_token_stream()
+			} else {
+				zyn::TokenStream::new()
+			};
+			let desc_method = match &arg.desc {
+				Some(desc) => zyn! { .description({{ desc | str }}) }.to_token_stream(),
+				None => zyn::TokenStream::new(),
+			};
+			ts.extend(zyn! { #constructor #mode_method #required_method #desc_method, }.to_token_stream());
+		}
+		ts
+	};
 
-		let desc_method = arg.desc.as_ref().map(|desc| quote! { .description(#desc) });
+	zyn! {
+		{{ item }}
 
-		args_construction.push(quote! { #constructor #mode_method #required_method #desc_method });
-	}
+		struct {{ struct_name }};
 
-	let expanded = quote! {
-		#item
-
-		#[allow(non_camel_case_types)]
-		struct #struct_name;
-
-		#[::puniyu_plugin::private::async_trait]
-		impl ::puniyu_plugin::private::Command for #struct_name {
+		#[::puniyu_plugin::__private::async_trait]
+		impl ::puniyu_plugin::__private::Command for {{ struct_name }} {
 			fn name(&self) -> &'static str {
 				#command_name
 			}
@@ -296,36 +96,113 @@ pub fn command(args: TokenStream, item: TokenStream) -> TokenStream {
 				#command_desc
 			}
 
-			fn rank(&self) -> u32 {
-				#command_rank
+			fn priority(&self) -> u32 {
+				#command_priority
 			}
 
-			fn args(&'_ self) -> Vec<::puniyu_plugin::private::Arg<'static>> {
-				vec![
-					#(#args_construction,)*
-				]
+			fn args(&self) -> ::std::vec::Vec<::puniyu_plugin::command::Arg<'static>> {
+				::std::vec![{{ args_tokens }}]
 			}
 
-			fn alias(&self) -> Vec<&'static str> {
+			fn alias(&self) -> ::std::vec::Vec<&'static str> {
 				#command_alias
 			}
 
-			fn permission(&self) -> ::puniyu_plugin::private::Permission {
+			fn permission(&self) -> ::puniyu_plugin::command::Permission {
 				#command_permission
 			}
 
-			async fn run(&self, ctx: &::puniyu_plugin::private::MessageContext) -> ::puniyu_plugin::private::HandlerResult<::puniyu_plugin::private::CommandAction> {
-				#fn_name(ctx).await
+			#[inline]
+			async fn run(
+				&self,
+				ctx: &::puniyu_plugin::context::MessageContext,
+			) -> ::puniyu_plugin::Result<::puniyu_plugin::command::CommandAction> {
+				{{ fn_name }}(ctx).await
 			}
 		}
 
-		::puniyu_plugin::private::inventory::submit! {
+		::puniyu_plugin::__private::inventory::submit! {
 			crate::CommandRegistry {
-				plugin_name: #plugin_name,
-				builder: || -> Box<dyn ::puniyu_plugin::private::Command> { Box::new(#struct_name {}) },
+				plugin_name: {{ plugin_name }},
+				builder: || -> ::std::sync::Arc<dyn ::puniyu_plugin::__private::Command> {
+					::std::sync::Arc::new({{ struct_name }} {})
+				}
 			}
+		}
+	}
+	.to_token_stream()
+}
+
+fn validate_command_args(fn_sig: &zyn::syn::Signature) -> zyn::syn::Result<()> {
+	use zyn::syn::spanned::Spanned;
+	let fn_name = &fn_sig.ident;
+	let inputs = &fn_sig.inputs;
+	if inputs.len() != 1 {
+		return Err(zyn::syn::Error::new(
+			fn_sig.span(),
+			format!("function `{}` must have exactly 1 parameter, found {}", fn_name, inputs.len()),
+		));
+	}
+	let arg = inputs.first().unwrap();
+	let pat_type = match arg {
+		zyn::syn::FnArg::Typed(pt) => pt,
+		zyn::syn::FnArg::Receiver(_) => {
+			return Err(zyn::syn::Error::new(arg.span(), "command function parameter must not be `self`"));
 		}
 	};
+	let inner_type = match pat_type.ty.as_ref() {
+		zyn::syn::Type::Reference(r) => &r.elem,
+		_ => {
+			return Err(zyn::syn::Error::new(
+				pat_type.ty.span(),
+				"command function parameter must be a reference: `&MessageContext`",
+			));
+		}
+	};
+	let is_valid = match inner_type.as_ref() {
+		zyn::syn::Type::Path(tp) => {
+			let last = tp.path.segments.last().map(|s| s.ident.to_string());
+			let full = tp.path.to_token_stream().to_string().replace(' ', "");
+			last.as_deref() == Some("MessageContext")
+				|| matches!(full.as_str(),
+					"puniyu_plugin::context::MessageContext"
+						| "::puniyu_plugin::context::MessageContext"
+				)
+		}
+		_ => false,
+	};
+	if !is_valid {
+		return Err(zyn::syn::Error::new(
+			inner_type.span(),
+			"command function parameter type must be `MessageContext` or `puniyu_plugin::context::MessageContext`",
+		));
+	}
+	Ok(())
+}
 
-	TokenStream::from(expanded)
+fn validate_command_return_type(fn_sig: &zyn::syn::Signature) -> zyn::syn::Result<()> {
+	use zyn::syn::spanned::Spanned;
+	let err = |span| Err(zyn::syn::Error::new(
+		span,
+		"command function must return `puniyu_plugin::Result<CommandAction>` or `puniyu_plugin::Result<puniyu_plugin::command::CommandAction>`",
+	));
+	let zyn::syn::ReturnType::Type(_, ty) = &fn_sig.output else {
+		return err(fn_sig.span());
+	};
+	let zyn::syn::Type::Path(tp) = ty.as_ref() else {
+		return err(ty.span());
+	};
+	let actual = tp.path.to_token_stream().to_string().replace(' ', "");
+	if matches!(actual.as_str(),
+		"puniyu_plugin::Result<CommandAction>"
+			| "::puniyu_plugin::Result<CommandAction>"
+			| "puniyu_plugin::Result<puniyu_plugin::command::CommandAction>"
+			| "::puniyu_plugin::Result<puniyu_plugin::command::CommandAction>"
+			| "puniyu_plugin::Result<::puniyu_plugin::command::CommandAction>"
+			| "::puniyu_plugin::Result<::puniyu_plugin::command::CommandAction>"
+	) {
+		Ok(())
+	} else {
+		err(ty.span())
+	}
 }

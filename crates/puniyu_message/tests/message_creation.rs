@@ -20,6 +20,20 @@ fn test_message_from_empty_string() {
 }
 
 #[test]
+fn test_message_from_owned_string() {
+	let msg = Message::from(String::from("Owned message"));
+	let elements: Vec<Elements> = msg.into();
+
+	assert_eq!(elements.len(), 1);
+	match &elements[0] {
+		Elements::Text(element) => {
+			assert_eq!(element.text, "Owned message");
+		}
+		_ => panic!("Expected Text element"),
+	}
+}
+
+#[test]
 fn test_message_from_single_element() {
 	let text = TextElement::new("Test message");
 	let msg = Message::from(Elements::Text(text));

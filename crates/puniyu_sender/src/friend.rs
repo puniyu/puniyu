@@ -2,42 +2,24 @@
 //!
 //! 提供好友发送者的类型定义和构建宏。
 
-use derive_builder::Builder;
-use crate::Sex;
-use serde::{Deserialize, Serialize};
 use crate::Sender;
+use crate::Sex;
+use derive_builder::Builder;
+use serde::{Deserialize, Serialize};
+use std::borrow::Cow;
 
-/// 好友发送者
-///
-/// 表示一对一聊天中的消息发送者信息。
-///
-/// # 字段
-///
-/// - `user_id` - 发送者 ID
-/// - `nick` - 用户昵称（可选）
-/// - `sex` - 性别
-/// - `age` - 年龄（可选）
-///
-/// # 示例
-///
-/// ```rust
-/// use puniyu_sender::{FriendSender, Sex};
-///
-/// let sender = FriendSender {
-///     user_id: "123456",
-///     nick: Some("Alice"),
-///     sex: Sex::Female,
-///     age: Some(25),
-/// };
-/// ```
+/// 好友发送者信息。
 #[derive(Debug, Default, Clone, PartialEq, Deserialize, Serialize, Builder)]
-#[builder(setter(into))]
+#[serde(bound(deserialize = "'de: 's"))]
+#[builder(setter(into), pattern = "owned")]
 pub struct FriendSender<'s> {
 	/// 发送者id
-	pub user_id: &'s str,
+	#[serde(borrow)]
+	pub user_id: Cow<'s, str>,
 	/// 用户昵称
-	#[builder(default)]
-	pub nick: Option<&'s str>,
+	#[builder(default, setter(into, strip_option))]
+	#[serde(borrow)]
+	pub nick: Option<Cow<'s, str>>,
 	/// 性别
 	#[builder(default)]
 	pub sex: Sex,
@@ -48,10 +30,10 @@ pub struct FriendSender<'s> {
 
 impl<'s> Sender for FriendSender<'s> {
 	fn user_id(&self) -> &str {
-		self.user_id
+		self.user_id.as_ref()
 	}
 	fn name(&self) -> Option<&str> {
-		self.nick
+		self.nick.as_deref()
 	}
 	fn sex(&self) -> &Sex {
 		&self.sex
@@ -61,13 +43,7 @@ impl<'s> Sender for FriendSender<'s> {
 	}
 }
 
-/// 构建好友发送者宏
-///
-/// 提供便捷的方式创建好友发送者。
-///
-/// # 用法
-///
-/// ## 使用命名字段
+/// 构建好友发送者。
 ///
 /// ```rust
 /// use puniyu_sender::{sender_friend, Sex};
@@ -79,22 +55,15 @@ impl<'s> Sender for FriendSender<'s> {
 ///     age: 25u32,
 /// );
 /// ```
-///
-/// ## 仅指定必需字段
-///
-/// ```rust
-/// use puniyu_sender::sender_friend;
-///
-/// let sender = sender_friend!(user_id: "123456");
-/// ```
 #[macro_export]
 macro_rules! sender_friend {
     ( $( $key:ident : $value:expr ),+ $(,)? ) => {{
-        let mut builder = $crate::FriendSenderBuilder::default();
-        $(
-            builder.$key($value);
-        )*
-        builder.build().expect("Failed to build FriendSender")
+        $crate::FriendSenderBuilder::default()
+            $(
+                .$key($value)
+            )*
+            .build()
+            .expect("Failed to build FriendSender")
     }};
 	($user_id:expr) => {{
 		$crate::FriendSenderBuilder::default()

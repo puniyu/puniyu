@@ -62,7 +62,7 @@ fn test_task_id_from_str() {
 #[test]
 fn test_task_id_variants() {
 	let id_variant = TaskId::Index(42);
-	let name_variant = TaskId::Name("my_task");
+	let name_variant = TaskId::Name(std::borrow::Cow::Borrowed("my_task"));
 
 	match id_variant {
 		TaskId::Index(id) => assert_eq!(id, 42),

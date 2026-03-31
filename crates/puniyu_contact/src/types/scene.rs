@@ -8,7 +8,7 @@ use strum::{Display, EnumString, IntoStaticStr};
 /// # 变体
 ///
 /// - `Friend` - 好友场景，表示一对一聊天
-/// - `Group` - 群聊场景，表示群组聊天（默认值）
+/// - `Group` - 群聊场景，表示群组聊天
 ///
 /// # 示例
 ///
@@ -49,12 +49,11 @@ use strum::{Display, EnumString, IntoStaticStr};
 	Serialize,
 )]
 #[serde(rename_all = "lowercase")]
+#[strum(serialize_all = "lowercase")]
 pub enum SceneType {
-	#[strum(serialize = "group")]
 	#[default]
 	/// 群聊场景
 	Group,
-	#[strum(serialize = "friend")]
 	/// 好友场景
 	Friend,
 }

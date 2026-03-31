@@ -2,8 +2,8 @@ Copyright (c) 2025 wuliya <3369906077@qq.com>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+the Free Software Foundation, either VERSION 3 of the License, or
+(at your option) any later VERSION.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -22,14 +22,14 @@ and a copy of GNU General Public License along with this program.  If not, see
  of this license document, but changing it is not allowed.
 
 
-  This version of the GNU Lesser General Public License incorporates
-the terms and conditions of version 3 of the GNU General Public
+  This VERSION of the GNU Lesser General Public License incorporates
+the terms and conditions of VERSION 3 of the GNU General Public
 License, supplemented by the additional permissions listed below.
 
   0. Additional Definitions.
 
-  As used herein, "this License" refers to version 3 of the GNU Lesser
-General Public License, and the "GNU GPL" refers to version 3 of the GNU
+  As used herein, "this License" refers to VERSION 3 of the GNU Lesser
+General Public License, and the "GNU GPL" refers to VERSION 3 of the GNU
 General Public License.
 
   "The Library" refers to a covered work governed by this License,
@@ -41,7 +41,7 @@ Defining a subclass of a class defined by the Library is deemed a mode
 of using an interface provided by the Library.
 
   A "Combined Work" is a work produced by combining or linking an
-Application with the Library.  The particular version of the Library
+Application with the Library.  The particular VERSION of the Library
 with which the Combined Work was made is also called the "Linked
 Version".
 
@@ -66,7 +66,7 @@ without being bound by section 3 of the GNU GPL.
 facility refers to a function or data to be supplied by an Application
 that uses the facility (other than as an argument passed when the
 facility is invoked), then you may convey a copy of the modified
-version:
+VERSION:
 
    a) under this License, provided that you make a good faith effort to
    ensure that, in the event an Application does not supply the
@@ -117,7 +117,7 @@ the following:
        0) Convey the Minimal Corresponding Source under the terms of this
        License, and the Corresponding Application Code in a form
        suitable for, and under terms that permit, the user to
-       recombine or relink the Application with a modified version of
+       recombine or relink the Application with a modified VERSION of
        the Linked Version to produce a modified Combined Work, in the
        manner specified by section 6 of the GNU GPL for conveying
        Corresponding Source.
@@ -125,16 +125,16 @@ the following:
        1) Use a suitable shared library mechanism for linking with the
        Library.  A suitable mechanism is one that (a) uses at run time
        a copy of the Library already present on the user's computer
-       system, and (b) will operate properly with a modified version
+       system, and (b) will operate properly with a modified VERSION
        of the Library that is interface-compatible with the Linked
        Version.
 
    e) Provide Installation Information, but only if you would otherwise
    be required to provide such information under section 6 of the
    GNU GPL, and only to the extent that such information is
-   necessary to install and execute a modified version of the
+   necessary to install and execute a modified VERSION of the
    Combined Work produced by recombining or relinking the
-   Application with a modified version of the Linked Version. (If
+   Application with a modified VERSION of the Linked Version. (If
    you use option 4d0, the Installation Information must accompany
    the Minimal Corresponding Source and Corresponding Application
    Code. If you use option 4d1, you must provide the Installation
@@ -161,23 +161,23 @@ choice, if you do both of the following:
 
   The Free Software Foundation may publish revised and/or new versions
 of the GNU Lesser General Public License from time to time. Such new
-versions will be similar in spirit to the present version, but may
+versions will be similar in spirit to the present VERSION, but may
 differ in detail to address new problems or concerns.
 
-  Each version is given a distinguishing version number. If the
-Library as you received it specifies that a certain numbered version
-of the GNU Lesser General Public License "or any later version"
+  Each VERSION is given a distinguishing VERSION number. If the
+Library as you received it specifies that a certain numbered VERSION
+of the GNU Lesser General Public License "or any later VERSION"
 applies to it, you have the option of following the terms and
-conditions either of that published version or of any later version
+conditions either of that published VERSION or of any later VERSION
 published by the Free Software Foundation. If the Library as you
-received it does not specify a version number of the GNU Lesser
-General Public License, you may choose any version of the GNU Lesser
+received it does not specify a VERSION number of the GNU Lesser
+General Public License, you may choose any VERSION of the GNU Lesser
 General Public License ever published by the Free Software Foundation.
 
   If the Library as you received it specifies that a proxy can decide
 whether future versions of the GNU Lesser General Public License shall
-apply, that proxy's public statement of acceptance of any version is
-permanent authorization for you to choose that version for the
+apply, that proxy's public statement of acceptance of any VERSION is
+permanent authorization for you to choose that VERSION for the
 Library.
 
                     GNU GENERAL PUBLIC LICENSE
@@ -235,7 +235,7 @@ can do so.  This is fundamentally incompatible with the aim of
 protecting users' freedom to change the software.  The systematic
 pattern of such abuse occurs in the area of products for individuals to
 use, which is precisely where it is most unacceptable.  Therefore, we
-have designed this version of the GPL to prohibit the practice for those
+have designed this VERSION of the GPL to prohibit the practice for those
 products.  If such problems arise substantially in other domains, we
 stand ready to extend this provision to those domains in future versions
 of the GPL, as needed to protect the freedom of users.
@@ -254,7 +254,7 @@ modification follow.
 
   0. Definitions.
 
-  "This License" refers to version 3 of the GNU General Public License.
+  "This License" refers to VERSION 3 of the GNU General Public License.
 
   "Copyright" also means copyright-like laws that apply to other kinds of
 works, such as semiconductor masks.
@@ -265,7 +265,7 @@ License.  Each licensee is addressed as "you".  "Licensees" and
 
   To "modify" a work means to copy from or adapt all or part of the work
 in a fashion requiring copyright permission, other than the making of an
-exact copy.  The resulting work is called a "modified version" of the
+exact copy.  The resulting work is called a "modified VERSION" of the
 earlier work or a work "based on" the earlier work.
 
   A "covered work" means either the unmodified Program or a work based
@@ -492,7 +492,7 @@ the only significant mode of use of the product.
   "Installation Information" for a User Product means any methods,
 procedures, authorization keys, or other information required to install
 and execute modified versions of a covered work in that User Product from
-a modified version of its Corresponding Source.  The information must
+a modified VERSION of its Corresponding Source.  The information must
 suffice to ensure that the continued functioning of the modified object
 code is in no case prevented or interfered with solely because
 modification has been made.
@@ -553,7 +553,7 @@ that material) supplement the terms of this License with terms:
 
     c) Prohibiting misrepresentation of the origin of that material, or
     requiring that modified versions of such material be marked in
-    reasonable ways as different from the original version; or
+    reasonable ways as different from the original VERSION; or
 
     d) Limiting the use for publicity purposes of names of licensors or
     authors of the material; or
@@ -654,14 +654,14 @@ sale, or importing the Program or any portion of it.
 
   A "contributor" is a copyright holder who authorizes use under this
 License of the Program or a work on which the Program is based.  The
-work thus licensed is called the contributor's "contributor version".
+work thus licensed is called the contributor's "contributor VERSION".
 
   A contributor's "essential patent claims" are all patent claims
 owned or controlled by the contributor, whether already acquired or
 hereafter acquired, that would be infringed by some manner, permitted
-by this License, of making, using, or selling its contributor version,
+by this License, of making, using, or selling its contributor VERSION,
 but do not include claims that would be infringed only as a
-consequence of further modification of the contributor version.  For
+consequence of further modification of the contributor VERSION.  For
 purposes of this definition, "control" includes the right to grant
 patent sublicenses in a manner consistent with the requirements of
 this License.
@@ -669,7 +669,7 @@ this License.
   Each contributor grants you a non-exclusive, worldwide, royalty-free
 patent license under the contributor's essential patent claims, to
 make, use, sell, offer for sale, import and otherwise run, modify and
-propagate the contents of its contributor version.
+propagate the contents of its contributor VERSION.
 
   In the following three paragraphs, a "patent license" is any express
 agreement or commitment, however denominated, not to enforce a patent
@@ -735,7 +735,7 @@ License would be to refrain entirely from conveying the Program.
 
   Notwithstanding any other provision of this License, you have
 permission to link or combine any covered work with a work licensed
-under version 3 of the GNU Affero General Public License into a single
+under VERSION 3 of the GNU Affero General Public License into a single
 combined work, and to convey the resulting work.  The terms of this
 License will continue to apply to the part which is the covered work,
 but the special requirements of the GNU Affero General Public License,
@@ -746,27 +746,27 @@ combination as such.
 
   The Free Software Foundation may publish revised and/or new versions of
 the GNU General Public License from time to time.  Such new versions will
-be similar in spirit to the present version, but may differ in detail to
+be similar in spirit to the present VERSION, but may differ in detail to
 address new problems or concerns.
 
-  Each version is given a distinguishing version number.  If the
-Program specifies that a certain numbered version of the GNU General
-Public License "or any later version" applies to it, you have the
+  Each VERSION is given a distinguishing VERSION number.  If the
+Program specifies that a certain numbered VERSION of the GNU General
+Public License "or any later VERSION" applies to it, you have the
 option of following the terms and conditions either of that numbered
-version or of any later version published by the Free Software
-Foundation.  If the Program does not specify a version number of the
-GNU General Public License, you may choose any version ever published
+VERSION or of any later VERSION published by the Free Software
+Foundation.  If the Program does not specify a VERSION number of the
+GNU General Public License, you may choose any VERSION ever published
 by the Free Software Foundation.
 
   If the Program specifies that a proxy can decide which future
 versions of the GNU General Public License can be used, that proxy's
-public statement of acceptance of a version permanently authorizes you
-to choose that version for the Program.
+public statement of acceptance of a VERSION permanently authorizes you
+to choose that VERSION for the Program.
 
   Later license versions may give you additional or different
 permissions.  However, no additional obligations are imposed on any
 author or copyright holder as a result of your choosing to follow a
-later version.
+later VERSION.
 
   15. Disclaimer of Warranty.
 
@@ -818,8 +818,8 @@ the "copyright" line and a pointer to where the full notice is found.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+    the Free Software Foundation, either VERSION 3 of the License, or
+    (at your option) any later VERSION.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of

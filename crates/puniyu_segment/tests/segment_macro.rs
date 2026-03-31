@@ -167,3 +167,10 @@ fn test_macro_type_checking() {
 	assert!(at.as_at().is_some());
 	assert!(at.as_text().is_none());
 }
+
+#[test]
+fn test_macro_text_from_string_expression() {
+	let element = segment!(text, format!("{} {}", "hello", "world"));
+
+	assert_eq!(element.as_text(), Some("hello world"));
+}

@@ -3,7 +3,10 @@ use crate::notion::{
 	GroupMemberTitleChange, GroupPoke, GroupRecall, NotionBase, NotionSubEventType,
 	PrivateFileUpload, PrivatePoke, PrivateRecall, ReceiveLike,
 };
-use crate::{EventBase, EventType};
+use crate::{
+	EventBase, EventType, codegen_delegate_to_variants, codegen_delegate_to_variants_convert,
+	codegen_impl_as,
+};
 use puniyu_bot::Bot;
 use puniyu_contact::ContactType;
 use puniyu_sender::SenderType;
@@ -37,188 +40,313 @@ pub enum NotionEvent<'n> {
 	GroupMemberTitleChange(GroupMemberTitleChange<'n>),
 }
 
-macro_rules! delegate_to_variants {
-	($self:ident, $method:ident() -> $ret:ty) => {
-		match $self {
-			Self::ReceiveLike(inner) => inner.$method(),
-			Self::FriendAdd(inner) => inner.$method(),
-			Self::FriendDecrease(inner) => inner.$method(),
-			Self::PrivatePoke(inner) => inner.$method(),
-			Self::PrivateRecall(inner) => inner.$method(),
-			Self::PrivateFileUpload(inner) => inner.$method(),
-			Self::GroupPoke(inner) => inner.$method(),
-			Self::GroupRecall(inner) => inner.$method(),
-			Self::GroupFileUpload(inner) => inner.$method(),
-			Self::GroupCardChange(inner) => inner.$method(),
-			Self::GroupMemberTitleChange(inner) => inner.$method(),
-		}
-	};
-}
-
-macro_rules! impl_as {
-    ($enum_name:ident { $($variant:ident => $method_name:ident),* $(,)? }) => {
-        impl $enum_name<'_> {
-            $(
-                pub fn $method_name(&self) -> Option<&$variant<'_>> {
-                    match self {
-                        Self::$variant(inner) => Some(inner),
-                        _ => None,
-                    }
-                }
-            )*
-        }
-    };
-}
-impl_as! {
+codegen_impl_as! {
 	NotionEvent {
-		ReceiveLike => as_receive_like,
-		FriendAdd => as_friend_add,
-		FriendDecrease => as_friend_decrease,
-		PrivatePoke => as_private_poke,
-		PrivateRecall => as_private_recall,
-		PrivateFileUpload => as_private_file_upload,
-		GroupPoke => as_group_poke,
-		GroupRecall => as_group_recall,
-		GroupFileUpload => as_group_file_upload,
-		GroupCardChange => as_group_card_change,
-		GroupMemberTitleChange => as_group_member_title_change,
+		ReceiveLike(ReceiveLike) => as_receive_like,
+		FriendAdd(FriendAdd) => as_friend_add,
+		FriendDecrease(FriendDecrease) => as_friend_decrease,
+		PrivatePoke(PrivatePoke) => as_private_poke,
+		PrivateRecall(PrivateRecall) => as_private_recall,
+		PrivateFileUpload(PrivateFileUpload) => as_private_file_upload,
+		GroupPoke(GroupPoke) => as_group_poke,
+		GroupRecall(GroupRecall) => as_group_recall,
+		GroupFileUpload(GroupFileUpload) => as_group_file_upload,
+		GroupCardChange(GroupCardChange) => as_group_card_change,
+		GroupMemberTitleChange(GroupMemberTitleChange) => as_group_member_title_change,
 	}
 }
+
+impl<'n> EventBase for NotionEvent<'n> {
+	type EventType = EventType;
+	type SubEventType = NotionSubEventType;
+	type Contact = dyn puniyu_contact::Contact + 'n;
+	type Sender = dyn puniyu_sender::Sender + 'n;
+
+	fn time(&self) -> u64 {
+		codegen_delegate_to_variants!(
+			self,
+			time,
+			ReceiveLike,
+			FriendAdd,
+			FriendDecrease,
+			PrivatePoke,
+			PrivateRecall,
+			PrivateFileUpload,
+			GroupPoke,
+			GroupRecall,
+			GroupFileUpload,
+			GroupCardChange,
+			GroupMemberTitleChange
+		)
+	}
+
+	fn event_type(&self) -> &Self::EventType {
+		codegen_delegate_to_variants!(
+			self,
+			event_type,
+			ReceiveLike,
+			FriendAdd,
+			FriendDecrease,
+			PrivatePoke,
+			PrivateRecall,
+			PrivateFileUpload,
+			GroupPoke,
+			GroupRecall,
+			GroupFileUpload,
+			GroupCardChange,
+			GroupMemberTitleChange
+		)
+	}
+
+	fn event_id(&self) -> &str {
+		codegen_delegate_to_variants!(
+			self,
+			event_id,
+			ReceiveLike,
+			FriendAdd,
+			FriendDecrease,
+			PrivatePoke,
+			PrivateRecall,
+			PrivateFileUpload,
+			GroupPoke,
+			GroupRecall,
+			GroupFileUpload,
+			GroupCardChange,
+			GroupMemberTitleChange
+		)
+	}
+
+	fn sub_event(&self) -> &Self::SubEventType {
+		codegen_delegate_to_variants!(
+			self,
+			sub_event,
+			ReceiveLike,
+			FriendAdd,
+			FriendDecrease,
+			PrivatePoke,
+			PrivateRecall,
+			PrivateFileUpload,
+			GroupPoke,
+			GroupRecall,
+			GroupFileUpload,
+			GroupCardChange,
+			GroupMemberTitleChange
+		)
+	}
+
+	fn bot(&self) -> &Bot {
+		codegen_delegate_to_variants!(
+			self,
+			bot,
+			ReceiveLike,
+			FriendAdd,
+			FriendDecrease,
+			PrivatePoke,
+			PrivateRecall,
+			PrivateFileUpload,
+			GroupPoke,
+			GroupRecall,
+			GroupFileUpload,
+			GroupCardChange,
+			GroupMemberTitleChange
+		)
+	}
+
+	fn self_id(&self) -> &str {
+		codegen_delegate_to_variants!(
+			self,
+			self_id,
+			ReceiveLike,
+			FriendAdd,
+			FriendDecrease,
+			PrivatePoke,
+			PrivateRecall,
+			PrivateFileUpload,
+			GroupPoke,
+			GroupRecall,
+			GroupFileUpload,
+			GroupCardChange,
+			GroupMemberTitleChange
+		)
+	}
+
+	fn user_id(&self) -> &str {
+		codegen_delegate_to_variants!(
+			self,
+			user_id,
+			ReceiveLike,
+			FriendAdd,
+			FriendDecrease,
+			PrivatePoke,
+			PrivateRecall,
+			PrivateFileUpload,
+			GroupPoke,
+			GroupRecall,
+			GroupFileUpload,
+			GroupCardChange,
+			GroupMemberTitleChange
+		)
+	}
+
+	fn contact(&self) -> &Self::Contact {
+		match self {
+			Self::ReceiveLike(inner) => inner.contact(),
+			Self::FriendAdd(inner) => inner.contact(),
+			Self::FriendDecrease(inner) => inner.contact(),
+			Self::PrivatePoke(inner) => inner.contact(),
+			Self::PrivateRecall(inner) => inner.contact(),
+			Self::PrivateFileUpload(inner) => inner.contact(),
+			Self::GroupPoke(inner) => inner.contact(),
+			Self::GroupRecall(inner) => inner.contact(),
+			Self::GroupFileUpload(inner) => inner.contact(),
+			Self::GroupCardChange(inner) => inner.contact(),
+			Self::GroupMemberTitleChange(inner) => inner.contact(),
+		}
+	}
+
+	fn sender(&self) -> &Self::Sender {
+		match self {
+			Self::ReceiveLike(inner) => inner.sender(),
+			Self::FriendAdd(inner) => inner.sender(),
+			Self::FriendDecrease(inner) => inner.sender(),
+			Self::PrivatePoke(inner) => inner.sender(),
+			Self::PrivateRecall(inner) => inner.sender(),
+			Self::PrivateFileUpload(inner) => inner.sender(),
+			Self::GroupPoke(inner) => inner.sender(),
+			Self::GroupRecall(inner) => inner.sender(),
+			Self::GroupFileUpload(inner) => inner.sender(),
+			Self::GroupCardChange(inner) => inner.sender(),
+			Self::GroupMemberTitleChange(inner) => inner.sender(),
+		}
+	}
+}
+
+impl<'n> NotionBase for NotionEvent<'n> {
+	type Content = ContentType;
+
+	fn notion(&self) -> &str {
+		codegen_delegate_to_variants!(
+			self,
+			notion,
+			ReceiveLike,
+			FriendAdd,
+			FriendDecrease,
+			PrivatePoke,
+			PrivateRecall,
+			PrivateFileUpload,
+			GroupPoke,
+			GroupRecall,
+			GroupFileUpload,
+			GroupCardChange,
+			GroupMemberTitleChange
+		)
+	}
+
+	fn content(&self) -> Self::Content {
+		codegen_delegate_to_variants_convert!(
+			self,
+			content,
+			ContentType,
+			ReceiveLike,
+			FriendAdd,
+			FriendDecrease,
+			PrivatePoke,
+			PrivateRecall,
+			PrivateFileUpload,
+			GroupPoke,
+			GroupRecall,
+			GroupFileUpload,
+			GroupCardChange,
+			GroupMemberTitleChange
+		)
+	}
+}
+
 impl NotionEvent<'_> {
-	/// 获取通知触发时间戳
-	///
-	/// # 返回值
-	///
-	/// 返回 Unix 时间戳（秒）
+	/// 获取通知事件时间戳。
 	pub fn time(&self) -> u64 {
-		delegate_to_variants!(self, time() -> u64)
+		EventBase::time(self)
 	}
 
-	/// 获取事件类型
-	///
-	/// # 返回值
-	///
-	/// 返回 `EventType::Notion`
-	pub fn event(&self) -> &EventType {
-		delegate_to_variants!(self, event() -> EventType)
+	/// 获取事件类型。
+	pub fn event_type(&self) -> &EventType {
+		EventBase::event_type(self)
 	}
 
-	/// 获取事件 ID
-	///
-	/// # 返回值
-	///
-	/// 返回事件的唯一标识符
+	/// 获取事件 ID。
 	pub fn event_id(&self) -> &str {
-		delegate_to_variants!(self, event_id() -> &str)
+		EventBase::event_id(self)
 	}
 
-	/// 获取通知子类型
-	///
-	/// # 返回值
-	///
-	/// 返回通知的具体子类型
+	/// 获取通知子类型。
 	pub fn sub_event(&self) -> &NotionSubEventType {
-		delegate_to_variants!(self, sub_event() -> &NotionSubEvent)
+		EventBase::sub_event(self)
 	}
 
-	/// 获取机器人实例
-	///
-	/// # 返回值
-	///
-	/// 返回处理该通知的机器人实例引用
+	/// 获取关联的机器人实例。
 	pub fn bot(&self) -> &Bot {
-		delegate_to_variants!(self, bot() -> &Bot)
+		EventBase::bot(self)
 	}
 
-	/// 获取机器人 ID
-	///
-	/// # 返回值
-	///
-	/// 返回机器人的唯一标识符
+	/// 获取机器人自身 ID。
 	pub fn self_id(&self) -> &str {
-		delegate_to_variants!(self, self_id() -> &str)
+		EventBase::self_id(self)
 	}
 
-	/// 获取用户 ID
-	///
-	/// # 返回值
-	///
-	/// 返回触发通知的用户 ID
+	/// 获取触发事件的用户 ID。
 	pub fn user_id(&self) -> &str {
-		delegate_to_variants!(self, user_id() -> &str)
+		EventBase::user_id(self)
 	}
 
-	/// 获取联系人信息
-	///
-	/// # 返回值
-	///
-	/// 返回通知发生的联系人信息
+	/// 获取通知对应的联系人信息。
 	pub fn contact(&self) -> ContactType<'_> {
-		match self {
-			Self::ReceiveLike(inner) => ContactType::from(inner.contact().clone()),
-			Self::FriendDecrease(inner) => ContactType::from(inner.contact().clone()),
-			Self::FriendAdd(inner) => ContactType::from(inner.contact().clone()),
-			Self::PrivatePoke(inner) => ContactType::from(inner.contact().clone()),
-			Self::PrivateRecall(inner) => ContactType::from(inner.contact().clone()),
-			Self::PrivateFileUpload(inner) => ContactType::from(inner.contact().clone()),
-			Self::GroupPoke(inner) => ContactType::from(inner.contact().clone()),
-			Self::GroupRecall(inner) => ContactType::from(inner.contact().clone()),
-			Self::GroupFileUpload(inner) => ContactType::from(inner.contact().clone()),
-			Self::GroupCardChange(inner) => ContactType::from(inner.contact().clone()),
-			Self::GroupMemberTitleChange(inner) => ContactType::from(inner.contact().clone()),
-		}
+		codegen_delegate_to_variants_convert!(
+			self,
+			contact,
+			ContactType,
+			ReceiveLike,
+			FriendAdd,
+			FriendDecrease,
+			PrivatePoke,
+			PrivateRecall,
+			PrivateFileUpload,
+			GroupPoke,
+			GroupRecall,
+			GroupFileUpload,
+			GroupCardChange,
+			GroupMemberTitleChange
+		)
 	}
 
-	/// 获取发送者信息
-	///
-	/// # 返回值
-	///
-	/// 返回触发通知的用户详细信息
+	/// 获取通知发送者信息。
 	pub fn sender(&self) -> SenderType<'_> {
-		match self {
-			Self::ReceiveLike(inner) => SenderType::from(inner.sender().clone()),
-			Self::FriendAdd(inner) => SenderType::from(inner.sender().clone()),
-			Self::FriendDecrease(inner) => SenderType::from(inner.sender().clone()),
-			Self::PrivatePoke(inner) => SenderType::from(inner.sender().clone()),
-			Self::PrivateRecall(inner) => SenderType::from(inner.sender().clone()),
-			Self::PrivateFileUpload(inner) => SenderType::from(inner.sender().clone()),
-			Self::GroupPoke(inner) => SenderType::from(inner.sender().clone()),
-			Self::GroupRecall(inner) => SenderType::from(inner.sender().clone()),
-			Self::GroupFileUpload(inner) => SenderType::from(inner.sender().clone()),
-			Self::GroupCardChange(inner) => SenderType::from(inner.sender().clone()),
-			Self::GroupMemberTitleChange(inner) => SenderType::from(inner.sender().clone()),
-		}
+		codegen_delegate_to_variants_convert!(
+			self,
+			sender,
+			SenderType,
+			ReceiveLike,
+			FriendAdd,
+			FriendDecrease,
+			PrivatePoke,
+			PrivateRecall,
+			PrivateFileUpload,
+			GroupPoke,
+			GroupRecall,
+			GroupFileUpload,
+			GroupCardChange,
+			GroupMemberTitleChange
+		)
 	}
 }
 
 impl NotionEvent<'_> {
-	/// 获取通知消息
-	///
-	/// # 返回值
-	///
-	/// 返回通知的文本消息内容
+	/// 获取通知描述文本。
 	pub fn notion(&self) -> &str {
-		delegate_to_variants!(self, notion() -> &str)
+		NotionBase::notion(self)
 	}
 
-	/// 获取通知内容
-	///
-	/// # 返回值
-	///
-	/// 返回通知的详细内容对象
+	/// 获取统一的通知内容枚举。
 	pub fn content(&self) -> ContentType {
-		match self {
-			Self::ReceiveLike(inner) => ContentType::from(inner.content().clone()),
-			Self::FriendAdd(inner) => ContentType::from(inner.content().clone()),
-			Self::FriendDecrease(inner) => ContentType::from(inner.content().clone()),
-			Self::PrivatePoke(inner) => ContentType::from(inner.content().clone()),
-			Self::PrivateRecall(inner) => ContentType::from(inner.content().clone()),
-			Self::PrivateFileUpload(inner) => ContentType::from(inner.content().clone()),
-			Self::GroupPoke(inner) => ContentType::from(inner.content().clone()),
-			Self::GroupRecall(inner) => ContentType::from(inner.content().clone()),
-			Self::GroupFileUpload(inner) => ContentType::from(inner.content().clone()),
-			Self::GroupCardChange(inner) => ContentType::from(inner.content().clone()),
-			Self::GroupMemberTitleChange(inner) => ContentType::from(inner.content().clone()),
-		}
+		NotionBase::content(self)
 	}
 }

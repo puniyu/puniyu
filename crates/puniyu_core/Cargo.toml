@@ -9,36 +9,41 @@ homepage.workspace = true
 repository.workspace = true
 edition.workspace = true
 rust-version.workspace = true
-include = ["src", "Cargo.toml", "README.md", "assets"]
+
+[lints]
+workspace = true
 
 [dependencies]
-figlet-rs = "0.1.5"
 bytes.workspace = true
 tokio.workspace = true
 convert_case.workspace = true
-puniyu_system_info.workspace = true
-
+puniyu_logger.workspace = true
 puniyu_version.workspace = true
+puniyu_common.workspace = true
 puniyu_path.workspace = true
-puniyu_config.workspace = true
+
 puniyu_dispatch.workspace = true
-puniyu_logger = { workspace = true, optional = true }
-puniyu_common = { workspace = true, features = ["version", "source"] }
+const-str.workspace = true
+
+figlet-rs = "0.1.5"
+
+puniyu_config.workspace = true
+puniyu_api.workspace = true
 puniyu_error = { workspace = true, features = ["registry"] }
-puniyu_bot = { workspace = true, features = ["registry"] }
 puniyu_hook = { workspace = true, features = ["registry"] }
 puniyu_command = { workspace = true, features = ["registry"] }
 puniyu_task = { workspace = true, features = ["registry"] }
-puniyu_plugin = { workspace = true, features = ["registry"] }
+puniyu_plugin_core = { workspace = true, features = ["registry"] }
 puniyu_loader = { workspace = true, features = ["registry"] }
 puniyu_handler = { workspace = true, features = ["registry"] }
-puniyu_adapter = { workspace = true, features = ["registry"] }
+puniyu_adapter_core = { workspace = true, features = ["registry"] }
 puniyu_server = { workspace = true, features = ["registry"], optional = true }
 
 
-
+[build-dependencies]
+vergen-git2 = { version = "9.1.0", features = ["build"] }
 
 [features]
 default = ["server", "logger"]
+logger = []
 server = ["dep:puniyu_server"]
-logger = ["dep:puniyu_logger"]

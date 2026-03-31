@@ -1,17 +1,10 @@
-mod option;
-
-pub use option::GroupOption;
+use crate::GroupOption;
 use puniyu_common::read_config;
-use puniyu_path::CONFIG_DIR;
+use puniyu_path::config_dir;
 use serde::{Deserialize, Serialize};
-use std::{
-	collections::HashMap,
-	sync::{Arc, LazyLock, RwLock},
-};
+use std::{collections::HashMap, path::PathBuf, sync::LazyLock};
 
-pub(crate) static GROUP_CONFIG: LazyLock<Arc<RwLock<GroupConfig>>> = LazyLock::new(|| {
-	Arc::new(RwLock::new(read_config(CONFIG_DIR.as_path(), "group").unwrap_or_default()))
-});
+static CONFIG_PATH: LazyLock<PathBuf> = LazyLock::new(|| config_dir().join("group.toml"));
 
 /// 群组配置结构
 ///
@@ -48,59 +41,45 @@ pub struct GroupConfig {
 }
 
 impl GroupConfig {
-	/// 获取群组配置实例
-	///
-	/// # 返回值
-	///
-	/// 返回当前的群组配置副本
+	/// 获取当前群组配置。
 	pub fn get() -> Self {
-		GROUP_CONFIG.read().expect("Failed to read group config").clone()
+		use crate::ConfigRegistry;
+		ConfigRegistry::get(CONFIG_PATH.as_path()).and_then(|v| v.try_into().ok()).unwrap_or_else(
+			|| read_config::<Self>(config_dir().as_path(), "group").unwrap_or_default(),
+		)
 	}
 
-	/// 获取全局群组配置
-	///
-	/// # 返回值
-	///
-	/// 返回全局群组配置的引用，作为所有群组的默认配置
+	/// 获取全局群组配置。
 	pub fn global(&self) -> &GroupOption {
 		&self.global
 	}
 
-	/// 获取指定群组的配置
-	///
-	/// # 参数
-	///
-	/// - `group_id`: 群组的唯一标识符
-	///
-	/// # 返回值
-	///
-	/// 返回对应群组的配置。特定群组配置会自动继承全局配置，
-	/// 只有显式设置的字段会覆盖全局配置
-	///
-	/// # 示例
-	///
-	/// ```rust,ignore
-	/// use puniyu_config::Config;
-	///
-	/// let group_config = Config::group();
-	/// // 如果 group_123 只设置了 cd，其他字段会继承全局配置
-	/// let group_option = group_config.group("group_123");
-	/// println!("群组 CD: {}", group_option.cd());
-	/// println!("用户 CD: {}", group_option.user_cd());
-	/// ```
+	/// 获取指定群组的配置，并自动与全局配置合并。
 	pub fn group(&self, group_id: &str) -> GroupOption {
 		self.group
 			.get(group_id)
-			.map(|specific| specific.merge_with(&self.global))
+			.map(|specific| crate::common::MergeWith::merge_with(specific, &self.global))
 			.unwrap_or_else(|| self.global.clone())
 	}
 
-	/// 获取所有群组配置列表
-	///
-	/// # 返回值
-	///
-	/// 返回包含所有群组配置的 Vec，每个配置都已与全局配置合并
+	/// 获取所有按群号定义的配置，并自动与全局配置合并。
 	pub fn list(&self) -> Vec<GroupOption> {
-		self.group.values().map(|specific| specific.merge_with(&self.global)).collect()
+		self.group
+			.values()
+			.map(|specific| crate::common::MergeWith::merge_with(specific, &self.global))
+			.collect()
+	}
+}
+
+impl crate::Config for GroupConfig {
+	fn config(&self) -> crate::ConfigInfo {
+		crate::ConfigInfo {
+			name: "group".to_string(),
+			path: CONFIG_PATH.clone(),
+			value: toml::from_str(
+				&toml::to_string(self).expect("Failed to serialize GroupConfig to TOML string"),
+			)
+			.expect("Failed to parse TOML string to Value"),
+		}
 	}
 }

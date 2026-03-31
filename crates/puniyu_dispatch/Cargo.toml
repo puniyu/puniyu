@@ -1,10 +1,10 @@
 [package]
 name = "puniyu_dispatch"
 version = "0.7.8"
-description = "事件分发和处理库，提供全局事件总线用于异步事件分发"
+description = "puniyu 事件分发库，提供全局事件发射器用于异步事件处理"
 authors.workspace = true
 license.workspace = true
-readme.workspace = true
+readme = "README.md"
 homepage.workspace = true
 repository.workspace = true
 edition.workspace = true
@@ -15,10 +15,10 @@ workspace = true
 
 [dependencies]
 puniyu_logger.workspace = true
+thiserror.workspace = true
 puniyu_event.workspace = true
 puniyu_handler = { workspace = true, features = ["registry"] }
-tokio = { workspace = true, features = ["rt", "sync", "macros"] }
+tokio = { workspace = true, features = ["rt"] }
 
 [dev-dependencies]
 tokio = { workspace = true, features = ["rt", "sync", "macros", "time"] }
-

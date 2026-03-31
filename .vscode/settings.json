@@ -1,7 +1,12 @@
 {
   "rust-analyzer.cargo.features": "all",
+  "editor.defaultFormatter": "rust-lang.rust-analyzer",
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.patterns": {
     "Cargo.toml": "Cargo.lock, clippy.toml, rustfmt.toml, rust-toolchain.toml"
+  },
+  "chatgpt.openOnStartup": false,
+  "[toml]": {
+    "editor.defaultFormatter": "tamasfe.even-better-toml"
   }
 }

@@ -1,22 +1,12 @@
-mod adapter;
-mod friend;
-mod group;
-mod logger;
-mod server;
-
-pub use adapter::AdapterConfig;
-pub use friend::FriendConfig;
-pub use group::GroupConfig;
-pub use logger::LoggerConfig;
+use crate::types::ListConfig;
+use crate::{AdapterConfig, LoggerConfig, ServerConfig};
 use puniyu_common::read_config;
-use puniyu_path::CONFIG_DIR;
+use puniyu_path::config_dir;
 use serde::{Deserialize, Serialize};
-pub use server::ServerConfig;
-use std::sync::{Arc, LazyLock, RwLock};
+use std::path::PathBuf;
+use std::sync::LazyLock;
 
-pub(crate) static APP_CONFIG: LazyLock<Arc<RwLock<AppConfig>>> = LazyLock::new(|| {
-	Arc::new(RwLock::new(read_config::<AppConfig>(CONFIG_DIR.as_path(), "app").unwrap_or_default()))
-});
+static CONFIG_PATH: LazyLock<PathBuf> = LazyLock::new(|| config_dir().join("app.toml"));
 
 fn default_master() -> Vec<String> {
 	vec!["console".to_string()]
@@ -50,13 +40,13 @@ pub struct AppConfig {
 	///
 	/// 包含群聊黑白名单等全局设置
 	#[serde(default)]
-	group: GroupConfig,
+	group: ListConfig,
 
 	/// 应用级好友配置
 	///
 	/// 包含好友黑白名单等全局设置
 	#[serde(default)]
-	friend: FriendConfig,
+	friend: ListConfig,
 
 	/// Bot 主人列表
 	///
@@ -75,87 +65,71 @@ impl Default for AppConfig {
 	#[inline]
 	fn default() -> Self {
 		Self {
-			logger: LoggerConfig::default(),
-			server: ServerConfig::default(),
-			adapter: AdapterConfig::default(),
-			group: GroupConfig::default(),
-			friend: FriendConfig::default(),
+			logger: Default::default(),
+			server: Default::default(),
+			adapter: Default::default(),
 			masters: default_master(),
 			prefix: default_prefix(),
+			group: Default::default(),
+			friend: Default::default(),
 		}
 	}
 }
 
 impl AppConfig {
-	/// 获取应用配置实例
-	///
-	/// # 返回值
-	///
-	/// 返回当前的应用配置副本
+	/// 获取当前应用配置。
 	pub fn get() -> Self {
-		APP_CONFIG.read().expect("Failed to read app config").clone()
+		use crate::ConfigRegistry;
+		ConfigRegistry::get(CONFIG_PATH.as_path()).and_then(|v| v.try_into().ok()).unwrap_or_else(
+			|| read_config::<Self>(config_dir().as_path(), "app").unwrap_or_default(),
+		)
 	}
 
-	/// 获取日志配置
-	///
-	/// # 返回值
-	///
-	/// 返回日志配置的引用，包括日志级别、文件记录等设置
+	/// 获取日志配置。
 	pub fn logger(&self) -> &LoggerConfig {
 		&self.logger
 	}
 
-	/// 获取服务器配置
-	///
-	/// # 返回值
-	///
-	/// 返回服务器配置的引用，包括主机地址和端口号
+	/// 获取服务配置。
 	pub fn server(&self) -> &ServerConfig {
 		&self.server
 	}
 
-	/// 获取适配器配置
-	///
-	/// # 返回值
-	///
-	/// 返回适配器配置的引用，控制启用哪些适配器
+	/// 获取适配器配置。
 	pub fn adapter(&self) -> &AdapterConfig {
 		&self.adapter
 	}
 
-	/// 获取 Bot 主人列表
-	///
-	/// # 返回值
-	///
-	/// 返回主人用户 ID 列表的引用
+	/// 获取应用级群组名单配置。
+	pub fn group(&self) -> &ListConfig {
+		&self.group
+	}
+
+	/// 获取应用级好友名单配置。
+	pub fn friend(&self) -> &ListConfig {
+		&self.friend
+	}
+
+	/// 获取 Bot 主人列表的副本。
 	pub fn masters(&self) -> Vec<String> {
 		self.masters.clone()
 	}
 
-	/// 获取应用级群组配置
-	///
-	/// # 返回值
-	///
-	/// 返回应用级群组配置的引用，包含群聊黑白名单等全局设置
-	pub fn group(&self) -> &GroupConfig {
-		&self.group
-	}
-
-	/// 获取应用级好友配置
-	///
-	/// # 返回值
-	///
-	/// 返回应用级好友配置的引用，包含好友黑白名单等全局设置
-	pub fn friend(&self) -> &FriendConfig {
-		&self.friend
-	}
-
-	/// 获取全局命令前缀
-	///
-	/// # 返回值
-	///
-	/// 返回命令前缀字符串的引用，默认为 "!", 为空时返回为[`None`]
+	/// 获取全局命令前缀的副本。
 	pub fn prefix(&self) -> Option<String> {
 		self.prefix.clone()
+	}
+}
+
+impl crate::Config for AppConfig {
+	fn config(&self) -> crate::ConfigInfo {
+		crate::ConfigInfo {
+			name: "app".to_string(),
+			path: CONFIG_PATH.clone(),
+			value: toml::from_str(
+				&toml::to_string(self).expect("Failed to serialize AppConfig to TOML string"),
+			)
+			.expect("Failed to parse TOML string to Value"),
+		}
 	}
 }

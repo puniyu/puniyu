@@ -1,0 +1,24 @@
+[package]
+name = "puniyu_adapter_api"
+version = "0.7.8"
+description = "puniyu 适配器 API 库，统一消息、群组、好友与账户操作接口"
+authors.workspace = true
+license.workspace = true
+readme = "README.md"
+homepage.workspace = true
+repository.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+async-trait.workspace = true
+thiserror.workspace = true
+derive_builder.workspace = true
+
+puniyu_adapter_types.workspace = true
+puniyu_contact.workspace = true
+puniyu_message.workspace = true
+puniyu_error.workspace = true

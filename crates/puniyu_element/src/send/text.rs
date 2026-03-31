@@ -1,24 +1,44 @@
+use crate::{Element, ElementType};
 use serde::{Deserialize, Serialize};
-use crate::{ElementType, RawMessage};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct TextElement<'t> {
+pub struct TextElement {
 	/// 文本元素内容
-	pub text: &'t str,
+	pub text: String,
 }
 
-impl<'t> TextElement<'t> {
-	pub fn new(text: &'t str) -> Self {
-		Self { text }
+impl TextElement {
+	pub fn new(text: impl Into<String>) -> Self {
+		Self { text: text.into() }
 	}
 }
 
-impl<'t> RawMessage for TextElement<'t> {
+impl From<&str> for TextElement {
+	fn from(text: &str) -> Self {
+		Self::new(text)
+	}
+}
+
+impl From<String> for TextElement {
+	fn from(text: String) -> Self {
+		Self::new(text)
+	}
+}
+
+impl From<TextElement> for String {
+	fn from(element: TextElement) -> Self {
+		element.text
+	}
+}
+
+impl AsRef<str> for TextElement {
+	fn as_ref(&self) -> &str {
+		&self.text
+	}
+}
+
+impl Element for TextElement {
 	fn r#type(&self) -> ElementType {
 		ElementType::Text
-	}
-
-	fn raw(&self) -> String {
-		self.text.to_string()
 	}
 }

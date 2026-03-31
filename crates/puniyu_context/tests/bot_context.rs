@@ -1,28 +1,11 @@
-use puniyu_account::AccountInfo;
-use puniyu_adapter_core::adapter_info;
-use puniyu_adapter_core::api::AdapterApi;
-use puniyu_adapter_core::types::info::{AdapterPlatform, AdapterProtocol};
-use puniyu_bot::Bot;
+use bytes::Bytes;
 use puniyu_context::BotContext;
 
-fn create_mock_bot() -> Bot {
-	let adapter_info = adapter_info!(
-		name: "test-adapter",
-		platform: AdapterPlatform::Other,
-		protocol: AdapterProtocol::Console,
-	);
-	let account = AccountInfo {
-		uin: "bot123".to_string(),
-		name: "TestBot".to_string(),
-		avatar: "".to_string(),
-	};
-	let api = AdapterApi::default();
-	Bot::new(adapter_info, api, account)
-}
+mod common;
 
 #[test]
 fn test_bot_context_creation() {
-	let bot = create_mock_bot();
+	let bot = common::make_bot_with_account("bot123", "TestBot", Bytes::new());
 	let context = BotContext::new(&bot);
 
 	assert_eq!(context.account().uin, "bot123");
@@ -31,7 +14,7 @@ fn test_bot_context_creation() {
 
 #[test]
 fn test_bot_context_api_access() {
-	let bot = create_mock_bot();
+	let bot = common::make_bot();
 	let context = BotContext::new(&bot);
 
 	let _api = context.api();
@@ -40,7 +23,7 @@ fn test_bot_context_api_access() {
 
 #[test]
 fn test_bot_context_account_access() {
-	let bot = create_mock_bot();
+	let bot = common::make_bot_with_account("bot123", "TestBot", Bytes::new());
 	let context = BotContext::new(&bot);
 
 	let account = context.account();
@@ -50,7 +33,7 @@ fn test_bot_context_account_access() {
 
 #[test]
 fn test_bot_context_clone() {
-	let bot = create_mock_bot();
+	let bot = common::make_bot();
 	let context1 = BotContext::new(&bot);
 	let context2 = context1.clone();
 
@@ -59,24 +42,10 @@ fn test_bot_context_clone() {
 
 #[test]
 fn test_bot_context_with_different_accounts() {
-	let account1 =
-		AccountInfo { uin: "bot123".to_string(), name: "Bot1".to_string(), avatar: "".to_string() };
-	let adapter_info1 = adapter_info!(
-		name: "test-adapter",
-		platform: AdapterPlatform::Other,
-		protocol: AdapterProtocol::Console,
-	);
-	let bot1 = Bot::new(adapter_info1, AdapterApi::default(), account1);
+	let bot1 = common::make_bot_with_account("bot123", "Bot1", Bytes::new());
 	let context1 = BotContext::new(&bot1);
 
-	let account2 =
-		AccountInfo { uin: "bot456".to_string(), name: "Bot2".to_string(), avatar: "".to_string() };
-	let adapter_info2 = adapter_info!(
-		name: "test-adapter",
-		platform: AdapterPlatform::Other,
-		protocol: AdapterProtocol::Console,
-	);
-	let bot2 = Bot::new(adapter_info2, AdapterApi::default(), account2);
+	let bot2 = common::make_bot_with_account("bot456", "Bot2", Bytes::new());
 	let context2 = BotContext::new(&bot2);
 
 	assert_eq!(context1.account().uin, "bot123");
@@ -85,17 +54,11 @@ fn test_bot_context_with_different_accounts() {
 
 #[test]
 fn test_bot_context_with_avatar() {
-	let account = AccountInfo {
-		uin: "bot123".to_string(),
-		name: "TestBot".to_string(),
-		avatar: "https://example.com/avatar.jpg".to_string(),
-	};
-	let adapter_info = adapter_info!(
-		name: "test-adapter",
-		platform: AdapterPlatform::Other,
-		protocol: AdapterProtocol::Console,
+	let bot = common::make_bot_with_account(
+		"bot123",
+		"TestBot",
+		Bytes::from("https://example.com/avatar.jpg"),
 	);
-	let bot = Bot::new(adapter_info, AdapterApi::default(), account);
 	let context = BotContext::new(&bot);
 
 	assert_eq!(context.account().avatar, "https://example.com/avatar.jpg");
@@ -103,14 +66,7 @@ fn test_bot_context_with_avatar() {
 
 #[test]
 fn test_bot_context_minimal_account() {
-	let account =
-		AccountInfo { uin: "bot123".to_string(), name: "".to_string(), avatar: "".to_string() };
-	let adapter_info = adapter_info!(
-		name: "test-adapter",
-		platform: AdapterPlatform::Other,
-		protocol: AdapterProtocol::Console,
-	);
-	let bot = Bot::new(adapter_info, AdapterApi::default(), account);
+	let bot = common::make_bot_with_account("bot123", "", Bytes::new());
 	let context = BotContext::new(&bot);
 
 	assert_eq!(context.account().uin, "bot123");

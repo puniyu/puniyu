@@ -1,10 +1,10 @@
 [package]
 name = "puniyu_sender"
 version = "0.7.8"
-description = "Puniyu 发送者类型定义库，提供好友和群聊发送者的统一类型系统"
+description = "puniyu 发送者类型库，统一好友与群聊发送者信息模型"
 authors.workspace = true
 license.workspace = true
-readme.workspace = true
+readme = "README.md"
 homepage.workspace = true
 repository.workspace = true
 edition.workspace = true

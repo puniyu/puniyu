@@ -1,24 +1,44 @@
+use crate::{Element, ElementType};
 use serde::{Deserialize, Serialize};
-use crate::{ElementType, RawMessage};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct JsonElement<'j> {
+pub struct JsonElement {
 	/// Json数据，未序列化
-	pub data: &'j str,
+	pub data: String,
 }
 
-impl<'j> JsonElement<'j> {
-	pub fn new(data: &'j str) -> Self {
-		Self { data }
+impl JsonElement {
+	pub fn new(data: impl Into<String>) -> Self {
+		Self { data: data.into() }
 	}
 }
 
-impl<'j> RawMessage for JsonElement<'j> {
+impl From<&str> for JsonElement {
+	fn from(data: &str) -> Self {
+		Self::new(data)
+	}
+}
+
+impl From<String> for JsonElement {
+	fn from(data: String) -> Self {
+		Self::new(data)
+	}
+}
+
+impl From<JsonElement> for String {
+	fn from(element: JsonElement) -> Self {
+		element.data
+	}
+}
+
+impl AsRef<str> for JsonElement {
+	fn as_ref(&self) -> &str {
+		&self.data
+	}
+}
+
+impl Element for JsonElement {
 	fn r#type(&self) -> ElementType {
 		ElementType::Json
-	}
-
-	fn raw(&self) -> String {
-		self.data.to_string()
 	}
 }

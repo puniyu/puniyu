@@ -5,12 +5,10 @@ pub struct FriendAddType {}
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct FriendDecreaseType {}
 
-
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct ReceiveLikeType {
 	pub count: u8,
 }
-
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct PrivatePokeType {
@@ -34,4 +32,3 @@ pub struct PrivateFileUploadType {
 	/// 文件Url
 	pub file_url: String,
 }
-

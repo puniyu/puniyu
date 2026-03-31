@@ -1,9 +1,9 @@
+#![allow(unused)]
+
 //! Puniyu 构建工具包
 //!
 //! 这个包提供了用于构建 Puniyu 应用相关的构建脚本，如plugin构建
 //!
-
-mod plugin;
 
 use cargo_metadata::MetadataCommand;
 use serde_json::Value;
@@ -20,16 +20,13 @@ pub fn setup_plugin() {
 		if let Some(plugin) = puniyu_metadata.get("plugin") {
 			match plugin {
 				Value::Bool(v) => {
-					if *v {
-						let features = &package.features;
-						plugin::check_features(features)
-					}
+					// if *v {
+					// 	let features = &package.features;
+					// 	plugin::check_features(features)
+					// }
 				}
 				Value::String(v) => {
-					if v == "true" {
-						let features = &package.features;
-						plugin::check_features(features)
-					}
+					
 				}
 				_ => {
 					panic!("plugin must be a bool or string")

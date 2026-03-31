@@ -1,124 +1,96 @@
 //! # puniyu_account
 //!
-//! 账户信息定义库，提供机器人账户信息的类型系统。
+//! 统一的机器人账户信息类型，描述账号 UIN、昵称与头像数据。
 //!
-//! ## 概述
+//! ## 特性
 //!
-//! `puniyu_account` 提供了机器人账户信息的结构定义，用于存储和管理机器人的基本信息。
+//! - 提供 `AccountInfo`
+//! - 提供构建宏 `account_info!`
+//! - 支持 `serde` 序列化与反序列化
+//! - 提供 `AccountInfoBuilder`
 //!
-//! ## 使用方式
-//!
-//! ### 创建账户信息
+//! ## 示例
 //!
 //! ```rust
+//! use bytes::Bytes;
 //! use puniyu_account::AccountInfo;
 //!
-//! // 手动创建
 //! let account = AccountInfo {
 //!     uin: "123456789".to_string(),
-//!     name: "MyBot".to_string(),
-//!     avatar: "https://example.com/avatar.jpg".to_string(),
+//!     name: "Puniyu".to_string(),
+//!     avatar: Bytes::from_static(b"avatar"),
 //! };
+//! assert_eq!(account.uin, "123456789");
 //! ```
 //!
-//! ### 使用宏创建
-//!
 //! ```rust
+//! use bytes::Bytes;
 //! use puniyu_account::account_info;
 //!
 //! let account = account_info!(
 //!     uin: "123456789",
-//!     name: "MyBot",
-//!     avatar: "https://example.com/avatar.jpg",
+//!     name: "Puniyu",
+//!     avatar: Bytes::from_static(b"avatar"),
 //! );
+//! assert_eq!(account.name, "Puniyu");
 //! ```
 
+use bytes::Bytes;
 use derive_builder::Builder;
 use serde::{Deserialize, Serialize};
 
-/// 账户信息
+/// 机器人账户信息。
 ///
-/// 存储机器人账户的基本信息，包括 UIN、昵称和头像。
-///
-/// # 字段
-///
-/// - `uin` - Bot 账号的 UIN（用户识别号）
-/// - `name` - Bot 账号的昵称
-/// - `avatar` - Bot 账号的头像 URL 地址
+/// 统一描述当前机器人账号的标识、展示名称和头像数据。
 ///
 /// # 示例
 ///
 /// ```rust
+/// use bytes::Bytes;
 /// use puniyu_account::AccountInfo;
 ///
 /// let account = AccountInfo {
 ///     uin: "123456789".to_string(),
-///     name: "MyBot".to_string(),
-///     avatar: "https://example.com/avatar.jpg".to_string(),
+///     name: "Puniyu".to_string(),
+///     avatar: Bytes::from_static(b"avatar"),
 /// };
 ///
 /// assert_eq!(account.uin, "123456789");
-/// assert_eq!(account.name, "MyBot");
+/// assert_eq!(account.name, "Puniyu");
 /// ```
 #[derive(Debug, Default, Clone, PartialEq, Eq, Serialize, Deserialize, Builder)]
+#[builder_struct_attr(doc = "机器人账户信息构建器。")]
 #[builder(setter(into))]
 pub struct AccountInfo {
-	/// Bot 账号的 UIN（用户识别号）
+	/// 机器人账号的唯一标识 UIN。
 	pub uin: String,
-	/// Bot 账号的昵称
+	/// 机器人账号的展示名称。
 	pub name: String,
-	/// Bot 账号的头像 URL 地址
-	pub avatar: String,
+	/// 机器人头像的原始字节数据。
+	pub avatar: Bytes,
 }
 
-/// 构建账户信息宏
+/// 构建机器人账户信息。
 ///
-/// 提供便捷的方式创建账户信息。支持两种调用方式：命名字段和位置参数。
-///
-/// # 用法
-///
-/// ## 命名字段形式
+/// 支持命名字段与位置参数两种写法。
 ///
 /// ```rust
+/// use bytes::Bytes;
 /// use puniyu_account::account_info;
 ///
-/// let account = account_info!(
+/// let named = account_info!(
 ///     uin: "123456789",
-///     name: "MyBot",
-///     avatar: "https://example.com/avatar.jpg",
+///     name: "Puniyu",
+///     avatar: Bytes::from_static(b"avatar"),
 /// );
-/// ```
+/// assert_eq!(named.uin, "123456789");
 ///
-/// ## 位置参数形式
-///
-/// 按照 `uin`、`name`、`avatar` 的顺序传递参数。
-///
-/// ```rust
-/// use puniyu_account::account_info;
-///
-/// let account = account_info!(
+/// let positional = account_info!(
 ///     "123456789",
-///     "MyBot",
-///     "https://example.com/avatar.jpg"
+///     "Puniyu",
+///     Bytes::new()
 /// );
-/// ```
-///
-/// ## 空字段处理
-///
-/// 如果某个字段为空，可以使用空字符串。
-///
-/// ```rust
-/// use puniyu_account::account_info;
-///
-/// // 命名字段形式
-/// let account = account_info!(
-///     uin: "123456789",
-///     name: "MyBot",
-///     avatar: "",
-/// );
-///
-/// // 位置参数形式
-/// let account = account_info!("123456789", "MyBot", "");
+/// assert_eq!(positional.name, "Puniyu");
 /// ```
 #[macro_export]
 macro_rules! account_info {

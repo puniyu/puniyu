@@ -4,15 +4,16 @@ use async_trait::async_trait;
 use itertools::Itertools as _;
 use puniyu_command::{CommandAction, CommandRegistry, Permission};
 use puniyu_command_parser::CommandParser;
-use puniyu_config::Config;
+use puniyu_config::app_config;
 use puniyu_context::MessageContext;
-use puniyu_event::Event;
+use puniyu_event::{Event, EventBase, message::MessageBase};
 use puniyu_handler::Handler;
 use puniyu_logger::info;
 use puniyu_logger::owo_colors::OwoColorize;
-use puniyu_plugin::PluginRegistry;
+use puniyu_plugin_core::PluginRegistry;
 use std::collections::HashMap;
 
+/// 命令处理器。
 #[derive(Default)]
 pub struct CommandHandler;
 
@@ -24,7 +25,7 @@ impl CommandHandler {
 
 	/// 构建前缀列表
 	fn build_prefix() -> Vec<String> {
-		let global = Config::app().prefix();
+		let global = app_config().prefix();
 		let mut prefixes: Vec<String> = global.iter().cloned().collect();
 
 		prefixes.extend(PluginRegistry::all().iter().filter_map(|p| p.prefix()).flat_map(|pp| {
@@ -109,8 +110,7 @@ impl CommandHandler {
 			return;
 		}
 
-
-		let message_ctx = MessageContext::new(event.inner(), parsed_args);
+		let message_ctx = MessageContext::new(event.event(), parsed_args);
 
 		Self::execute_command(&message_ctx, &command_name).await;
 	}
@@ -120,10 +120,9 @@ impl CommandHandler {
 		let commands = CommandRegistry::all()
 			.into_iter()
 			.filter(|cmd| cmd.builder.name() == command_name)
-			.sorted_by_key(|cmd| cmd.builder.rank());
+			.sorted_by_key(|cmd| cmd.builder.priority());
 
 		for command in commands {
-			let plugin_id = &command.plugin_id;
 			let start_time = std::time::Instant::now();
 			info!("[{}] 开始执行", format!("command:{}", command_name).yellow());
 
@@ -131,7 +130,7 @@ impl CommandHandler {
 
 			info!(
 				"[{}] 执行完毕, 耗时{}ms",
-				format!("command:{}:{}", plugin_id, command_name).yellow(),
+				format!("command:{}", command_name).yellow(),
 				start_time.elapsed().as_millis()
 			);
 

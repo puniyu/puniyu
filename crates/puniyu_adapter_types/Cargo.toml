@@ -1,0 +1,25 @@
+[package]
+name = "puniyu_adapter_types"
+version = "0.7.8"
+description = "puniyu 适配器类型库，统一适配器信息、消息结果与群好友资料模型"
+authors.workspace = true
+license.workspace = true
+readme = "README.md"
+homepage.workspace = true
+repository.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+serde.workspace = true
+bytes.workspace = true
+strum.workspace = true
+chrono.workspace = true
+derive_builder.workspace = true
+puniyu_sender.workspace = true
+puniyu_contact.workspace = true
+puniyu_version.workspace = true
+puniyu_element.workspace = true
+
+[lints]
+workspace = true

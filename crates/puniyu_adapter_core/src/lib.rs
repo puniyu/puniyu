@@ -1,62 +1,81 @@
 //! # puniyu_adapter_core
 //!
-//! 适配器核心库，提供适配器 API 接口和类型定义。
+//! 统一的 puniyu 适配器核心库，覆盖适配器定义、元信息与注册表管理场景。
 //!
-//! ## 概述
+//! ## 特性
 //!
-//! `puniyu_adapter_core` 定义了 Puniyu 框架中适配器的标准接口和类型系统。
-//! 该库为不同平台的适配器提供统一的抽象层，包括消息、群组、好友、账户等核心功能。
+//! - 提供 [`Adapter`] trait 定义适配器行为
+//! - 提供 [`AdapterRegistry`] 管理适配器注册与查询
+//! - 组合 `puniyu_adapter_api` 与 `puniyu_adapter_types`
+//! - 支持配置、钩子、服务器与初始化流程扩展
 //!
-//! ## 主要模块
-//!
-//! - [`api`] - 适配器 API 接口定义
-//!   - [`api::MessageApi`] - 消息相关 API
-//!   - [`api::GroupApi`] - 群组相关 API
-//!   - [`api::FriendApi`] - 好友相关 API
-//!   - [`api::AccountApi`] - 账户相关 API
-//! - [`types`] - 类型定义
-//!   - [`types::AdapterInfo`] - 适配器信息
-//!   - [`types::MessageType`] - 消息类型
-//!   - [`types::UserInfo`] - 用户信息
-//!   - [`types::GroupInfo`] - 群组信息
-//!
-//! ## 快速开始
-//!
-//! ### 实现适配器
+//! ## 示例
 //!
 //! ```rust,ignore
-//! use puniyu_adapter_core::{Adapter, AdapterApi, AdapterInfo};
 //! use async_trait::async_trait;
+//! use puniyu_adapter_api::AdapterApi;
+//! use puniyu_adapter_core::Adapter;
+//! use puniyu_adapter_types::{adapter_info, AdapterPlatform, AdapterProtocol};
 //!
-//! struct MyAdapter {
-//!     info: AdapterInfo,
-//!     api: AdapterApi,
-//! }
+//! struct MyAdapter;
 //!
 //! #[async_trait]
 //! impl Adapter for MyAdapter {
-//!     type Context = ();
-//!
-//!     fn info(&self) -> &AdapterInfo {
-//!         &self.info
+//!     fn info(&self) -> puniyu_adapter_types::AdapterInfo {
+//!         adapter_info!("console", AdapterPlatform::QQ, AdapterProtocol::Console)
 //!     }
 //!
-//!     fn api(&self) -> &AdapterApi {
-//!         &self.api
+//!     fn api(&self) -> AdapterApi {
+//!         AdapterApi::default()
 //!     }
-//! }
-//! ```
-//!
-//! ### 使用 API
-//!
-//! ```rust,ignore
-//! use puniyu_adapter_core::api::MessageApi;
-//!
-//! async fn send_message(api: &impl MessageApi) {
-//!     // 发送消息
-//!     // api.send_msg(...).await?;
 //! }
 //! ```
 
-pub mod api;
-pub mod types;
+mod registry;
+#[doc(inline)]
+pub use registry::AdapterRegistry;
+mod types;
+#[doc(inline)]
+pub use types::*;
+
+use puniyu_adapter_api::AdapterApi;
+use puniyu_adapter_types::AdapterInfo;
+use puniyu_config::Config;
+use puniyu_hook::Hook;
+use std::sync::Arc;
+
+#[async_trait::async_trait]
+pub trait Adapter: Send + Sync + 'static {
+	/// 获取适配器信息。
+	fn info(&self) -> AdapterInfo;
+
+	/// 获取适配器 API。
+	fn api(&self) -> AdapterApi;
+
+	/// 获取配置列表。
+	fn config(&self) -> Vec<Arc<dyn Config>> {
+		Vec::new()
+	}
+
+	/// 获取钩子列表。
+	fn hook(&self) -> Vec<Arc<dyn Hook>> {
+		Vec::new()
+	}
+
+	/// 获取服务器扩展。
+	fn server(&self) -> Option<puniyu_server::ServerFunction> {
+		None
+	}
+
+	/// 初始化适配器。
+	async fn init(&self) -> puniyu_error::Result {
+		puniyu_logger::info!("Adapter: 初始化完成");
+		Ok(())
+	}
+}
+
+impl PartialEq for dyn Adapter {
+	fn eq(&self, other: &Self) -> bool {
+		self.info() == other.info()
+	}
+}

@@ -1,15 +1,12 @@
+use crate::FriendOption;
 use puniyu_common::read_config;
-use puniyu_path::CONFIG_DIR;
+use puniyu_path::config_dir;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use std::sync::{Arc, LazyLock, RwLock};
+use std::path::PathBuf;
+use std::sync::LazyLock;
 
-mod option;
-pub use option::FriendOption;
-
-pub(crate) static FRIEND_CONFIG: LazyLock<Arc<RwLock<FriendConfig>>> = LazyLock::new(|| {
-	Arc::new(RwLock::new(read_config(CONFIG_DIR.as_path(), "friend").unwrap_or_default()))
-});
+static CONFIG_PATH: LazyLock<PathBuf> = LazyLock::new(|| config_dir().join("friend.toml"));
 
 /// 好友配置结构
 ///
@@ -44,58 +41,45 @@ pub struct FriendConfig {
 }
 
 impl FriendConfig {
-	/// 获取好友配置实例
-	///
-	/// # 返回值
-	///
-	/// 返回当前的好友配置副本
-	pub fn get() -> FriendConfig {
-		FRIEND_CONFIG.read().expect("Failed to acquire lock").clone()
+	/// 获取当前好友配置。
+	pub fn get() -> Self {
+		use crate::ConfigRegistry;
+		ConfigRegistry::get(CONFIG_PATH.as_path()).and_then(|v| v.try_into().ok()).unwrap_or_else(
+			|| read_config::<Self>(config_dir().as_path(), "friend").unwrap_or_default(),
+		)
 	}
 
-	/// 获取全局好友配置
-	///
-	/// # 返回值
-	///
-	/// 返回全局好友配置的引用，作为所有好友的默认配置
+	/// 获取全局好友配置。
 	pub fn global(&self) -> &FriendOption {
 		&self.global
 	}
 
-	/// 获取指定好友的配置
-	///
-	/// # 参数
-	///
-	/// - `user_id`: 用户的唯一标识符
-	///
-	/// # 返回值
-	///
-	/// 返回对应好友的配置。特定好友配置会自动继承全局配置，
-	/// 只有显式设置的字段会覆盖全局配置
-	///
-	/// # 示例
-	///
-	/// ```rust,ignore
-	/// use puniyu_config::Config;
-	///
-	/// let friend_config = Config::friend();
-	/// // 如果 user_123 只设置了 cd，其他字段会继承全局配置
-	/// let friend_option = friend_config.friend("user_123");
-	/// println!("好友 CD: {}", friend_option.cd());
-	/// ```
+	/// 获取指定好友的配置，并自动与全局配置合并。
 	pub fn friend(&self, user_id: &str) -> FriendOption {
 		self.friend
 			.get(user_id)
-			.map(|specific| specific.merge_with(&self.global))
+			.map(|specific| crate::common::MergeWith::merge_with(specific, &self.global))
 			.unwrap_or_else(|| self.global.clone())
 	}
 
-	/// 获取所有好友配置列表
-	///
-	/// # 返回值
-	///
-	/// 返回包含所有好友配置的 Vec，每个配置都已与全局配置合并
+	/// 获取所有按用户 ID 定义的配置，并自动与全局配置合并。
 	pub fn list(&self) -> Vec<FriendOption> {
-		self.friend.values().map(|specific| specific.merge_with(&self.global)).collect()
+		self.friend
+			.values()
+			.map(|specific| crate::common::MergeWith::merge_with(specific, &self.global))
+			.collect()
+	}
+}
+
+impl crate::Config for FriendConfig {
+	fn config(&self) -> crate::ConfigInfo {
+		crate::ConfigInfo {
+			name: "friend".to_string(),
+			path: CONFIG_PATH.clone(),
+			value: toml::from_str(
+				&toml::to_string(self).expect("Failed to serialize FriendConfig to TOML string"),
+			)
+			.expect("Failed to parse TOML string to Value"),
+		}
 	}
 }

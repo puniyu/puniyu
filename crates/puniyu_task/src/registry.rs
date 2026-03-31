@@ -7,6 +7,12 @@ use store::TaskStore;
 
 static STORE: LazyLock<TaskStore> = LazyLock::new(TaskStore::new);
 
+/// 初始化任务调度器
+#[inline]
+pub async fn init() {
+	store::init_scheduler().await;
+}
+
 /// 任务注册表
 ///
 /// 提供任务的注册、卸载和查询功能。
@@ -21,7 +27,7 @@ static STORE: LazyLock<TaskStore> = LazyLock::new(TaskStore::new);
 /// # 示例
 ///
 /// ```rust,ignore
-/// use puniyu_task::{Task, registry::TaskRegistry};
+/// use puniyu_task::{Task, TaskRegistry};
 /// use async_trait::async_trait;
 /// use std::sync::Arc;
 ///
@@ -72,7 +78,7 @@ impl<'t> TaskRegistry {
 	/// # 示例
 	///
 	/// ```rust,ignore
-	/// use puniyu_task::registry::TaskRegistry;
+	/// use puniyu_task::TaskRegistry;
 	/// use std::sync::Arc;
 	///
 	/// let task_id = TaskRegistry::register(1, Arc::new(MyTask)).await?;
@@ -98,7 +104,7 @@ impl<'t> TaskRegistry {
 	/// # 示例
 	///
 	/// ```rust,ignore
-	/// use puniyu_task::registry::TaskRegistry;
+	/// use puniyu_task::TaskRegistry;
 	///
 	/// // 通过 ID 卸载
 	/// TaskRegistry::unregister(123u64).await?;
@@ -113,7 +119,7 @@ impl<'t> TaskRegistry {
 		let task = task.into();
 		match task {
 			TaskId::Index(id) => Self::unregister_with_index(id).await,
-			TaskId::Name(name) => Self::unregister_with_task_name(name).await,
+			TaskId::Name(name) => Self::unregister_with_task_name(name.as_ref()).await,
 		}
 	}
 
@@ -199,7 +205,7 @@ impl<'t> TaskRegistry {
 	/// # 示例
 	///
 	/// ```rust,ignore
-	/// use puniyu_task::registry::TaskRegistry;
+	/// use puniyu_task::TaskRegistry;
 	///
 	/// // 通过 ID 查询
 	/// let tasks = TaskRegistry::get(123u64);
@@ -214,7 +220,7 @@ impl<'t> TaskRegistry {
 		let task = task.into();
 		match task {
 			TaskId::Index(id) => Self::get_with_index(id).into_iter().collect(),
-			TaskId::Name(name) => Self::get_with_task_name(name),
+			TaskId::Name(name) => Self::get_with_task_name(name.as_ref()),
 		}
 	}
 
@@ -272,7 +278,7 @@ impl<'t> TaskRegistry {
 	/// # 示例
 	///
 	/// ```rust,ignore
-	/// use puniyu_task::registry::TaskRegistry;
+	/// use puniyu_task::TaskRegistry;
 	///
 	/// let all_tasks = TaskRegistry::all();
 	/// println!("共有 {} 个任务", all_tasks.len());

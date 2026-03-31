@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use crate::{ElementType, RawMessage};
+use crate::{Element, ElementType};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct JsonElement<'j> {
@@ -7,13 +7,9 @@ pub struct JsonElement<'j> {
     pub data: &'j str,
 }
 
-impl<'j> RawMessage for JsonElement<'j> {
+impl<'j> Element for JsonElement<'j> {
     fn r#type(&self) -> ElementType {
         ElementType::Json
-    }
-
-    fn raw(&self) -> String {
-        self.data.to_string()
     }
 }
 

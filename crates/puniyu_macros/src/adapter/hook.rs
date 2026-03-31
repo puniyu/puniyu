@@ -1,173 +1,70 @@
-use convert_case::{Case, Casing};
-use darling::ast::NestedMeta;
-use darling::{Error, FromMeta};
-use proc_macro::TokenStream;
-use proc_macro2::Ident;
-use quote::quote;
-use syn::{ItemFn, parse_macro_input};
+use crate::{
+	HookArgs,
+	common::{validate_async, validate_hook_args, validate_return_type},
+};
+use zyn::{ToTokens, syn::spanned::Spanned, zyn};
 
-#[derive(FromMeta)]
-struct HookArg {
-	name: Option<String>,
-	#[darling(rename = "type")]
-	r#type: Option<String>,
-	rank: Option<u32>,
-}
+pub fn hook(item: zyn::syn::ItemFn, cfg: HookArgs) -> zyn::TokenStream {
+	let fn_sig = item.sig.clone();
+	if let Err(err) = validate_async(&fn_sig) {
+		return err.to_compile_error();
+	}
+	if let Err(err) = validate_hook_args(&fn_sig) {
+		return err.to_compile_error();
+	}
+	if let Err(err) = validate_return_type(&fn_sig, "puniyu_adapter::Result") {
+		return err.to_compile_error();
+	}
 
-pub fn hook(args: TokenStream, item: TokenStream) -> TokenStream {
-	let attr_args = match NestedMeta::parse_meta_list(args.into()) {
-		Ok(v) => v,
-		Err(e) => return TokenStream::from(Error::from(e).write_errors()),
-	};
-	let item = parse_macro_input!(item as ItemFn);
-	let args = match HookArg::from_list(&attr_args) {
-		Ok(v) => v,
-		Err(e) => return TokenStream::from(e.write_errors()),
-	};
-
-	let fn_sig = &item.sig;
 	let fn_name = &fn_sig.ident;
-	let fn_inputs = &fn_sig.inputs;
-
-	if item.sig.asyncness.is_none() {
-		return syn::Error::new_spanned(&item.sig, "function must be async")
-			.to_compile_error()
-			.into();
-	}
-
-	if fn_inputs.len() != 1 {
-		return syn::Error::new_spanned(
-			fn_sig,
-			format!(
-				"function `{}` must have exactly 1 parameters, found {}",
-				fn_name,
-				fn_inputs.len()
-			),
-		)
-		.to_compile_error()
-		.into();
-	}
-
-	let first_param = match fn_inputs.first() {
-		Some(param) => param,
-		None => {
-			return syn::Error::new_spanned(fn_sig, "function signature has no parameters")
-				.to_compile_error()
-				.into();
-		}
+	let struct_name = zyn! {{ fn_name | fmt: "{}Hook" | pascal }};
+	let adapter_name = zyn! { env!("CARGO_PKG_NAME") };
+	let hook_name = match &cfg.name {
+		Some(name) => zyn! { {{ name | str }} },
+		_ => zyn! { {{ fn_name | lower | str }} },
 	};
-
-	if let syn::FnArg::Typed(pat_type) = first_param {
-		let ty = &*pat_type.ty;
-
-		let is_valid_type = match ty {
-			syn::Type::Path(type_path) => {
-				if let Some(last_seg) = type_path.path.segments.last() {
-					if last_seg.ident == "Option" {
-						if let syn::PathArguments::AngleBracketed(args) = &last_seg.arguments {
-							if let Some(syn::GenericArgument::Type(syn::Type::Reference(
-								type_ref,
-							))) = args.args.first()
-							{
-								if let syn::Type::Path(inner_path) = &*type_ref.elem {
-									if let Some(inner_last_seg) = inner_path.path.segments.last() {
-										inner_last_seg.ident == "Event"
-									} else {
-										false
-									}
-								} else {
-									false
-								}
-							} else {
-								false
-							}
-						} else {
-							false
-						}
-					} else {
-						false
-					}
-				} else {
-					false
-				}
-			}
-			_ => false,
-		};
-
-		if !is_valid_type {
-			return syn::Error::new_spanned(
-				pat_type,
-				format!(
-					"function `{}` parameter must be of type `Option<&Event>`, found `{}`",
-					fn_name,
-					quote::quote! { #ty }
-				),
-			)
-			.to_compile_error()
-			.into();
-		}
-	} else {
-		return syn::Error::new_spanned(
-			first_param,
-			format!("function `{}` parameter must be a typed parameter", fn_name),
-		)
-		.to_compile_error()
-		.into();
-	}
-
-	let struct_name_str = {
-		let fn_name_str = fn_name.to_string();
-		let pascal_case_name = fn_name_str.to_case(Case::Pascal);
-		format!("{}Hook", pascal_case_name)
-	};
-	let struct_name = Ident::new(&struct_name_str, fn_name.span());
-	let adapter_name = quote! { env!("CARGO_PKG_NAME") };
-	let hook_name = match &args.name {
-		Some(name) => quote! { #name },
-		_ => quote! { stringify!(#fn_name) },
-	};
-	let hook_type = match &args.r#type {
+	let hook_type = match &cfg.hook_type {
 		Some(type_str) => {
 			let parts: Vec<&str> = type_str.split('.').collect();
 			match parts.as_slice() {
-				["event"] => quote! {
-					::puniyu_adapter::__private::HookType::Event(
-						::puniyu_adapter::__private::HookEventType::default()
+				["event"] => zyn! {
+					::puniyu_adapter::hook::HookType::Event(
+						::puniyu_adapter::hook::HookEventType::default()
 					)
 				},
-				["event", "message"] => quote! {
-					::puniyu_adapter::__private::HookType::Event(
-						::puniyu_adapter::__private::HookEventType::Message
+				["event", "message"] => zyn! {
+					::puniyu_adapter::hook::HookType::Event(
+						::puniyu_adapter::hook::HookEventType::Message
 					)
 				},
-				["event", "notion"] => quote! {
-					::puniyu_adapter::__private::HookType::Event(
-						::puniyu_adapter::__private::HookEventType::Notion
+				["event", "notion"] => zyn! {
+					::puniyu_adapter::hook::HookType::Event(
+						::puniyu_adapter::hook::HookEventType::Notion
 					)
 				},
-				["event", "request"] => quote! {
-					::puniyu_adapter::__private::HookType::Event(
-						::puniyu_adapter::__private::HookEventType::Request
+				["event", "request"] => zyn! {
+					::puniyu_adapter::hook::HookType::Event(
+						::puniyu_adapter::hook::HookEventType::Request
 					)
 				},
-				["event", "all"] => quote! {
-					::puniyu_adapter::__private::HookType::Event(
-						::puniyu_adapter::__private::HookEventType::All
+				["event", "all"] => zyn! {
+					::puniyu_adapter::hook::HookType::Event(
+						::puniyu_adapter::hook::HookEventType::All
 					)
 				},
-				["status"] => quote! {
-					::puniyu_adapter::__private::HookType::Status(
-						::puniyu_adapter::__private::StatusType::default()
+				["status"] => zyn! {
+					::puniyu_adapter::hook::HookType::Status(
+						::puniyu_adapter::hook::StatusType::default()
 					)
 				},
-				["status", "start"] => quote! {
-					::puniyu_adapter::__private::HookType::Status(
-						::puniyu_adapter::__private::StatusType::Start
+				["status", "start"] => zyn! {
+					::puniyu_adapter::hook::HookType::Status(
+						::puniyu_adapter::hook::StatusType::Start
 					)
 				},
-				["status", "stop"] => quote! {
-					::puniyu_adapter::__private::HookType::Status(
-						::puniyu_adapter::__private::StatusType::Stop
+				["status", "stop"] => zyn! {
+					::puniyu_adapter::hook::HookType::Status(
+						::puniyu_adapter::hook::StatusType::Stop
 					)
 				},
 				["event", subtype] => {
@@ -176,7 +73,7 @@ pub fn hook(args: TokenStream, item: TokenStream) -> TokenStream {
 						Examples: 'event.message', 'event.notion'",
 						subtype
 					);
-					return TokenStream::from(Error::custom(err_msg).write_errors());
+					return zyn::syn::Error::new(fn_sig.span(), err_msg).to_compile_error();
 				}
 				["status", subtype] => {
 					let err_msg = format!(
@@ -184,7 +81,7 @@ pub fn hook(args: TokenStream, item: TokenStream) -> TokenStream {
 						Examples: 'status.start', 'status.stop'",
 						subtype
 					);
-					return TokenStream::from(Error::custom(err_msg).write_errors());
+					return zyn::syn::Error::new(fn_sig.span(), err_msg).to_compile_error();
 				}
 				[category, _] => {
 					let err_msg = format!(
@@ -192,7 +89,7 @@ pub fn hook(args: TokenStream, item: TokenStream) -> TokenStream {
 						Examples: 'event.message', 'status.start'",
 						category
 					);
-					return TokenStream::from(Error::custom(err_msg).write_errors());
+					return zyn::syn::Error::new(fn_sig.span(), err_msg).to_compile_error();
 				}
 				[category] => {
 					let err_msg = format!(
@@ -200,7 +97,7 @@ pub fn hook(args: TokenStream, item: TokenStream) -> TokenStream {
 						Examples: 'event', 'event.message', 'status.start'",
 						category
 					);
-					return TokenStream::from(Error::custom(err_msg).write_errors());
+					return zyn::syn::Error::new(fn_sig.span(), err_msg).to_compile_error();
 				}
 				_ => {
 					let err_msg = format!(
@@ -208,53 +105,53 @@ pub fn hook(args: TokenStream, item: TokenStream) -> TokenStream {
 						Examples: 'event', 'event.message', 'status.start'",
 						type_str
 					);
-					return TokenStream::from(Error::custom(err_msg).write_errors());
+					return zyn::syn::Error::new(fn_sig.span(), err_msg).to_compile_error();
 				}
 			}
 		}
-		None => quote! { ::puniyu_adapter::__private::HookType::default() },
+		None => zyn! { ::puniyu_adapter::hook::HookType::default() },
 	};
-	let hook_rank = match &args.rank {
-		Some(rank) => quote! { *#rank },
-		_ => quote! { 500 },
+	let hook_priority = match &cfg.priority {
+		Some(priority) => zyn! { {{ priority }} },
+		_ => zyn! { 500 },
 	};
 
-	let expanded = quote! {
-		#item
+	zyn! {
+		{{ item }}
 
-		#[allow(non_camel_case_types)]
-		struct #struct_name;
+		struct {{ struct_name }};
 
 		#[::puniyu_adapter::__private::async_trait]
-		impl ::puniyu_adapter::__private::Hook for #struct_name {
+		impl ::puniyu_adapter::__private::Hook for {{ struct_name }} {
 			fn name(&self) -> &'static str {
 				#hook_name
 			}
 
-			fn r#type(&self) -> ::puniyu_adapter::__private::HookType {
+			fn r#type(&self) -> ::puniyu_adapter::hook::HookType {
 				#hook_type
 			}
 
-			fn rank(&self) -> u32 {
-				#hook_rank
+			fn priority(&self) -> u32 {
+				#hook_priority
 			}
 
+			#[inline]
 			async fn run(
 				&self,
 				event: Option<&Event>,
-			) -> ::puniyu_adapter::__private::HandlerResult {
-				#fn_name(event).await
+			) -> ::puniyu_adapter::Result {
+				{{ fn_name }}(event).await
 			}
 		}
 
 		::puniyu_adapter::__private::inventory::submit! {
 			crate::HookRegistry {
-				adapter_name: #adapter_name,
-				builder: || -> Box<dyn ::puniyu_adapter::__private::Hook> {
-					Box::new(#struct_name {})
+				adapter_name: {{ adapter_name }},
+				builder: || -> ::std::sync::Arc<dyn ::puniyu_adapter::__private::Hook> {
+					::std::sync::Arc::new({{ struct_name }} {})
 				}
 			}
 		}
-	};
-	TokenStream::from(expanded)
+	}
+	.to_token_stream()
 }

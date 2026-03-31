@@ -3,6 +3,7 @@ use crate::Task;
 use puniyu_logger::owo_colors::OwoColorize;
 #[cfg(feature = "registry")]
 use puniyu_logger::{error, info};
+use std::borrow::Cow;
 use std::sync::Arc;
 #[cfg(feature = "registry")]
 use std::time::Instant;
@@ -26,8 +27,8 @@ pub struct TaskInfo {
 }
 
 #[cfg(feature = "registry")]
-impl From<TaskInfo> for tokio_cron_scheduler::Job {
-	fn from(task: TaskInfo) -> Self {
+impl From<&TaskInfo> for tokio_cron_scheduler::Job {
+	fn from(task: &TaskInfo) -> Self {
 		let cron_str = task.builder.cron().to_string();
 		JobBuilder::new()
 			.with_timezone(chrono_tz::Asia::Shanghai)
@@ -61,6 +62,13 @@ impl From<TaskInfo> for tokio_cron_scheduler::Job {
 	}
 }
 
+#[cfg(feature = "registry")]
+impl From<TaskInfo> for tokio_cron_scheduler::Job {
+	fn from(task: TaskInfo) -> Self {
+		tokio_cron_scheduler::Job::from(&task)
+	}
+}
+
 /// 任务 ID 枚举
 ///
 /// 用于标识任务的两种方式：索引或名称。
@@ -86,7 +94,7 @@ pub enum TaskId<'t> {
 	/// 任务索引 ID
 	Index(u64),
 	/// 任务名称
-	Name(&'t str),
+	Name(Cow<'t, str>),
 }
 
 impl From<u64> for TaskId<'_> {
@@ -97,6 +105,12 @@ impl From<u64> for TaskId<'_> {
 
 impl<'t> From<&'t str> for TaskId<'t> {
 	fn from(value: &'t str) -> Self {
-		Self::Name(value)
+		Self::Name(Cow::Borrowed(value))
+	}
+}
+
+impl From<String> for TaskId<'_> {
+	fn from(value: String) -> Self {
+		Self::Name(Cow::Owned(value))
 	}
 }

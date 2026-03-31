@@ -14,6 +14,16 @@ use uuid::Uuid;
 static TASK_ID: AtomicU64 = AtomicU64::new(0);
 static SCHEDULER: OnceCell<Arc<JobScheduler>> = OnceCell::const_new();
 
+pub(crate) async fn init_scheduler() {
+	let _ = SCHEDULER
+		.get_or_init(|| async {
+			let sched = JobScheduler::new().await.expect("Failed to create scheduler");
+			sched.start().await.expect("Failed to start scheduler");
+			Arc::new(sched)
+		})
+		.await;
+}
+
 #[derive(Default)]
 pub(crate) struct TaskStore {
 	tasks: Arc<RwLock<HashMap<u64, TaskInfo>>>,
@@ -25,14 +35,8 @@ impl TaskStore {
 		Self::default()
 	}
 
-	pub async fn get_scheduler(&self) -> &'static Arc<JobScheduler> {
-		SCHEDULER
-			.get_or_init(|| async {
-				let sched = JobScheduler::new().await.expect("Failed to create scheduler");
-				sched.start().await.expect("Failed to start scheduler");
-				Arc::new(sched)
-			})
-			.await
+	pub fn get_scheduler(&self) -> Result<&'static Arc<JobScheduler>, Error> {
+		SCHEDULER.get().ok_or_else(|| Error::NotFound("Scheduler".to_string()))
 	}
 
 	pub async fn insert(&self, task: TaskInfo) -> Result<u64, Error> {
@@ -47,8 +51,8 @@ impl TaskStore {
 			}
 		}
 
-		let job = tokio_cron_scheduler::Job::from(task.clone());
-		let scheduler = self.get_scheduler().await;
+		let job = tokio_cron_scheduler::Job::from(&task);
+		let scheduler = self.get_scheduler()?;
 		let uuid = scheduler.add(job).await.map_err(|e| Error::NotFound(e.to_string()))?;
 
 		{
@@ -75,7 +79,7 @@ impl TaskStore {
 		#[allow(clippy::unwrap_used)]
 		let uuid = uuid.unwrap();
 
-		let scheduler = self.get_scheduler().await;
+		let scheduler = self.get_scheduler()?;
 		if scheduler.remove(&uuid).await.is_err() {
 			return Err(Error::NotFound("Task".to_string()));
 		}

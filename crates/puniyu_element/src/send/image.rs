@@ -1,29 +1,31 @@
+use crate::{Element, ElementType};
 use bytes::Bytes;
-use crate::{ElementType, RawMessage};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ImageElement<'m> {
+pub struct ImageElement {
 	/// 图片元素
 	pub file: Bytes,
 	/// 图片文件名
-	pub file_name: &'m str,
+	pub file_name: String,
 	/// 图片外显
-	pub summary: &'m str,
+	pub summary: String,
 }
 
-impl<'m> ImageElement<'m> {
-	pub fn new(file: impl Into<Bytes>, file_name: &'m str, summary: Option<&'m str>) -> Self {
-		Self { file: file.into(), file_name, summary: summary.unwrap_or(file_name) }
+impl ImageElement {
+	pub fn new(
+		file: impl Into<Bytes>,
+		file_name: impl Into<String>,
+		summary: Option<String>,
+	) -> Self {
+		let file_name = file_name.into();
+		let summary = summary.unwrap_or_else(|| file_name.clone());
+		Self { file: file.into(), file_name, summary }
 	}
 }
 
-impl<'m> RawMessage for ImageElement<'m> {
+impl Element for ImageElement {
 	fn r#type(&self) -> ElementType {
 		ElementType::Image
-	}
-
-	fn raw(&self) -> String {
-		self.file_name.to_string()
 	}
 }

@@ -188,7 +188,7 @@ fn test_method_and_macro_equivalence() {
 
 #[test]
 fn test_builder_pattern_simulation() {
-	fn build_greeting_message<'a>(user_id: &'a str, name: &'a str) -> Vec<Elements<'a>> {
+	fn build_greeting_message(user_id: &str, name: &str) -> Vec<Elements> {
 		vec![
 			segment!(at, user_id),
 			segment!(text, " Hello, "),

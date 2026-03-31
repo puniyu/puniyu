@@ -1,20 +1,25 @@
+pub use puniyu_plugin_core::PluginId;
 use puniyu_version::Version;
 
-
-
-
-#[derive(Debug, Clone)]
-pub enum PluginId<'p> {
-    Index(u64),
-    Name(&'p str),
+#[derive(Debug, Clone, PartialEq)]
+pub struct PluginInfo<'p> {
+	pub name: &'p str,
+	pub author: Vec<&'p str>,
+	pub description: Option<&'p str>,
+	pub version: Version,
 }
-impl From<u64> for PluginId<'_> {
-    fn from(value: u64) -> Self {
-        Self::Index(value)
-    }
-}
-impl<'p> From<&'p str> for PluginId<'p> {
-    fn from(value: &'p str) -> Self {
-        Self::Name(value)
-    }
+
+pub fn get_plugin<'p>(plugin: impl Into<PluginId<'p>>) -> Option<PluginInfo<'p>> {
+	use puniyu_plugin_core::PluginRegistry;
+	let plugin_id = plugin.into();
+	let plugin = match plugin_id {
+		PluginId::Index(index) => PluginRegistry::get_with_index(index),
+		PluginId::Name(name) => PluginRegistry::get_with_plugin_name(name.as_ref()),
+	};
+	plugin.map(|plugin| PluginInfo {
+		name: plugin.name(),
+		author: plugin.author(),
+		description: plugin.description(),
+		version: plugin.version(),
+	})
 }

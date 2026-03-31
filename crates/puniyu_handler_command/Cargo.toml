@@ -1,10 +1,10 @@
 [package]
 name = "puniyu_handler_command"
 version = "0.7.9"
-description = "puniyu handler for command"
+description = "puniyu 命令处理器，统一命令匹配、权限检查与执行分发流程"
 authors.workspace = true
 license.workspace = true
-readme.workspace = true
+readme = "README.md"
 homepage.workspace = true
 repository.workspace = true
 edition.workspace = true
@@ -17,11 +17,23 @@ puniyu_logger.workspace = true
 puniyu_config.workspace = true
 puniyu_event.workspace = true
 puniyu_message.workspace = true
+puniyu_element.workspace = true
 puniyu_context.workspace = true
 puniyu_handler.workspace = true
 
-puniyu_cooldown = { path = "../puniyu_cooldown" }
+puniyu_cooldown = { version = "0.7.8", path = "../puniyu_cooldown" }
 puniyu_error = { workspace = true, features = ["registry"] }
-puniyu_plugin = { workspace = true, features = ["registry"] }
+puniyu_plugin_core = { workspace = true, features = ["registry"] }
 puniyu_command = { workspace = true, features = ["registry"] }
 puniyu_command_parser = { path = "../puniyu_command_parser" }
+
+[dev-dependencies]
+async-trait.workspace = true
+bytes.workspace = true
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
+puniyu_account.workspace = true
+puniyu_adapter_api.workspace = true
+puniyu_adapter_types.workspace = true
+puniyu_bot.workspace = true
+puniyu_contact.workspace = true
+puniyu_sender.workspace = true

@@ -1,7 +1,6 @@
 use bytes::Bytes;
-use puniyu_element::ElementType;
-use puniyu_element::RawMessage;
 use puniyu_element::receive::*;
+use puniyu_element::{Element, ElementType};
 
 #[test]
 fn test_text_element_creation() {
@@ -10,7 +9,6 @@ fn test_text_element_creation() {
 
 	assert_eq!(element.text, "test text");
 	assert_eq!(element.r#type(), ElementType::Text);
-	assert_eq!(element.raw(), "test text");
 }
 
 #[test]
@@ -43,7 +41,6 @@ fn test_at_element_creation() {
 
 	assert_eq!(element.target_id, "123456");
 	assert_eq!(element.r#type(), ElementType::At);
-	assert_eq!(element.raw(), "123456");
 }
 
 #[test]
@@ -79,7 +76,6 @@ fn test_reply_element_creation() {
 
 	assert_eq!(element.message_id, "msg_001");
 	assert_eq!(element.r#type(), ElementType::Reply);
-	assert_eq!(element.raw(), "msg_001");
 }
 
 #[test]
@@ -103,7 +99,6 @@ fn test_face_element_creation() {
 
 	assert_eq!(element.id, 42);
 	assert_eq!(element.r#type(), ElementType::Face);
-	assert_eq!(element.raw(), "42");
 }
 
 #[test]
@@ -138,7 +133,6 @@ fn test_image_element_creation() {
 	assert_eq!(element.width, 800);
 	assert_eq!(element.height, 600);
 	assert_eq!(element.r#type(), ElementType::Image);
-	assert_eq!(element.raw(), "test image");
 }
 
 #[test]
@@ -151,7 +145,6 @@ fn test_file_element_creation() {
 	assert_eq!(element.file_size, 1024);
 	assert_eq!(element.file_name, "document.pdf");
 	assert_eq!(element.r#type(), ElementType::File);
-	assert_eq!(element.raw(), "document.pdf");
 }
 
 #[test]
@@ -162,7 +155,6 @@ fn test_video_element_creation() {
 	assert_eq!(element.file, video_data);
 	assert_eq!(element.file_name, "video.mp4");
 	assert_eq!(element.r#type(), ElementType::Video);
-	assert_eq!(element.raw(), "video.mp4");
 }
 
 #[test]
@@ -173,7 +165,6 @@ fn test_record_element_creation() {
 	assert_eq!(element.file, audio_data);
 	assert_eq!(element.file_name, "audio.mp3");
 	assert_eq!(element.r#type(), ElementType::Record);
-	assert_eq!(element.raw(), "audio.mp3");
 }
 
 #[test]
@@ -183,7 +174,6 @@ fn test_json_element_creation() {
 
 	assert_eq!(element.data, json_data);
 	assert_eq!(element.r#type(), ElementType::Json);
-	assert_eq!(element.raw(), json_data);
 }
 
 #[test]
@@ -205,7 +195,6 @@ fn test_xml_element_creation() {
 
 	assert_eq!(element.data, xml_data);
 	assert_eq!(element.r#type(), ElementType::Xml);
-	assert_eq!(element.raw(), xml_data);
 }
 
 #[test]
@@ -228,7 +217,6 @@ fn test_elements_enum_text() {
 	assert_eq!(element.as_text(), Some("test"));
 	assert!(element.as_at().is_none());
 	assert_eq!(element.r#type(), ElementType::Text);
-	assert_eq!(element.raw(), "test");
 }
 
 #[test]

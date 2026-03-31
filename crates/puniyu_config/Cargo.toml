@@ -1,7 +1,7 @@
 [package]
 name = "puniyu_config"
 version = "0.7.8"
-description = "Puniyu 配置管理库，提供多层级配置、热重载和类型安全的配置系统"
+description = "puniyu 配置管理库，统一应用、Bot、群聊与好友配置读取与热重载"
 readme = "README.md"
 authors.workspace = true
 license.workspace = true
@@ -17,20 +17,11 @@ workspace = true
 toml.workspace = true
 puniyu_logger.workspace = true
 serde.workspace = true
+sugar_path.workspace = true
 serde_repr.workspace = true
 
 puniyu_path.workspace = true
 puniyu_common.workspace = true
 
-puniyu_error = { workspace = true, features = ["config"] }
-
+puniyu_error = { workspace = true, features = ["config", "registry"] }
 notify-debouncer-full = { version = "0.7.0", features = ["flume"] }
-
-[dev-dependencies]
-assert_fs = "1.1"
-predicates = "3.1"
-serde_json.workspace = true
-
-[features]
-default = []
-registry = ["puniyu_error/registry"]

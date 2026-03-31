@@ -1,10 +1,10 @@
 mod store;
-use std::sync::{Arc, LazyLock};
-use puniyu_common::source::SourceType;
-use store::HookStore;
-use puniyu_error::registry::Error;
 use crate::Hook;
 use crate::types::{HookId, HookInfo};
+use puniyu_common::source::SourceType;
+use puniyu_error::registry::Error;
+use std::sync::{Arc, LazyLock};
+use store::HookStore;
 
 static STORE: LazyLock<HookStore> = LazyLock::new(HookStore::new);
 
@@ -22,7 +22,7 @@ impl<'h> HookRegistry {
 		let hook = hook.into();
 		match hook {
 			HookId::Index(index) => Self::unregister_with_index(index),
-			HookId::Name(name) => Self::unregister_with_hook_name(name),
+			HookId::Name(name) => Self::unregister_with_hook_name(name.as_ref()),
 			HookId::Source(source) => Self::unregister_with_source(source),
 		}
 	}
@@ -30,11 +30,7 @@ impl<'h> HookRegistry {
 	pub fn unregister_with_index(index: u64) -> Result<(), Error> {
 		let raw = STORE.raw();
 		let mut map = raw.write().expect("Failed to acquire lock");
-		if map.remove(&index).is_some() {
-			Ok(())
-		} else {
-			Err(Error::NotFound("Hook".to_string()))
-		}
+		if map.remove(&index).is_some() { Ok(()) } else { Err(Error::NotFound("Hook".to_string())) }
 	}
 
 	pub fn unregister_with_source(source: SourceType) -> Result<(), Error> {
@@ -57,7 +53,7 @@ impl<'h> HookRegistry {
 		let hook = hook.into();
 		match hook {
 			HookId::Index(index) => Self::get_with_index(index).into_iter().collect(),
-			HookId::Name(name) => Self::get_with_hook_name(name),
+			HookId::Name(name) => Self::get_with_hook_name(name.as_ref()),
 			HookId::Source(source) => Self::get_with_source(source),
 		}
 	}

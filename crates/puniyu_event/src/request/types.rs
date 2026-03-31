@@ -1,7 +1,7 @@
 use crate::request::{GroupApplyType, GroupInviteType, PrivateApplyType};
+use crate::types::codegen_from_for_content_type;
 use serde::{Deserialize, Serialize};
 use strum::{Display, EnumString, IntoStaticStr};
-use crate::types::impl_from_for_content_type;
 
 /// 请求子类型枚举
 ///
@@ -35,10 +35,11 @@ use crate::types::impl_from_for_content_type;
 ///
 /// let request_type = RequestSubEventType::GroupApply;
 /// let json = serde_json::to_string(&request_type).unwrap();
-/// assert_eq!(json, r#""GroupApply""#);
+/// assert_eq!(json, r#""groupApply""#);
 /// ```
 #[derive(
 	Debug,
+	Copy,
 	Clone,
 	EnumString,
 	Display,
@@ -50,15 +51,14 @@ use crate::types::impl_from_for_content_type;
 	PartialOrd,
 	Ord,
 )]
+#[strum(serialize_all = "camelCase")]
+#[serde(rename_all = "camelCase")]
 pub enum RequestSubEventType {
 	/// 好友申请
-	#[strum(serialize = "privateApply")]
 	PrivateApply,
 	/// 群申请
-	#[strum(serialize = "groupApply")]
 	GroupApply,
 	/// 邀请入群
-	#[strum(serialize = "groupInvite")]
 	GroupInvite,
 }
 
@@ -93,9 +93,7 @@ pub enum ContentType {
 	GroupInvite(GroupInviteType),
 }
 
-
-
-impl_from_for_content_type! {
+codegen_from_for_content_type! {
 	PrivateApply(PrivateApplyType),
 	GroupApply(GroupApplyType),
 	GroupInvite(GroupInviteType)

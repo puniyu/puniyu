@@ -1,15 +1,39 @@
+//! # puniyu_command_parser
+//!
+//! 统一的 puniyu 命令解析器，覆盖命令文本解析、别名剥离、前缀处理与参数验证场景。
+//!
+//! ## 特性
+//!
+//! - 提供 [`CommandParser`] 与 [`CommandParserBuilder`]
+//! - 支持按顺序剥离 bot 别名和命令前缀
+//! - 支持结合 `puniyu_command` 注册表做参数验证
+//! - 支持字符串、整数、浮点数和布尔参数
+//!
+//! ## 示例
+//!
+//! ```rust,no_run
+//! use puniyu_command_parser::CommandParser;
+//!
+//! let parser = CommandParser::builder()
+//!     .aliases(vec!["@bot".to_string()])
+//!     .prefix(vec!["!".to_string()])
+//!     .parse("@bot !greet --name Alice")?;
+//!
+//! assert_eq!(parser.command_name(), "greet");
+//! assert!(parser.contains("name"));
+//! # Ok::<(), puniyu_command_parser::Error>(())
+//! ```
+
 mod error;
 #[doc(inline)]
 pub use error::Error;
 
 use clap::builder::ValueParser;
 use puniyu_command::CommandRegistry;
-use puniyu_command_core::{Arg, ArgMode, ArgType, ArgValue};
+use puniyu_command_types::{Arg, ArgMode, ArgType, ArgValue};
 use std::collections::HashMap;
 
-/// 命令解析器构建器
-///
-/// 用于配置和创建命令解析器实例
+/// 命令解析器构建器。
 #[derive(Debug, Clone, Default)]
 pub struct CommandParserBuilder {
 	alias: Vec<String>,
@@ -17,12 +41,12 @@ pub struct CommandParserBuilder {
 }
 
 impl CommandParserBuilder {
-	/// 创建新的构建器
+	/// 创建构建器。
 	pub fn new() -> Self {
 		Self::default()
 	}
 
-	/// 设置 bot 别名列表
+	/// 设置 bot 别名列表。
 	pub fn aliases<I, S>(mut self, aliases: I) -> Self
 	where
 		I: IntoIterator<Item = S>,
@@ -32,7 +56,7 @@ impl CommandParserBuilder {
 		self
 	}
 
-	/// 设置前缀列表
+	/// 设置命令前缀列表。
 	pub fn prefix<I, S>(mut self, prefix: I) -> Self
 	where
 		I: IntoIterator<Item = S>,
@@ -42,44 +66,20 @@ impl CommandParserBuilder {
 		self
 	}
 
-	/// 解析命令字符串
-	///
-	/// 如果命令不存在或解析失败，返回 Err
+	/// 解析命令字符串。
 	pub fn parse(self, input: &str) -> Result<CommandParser, Error> {
 		let options = ParseOptions { alias: self.alias, prefixes: self.prefix };
 		CommandParser::parse_with_options(input, &options)
 	}
 }
 
-/// 命令解析器
-///
-/// 从字符串解析命令并验证参数
-///
-/// # 示例
-///
-/// ```rust,ignore
-/// use puniyu_command_parser::CommandParser;
-///
-/// // 简单解析（不处理别名和前缀）
-/// let input = "greet --name Alice --age 30";
-/// let parser = CommandParser::new(input).unwrap();
-///
-/// // 使用 Builder 模式（支持别名和前缀）
-/// let parser = CommandParser::builder()
-///     .with_bot_aliases(vec!["@bot".to_string()])
-///     .with_global_prefix(Some("!".to_string()))
-///     .parse("@bot !greet --name Alice")
-///     .unwrap();
-///
-/// assert_eq!(parser.command_name(), "greet");
-/// assert_eq!(parser.get_string("name"), Some("Alice"));
-/// ```
+/// 命令解析器。
 pub struct CommandParser {
 	command_name: String,
 	parsed_args: HashMap<String, ArgValue>,
 }
 
-/// 解析选项（内部使用）
+/// 解析选项。
 #[derive(Debug, Clone, Default)]
 struct ParseOptions {
 	alias: Vec<String>,
@@ -87,60 +87,24 @@ struct ParseOptions {
 }
 
 impl CommandParser {
-	/// 创建命令解析器构建器
+	/// 创建命令解析器构建器。
 	pub fn builder() -> CommandParserBuilder {
 		CommandParserBuilder::new()
 	}
 
-	/// 从字符串解析命令
-	///
-	/// 等价于 [`CommandParser::new`]
+	/// 从字符串解析命令。
 	pub fn parse(input: &str) -> Result<Self, Error> {
 		Self::new(input)
 	}
 
-	/// 从字符串解析命令
-	///
-	/// 自动从注册表查询命令定义并验证参数（支持别名）
-	///
-	/// # 参数
-	///
-	/// - `input` - 输入字符串，格式为 "command_name arg1 arg2 --flag"
-	///
-	/// # 返回
-	///
-	/// 返回解析后的命令解析器实例
-	///
-	/// # 错误
-	///
-	/// 如果输入为空、命令未注册或参数验证失败，返回错误
+	/// 从字符串解析命令，并自动查询注册表验证参数。
 	pub fn new(input: &str) -> Result<Self, Error> {
 		Self::parse_with_options(input, &ParseOptions::default())
 	}
 
-	/// 从字符串解析命令（带选项）
-	///
-	/// 自动从注册表查询命令定义并验证参数（支持别名）
-	/// 支持去除 bot 别名和全局前缀
-	///
-	/// # 参数
-	///
-	/// - `input` - 输入字符串，格式为 "command_name arg1 arg2 --flag"
-	/// - `options` - 解析选项，包含 bot 别名和全局前缀配置
-	///
-	/// # 返回
-	///
-	/// 返回解析后的命令解析器实例
-	///
-	/// # 错误
-	///
-	/// 如果输入为空、命令未注册或参数验证失败，返回错误
-	///
 	fn parse_with_options(input: &str, options: &ParseOptions) -> Result<Self, Error> {
-		let text = Self::strip_bot_alias(input, &options.alias);
-
-		let text = Self::strip_prefix(&text, &options.prefixes);
-
+		let text =
+			Self::strip_prefix(Self::strip_bot_alias(input, &options.alias), &options.prefixes);
 		let text = text.trim();
 		let args = shlex::split(text).ok_or(Error::EmptyInput)?;
 		let command_name = args.first().ok_or(Error::EmptyInput)?.clone();
@@ -159,7 +123,7 @@ impl CommandParser {
 
 		let cmd = Self::build_command(&command_name, &aliases, &arg_defs);
 		let matches =
-			cmd.try_get_matches_from(&args).map_err(|e| Self::convert_error(e, &arg_defs))?;
+			cmd.try_get_matches_from(&args[1..]).map_err(|e| Self::convert_error(e, &arg_defs))?;
 
 		let mut parsed_args = HashMap::new();
 		for arg_def in &arg_defs {
@@ -171,61 +135,55 @@ impl CommandParser {
 		Ok(Self { command_name, parsed_args })
 	}
 
-	/// 去除 bot 别名
-	///
-	/// 如果文本以任一 bot 别名开头，则去除该别名
-	fn strip_bot_alias(text: &str, aliases: &[String]) -> String {
-		aliases
-			.iter()
-			.find(|alias| !alias.is_empty() && text.starts_with(alias.as_str()))
-			.and_then(|alias| text.strip_prefix(alias))
-			.map(|stripped| stripped.trim_start().to_string())
-			.unwrap_or_else(|| text.to_string())
+	fn strip_bot_alias<'t>(text: &'t str, aliases: &[String]) -> &'t str {
+		Self::strip_pattern(text, aliases)
 	}
 
-	/// 去除前缀（按顺序尝试匹配）
-	///
-	/// 尝试按顺序匹配前缀列表中的前缀，匹配成功则去除
-	fn strip_prefix(text: &str, prefix: &[String]) -> String {
-		prefix
-			.iter()
-			.find(|p| !p.is_empty() && text.starts_with(p.as_str()))
-			.and_then(|p| text.strip_prefix(p))
-			.map(|stripped| stripped.trim_start().to_string())
-			.unwrap_or_else(|| text.to_string())
+	fn strip_prefix<'t>(text: &'t str, prefixes: &[String]) -> &'t str {
+		Self::strip_pattern(text, prefixes)
 	}
 
-	/// 获取命令名称
+	fn strip_pattern<'t>(text: &'t str, patterns: &[String]) -> &'t str {
+		patterns
+			.iter()
+			.find_map(|pattern| {
+				(!pattern.is_empty()).then(|| text.strip_prefix(pattern.as_str())).flatten()
+			})
+			.map(str::trim_start)
+			.unwrap_or(text)
+	}
+
+	/// 获取命令名称。
 	pub fn command_name(&self) -> &str {
 		&self.command_name
 	}
 
-	/// 获取原始参数值
+	/// 获取原始参数值。
 	pub fn get(&self, name: &str) -> Option<&ArgValue> {
 		self.parsed_args.get(name)
 	}
 
-	/// 检查参数是否存在
+	/// 检查参数是否存在。
 	pub fn contains(&self, name: &str) -> bool {
 		self.parsed_args.contains_key(name)
 	}
 
-	/// 获取所有参数名
+	/// 获取所有参数名。
 	pub fn keys(&self) -> impl Iterator<Item = &String> {
 		self.parsed_args.keys()
 	}
 
-	/// 获取参数数量
+	/// 获取参数数量。
 	pub fn len(&self) -> usize {
 		self.parsed_args.len()
 	}
 
-	/// 检查是否为空
+	/// 检查是否为空。
 	pub fn is_empty(&self) -> bool {
 		self.parsed_args.is_empty()
 	}
 
-	/// 消耗 self，返回参数 HashMap
+	/// 消耗 `self` 并返回参数表。
 	pub fn into_inner(self) -> HashMap<String, ArgValue> {
 		self.parsed_args
 	}

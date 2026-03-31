@@ -96,7 +96,7 @@ impl<'l> LoaderRegistry {
 		let loader = loader.into();
 		match loader {
 			LoaderId::Index(index) => Self::unregister_with_index(index),
-			LoaderId::Name(name) => Self::unregister_with_loader_name(name),
+			LoaderId::Name(name) => Self::unregister_with_loader_name(name.as_ref()),
 		}
 	}
 
@@ -166,7 +166,7 @@ impl<'l> LoaderRegistry {
 		let loader = loader.into();
 		match loader {
 			LoaderId::Index(index) => Self::get_with_index(index).into_iter().collect(),
-			LoaderId::Name(name) => Self::get_with_loader_name(name),
+			LoaderId::Name(name) => Self::get_with_loader_name(name.as_ref()),
 		}
 	}
 

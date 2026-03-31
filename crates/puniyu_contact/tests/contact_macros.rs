@@ -1,6 +1,5 @@
 use puniyu_contact::{Contact, contact_friend, contact_group};
 
-
 #[test]
 fn test_contact_friend_macro_peer_only() {
 	let friend = contact_friend!("123456");

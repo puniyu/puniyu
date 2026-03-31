@@ -1,31 +1,47 @@
-use std::collections::HashMap;
-use std::sync::{Arc, RwLock};
-use std::sync::atomic::{AtomicU64, Ordering};
 use crate::types::ConfigInfo;
 use puniyu_error::registry::Error;
+use std::collections::HashMap;
+use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::{Arc, RwLock};
 
+/// 全局配置 ID 计数器
 static CONFIG_ID: AtomicU64 = AtomicU64::new(0);
+
+/// 配置存储
+///
+/// 内部使用的配置存储结构，提供线程安全的配置管理。
 #[derive(Default)]
 pub(crate) struct ConfigStore(Arc<RwLock<HashMap<u64, ConfigInfo>>>);
 
 impl ConfigStore {
-    pub fn new() -> Self {
-        Self::default()
-    }
-    pub fn insert(&self, config: ConfigInfo) -> Result<u64, Error> {
-        let mut map = self.0.write().expect("Failed to acquire lock");
-        if map.values().any(|v| v == &config) {
-            return Err(Error::Exists("Config".to_string()));
-        }
-        let index = CONFIG_ID.fetch_add(1, Ordering::Relaxed);
-        map.insert(index, config).ok_or(Error::Exists("Config".to_string()))?;
-        Ok(index)
-    }
-    pub fn all(&self) -> Vec<ConfigInfo> {
-        let map = self.0.read().expect("Failed to acquire lock");
-        map.values().cloned().collect()
-    }
-    pub(crate) fn raw(&self) -> Arc<RwLock<HashMap<u64, ConfigInfo>>> {
-        self.0.clone()
-    }
+	/// 创建新的配置存储
+	pub fn new() -> Self {
+		Self::default()
+	}
+
+	/// 插入配置
+	pub fn insert<C>(&self, config: C) -> Result<u64, Error>
+	where
+		C: Into<ConfigInfo>,
+	{
+		let config = config.into();
+		let mut map = self.0.write().expect("Failed to acquire lock");
+		if map.values().any(|v| v == &config) {
+			return Err(Error::Exists("Config".to_string()));
+		}
+		let index = CONFIG_ID.fetch_add(1, Ordering::Relaxed);
+		map.insert(index, config);
+		Ok(index)
+	}
+
+	/// 获取所有配置
+	pub fn all(&self) -> Vec<ConfigInfo> {
+		let map = self.0.read().expect("Failed to acquire lock");
+		map.values().cloned().collect()
+	}
+
+	/// 获取原始存储的引用
+	pub(crate) fn raw(&self) -> Arc<RwLock<HashMap<u64, ConfigInfo>>> {
+		self.0.clone()
+	}
 }

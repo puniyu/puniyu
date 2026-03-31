@@ -1,6 +1,7 @@
 mod scene;
 #[doc(inline)]
 pub use scene::SceneType;
+use std::fmt::{self, Debug, Formatter};
 
 /// 联系人 Trait
 ///
@@ -17,12 +18,11 @@ pub use scene::SceneType;
 /// # 示例
 ///
 /// ```rust
-/// use puniyu_contact::{Contact, FriendContact, SceneType};
+/// use puniyu_contact::{Contact, FriendContact};
 ///
 /// let friend = FriendContact {
-///     scene: SceneType::Friend,
-///     peer: "123456",
-///     name: Some("Alice"),
+///     peer: "123456".into(),
+///     name: Some("Alice".into()),
 /// };
 ///
 /// // 使用 Contact trait 方法
@@ -34,10 +34,10 @@ pub use scene::SceneType;
 ///
 /// # 泛型使用
 ///
-/// 可以编写接受任何实现 `Contact` trait 的类型的泛型函数：
+/// 可以编写接受任何实现 [`Contact`] trait 的类型的泛型函数：
 ///
 /// ```rust
-/// use puniyu_contact::{Contact, FriendContact, GroupContact, SceneType};
+/// use puniyu_contact::{Contact, FriendContact, GroupContact};
 ///
 /// fn print_contact_info<C: Contact>(contact: &C) {
 ///     println!("ID: {}", contact.peer());
@@ -48,40 +48,44 @@ pub use scene::SceneType;
 /// }
 ///
 /// let friend = FriendContact {
-///     scene: SceneType::Friend,
-///     peer: "123456",
-///     name: Some("Alice"),
+///     peer: "123456".into(),
+///     name: Some("Alice".into()),
 /// };
 /// print_contact_info(&friend);
 ///
 /// let group = GroupContact {
-///     scene: SceneType::Group,
-///     peer: "789012",
-///     name: Some("Dev Team"),
+///     peer: "789012".into(),
+///     name: Some("Dev Team".into()),
 /// };
 /// print_contact_info(&group);
 /// ```
 pub trait Contact: Send + Sync {
 	/// 获取场景类型
 	///
-	/// 返回联系人所属的场景类型（好友或群聊）。
+	/// # 返回值
+	///
+	/// 返回联系人所属的场景类型 [`SceneType`]。
 	fn scene(&self) -> &SceneType;
 
 	/// 获取联系人 ID
 	///
-	/// 返回联系人的唯一标识符。
+	/// # 返回值
+	///
+	/// 返回联系人的唯一标识符 [`str`]。
 	fn peer(&self) -> &str;
 
 	/// 获取联系人名称
 	///
-	/// 返回联系人的名称，如果未设置则返回 `None`。
+	/// # 返回值
+	///
+	/// 返回联系人的名称 [`Option<&str>`]，如果未设置则返回 [`None`]。
 	fn name(&self) -> Option<&str>;
 
 	/// 判断是否为好友场景
 	///
 	/// # 返回值
 	///
-	/// 如果是好友场景返回 `true`，否则返回 `false`。
+	/// 如果是好友场景返回 [`true`]，否则返回 [`false`]。
 	fn is_friend(&self) -> bool {
 		matches!(self.scene(), SceneType::Friend)
 	}
@@ -90,12 +94,23 @@ pub trait Contact: Send + Sync {
 	///
 	/// # 返回值
 	///
-	/// 如果是群聊场景返回 `true`，否则返回 `false`。
+	/// 如果是群聊场景返回 [`true`]，否则返回 [`false`]。
 	fn is_group(&self) -> bool {
 		matches!(self.scene(), SceneType::Group)
 	}
 }
 
+impl PartialEq for dyn Contact {
+	fn eq(&self, other: &Self) -> bool {
+		self.scene() == other.scene() && self.peer() == other.peer() && self.name() == other.name()
+	}
+}
+
+impl Debug for dyn Contact {
+	fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+		f.debug_struct("Contact").field("peer", &self.peer()).field("name", &self.name()).finish()
+	}
+}
 
 impl<T: Contact> Contact for &T {
 	fn scene(&self) -> &SceneType {

@@ -1,216 +1,70 @@
 //! # puniyu_bot
 //!
-//! 机器人实例库，提供机器人的统一类型定义。
+//! 统一的机器人实例类型，封装适配器与账户信息，并提供全局注册表。
 //!
-//! ## 概述
+//! ## 特性
 //!
-//! `puniyu_bot` 提供了机器人实例的类型定义，封装了适配器信息、API 接口和账户信息。
-//!
-//! ## 使用方式
-//!
-//! ### 创建机器人实例
-//!
-//! ```rust
-//! use puniyu_bot::Bot;
-//! use puniyu_account::AccountInfo;
-//! use puniyu_adapter_core::api::AdapterApi;
-//! use puniyu_adapter_core::adapter_info;
-//! use puniyu_adapter_core::types::info::{AdapterPlatform, AdapterProtocol};
-//!
-//! let adapter = adapter_info!(
-//!     "my_adapter",
-//!     AdapterPlatform::QQ,
-//!     AdapterProtocol::Console
-//! );
-//!
-//! let api = AdapterApi::default();
-//!
-//! let account = AccountInfo {
-//!     uin: "123456".to_string(),
-//!     name: "MyBot".to_string(),
-//!     avatar: "".to_string(),
-//! };
-//!
-//! let bot = Bot::new(adapter, api, account);
-//! ```
-//!
-//! ### 访问机器人信息
-//!
-//! ```rust,ignore
-//! use puniyu_bot::Bot;
-//!
-//! // 获取适配器信息
-//! let adapter = bot.adapter();
-//! println!("适配器: {}", adapter.name);
-//!
-//! // 获取 API
-//! let api = bot.api();
-//! api.message().send_msg(&contact, &message).await?;
-//!
-//! // 获取账户信息
-//! let account = bot.account();
-//! println!("机器人 UIN: {}", account.uin);
-//! ```
+//! - 提供 `Bot`
+//! - 提供 `BotRegistry` 与 `BotId`
+//! - 提供便捷函数 `get_bot`、`get_bot_count` 与 `get_all_bot`
+//! - 提供宏 `register_bot!` 与 `unregister_bot!`
 
-#[cfg(feature = "registry")]
 mod registry;
-#[cfg(feature = "registry")]
+#[doc(inline)]
 pub use registry::BotRegistry;
-pub mod types;
+mod macros;
+mod types;
+#[doc(inline)]
+pub use types::*;
 
 use puniyu_account::AccountInfo;
-use puniyu_adapter_core::api::AdapterApi;
-use puniyu_adapter_core::types::info::AdapterInfo;
-use std::fmt::{Debug, Formatter};
+use puniyu_adapter_api::AdapterApi;
+use puniyu_adapter_types::AdapterInfo;
+use std::{
+	fmt::{Debug, Formatter},
+	sync::Arc,
+};
 
-/// 机器人实例
-///
-/// 封装了适配器信息、API 接口和账户信息的机器人实例。
-///
-/// # 字段
-///
-/// - `adapter` - 适配器信息
-/// - `api` - 适配器 API 接口
-/// - `account` - 机器人账户信息
-///
-/// # 示例
-///
-/// ```rust
-/// use puniyu_bot::Bot;
-/// use puniyu_account::AccountInfo;
-/// use puniyu_adapter_core::api::AdapterApi;
-/// use puniyu_adapter_core::adapter_info;
-/// use puniyu_adapter_core::types::info::{AdapterPlatform, AdapterProtocol};
-///
-/// let adapter = adapter_info!(
-///     "test_adapter",
-///     AdapterPlatform::QQ,
-///     AdapterProtocol::Console
-/// );
-///
-/// let api = AdapterApi::default();
-///
-/// let account = AccountInfo {
-///     uin: "123456".to_string(),
-///     name: "TestBot".to_string(),
-///     avatar: "".to_string(),
-/// };
-///
-/// let bot = Bot::new(adapter, api, account);
-///
-/// assert_eq!(bot.account().uin, "123456");
-/// ```
-#[derive(Clone)]
+/// 机器人实例。
+#[derive(Clone, PartialEq)]
 pub struct Bot {
-	/// 适配器信息
-	adapter: AdapterInfo,
-	/// 适配器API
-	api: AdapterApi,
-	/// 账户信息
-	account: AccountInfo,
+	adapter: Arc<AdapterInfo>,
+	api: Arc<AdapterApi>,
+	account: Arc<AccountInfo>,
 }
 
 impl Debug for Bot {
 	fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-		f.debug_tuple("Bot").field(&self.adapter).field(&self.account).finish()
-	}
-}
-
-impl PartialEq for Bot {
-	fn eq(&self, other: &Self) -> bool {
-		self.adapter == other.adapter && self.account == other.account
+		f.debug_struct("Bot")
+			.field("adapter", &self.adapter)
+			.field("account", &self.account)
+			.finish()
 	}
 }
 
 impl Bot {
-	/// 创建新的机器人实例
+	/// 使用适配器信息、适配器 API 与账户信息创建机器人实例。
 	///
-	/// # 参数
-	///
-	/// - `adapter` - 适配器信息
-	/// - `api` - 适配器 API 接口
-	/// - `account` - 机器人账户信息
-	///
-	/// # 示例
-	///
-	/// ```rust
-	/// use puniyu_bot::Bot;
-	/// use puniyu_account::AccountInfo;
-	/// use puniyu_adapter_core::api::AdapterApi;
-	/// use puniyu_adapter_core::adapter_info;
-	/// use puniyu_adapter_core::types::info::{AdapterPlatform, AdapterProtocol};
-	///
-	/// let adapter = adapter_info!(
-	///     "my_adapter",
-	///     AdapterPlatform::QQ,
-	///     AdapterProtocol::Console
-	/// );
-	///
-	/// let api = AdapterApi::default();
-	///
-	/// let account = AccountInfo {
-	///     uin: "123456".to_string(),
-	///     name: "MyBot".to_string(),
-	///     avatar: "".to_string(),
-	/// };
-	///
-	/// let bot = Bot::new(adapter, api, account);
-	/// ```
-	pub fn new(adapter: AdapterInfo, api: AdapterApi, account: AccountInfo) -> Self {
-		Self { adapter, api, account }
+	/// 参数可以是 `T` 或 `Arc<T>`，均可自动转换。
+	pub fn new(
+		adapter: impl Into<Arc<AdapterInfo>>,
+		api: impl Into<Arc<AdapterApi>>,
+		account: impl Into<Arc<AccountInfo>>,
+	) -> Self {
+		Self { adapter: adapter.into(), api: api.into(), account: account.into() }
 	}
 
-	/// 获取适配器信息
-	///
-	/// # 返回值
-	///
-	/// 返回适配器信息的引用
-	///
-	/// # 示例
-	///
-	/// ```rust,ignore
-	/// let adapter = bot.adapter();
-	/// println!("适配器名称: {}", adapter.name);
-	/// println!("平台: {}", adapter.platform);
-	/// ```
+	/// 返回适配器信息引用。
 	pub fn adapter(&self) -> &AdapterInfo {
 		&self.adapter
 	}
 
-	/// 获取适配器 API
-	///
-	/// # 返回值
-	///
-	/// 返回适配器 API 的引用
-	///
-	/// # 示例
-	///
-	/// ```rust,ignore
-	/// let api = bot.api();
-	///
-	/// // 发送消息
-	/// api.message().send_msg(&contact, &message).await?;
-	///
-	/// // 获取群列表
-	/// let groups = api.group().get_group_list().await?;
-	/// ```
+	/// 返回适配器 API 引用。
 	pub fn api(&self) -> &AdapterApi {
 		&self.api
 	}
 
-	/// 获取账户信息
-	///
-	/// # 返回值
-	///
-	/// 返回机器人账户信息的引用
-	///
-	/// # 示例
-	///
-	/// ```rust,ignore
-	/// let account = bot.account();
-	/// println!("机器人 UIN: {}", account.uin);
-	/// println!("机器人昵称: {}", account.name);
-	/// ```
+	/// 返回账户信息引用。
 	pub fn account(&self) -> &AccountInfo {
 		&self.account
 	}

@@ -1,10 +1,10 @@
 [package]
 name = "puniyu_path"
 version = "0.7.8"
-description = "puniyu crate for Path"
+description = "puniyu 路径管理库，统一提供应用、插件与适配器目录路径"
 authors.workspace = true
 license.workspace = true
-readme.workspace = true
+readme = "README.md"
 homepage.workspace = true
 repository.workspace = true
 edition.workspace = true
@@ -19,3 +19,5 @@ workspace = true
 [dependencies]
 puniyu_common.workspace = true
 
+[dev-dependencies]
+puniyu_version.workspace = true

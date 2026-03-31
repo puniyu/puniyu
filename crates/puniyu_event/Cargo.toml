@@ -1,7 +1,7 @@
 [package]
 name = "puniyu_event"
 version = "0.7.8"
-description = "Puniyu 事件类型定义库，提供消息、通知和请求事件的完整类型系统"
+description = "puniyu 事件类型库，统一消息、通知与请求事件模型"
 authors.workspace = true
 license.workspace = true
 readme.workspace = true
@@ -25,3 +25,6 @@ puniyu_element.workspace = true
 
 [dev-dependencies]
 serde_json.workspace = true
+puniyu_account.workspace = true
+puniyu_adapter_api.workspace = true
+puniyu_adapter_types.workspace = true

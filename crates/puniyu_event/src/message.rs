@@ -12,16 +12,11 @@ mod event;
 #[doc(inline)]
 pub use event::MessageEvent;
 mod types;
-#[doc(inline)]
-pub use types::*;
-
-
 use super::EventBase;
 use bytes::Bytes;
 use puniyu_element::receive::Elements;
-use puniyu_bot::Bot;
-pub use puniyu_element::RawMessage;
-
+#[doc(inline)]
+pub use types::*;
 
 /// 消息基础 trait
 ///
@@ -43,10 +38,10 @@ pub use puniyu_element::RawMessage;
 ///     // 获取文本内容
 ///     let texts = msg.get_text();
 ///     println!("消息内容: {}", texts.join(" "));
-///     
-///     // 判断是否为主人
-///     if msg.is_master() {
-///         println!("主人发送的消息");
+///
+///     // 获取回复消息 ID
+///     if let Some(reply_id) = msg.get_reply_id() {
+///         println!("回复消息 ID: {}", reply_id);
 ///     }
 /// }
 /// ```
@@ -115,30 +110,24 @@ pub trait MessageBase: Send + Sync + EventBase {
 	///
 	/// # 返回值
 	///
-	/// 如果消息包含图片，返回 `Some(Bytes)`，否则返回 `None`
-	fn get_image(&self) -> Option<Bytes> {
-		self.elements()
-			.iter()
-			.filter_map(|e| match e {
-				Elements::Image(image) => Some(image.file.clone()),
-				_ => None,
-			})
-			.next()
+	/// 如果消息包含图片，返回 `Some(&Bytes)`，否则返回 `None`
+	fn get_image(&self) -> Option<&Bytes> {
+		self.elements().iter().find_map(|e| match e {
+			Elements::Image(image) => Some(&image.file),
+			_ => None,
+		})
 	}
 
 	/// 获取第一个语音元素
 	///
 	/// # 返回值
 	///
-	/// 如果消息包含语音，返回 `Some(Bytes)`，否则返回 `None`
-	fn get_record(&self) -> Option<Bytes> {
-		self.elements()
-			.iter()
-			.filter_map(|e| match e {
-				Elements::Record(record) => Some(record.file.clone()),
-				_ => None,
-			})
-			.next()
+	/// 如果消息包含语音，返回 `Some(&Bytes)`，否则返回 `None`
+	fn get_record(&self) -> Option<&Bytes> {
+		self.elements().iter().find_map(|e| match e {
+			Elements::Record(record) => Some(&record.file),
+			_ => None,
+		})
 	}
 
 	/// 获取回复消息的 ID
@@ -157,29 +146,142 @@ pub trait MessageBase: Send + Sync + EventBase {
 	}
 }
 
-/// 消息构建器
-///
-/// 用于构建消息事件的辅助结构。
-#[derive(Debug)]
-pub struct MessageBuilder<'m, Contact, Sender>
-where
-	Contact: puniyu_contact::Contact,
-	Sender: puniyu_sender::Sender,
-{
-	/// 机器人实例
-	pub bot: &'m Bot,
-	/// 事件 ID
-	pub event_id: &'m str,
-	/// 用户 ID
-	pub user_id: &'m str,
-	/// 联系人信息
-	pub contact: &'m Contact,
-	/// 发送者信息
-	pub sender: &'m Sender,
-	/// 时间戳
-	pub time: u64,
-	/// 消息 ID
-	pub message_id: &'m str,
-	/// 消息元素列表
-	pub elements: &'m Vec<Elements<'m>>,
+/// 快速构建好友消息事件。
+#[macro_export]
+macro_rules! crate_friend_message {
+	(
+		bot: $bot:expr,
+		event_id: $event_id:expr,
+		user_id: $user_id:expr,
+		contact: $contact:expr,
+		sender: $sender:expr,
+		time: $time:expr,
+		message_id: $message_id:expr,
+		elements: $elements:expr $(,)?
+	) => {
+		$crate::message::FriendMessage::new(
+			$bot,
+			$event_id,
+			$user_id,
+			$contact,
+			$sender,
+			$time,
+			$message_id,
+			$elements,
+		)
+	};
 }
+
+/// 快速构建群消息事件。
+#[macro_export]
+macro_rules! crate_group_message {
+	(
+		bot: $bot:expr,
+		event_id: $event_id:expr,
+		user_id: $user_id:expr,
+		contact: $contact:expr,
+		sender: $sender:expr,
+		time: $time:expr,
+		message_id: $message_id:expr,
+		elements: $elements:expr $(,)?
+	) => {
+		$crate::message::GroupMessage::new(
+			$bot,
+			$event_id,
+			$user_id,
+			$contact,
+			$sender,
+			$time,
+			$message_id,
+			$elements,
+		)
+	};
+}
+
+/// 快速构建消息事件枚举。
+#[macro_export]
+macro_rules! create_message {
+	(Friend, $message:expr $(,)?) => {
+		$crate::message::MessageEvent::Friend($message)
+	};
+	(Group, $message:expr $(,)?) => {
+		$crate::message::MessageEvent::Group($message)
+	};
+}
+
+/// 生成消息事件结构体及其 EventBase、MessageBase 实现
+///
+/// # 参数
+///
+/// - `$name`: 结构体名称
+/// - `$contact`: 联系人类型（如 `FriendContact`、`GroupContact`）
+/// - `$sender`: 发送者类型（如 `FriendSender`、`GroupSender`）
+/// - `$sub_event`: 消息子类型变体（如 `MessageSubEventType::Friend`）
+macro_rules! codegen_message {
+	(
+		$(#[$meta:meta])*
+		$name:ident, $contact:ident, $sender:ident, $sub_event:expr
+	) => {
+		$(#[$meta])*
+		#[derive(Debug, Clone)]
+		pub struct $name<'m> {
+			bot: &'m puniyu_bot::Bot,
+			event_id: &'m str,
+			time: u64,
+			user_id: &'m str,
+			message_id: &'m str,
+			elements: &'m Vec<puniyu_element::receive::Elements<'m>>,
+			contact: &'m $contact<'m>,
+			sender: &'m $sender<'m>,
+		}
+
+		impl<'m> $name<'m> {
+			#[doc = concat!("使用完整参数构建 [`", stringify!($name), "`]。")]
+			#[allow(clippy::too_many_arguments)]
+			pub fn new(
+				bot: &'m puniyu_bot::Bot,
+				event_id: &'m str,
+				user_id: &'m str,
+				contact: &'m $contact<'m>,
+				sender: &'m $sender<'m>,
+				time: u64,
+				message_id: &'m str,
+				elements: &'m Vec<puniyu_element::receive::Elements<'m>>,
+			) -> Self {
+				Self {
+					bot,
+					event_id,
+					time,
+					user_id,
+					message_id,
+					elements,
+					contact,
+					sender,
+				}
+			}
+		}
+
+		impl<'e> $crate::EventBase for $name<'e> {
+			type EventType = $crate::EventType;
+			type SubEventType = super::MessageSubEventType;
+			type Contact = $contact<'e>;
+			type Sender = $sender<'e>;
+
+			fn time(&self) -> u64 { self.time }
+			fn event_type(&self) -> &$crate::EventType { &$crate::EventType::Message }
+			fn event_id(&self) -> &str { self.event_id }
+			fn sub_event(&self) -> &super::MessageSubEventType { &$sub_event }
+			fn bot(&self) -> &puniyu_bot::Bot { self.bot }
+			fn self_id(&self) -> &str { self.bot.account().uin.as_str() }
+			fn user_id(&self) -> &str { self.user_id }
+			fn contact(&self) -> &Self::Contact { self.contact }
+			fn sender(&self) -> &Self::Sender { self.sender }
+		}
+
+		impl<'m> super::MessageBase for $name<'m> {
+			fn message_id(&self) -> &str { self.message_id }
+			fn elements(&self) -> &Vec<puniyu_element::receive::Elements<'_>> { self.elements }
+		}
+	};
+}
+pub(crate) use codegen_message;
