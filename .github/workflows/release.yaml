@@ -38,7 +38,7 @@ jobs:
 
       - name: 运行 release-plz
         id: release-plz
-        uses: release-plz/action@1528104d2ca23787631a1c1f022abb64b34c1e11 # v0.5
+        uses: release-plz/action@52440b50d383aa252927de395c8b2c1e0a9cf8e9 # v0.5
         with:
           command: release-pr
         env:
@@ -68,7 +68,7 @@ jobs:
 
       - name: 运行 release-plz
         id: release-plz
-        uses: release-plz/action@1528104d2ca23787631a1c1f022abb64b34c1e11 # v0.5
+        uses: release-plz/action@52440b50d383aa252927de395c8b2c1e0a9cf8e9 # v0.5
         with:
           command: release
         env:
@@ -89,7 +89,7 @@ jobs:
         uses: puniyu/setup-rust@main
         with:
           tools: just
-          save-cache: true
+          cache: true
           prefix-key: ${{ env.APP_NAME }}
 
       - name: 单元测试
@@ -97,5 +97,41 @@ jobs:
           just test
 
 
+  build:
+    needs: [ release-pr, test ]
+    uses: ./.github/workflows/build.yaml
 
-      
+  publish-github-release:
+    needs: [ release-pr, release, build ]
+    if: ${{ needs.release-pr.outputs.prs_created == 'false' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: 获取token
+        uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
+        id: app-token
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - name: 下载构建产物
+        uses: dawidd6/action-download-artifact@ac66b43f0e6a346234dd65d4d0c8fbb31cb316e5 # v11
+        with:
+          name: "^${{ env.APP_NAME }}.*"
+          name_is_regexp: true
+          skip_unpack: true
+
+      - name: 获取包的标签
+        id: get-tag
+        run: |
+          puniyu_tag=$(echo '${{ needs.release.outputs.releases }}' | jq -r '.[] | select(.package_name == "puniyu") | .tag')
+          echo "puniyu_tag=$puniyu_tag" >> $GITHUB_OUTPUT
+
+          
+
+      - name: 上传主程序 Release
+        if: ${{ steps.get-tag.outputs.puniyu_tag }}
+        uses: softprops/action-gh-release@a06a81a03ee405af7f2048a818ed3f03bbf83c7b # v2.5.0
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          files: ${{ env.APP_NAME }}-*
+          tag_name: ${{ steps.get-tag.outputs.puniyu_tag }}
