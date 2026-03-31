@@ -25,7 +25,7 @@ puniyu_path.workspace = true
 puniyu_dispatch.workspace = true
 const-str.workspace = true
 
-figlet-rs = "0.1.5"
+figlet-rs = "0.2.0"
 
 puniyu_config.workspace = true
 puniyu_api.workspace = true
