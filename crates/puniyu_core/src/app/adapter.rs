@@ -1,12 +1,13 @@
 use puniyu_adapter_core::Adapter;
+use puniyu_adapter_core::AdapterRegistry;
 use puniyu_common::source::SourceType;
+use puniyu_config::ConfigRegistry;
 use puniyu_logger::error;
 use puniyu_path::adapter::*;
 use std::sync::Arc;
 use tokio::fs::create_dir_all;
 
 pub async fn init_adapter(adapter: Arc<dyn Adapter>) {
-	use puniyu_adapter_core::AdapterRegistry;
 	let name = adapter.info().name;
 	let hooks = adapter.hook();
 	#[cfg(feature = "server")]
@@ -16,7 +17,9 @@ pub async fn init_adapter(adapter: Arc<dyn Adapter>) {
 		Err(e) => return error!("Failed to register adapter {}: {}", name, e),
 	};
 	let source = SourceType::Adapter(index);
-	if let Err(e) = super::hook::init_hook(source, hooks) {
+	if !hooks.is_empty()
+		&& let Err(e) = super::hook::init_hook(source, hooks)
+	{
 		error!("Failed to init hook for adapter {}: {}", name, e);
 	}
 	#[cfg(feature = "server")]
@@ -39,8 +42,20 @@ pub async fn init_adapter(adapter: Arc<dyn Adapter>) {
 	if !temp_dir().join(&name).exists() {
 		let _ = create_dir_all(temp_dir().join(&name)).await;
 	}
-	
+
 	if let Err(e) = adapter.init().await {
 		error!("Failed to init adapter: {}", e);
+	}
+
+	let configs = adapter.config();
+	if !configs.is_empty() {
+		for config in configs {
+			let config = config.config();
+			let path = config_dir().join(&name).join(&config.name);
+			if !path.exists() {
+				let _ = create_dir_all(path).await;
+			}
+			let _ = ConfigRegistry::register(config);
+		}
 	}
 }

@@ -1,15 +1,16 @@
 use puniyu_command::Command;
 use puniyu_common::source::SourceType;
+use puniyu_config::ConfigRegistry;
 use puniyu_error::registry::Error;
 use puniyu_logger::error;
+use puniyu_path::plugin::*;
 use puniyu_plugin_core::Plugin;
+use puniyu_plugin_core::PluginRegistry;
 use puniyu_task::Task;
 use std::sync::Arc;
 use tokio::fs::create_dir_all;
-use puniyu_path::plugin::*;
 
 pub async fn init_plugin(plugin: Arc<dyn Plugin>) {
-	use puniyu_plugin_core::PluginRegistry;
 	let name = plugin.name();
 	let hooks = plugin.hooks();
 	let commands = plugin.commands();
@@ -23,21 +24,30 @@ pub async fn init_plugin(plugin: Arc<dyn Plugin>) {
 		}
 	};
 	let source = SourceType::Plugin(index);
-	if let Err(e) = super::hook::init_hook(source, hooks) {
+	if !hooks.is_empty()
+		&& let Err(e) = super::hook::init_hook(source, hooks)
+	{
 		error!("Failed to register hook for plugin: {:?}", e);
 	}
-	if let Err(e) = init_command(index, commands) {
+
+	if !commands.is_empty()
+		&& let Err(e) = init_command(index, commands)
+	{
 		error!("Failed to register command for plugin: {:?}", e);
 	};
-	if let Err(e) = init_task(index, tasks).await {
+
+	if !tasks.is_empty()
+		&& let Err(e) = init_task(index, tasks).await
+	{
 		error!("Failed to register task for plugin: {:?}", e);
 	};
 	#[cfg(feature = "server")]
 	{
 		if let Some(server) = servers
-			&& let Err(e) = super::server::init_server(source, server) {
-				error!("Failed to register server for plugin: {:?}", e);
-			}
+			&& let Err(e) = super::server::init_server(source, server)
+		{
+			error!("Failed to register server for plugin: {:?}", e);
+		}
 	}
 	if !config_dir().join(name).exists() {
 		let _ = create_dir_all(config_dir().join(name)).await;
@@ -53,6 +63,17 @@ pub async fn init_plugin(plugin: Arc<dyn Plugin>) {
 	}
 	if let Err(e) = plugin.init().await {
 		error!("Failed to init plugin: {:?}", e);
+	}
+	let configs = plugin.config();
+	if !configs.is_empty() {
+		for config in configs {
+			let config = config.config();
+			let path = config_dir().join(name).join(&config.name);
+			if !path.exists() {
+				let _ = create_dir_all(path).await;
+			}
+			let _ = ConfigRegistry::register(config);
+		}
 	}
 }
 

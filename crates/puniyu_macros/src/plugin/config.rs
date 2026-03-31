@@ -16,30 +16,30 @@ pub fn config(item: zyn::syn::ItemStruct, cfg: ConfigArgs) -> zyn::TokenStream {
 	let plugin_name = zyn! { env!("CARGO_PKG_NAME") };
 
 	zyn! {
-		{{ item }}
+			{{ item }}
 
-impl ::puniyu_plugin::__private::Config for {{ struct_name }} {
-			fn config(&self) -> ::puniyu_plugin::__private::ConfigInfo {
-				::puniyu_plugin::__private::ConfigInfo {
-					name: ::std::string::String::from({{ config_name }}),
-					path: ::puniyu_plugin::path::adapter::config_dir()
-						.join({{ plugin_name }})
-						.join({{ config_file_name }}),
-					value: ::puniyu_plugin::__private::toml::from_str(
-						&::puniyu_plugin::__private::toml::to_string(self).expect({{ serialize_error }}),
-					).expect("Failed to parse TOML string to Value"),
+	impl ::puniyu_plugin::__private::Config for {{ struct_name }} {
+				fn config(&self) -> ::puniyu_plugin::__private::ConfigInfo {
+					::puniyu_plugin::__private::ConfigInfo {
+						name: ::std::string::String::from({{ config_name }}),
+						path: ::puniyu_plugin::path::adapter::config_dir()
+							.join({{ plugin_name }})
+							.join({{ config_file_name }}),
+						value: ::puniyu_plugin::__private::toml::from_str(
+							&::puniyu_plugin::__private::toml::to_string(self).expect({{ serialize_error }}),
+						).expect("Failed to parse TOML string to Value"),
+					}
+				}
+			}
+
+			::puniyu_plugin::__private::inventory::submit! {
+				crate::ConfigRegistry {
+					plugin_name: {{ plugin_name }},
+					builder: || -> ::std::sync::Arc<dyn ::puniyu_plugin::__private::Config> {
+						::std::sync::Arc::new( {{ struct_name}}::default())
+					}
 				}
 			}
 		}
-
-		::puniyu_plugin::__private::inventory::submit! {
-			crate::ConfigRegistry {
-				plugin_name: {{ plugin_name }},
-				builder: || -> ::std::sync::Arc<dyn ::puniyu_plugin::__private::Config> {
-					::std::sync::Arc::new( {{ struct_name}}::default())
-				}
-			}
-		}
-	}
 	.into_token_stream()
 }

@@ -25,9 +25,7 @@ pub fn setup_plugin() {
 					// 	plugin::check_features(features)
 					// }
 				}
-				Value::String(v) => {
-					
-				}
+				Value::String(v) => {}
 				_ => {
 					panic!("plugin must be a bool or string")
 				}

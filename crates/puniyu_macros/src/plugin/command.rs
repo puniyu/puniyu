@@ -1,4 +1,4 @@
-use crate::{CommandArgs, ArgType, common::validate_async};
+use crate::{ArgType, CommandArgs, common::validate_async};
 use zyn::{ToTokens, zyn};
 
 pub fn command(item: zyn::syn::ItemFn, cfg: CommandArgs) -> zyn::TokenStream {
@@ -14,7 +14,7 @@ pub fn command(item: zyn::syn::ItemFn, cfg: CommandArgs) -> zyn::TokenStream {
 	}
 
 	let fn_name = &item.sig.ident;
-	let struct_name = zyn!{ {{ fn_name | pascal | ident: "{}Command" }} };
+	let struct_name = zyn! { {{ fn_name | pascal | ident: "{}Command" }} };
 	let plugin_name = zyn! { env!("CARGO_PKG_NAME") };
 	let command_name = zyn! { {{ cfg.name | str }} };
 	let command_priority = match cfg.priority {
@@ -44,7 +44,9 @@ pub fn command(item: zyn::syn::ItemFn, cfg: CommandArgs) -> zyn::TokenStream {
 	let args_tokens = {
 		let mut ts = zyn::TokenStream::new();
 		for attr in &item.attrs {
-			if !attr.path().is_ident("arg") { continue; }
+			if !attr.path().is_ident("arg") {
+				continue;
+			}
 			let list = match attr.meta.require_list() {
 				Ok(l) => l,
 				Err(e) => return e.to_compile_error(),
@@ -76,7 +78,9 @@ pub fn command(item: zyn::syn::ItemFn, cfg: CommandArgs) -> zyn::TokenStream {
 				Some(desc) => zyn! { .description({{ desc | str }}) }.to_token_stream(),
 				None => zyn::TokenStream::new(),
 			};
-			ts.extend(zyn! { #constructor #mode_method #required_method #desc_method, }.to_token_stream());
+			ts.extend(
+				zyn! { #constructor #mode_method #required_method #desc_method, }.to_token_stream(),
+			);
 		}
 		ts
 	};
@@ -147,7 +151,10 @@ fn validate_command_args(fn_sig: &zyn::syn::Signature) -> zyn::syn::Result<()> {
 	let pat_type = match arg {
 		zyn::syn::FnArg::Typed(pt) => pt,
 		zyn::syn::FnArg::Receiver(_) => {
-			return Err(zyn::syn::Error::new(arg.span(), "command function parameter must not be `self`"));
+			return Err(zyn::syn::Error::new(
+				arg.span(),
+				"command function parameter must not be `self`",
+			));
 		}
 	};
 	let inner_type = match pat_type.ty.as_ref() {
@@ -164,7 +171,8 @@ fn validate_command_args(fn_sig: &zyn::syn::Signature) -> zyn::syn::Result<()> {
 			let last = tp.path.segments.last().map(|s| s.ident.to_string());
 			let full = tp.path.to_token_stream().to_string().replace(' ', "");
 			last.as_deref() == Some("MessageContext")
-				|| matches!(full.as_str(),
+				|| matches!(
+					full.as_str(),
 					"puniyu_plugin::context::MessageContext"
 						| "::puniyu_plugin::context::MessageContext"
 				)
@@ -182,10 +190,12 @@ fn validate_command_args(fn_sig: &zyn::syn::Signature) -> zyn::syn::Result<()> {
 
 fn validate_command_return_type(fn_sig: &zyn::syn::Signature) -> zyn::syn::Result<()> {
 	use zyn::syn::spanned::Spanned;
-	let err = |span| Err(zyn::syn::Error::new(
-		span,
-		"command function must return `puniyu_plugin::Result<CommandAction>` or `puniyu_plugin::Result<puniyu_plugin::command::CommandAction>`",
-	));
+	let err = |span| {
+		Err(zyn::syn::Error::new(
+			span,
+			"command function must return `puniyu_plugin::Result<CommandAction>` or `puniyu_plugin::Result<puniyu_plugin::command::CommandAction>`",
+		))
+	};
 	let zyn::syn::ReturnType::Type(_, ty) = &fn_sig.output else {
 		return err(fn_sig.span());
 	};
@@ -193,7 +203,8 @@ fn validate_command_return_type(fn_sig: &zyn::syn::Signature) -> zyn::syn::Resul
 		return err(ty.span());
 	};
 	let actual = tp.path.to_token_stream().to_string().replace(' ', "");
-	if matches!(actual.as_str(),
+	if matches!(
+		actual.as_str(),
 		"puniyu_plugin::Result<CommandAction>"
 			| "::puniyu_plugin::Result<CommandAction>"
 			| "puniyu_plugin::Result<puniyu_plugin::command::CommandAction>"

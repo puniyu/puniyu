@@ -5,15 +5,14 @@ pub use task::task;
 mod config;
 pub use config::config;
 mod hook;
+use crate::{
+	PluginArg,
+	common::{validate_async, validate_return_type},
+};
 pub use hook::hook;
-use zyn::{zyn, ToTokens};
-use crate::{PluginArg, common::{validate_async, validate_return_type}};
+use zyn::{ToTokens, zyn};
 
-
-pub fn plugin(
-	item: zyn::syn::ItemFn,
-	cfg: PluginArg,
-) -> zyn::TokenStream {
+pub fn plugin(item: zyn::syn::ItemFn, cfg: PluginArg) -> zyn::TokenStream {
 	if let Err(err) = validate_async(&item.sig) {
 		return err.to_compile_error();
 	}
@@ -162,5 +161,6 @@ pub fn plugin(
 		}
 		::puniyu_plugin::__private::inventory::collect!(crate::HookRegistry);
 
-	}.to_token_stream()
+	}
+	.to_token_stream()
 }

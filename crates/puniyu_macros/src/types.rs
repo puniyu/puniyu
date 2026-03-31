@@ -30,7 +30,7 @@ pub(crate) struct HookArgs {
 pub(crate) struct PluginArg {
 	pub desc: Option<String>,
 	pub prefix: Option<String>,
-	pub server: Option<zyn::syn::Expr>	
+	pub server: Option<zyn::syn::Expr>,
 }
 
 #[derive(zyn::Attribute)]
@@ -39,7 +39,6 @@ pub(crate) struct TaskArgs {
 	pub name: Option<String>,
 	pub cron: String,
 }
-
 
 #[derive(zyn::Attribute)]
 #[zyn("arg")]

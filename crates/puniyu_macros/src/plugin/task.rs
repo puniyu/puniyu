@@ -1,9 +1,9 @@
-use std::str::FromStr;
 use crate::{
 	TaskArgs,
 	common::{validate_async, validate_return_type},
 };
 use croner::Cron;
+use std::str::FromStr;
 use zyn::{ToTokens, zyn};
 
 pub fn task(item: zyn::syn::ItemFn, cfg: TaskArgs) -> zyn::TokenStream {

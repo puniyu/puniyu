@@ -17,7 +17,7 @@ pub fn hook(item: zyn::syn::ItemFn, cfg: HookArgs) -> zyn::TokenStream {
 	}
 
 	let fn_name = &fn_sig.ident;
-	let struct_name = zyn!{ {{ fn_name | pascal | ident: "{}Hook" }} };
+	let struct_name = zyn! { {{ fn_name | pascal | ident: "{}Hook" }} };
 	let plugin_name = zyn! { env!("CARGO_PKG_NAME") };
 	let hook_name = match &cfg.name {
 		Some(name) => zyn! { {{ name | str }} },

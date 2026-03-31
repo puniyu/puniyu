@@ -1,9 +1,9 @@
 pub use puniyu_account::account_info;
 pub use puniyu_contact::{contact, contact_friend, contact_group};
+pub use puniyu_macros::command;
 pub use puniyu_macros::plugin;
-pub use puniyu_macros::plugin_hook as hook;
 pub use puniyu_macros::plugin_config as config;
-pub use puniyu_macros::command as command;
+pub use puniyu_macros::plugin_hook as hook;
 pub use puniyu_message::message;
 pub use puniyu_segment::segment;
 pub use puniyu_sender::{sender, sender_friend, sender_group};

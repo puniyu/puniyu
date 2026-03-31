@@ -1,6 +1,6 @@
-use puniyu_system_info::SystemInfo;
 use puniyu_common::app::{app_name, app_version};
 use puniyu_plugin::prelude::*;
+use puniyu_system_info::SystemInfo;
 
 #[command(name = "state")]
 async fn state(ctx: &MessageContext<'_>) -> puniyu_plugin::Result<CommandAction> {
