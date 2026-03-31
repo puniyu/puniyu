@@ -76,10 +76,10 @@ impl crate::Config for BotConfig {
 		crate::ConfigInfo {
 			name: "bot".to_string(),
 			path: CONFIG_PATH.clone(),
-            value: toml::from_str(
-                &toml::to_string(self).expect("Failed to serialize BotConfig to TOML string"),
-            )
-            .expect("Failed to parse TOML string to Value"),
+			value: toml::from_str(
+				&toml::to_string(self).expect("Failed to serialize BotConfig to TOML string"),
+			)
+			.expect("Failed to parse TOML string to Value"),
 		}
 	}
 }

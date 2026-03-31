@@ -25,9 +25,11 @@ impl Handler for HookHandler {
 		let context = EventContext::new(event);
 		let event_type = HookEventType::from(*context.event_type());
 		let mut hooks = HookRegistry::all();
-		hooks.retain(|x| matches!(x.builder.r#type(),
-			HookType::Event(t) if *t == HookEventType::All || *t == event_type
-		));
+		hooks.retain(|x| {
+			matches!(x.builder.r#type(),
+				HookType::Event(t) if *t == HookEventType::All || *t == event_type
+			)
+		});
 		hooks.sort_unstable_by_key(|a| a.builder.priority());
 		for hook in hooks {
 			if let Err(e) = hook.builder.run(Some(&context)).await {

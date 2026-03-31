@@ -94,9 +94,8 @@ pub fn make_message_context() -> MessageContext<'static> {
 }
 
 pub fn make_event_context() -> EventContext<'static> {
-	let event = Box::leak(Box::new(Event::Message(Box::new(make_message_event(
-		leak_empty_elements(),
-	)))));
+	let event =
+		Box::leak(Box::new(Event::Message(Box::new(make_message_event(leak_empty_elements())))));
 
 	EventContext::new(event)
 }

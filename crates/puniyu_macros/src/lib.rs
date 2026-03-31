@@ -18,7 +18,6 @@ pub fn adapter_config(
 	adapter::config(item, cfg)
 }
 
-
 /// 适配器钩子宏
 ///
 /// 用于在适配器中定义钩子函数，在特定事件或状态变化时自动执行。
@@ -94,12 +93,8 @@ pub fn adapter_hook(
 	adapter::hook(item, cfg)
 }
 
-
 #[zyn::attribute(debug(pretty))]
-pub fn adapter(
-	#[zyn(input)] item: zyn::syn::ItemFn,
-	args: zyn::Args,
-) -> proc_macro::TokenStream {
+pub fn adapter(#[zyn(input)] item: zyn::syn::ItemFn, args: zyn::Args) -> proc_macro::TokenStream {
 	let cfg = match AdapterArgs::from_args(&args) {
 		Ok(cfg) => cfg,
 		Err(err) => bail!("{err}"),
@@ -116,8 +111,6 @@ pub fn adapter(
 // 	item
 // }
 
-
-
 // #[proc_macro_attribute]
 // pub fn plugin(
 // 	args: proc_macro::TokenStream,
@@ -125,7 +118,6 @@ pub fn adapter(
 // ) -> proc_macro::TokenStream {
 // 	plugin::plugin(args, item)
 // }
-
 
 // #[proc_macro_attribute]
 // pub fn command(
@@ -259,7 +251,6 @@ pub fn arg(
 	item
 }
 
-
 // #[proc_macro_attribute]
 // pub fn task(
 // 	args: proc_macro::TokenStream,
@@ -268,7 +259,6 @@ pub fn arg(
 // 	plugin::task(args, item)
 // }
 
-
 // #[proc_macro_attribute]
 // pub fn server(
 // 	_args: proc_macro::TokenStream,
@@ -276,7 +266,6 @@ pub fn arg(
 // ) -> proc_macro::TokenStream {
 // 	plugin::server(item)
 // }
-
 
 // #[proc_macro_attribute]
 // pub fn plugin_hook(

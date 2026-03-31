@@ -2,9 +2,7 @@ use crate::{
 	HookArgs,
 	common::{validate_async, validate_return_type},
 };
-use zyn::{
-	ToTokens, syn::{spanned::Spanned}, zyn
-};
+use zyn::{ToTokens, syn::spanned::Spanned, zyn};
 
 pub fn hook(item: zyn::syn::ItemFn, cfg: HookArgs) -> zyn::TokenStream {
 	let fn_sig = item.sig.clone();
@@ -72,7 +70,7 @@ pub fn hook(item: zyn::syn::ItemFn, cfg: HookArgs) -> zyn::TokenStream {
 						Examples: 'event.message', 'event.notion'",
 						subtype
 					);
-				return zyn::syn::Error::new(fn_sig.span(),err_msg).to_compile_error();
+					return zyn::syn::Error::new(fn_sig.span(), err_msg).to_compile_error();
 				}
 				["status", subtype] => {
 					let err_msg = format!(
@@ -80,7 +78,7 @@ pub fn hook(item: zyn::syn::ItemFn, cfg: HookArgs) -> zyn::TokenStream {
 						Examples: 'status.start', 'status.stop'",
 						subtype
 					);
-				return zyn::syn::Error::new(fn_sig.span(),err_msg).to_compile_error();
+					return zyn::syn::Error::new(fn_sig.span(), err_msg).to_compile_error();
 				}
 				[category, _] => {
 					let err_msg = format!(
@@ -88,7 +86,7 @@ pub fn hook(item: zyn::syn::ItemFn, cfg: HookArgs) -> zyn::TokenStream {
 						Examples: 'event.message', 'status.start'",
 						category
 					);
-				return zyn::syn::Error::new(fn_sig.span(),err_msg).to_compile_error();
+					return zyn::syn::Error::new(fn_sig.span(), err_msg).to_compile_error();
 				}
 				[category] => {
 					let err_msg = format!(
@@ -96,7 +94,7 @@ pub fn hook(item: zyn::syn::ItemFn, cfg: HookArgs) -> zyn::TokenStream {
 						Examples: 'event', 'event.message', 'status.start'",
 						category
 					);
-				return zyn::syn::Error::new(fn_sig.span(),err_msg).to_compile_error();
+					return zyn::syn::Error::new(fn_sig.span(), err_msg).to_compile_error();
 				}
 				_ => {
 					let err_msg = format!(
@@ -104,7 +102,7 @@ pub fn hook(item: zyn::syn::ItemFn, cfg: HookArgs) -> zyn::TokenStream {
 						Examples: 'event', 'event.message', 'status.start'",
 						type_str
 					);
-				return zyn::syn::Error::new(fn_sig.span(),err_msg).to_compile_error();
+					return zyn::syn::Error::new(fn_sig.span(), err_msg).to_compile_error();
 				}
 			}
 		}
@@ -151,5 +149,6 @@ pub fn hook(item: zyn::syn::ItemFn, cfg: HookArgs) -> zyn::TokenStream {
 				}
 			}
 		}
-	}.to_token_stream()
+	}
+	.to_token_stream()
 }

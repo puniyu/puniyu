@@ -11,10 +11,7 @@ pub(crate) fn validate_async(fn_sig: &syn::Signature) -> syn::Result<()> {
 	Ok(())
 }
 
-pub(crate) fn validate_return_type(
-	fn_sig: &syn::Signature,
-	expected: &str,
-) -> syn::Result<()> {
+pub(crate) fn validate_return_type(fn_sig: &syn::Signature, expected: &str) -> syn::Result<()> {
 	let expected = expected.replace(' ', "");
 
 	match &fn_sig.output {
@@ -23,8 +20,7 @@ pub(crate) fn validate_return_type(
 				syn::Type::Path(type_path) => {
 					let actual = type_path.path.to_token_stream().to_string().replace(' ', "");
 
-					actual == expected
-						|| actual == format!("::{expected}")
+					actual == expected || actual == format!("::{expected}")
 				}
 				_ => false,
 			};
@@ -32,15 +28,11 @@ pub(crate) fn validate_return_type(
 			if is_expected {
 				Ok(())
 			} else {
-				Err(syn::Error::new(
-					ty.span(),
-					format!("function must return `{expected}`"),
-				))
+				Err(syn::Error::new(ty.span(), format!("function must return `{expected}`")))
 			}
 		}
-		syn::ReturnType::Default => Err(syn::Error::new(
-			fn_sig.span(),
-			format!("function must return `{expected}`"),
-		)),
+		syn::ReturnType::Default => {
+			Err(syn::Error::new(fn_sig.span(), format!("function must return `{expected}`")))
+		}
 	}
 }

@@ -27,7 +27,6 @@ pub fn adapter(item: zyn::syn::ItemFn, cfg: AdapterArgs) -> zyn::TokenStream {
 		}
 	};
 
-
 	zyn! {
 		{{ item }}
 

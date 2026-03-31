@@ -51,11 +51,7 @@ impl Bot {
 		api: impl Into<Arc<AdapterApi>>,
 		account: impl Into<Arc<AccountInfo>>,
 	) -> Self {
-		Self {
-			adapter: adapter.into(),
-			api: api.into(),
-			account: account.into(),
-		}
+		Self { adapter: adapter.into(), api: api.into(), account: account.into() }
 	}
 
 	/// 返回适配器信息引用。
@@ -72,19 +68,4 @@ impl Bot {
 	pub fn account(&self) -> &AccountInfo {
 		&self.account
 	}
-}
-
-/// 按索引或 UIN 查询已注册的机器人。
-pub fn get_bot<'b>(bot_id: impl Into<BotId<'b>>) -> Option<Bot> {
-	BotRegistry::get(bot_id)
-}
-
-/// 返回当前已注册的机器人数量。
-pub fn get_bot_count() -> usize {
-	BotRegistry::all().len()
-}
-
-/// 返回所有已注册的机器人副本。
-pub fn get_all_bot() -> Vec<Bot> {
-	BotRegistry::all()
 }

@@ -76,7 +76,6 @@ impl FromStr for Version {
 	}
 }
 
-
 /// 从当前 crate 的 `Cargo.toml` 自动构造 [`Version`]。
 ///
 /// 无需依赖 `const_str`，在 const 上下文中即可使用。

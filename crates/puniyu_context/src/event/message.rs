@@ -10,7 +10,6 @@ use puniyu_event::message::{
 use puniyu_event::{EventBase, EventType};
 use puniyu_message::Message;
 
-
 /// 消息上下文
 ///
 /// 提供对消息事件的专门处理，包括消息回复、参数获取、发送者信息等。

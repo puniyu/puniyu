@@ -12,11 +12,11 @@ mod event;
 #[doc(inline)]
 pub use event::MessageEvent;
 mod types;
-#[doc(inline)]
-pub use types::*;
 use super::EventBase;
 use bytes::Bytes;
 use puniyu_element::receive::Elements;
+#[doc(inline)]
+pub use types::*;
 
 /// 消息基础 trait
 ///
@@ -206,7 +206,7 @@ macro_rules! create_message {
 	};
 	(Group, $message:expr $(,)?) => {
 		$crate::message::MessageEvent::Group($message)
-	};	
+	};
 }
 
 /// 生成消息事件结构体及其 EventBase、MessageBase 实现

@@ -442,7 +442,6 @@ impl Event<'_> {
 	}
 }
 
-
 /// 快速构建顶层消息事件。
 #[macro_export]
 macro_rules! create_event {

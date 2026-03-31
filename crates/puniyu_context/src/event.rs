@@ -5,9 +5,9 @@ pub use message::MessageContext;
 use crate::BotContext;
 use puniyu_bot::Bot;
 use puniyu_contact::ContactType;
-use std::collections::HashMap;
 use puniyu_event::{Event, EventBase, EventType, SubEventType};
 use puniyu_sender::SenderType;
+use std::collections::HashMap;
 
 /// 事件上下文
 ///
@@ -76,9 +76,7 @@ impl<'c> EventContext<'c> {
 	///
 	/// 当事件为消息事件时返回 [`Some`]，否则返回 [`None`]。
 	pub fn as_message(&self) -> Option<MessageContext<'_>> {
-		self.inner
-			.as_message()
-			.map(|message| MessageContext::new(message, HashMap::new()))
+		self.inner.as_message().map(|message| MessageContext::new(message, HashMap::new()))
 	}
 }
 impl<'c> EventBase for EventContext<'c> {

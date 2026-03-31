@@ -10,4 +10,3 @@ pub const VERSION: puniyu_version::Version = puniyu_version::Version {
 	patch: const_str::parse!(env!("CARGO_PKG_VERSION_PATCH"), u64),
 };
 pub use puniyu_api::bot::*;
-

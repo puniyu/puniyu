@@ -1,8 +1,6 @@
 use puniyu_contact::Contact;
 use puniyu_event::{
-	EventType, SubEventType,
-	message::MessageSubEventType,
-	notion::NotionSubEventType,
+	EventType, SubEventType, message::MessageSubEventType, notion::NotionSubEventType,
 	request::RequestSubEventType,
 };
 use puniyu_sender::Sender;

@@ -1,9 +1,9 @@
 use crate::Task;
-use std::borrow::Cow;
 #[cfg(feature = "registry")]
 use puniyu_logger::owo_colors::OwoColorize;
 #[cfg(feature = "registry")]
 use puniyu_logger::{error, info};
+use std::borrow::Cow;
 use std::sync::Arc;
 #[cfg(feature = "registry")]
 use std::time::Instant;

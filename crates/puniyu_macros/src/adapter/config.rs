@@ -53,5 +53,6 @@ pub fn config(item: zyn::syn::ItemStruct, cfg: ConfigArgs) -> zyn::TokenStream {
 				}
 			}
 		}
-	}.into_token_stream()
+	}
+	.into_token_stream()
 }

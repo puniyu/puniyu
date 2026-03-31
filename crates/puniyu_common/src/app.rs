@@ -13,11 +13,7 @@ pub struct AppInfo {
 
 impl AppInfo {
 	pub fn new(name: &'static str, version: &'static Version, cwd_dir: impl Into<PathBuf>) -> Self {
-		let cwd_dir = cwd_dir
-			.into()
-			.to_slash_lossy()
-			.as_path()
-			.to_path_buf();
+		let cwd_dir = cwd_dir.into().to_slash_lossy().as_path().to_path_buf();
 		Self { name, version, cwd_dir }
 	}
 

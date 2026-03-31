@@ -1,7 +1,7 @@
 #[derive(zyn::Attribute)]
 #[zyn("config")]
 pub(crate) struct ConfigArgs {
-    #[zyn(default)]
+	#[zyn(default)]
 	pub name: Option<String>,
 }
 
@@ -10,17 +10,17 @@ pub(crate) struct ConfigArgs {
 pub(crate) struct AdapterArgs {
 	pub info: zyn::syn::Expr,
 	pub api: zyn::syn::Expr,
-    #[zyn(default)]
-    pub server: Option<zyn::syn::Expr>,
+	#[zyn(default)]
+	pub server: Option<zyn::syn::Expr>,
 }
 
 #[derive(zyn::Attribute)]
 #[zyn("hook")]
 pub(crate) struct HookArgs {
-    #[zyn(default)]
+	#[zyn(default)]
 	pub name: Option<String>,
 	#[zyn("type")]
 	pub hook_type: Option<String>,
-    #[zyn(default = "500")]
+	#[zyn(default = "500")]
 	pub priority: Option<u32>,
 }

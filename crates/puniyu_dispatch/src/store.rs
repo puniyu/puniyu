@@ -1,6 +1,6 @@
 use crate::Error;
-use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::OnceLock;
+use std::sync::atomic::{AtomicBool, Ordering};
 use tokio::runtime::Handle;
 
 static RUNNING: OnceLock<AtomicBool> = OnceLock::new();

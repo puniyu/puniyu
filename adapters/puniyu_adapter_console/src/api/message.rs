@@ -1,9 +1,9 @@
 use crate::common::make_random_id;
 use async_trait::async_trait;
-use puniyu_adapter::prelude::*;
-use puniyu_adapter::Result;
-use std::time::{SystemTime, UNIX_EPOCH};
 use log::debug;
+use puniyu_adapter::Result;
+use puniyu_adapter::prelude::*;
+use std::time::{SystemTime, UNIX_EPOCH};
 
 pub struct ConsoleMessageApi;
 
