@@ -98,7 +98,7 @@ jobs:
 
 
   build:
-    needs: [ release-pr, test ]
+    needs: [ test ]
     uses: ./.github/workflows/build.yaml
 
   publish-github-release:
