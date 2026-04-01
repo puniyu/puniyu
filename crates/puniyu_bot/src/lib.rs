@@ -44,8 +44,6 @@ impl Debug for Bot {
 
 impl Bot {
 	/// 使用适配器信息、适配器 API 与账户信息创建机器人实例。
-	///
-	/// 参数可以是 `T` 或 `Arc<T>`，均可自动转换。
 	pub fn new(
 		adapter: impl Into<Arc<AdapterInfo>>,
 		api: impl Into<Arc<AdapterApi>>,

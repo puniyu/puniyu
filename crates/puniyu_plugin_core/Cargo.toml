@@ -14,6 +14,7 @@ workspace = true
 
 [dependencies]
 async-trait.workspace = true
+puniyu_logger.workspace = true
 puniyu_error.workspace = true
 puniyu_version.workspace = true
 puniyu_hook.workspace = true

@@ -15,6 +15,7 @@ use puniyu_server::ServerFunction;
 use puniyu_task::Task;
 use puniyu_version::Version;
 use std::sync::Arc;
+use puniyu_logger::info;
 
 #[async_trait]
 pub trait Plugin: Send + Sync + 'static {
@@ -64,7 +65,10 @@ pub trait Plugin: Send + Sync + 'static {
 		None
 	}
 	/// 插件初始化函数
-	async fn init(&self) -> Result;
+	async fn init(&self) -> Result {
+		info!("plugin: {} v{} init", self.name(), self.version());
+		Ok(())
+	}
 }
 
 impl PartialEq for dyn Plugin {

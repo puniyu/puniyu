@@ -16,7 +16,9 @@ pub fn plugin(item: zyn::syn::ItemFn, cfg: PluginArg) -> zyn::TokenStream {
 	if let Err(err) = validate_async(&item.sig) {
 		return err.to_compile_error();
 	}
-	if let Err(err) = validate_return_type(&item.sig, "puniyu_plugin::Result") {
+	if !item.block.stmts.is_empty()
+		&& let Err(err) = validate_return_type(&item.sig, "puniyu_plugin::Result")
+	{
 		return err.to_compile_error();
 	}
 
