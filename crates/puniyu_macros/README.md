@@ -1,295 +1,373 @@
 # puniyu_macros
 
-puniyu 项目的过程宏库，提供简化插件和适配器开发的属性宏。
+`puniyu_macros` 是 puniyu 生态的过程宏库，用于声明插件、命令、任务、配置和适配器相关入口。
 
-## 概述
+## 宏列表
 
-`puniyu_macros` 提供了一组过程宏，用于简化 puniyu 插件、适配器、命令、任务和服务器路由的开发。所有宏都会自动从 `Cargo.toml` 中读取包信息（名称、版本、作者等），无需手动设置环境变量。
+### 插件侧宏
 
-## 快速开始
+- `#[plugin]`：声明插件入口函数
+- `#[plugin_config]`：声明插件配置结构体
+- `#[plugin_hook]`：声明插件钩子函数
+- `#[command]`：声明命令处理函数
+- `#[arg]`：为命令补充参数描述
+- `#[task]`：声明定时任务函数
 
-在 `Cargo.toml` 中添加依赖：
+### 适配器侧宏
 
-```toml
-[dependencies]
-puniyu_macros = "0.4.1"
-```
+- `#[adapter]`：声明适配器入口函数
+- `#[adapter_config]`：声明适配器配置结构体
+- `#[adapter_hook]`：声明适配器钩子函数
 
-创建一个简单的插件：
+## 使用说明
 
-```rust
-use puniyu_macros::plugin;
+### `#[plugin]`
 
-#[plugin(desc = "我的第一个插件")]
-pub async fn init() {
-    println!("插件初始化成功！");
-}
-```
+用于声明插件入口函数。
 
-就这么简单！宏会自动：
-- 从 `Cargo.toml` 读取包名、版本和作者
-- 生成 `PluginBuilder` 实现
-- 注册插件到系统
+要求：
+- 函数必须是 `async`
+- 当函数体非空时，返回类型必须为 `puniyu_plugin::Result`
+- 当函数体为空时，可以省略返回值类型
 
-## 功能特性
-
-### `#[adapter]` 宏
-
-**特性要求：** `adapter`
-
-用于标记适配器结构体，自动生成 `Adapter` 结构体并实现 `AdapterBuilder` trait。
-
-**特点：**
-- 自动从 `Cargo.toml` 读取适配器信息
-- 生成适配器注册代码
-- 无需手动实现 `AdapterBuilder` trait
-
-### `#[plugin]` 宏
-
-**特性要求：** `plugin`（默认启用）
-
-用于标记插件初始化函数，自动生成完整的插件结构体和实现。
-
-**参数：**
-- `desc`（可选）：插件描述，默认为 `"这个人很懒，没有设置呢"`
-
-**特点：**
-- 必须是异步函数
-- 自动从 `Cargo.toml` 读取：`CARGO_PKG_NAME`、`CARGO_PKG_VERSION`、`CARGO_PKG_AUTHORS`
-- 如果 `authors` 为空，默认使用 `"Unknown"`
-- 自动生成 `PluginBuilder` 实现
-- 自动注册插件、命令、任务和服务器路由
-- 支持空函数体（使用默认初始化）或自定义初始化逻辑
-
-### `#[command]` 宏
-
-**特性要求：** `command`（`plugin` 特性包含）
-
-用于标记命令处理函数，自动生成命令结构体。
-
-**参数：**
-- `name`（必填）：命令名称
-- `desc`（可选）：命令描述，默认为空
-- `priority`（可选）：命令优先级，默认为 `100`
-- `args`（可选）：命令参数列表，默认为空数组
-
-**特点：**
-- 必须是异步函数
-- 函数签名必须包含两个参数：`&BotContext` 和 `&MessageContext`
-- 自动生成 `CommandBuilder` 实现
-- 自动注册到命令注册表
-
-### `#[task]` 宏
-
-**特性要求：** `task`（`plugin` 特性包含）
-
-用于标记定时任务函数，自动生成任务结构体。
-
-**参数：**
-- `cron`（必填）：cron 表达式
-- `name`（可选）：任务名称，默认使用函数名
-
-**特点：**
-- 必须是异步函数
-- 函数必须无参数
-- 编译时验证 cron 表达式的有效性
-- 自动生成 `TaskBuilder` 实现
-- 自动注册到任务注册表
-
-### `#[server]` 宏
-
-**特性要求：** `plugin`
-
-用于注册插件的 HTTP 服务路由。
-
-**特点：**
-- 函数必须接收一个 `&mut ServiceConfig` 参数
-- 自动注册到服务器注册表
-- 支持 actix-web 路由配置
-
-## 使用方法
-
-### 适配器示例
+最小示例：
 
 ```rust
-use puniyu_macros::adapter;
-use async_trait::async_trait;
-use puniyu_adapter::{AdapterBuilder, AdapterInfo, AdapterApi, Result};
-
-#[adapter]
-struct Console;
-
-#[async_trait]
-impl AdapterBuilder for Console {
-    fn info(&self) -> AdapterInfo {
-        // 返回适配器信息
-    }
-
-    fn api(&self) -> &'static dyn AdapterApi {
-        // 返回 API 实现
-    }
-
-    async fn init(&self) -> Result<()> {
-        // 适配器初始化逻辑
-        Ok(())
-    }
-}
-```
-
-### 插件示例
-
-#### 最小化示例（默认初始化）
-
-```rust
-use puniyu_macros::plugin;
+use puniyu_plugin::prelude::*;
 
 #[plugin]
-pub async fn hello() {}
+async fn __main() {}
 ```
 
-#### 完整示例（自定义初始化 + 描述）
+完整示例：
 
 ```rust
-use puniyu_macros::plugin;
+use puniyu_plugin::prelude::*;
 
-#[plugin(desc = "我的第一个插件")]
-pub async fn hello() -> Result<(), Box<dyn std::error::Error>> {
-    println!("插件初始化完成！");
-    Ok(())
+#[plugin(desc = "基础功能插件", prefix = "basic")]
+async fn __main() -> puniyu_plugin::Result {
+	log::info!("plugin init");
+	Ok(())
 }
 ```
 
-### 命令示例
+---
+
+### `#[command]`
+
+用于声明命令处理函数。
+
+常用参数：
+- `name`：命令名称，必填
+- `desc`：命令描述，可选
+- `priority`：优先级，可选，默认 `500`
+- `alias`：别名列表，可选
+- `permission`：权限，可选，支持 `"all"` 和 `"admin"`
+
+要求：
+- 函数必须是 `async`
+- 必须且只能接收一个参数：`&MessageContext<'_>`
+- 返回类型必须为 `puniyu_plugin::Result<CommandAction>`
+
+基础示例：
 
 ```rust
-use puniyu_macros::command;
-use puniyu_plugin::{BotContext, MessageContext, HandlerResult};
+use puniyu_plugin::prelude::*;
 
-#[command(
-    name = "echo",
-    desc = "回显消息",
-    args = ["message"],
-    priority = 50
-)]
-pub async fn echo_command(bot: &BotContext, ev: &MessageContext) -> HandlerResult {
-    // 命令处理逻辑
-    Ok(())
+#[command(name = "state", desc = "查看运行状态", alias = ["status"], priority = 100)]
+async fn state(ctx: &MessageContext<'_>) -> puniyu_plugin::Result<CommandAction> {
+	ctx.reply(message!(segment!(text, "running"))).await?;
+	Ok(CommandAction::Done)
 }
 ```
 
-### 任务示例
+带参数示例：
 
 ```rust
-use puniyu_macros::task;
+use puniyu_plugin::prelude::*;
 
-// 使用默认任务名（函数名）
-#[task(cron = "0 0 * * *")]
-pub async fn daily_task() {
-    // 每天 0 点执行
-    println!("执行每日任务");
-}
-
-// 指定任务名
-#[task(cron = "*/5 * * * *", name = "five_min_task")]
-pub async fn check_status() {
-    // 每 5 分钟执行
-    println!("检查状态");
+#[command(name = "echo", desc = "回显文本", permission = "all")]
+#[arg(name = "message", desc = "要发送的文本", required = true)]
+#[arg(name = "times", type = "integer", mode = "optional", desc = "重复次数")]
+async fn echo(ctx: &MessageContext<'_>) -> puniyu_plugin::Result<CommandAction> {
+	ctx.reply(message!(segment!(text, "echo"))).await?;
+	Ok(CommandAction::Done)
 }
 ```
 
-### 服务器路由示例
+---
+
+### `#[arg]`
+
+用于为 `#[command]` 生成命令参数描述。
+
+常用参数：
+- `name`：参数名，必填
+- `desc`：参数说明，可选
+- `type`：参数类型，可选，支持 `string`、`integer`、`boolean`
+- `mode`：参数模式，可选，支持 `positional`、`optional`
+- `required`：是否必填，可选
+
+完整示例：
 
 ```rust
-use puniyu_macros::server;
-use actix_web::web::{self, ServiceConfig};
+use puniyu_plugin::prelude::*;
 
-#[server]
-pub fn routes(cfg: &mut ServiceConfig) {
-    cfg.service(
-        web::resource("/hello")
-            .route(web::get().to(|| async { "Hello World!" }))
-    );
+#[command(name = "echo")]
+#[arg(name = "message", desc = "消息内容", required = true)]
+#[arg(name = "times", type = "integer", mode = "optional", desc = "重复次数")]
+#[arg(name = "silent", type = "boolean", mode = "optional", desc = "是否静默执行")]
+async fn echo(ctx: &MessageContext<'_>) -> puniyu_plugin::Result<CommandAction> {
+	Ok(CommandAction::Done)
 }
 ```
 
-## 环境变量
+---
 
-所有宏都会自动从 `Cargo.toml` 中读取以下信息：
+### `#[task]`
 
-- `CARGO_PKG_NAME`：包名称
-- `CARGO_PKG_VERSION`：包版本
-- `CARGO_PKG_AUTHORS`：包作者（如果为空，默认使用 `"Unknown"`）
+用于声明定时任务函数。
 
-**无需手动设置环境变量**，只需在 `Cargo.toml` 中正常配置即可：
+常用参数：
+- `cron`：cron 表达式，必填
+- `name`：任务名，可选，默认使用函数名
 
-```toml
-[package]
-name = "my_plugin"
-VERSION = "0.1.0"
-authors = ["Your Name <your.email@example.com>"]
+要求：
+- 函数必须是 `async`
+- 函数不接收参数
+- 返回类型必须为 `puniyu_plugin::Result`
+- `cron` 会在编译时校验
+
+基础示例：
+
+```rust
+use puniyu_plugin::prelude::*;
+
+#[task(cron = "0 0 * * *", name = "daily_job")]
+async fn daily_job() -> puniyu_plugin::Result {
+	Ok(())
+}
 ```
 
-## Feature 特性
+多个任务示例：
 
-本包提供以下 feature：
+```rust
+use puniyu_plugin::prelude::*;
 
-- `default`：默认启用 `plugin` 特性
-- `plugin`：包含 `task`、`command` 和 `server` 宏
-- `adapter`：适配器相关宏
-- `command`：命令宏（单独启用）
-- `task`：任务宏（单独启用）
+#[task(cron = "*/5 * * * *", name = "health_check")]
+async fn health_check() -> puniyu_plugin::Result {
+	Ok(())
+}
 
-在 `Cargo.toml` 中配置：
-
-```toml
-[dependencies]
-# 默认配置（包含 plugin 相关所有宏）
-puniyu_macros = "0.4.1"
-
-# 只使用适配器宏
-puniyu_macros = { VERSION = "0.4.1", default-features = false, features = ["adapter"] }
-
-# 使用插件和适配器宏
-puniyu_macros = { VERSION = "0.4.1", features = ["adapter"] }
+#[task(cron = "0 0 * * 1", name = "weekly_cleanup")]
+async fn weekly_cleanup() -> puniyu_plugin::Result {
+	Ok(())
+}
 ```
 
-## 错误处理
+---
 
-所有宏都包含详细的编译时检查和友好的错误提示：
+### `#[plugin_config]`
 
-### 常见错误
+用于声明插件配置结构体，并注册到插件配置列表中。
 
-**1. 函数必须是异步的**
+要求：
+- 通常用于可序列化且实现了 `Default` 的结构体
+- 默认配置文件名取结构体名的 snake_case，也可以通过 `name` 指定
+
+完整示例：
+
+```rust
+use serde::{Deserialize, Serialize};
+use puniyu_macros::plugin_config;
+
+#[derive(Default, Debug, Clone, Serialize, Deserialize)]
+#[plugin_config(name = "basic")]
+pub struct BasicConfig {
+	pub enabled: bool,
+	pub prefix: String,
+}
 ```
-error: 诶嘿~杂鱼函数连async都不会用吗？
-```
-→ 确保在函数前添加 `async` 关键字
 
-**2. 命令参数错误**
-```
-error: 呜哇~命令函数必须有两个参数：&BotContext, &MessageContext！笨蛋！
-```
-→ 检查命令处理函数的参数签名
+---
 
-**3. Cron 表达式无效**
-```
-error: 呜哇~, cron表达式都不会写吗？真是杂鱼呢~
-```
-→ 验证 cron 表达式格式是否正确
+### `#[plugin_hook]`
 
-**4. 服务器路由参数错误**
+用于声明插件钩子函数。
+
+常用参数：
+- `name`：钩子名称，可选
+- `hook_type`：钩子类型，可选，如 `"event.message"`、`"status.start"`
+- `priority`：优先级，可选，默认 `500`
+
+要求：
+- 函数必须是 `async`
+- 必须且只能接收一个引用参数，对应 `HookType`
+- 返回类型必须为 `puniyu_plugin::Result`
+
+基础示例：
+
+```rust
+use puniyu_plugin::hook::HookType;
+use puniyu_macros::plugin_hook;
+
+#[plugin_hook(name = "on_message", hook_type = "event.message", priority = 100)]
+async fn on_message(event: &HookType) -> puniyu_plugin::Result {
+	let _ = event;
+	Ok(())
+}
 ```
-error: 呜哇~函数必须接收一个参数 &mut ServiceConfig！
+
+状态钩子示例：
+
+```rust
+use puniyu_plugin::hook::HookType;
+use puniyu_macros::plugin_hook;
+
+#[plugin_hook(name = "on_start", hook_type = "status.start")]
+async fn on_start(event: &HookType) -> puniyu_plugin::Result {
+	let _ = event;
+	Ok(())
+}
 ```
-→ 确保服务器路由函数接收正确的参数类型
 
-## 注意事项
+`hook_type` 支持的常见值：
+- `event`
+- `event.message`
+- `event.notion`
+- `event.request`
+- `event.all`
+- `status`
+- `status.start`
+- `status.stop`
 
-1. **编译时检查**：所有宏在编译时进行检查，确保代码正确性
-2. **自动注册**：插件、命令、任务和服务器路由会自动注册，无需手动操作
-3. **类型安全**：所有生成的代码都是类型安全的
-4. **零运行时开销**：宏在编译时展开，不会增加运行时开销
+---
 
+### `#[adapter]`
+
+用于声明适配器入口函数。
+
+常用参数：
+- `info`：返回适配器信息的函数，必填
+- `api`：返回适配器 API 的函数，必填
+
+要求：
+- 函数必须是 `async`
+- 当函数体非空时，返回类型必须为 `puniyu_adapter::Result`
+- 当函数体为空时，可以省略返回值类型
+
+完整示例：
+
+```rust
+use puniyu_adapter::types::*;
+
+mod api {
+	use puniyu_adapter::api::AdapterApi;
+	pub fn api() -> AdapterApi {
+		unimplemented!()
+	}
+}
+
+fn info() -> AdapterInfo {
+	adapter_info!(
+		name: env!("CARGO_PKG_NAME"),
+		version: pkg_version!(),
+		platform: AdapterPlatform::Other,
+		standard: AdapterStandard::Other,
+		protocol: AdapterProtocol::Console,
+		communication: AdapterCommunication::Other
+	)
+}
+
+#[adapter(info = info, api = api::api)]
+async fn main() -> puniyu_adapter::Result {
+	Ok(())
+}
+```
+
+---
+
+### `#[adapter_config]`
+
+用于声明适配器配置结构体，并注册到适配器配置列表中。
+
+要求：
+- 通常用于可序列化且实现了 `Default` 的结构体
+- 默认配置文件名取结构体名的 snake_case，也可以通过 `name` 指定
+
+完整示例：
+
+```rust
+use serde::{Deserialize, Serialize};
+use puniyu_macros::adapter_config;
+
+#[derive(Default, Debug, Clone, Serialize, Deserialize)]
+#[adapter_config(name = "console")]
+pub struct ConsoleConfig {
+	pub enabled: bool,
+	pub prompt: String,
+}
+```
+
+如果不指定 `name`，默认会使用结构体名的 snake_case 作为配置名和文件名。
+
+---
+
+### `#[adapter_hook]`
+
+用于声明适配器钩子函数。
+
+常用参数：
+- `name`：钩子名称，可选
+- `hook_type`：钩子类型，可选，如 `"event.message"`、`"status.start"`
+- `priority`：优先级，可选，默认 `500`
+
+要求：
+- 函数必须是 `async`
+- 必须且只能接收一个引用参数，对应 `HookType`
+- 返回类型必须为 `puniyu_adapter::Result`
+
+基础示例：
+
+```rust
+use puniyu_adapter::hook::HookType;
+use puniyu_macros::adapter_hook;
+
+#[adapter_hook(name = "on_start", hook_type = "status.start", priority = 100)]
+async fn on_start(event: &HookType) -> puniyu_adapter::Result {
+	let _ = event;
+	Ok(())
+}
+```
+
+事件钩子示例：
+
+```rust
+use puniyu_adapter::hook::HookType;
+use puniyu_macros::adapter_hook;
+
+#[adapter_hook(name = "on_event_message", hook_type = "event.message")]
+async fn on_event_message(event: &HookType) -> puniyu_adapter::Result {
+	let _ = event;
+	Ok(())
+}
+```
+
+`hook_type` 支持的常见值：
+- `event`
+- `event.message`
+- `event.notion`
+- `event.request`
+- `event.all`
+- `status`
+- `status.start`
+- `status.stop`
+
+## 参考示例
+
+- 插件入口：[plugins/puniyu_plugin_basic/src/lib.rs](../../plugins/puniyu_plugin_basic/src/lib.rs)
+- 命令示例：[plugins/puniyu_plugin_basic/src/command/state.rs](../../plugins/puniyu_plugin_basic/src/command/state.rs)
+- 适配器入口：[adapters/puniyu_adapter_console/src/lib.rs](../../adapters/puniyu_adapter_console/src/lib.rs)
 
 ## 许可证
 
