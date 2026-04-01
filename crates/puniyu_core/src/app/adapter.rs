@@ -5,7 +5,7 @@ use puniyu_config::ConfigRegistry;
 use puniyu_logger::error;
 use puniyu_path::adapter::*;
 use std::sync::Arc;
-use tokio::fs::create_dir_all;
+use tokio::fs::{create_dir_all, write};
 
 pub async fn init_adapter(adapter: Arc<dyn Adapter>) {
 	let name = adapter.info().name;
@@ -52,8 +52,13 @@ pub async fn init_adapter(adapter: Arc<dyn Adapter>) {
 		for config in configs {
 			let config = config.config();
 			let path = config_dir().join(&name).join(&config.name);
+			if let Some(parent) = path.parent()
+				&& !parent.exists()
+			{
+				let _ = create_dir_all(parent).await;
+			}
 			if !path.exists() {
-				let _ = create_dir_all(path).await;
+				let _ = write(&path, config.value.to_string()).await;
 			}
 			let _ = ConfigRegistry::register(config);
 		}
