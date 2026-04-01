@@ -18,7 +18,7 @@ use puniyu_loader::Loader;
 use puniyu_logger::owo_colors::OwoColorize;
 use puniyu_logger::{debug, error, info};
 use puniyu_plugin_core::Plugin;
-use std::path::Path;
+use std::path::PathBuf;
 use std::sync::Arc;
 use std::{env, io};
 use tokio::{fs, signal};
@@ -44,7 +44,7 @@ use tokio::{fs, signal};
 pub struct AppBuilder {
 	name: &'static str,
 	logo: Option<Bytes>,
-	working_dir: &'static Path,
+	working_dir: PathBuf,
 	plugins: Vec<Arc<dyn Plugin>>,
 	adapters: Vec<Arc<dyn Adapter>>,
 	loaders: Vec<Arc<dyn Loader>>,
@@ -53,10 +53,11 @@ pub struct AppBuilder {
 
 impl Default for AppBuilder {
 	fn default() -> Self {
+		#[allow(clippy::unwrap_used)]
 		Self {
 			name: "puniyu",
 			logo: None,
-			working_dir: Path::new("."),
+			working_dir: std::env::current_dir().unwrap(),
 			plugins: Vec::new(),
 			adapters: Vec::new(),
 			loaders: Vec::new(),
@@ -91,7 +92,7 @@ impl AppBuilder {
 	/// # 参数
 	///
 	/// - `dir`: 工作目录路径
-	pub fn with_working_dir(mut self, dir: impl Into<&'static Path>) -> Self {
+	pub fn with_working_dir(mut self, dir: impl Into<PathBuf>) -> Self {
 		self.working_dir = dir.into();
 		self
 	}
@@ -196,7 +197,7 @@ impl AppBuilder {
 pub struct App {
 	name: &'static str,
 	logo: Option<Bytes>,
-	working_dir: &'static Path,
+	working_dir: PathBuf,
 	plugins: Vec<Arc<dyn Plugin>>,
 	adapters: Vec<Arc<dyn Adapter>>,
 	loaders: Vec<Arc<dyn Loader>>,
@@ -303,6 +304,7 @@ async fn init_app(
 	loaders: Vec<Arc<dyn Loader>>,
 ) -> io::Result<()> {
 	use puniyu_path::{adapter_dir, app_dir, config_dir, data_dir, plugin_dir, resource_dir};
+	use std::path::Path;
 	async fn check_dir(path: &Path) -> io::Result<()> {
 		if !path.exists() {
 			fs::create_dir_all(path.to_path_buf()).await?;
