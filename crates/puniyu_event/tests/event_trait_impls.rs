@@ -30,23 +30,23 @@ fn notion_event_implements_event_and_notion_traits() {
 	let event = common::make_notion_event();
 
 	assert_eq!(event.event_type(), &EventType::Notion);
-	assert_eq!(event.sub_event(), &NotionSubEventType::ReceiveLike);
+	assert_eq!(event.sub_event(), &NotionSubEventType::GroupRecall);
 	assert_eq!(
 		common::base_snapshot(&event),
 		(
 			2,
 			"notion-event-1".to_string(),
 			"123456".to_string(),
-			"123456".to_string(),
+			"654321".to_string(),
 			"123456".to_string(),
 		)
 	);
 
 	let (notion, content) = common::notion_summary(&event);
-	assert_eq!(notion, "收到点赞事件");
+	assert_eq!(notion, "收到群聊撤回事件");
 	match content {
-		NotionContentType::ReceiveLike(content) => assert_eq!(content.count, 1),
-		_ => panic!("expected receive like content"),
+		NotionContentType::GroupRecall(content) => assert_eq!(content.message_id, "msg-1"),
+		_ => panic!("expected group recall content"),
 	}
 }
 

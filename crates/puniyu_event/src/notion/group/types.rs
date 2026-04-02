@@ -1,15 +1,6 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
-pub struct GroupSignInType {}
-
-#[derive(Debug, Clone, Deserialize, Serialize)]
-pub struct GroupPokeType {
-	/// 被戳的用户id
-	pub target_id: String,
-}
-
-#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct GroupRecallType {
 	pub message_id: String,
 }
@@ -22,33 +13,6 @@ pub struct GroupFileUploadType {
 	pub file_name: String,
 	/// 文件大小
 	pub file_size: u64,
-}
-
-#[derive(Debug, Clone, Deserialize, Serialize)]
-pub struct GroupCardChangeType {
-	/// 群名片，新的群名片
-	pub card: String,
-}
-
-#[derive(Debug, Clone, Deserialize, Serialize)]
-pub struct GroupMemberTitleChangeType {
-	pub title: String,
-}
-
-#[derive(Debug, Clone, Deserialize, Serialize)]
-pub enum HighlightsAction {
-	/// 添加精华
-	Add,
-	/// 移除精华
-	Remove,
-}
-
-#[derive(Debug, Clone, Deserialize, Serialize)]
-pub struct GroupHighlightsChangeType {
-	/// 被添加精华消息的用户id
-	pub target_id: String,
-	pub message_id: String,
-	pub action: HighlightsAction,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
@@ -84,21 +48,6 @@ pub enum GroupLeaveType {
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
-pub struct GroupAdminChangeType {
-	/// 被操作的id
-	pub target_id: String,
-	pub admin_type: GroupAdminType,
-}
-
-#[derive(Debug, Clone, Deserialize, Serialize)]
-pub enum GroupAdminType {
-	/// 设置
-	Set,
-	/// 取消
-	Remove,
-}
-
-#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct GroupMemberBanType {
 	/// 被禁用的用户id
 	pub target_id: String,
@@ -128,39 +77,3 @@ pub enum GroupWholeBanActionType {
 	WholeUnban,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize)]
-pub struct GroupMessageReactionType {
-	pub message_id: String,
-	pub face_id: u32,
-	pub count: u8,
-	pub action: GroupMessageReactionAction,
-}
-
-#[derive(Debug, Clone, Deserialize, Serialize)]
-pub enum GroupMessageReactionAction {
-	/// 添加
-	Add,
-	/// 移除
-	Remove,
-}
-
-#[derive(Debug, Clone, Deserialize, Serialize)]
-pub struct GroupLuckKingType {
-	/// 运气王id
-	pub target_id: String,
-}
-
-#[derive(Debug, Clone, Deserialize, Serialize)]
-pub struct GroupHonorChangeType {
-	pub honor_type: HonorType,
-}
-
-#[derive(Debug, Clone, Deserialize, Serialize)]
-pub enum HonorType {
-	/// 龙王
-	Talkative,
-	/// 群聊之火
-	Performer,
-	/// 快乐源泉
-	Emotion,
-}

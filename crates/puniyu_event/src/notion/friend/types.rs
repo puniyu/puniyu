@@ -6,17 +6,6 @@ pub struct FriendAddType {}
 pub struct FriendDecreaseType {}
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
-pub struct ReceiveLikeType {
-	pub count: u8,
-}
-
-#[derive(Debug, Clone, Deserialize, Serialize)]
-pub struct PrivatePokeType {
-	/// 目标id, 就是被戳的用户
-	pub target_id: String,
-}
-
-#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct PrivateRecallType {
 	pub message_id: String,
 }

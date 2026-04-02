@@ -5,15 +5,15 @@ use puniyu_account::AccountInfo;
 use puniyu_adapter_api::AdapterApi;
 use puniyu_adapter_types::{AdapterPlatform, AdapterProtocol, adapter_info};
 use puniyu_bot::Bot;
-use puniyu_contact::{Contact, contact_friend};
+use puniyu_contact::{Contact, contact_friend, contact_group};
 use puniyu_element::receive::Elements;
 use puniyu_event::{
 	Event, EventBase,
 	message::{FriendMessage, MessageBase, MessageEvent},
-	notion::{NotionBase, NotionEvent, ReceiveLike, ReceiveLikeType},
+	notion::{GroupRecall, GroupRecallType, NotionBase, NotionEvent},
 	request::{PrivateApply, PrivateApplyType, RequestBase, RequestEvent},
 };
-use puniyu_sender::{Sender, sender_friend};
+use puniyu_sender::{Sender, sender_friend, sender_group};
 
 pub fn make_bot() -> Bot {
 	let adapter = adapter_info!("console", AdapterPlatform::QQ, AdapterProtocol::Console);
@@ -78,6 +78,14 @@ pub fn leak_sender() -> &'static puniyu_sender::FriendSender<'static> {
 	Box::leak(Box::new(sender_friend!(user_id: "123456", nick: "Alice")))
 }
 
+pub fn leak_group_contact() -> &'static puniyu_contact::GroupContact<'static> {
+	Box::leak(Box::new(contact_group!(peer: "654321", name: "Dev Group")))
+}
+
+pub fn leak_group_sender() -> &'static puniyu_sender::GroupSender<'static> {
+	Box::leak(Box::new(sender_group!(user_id: "123456")))
+}
+
 pub fn leak_empty_elements() -> &'static Vec<Elements<'static>> {
 	Box::leak(Box::new(Vec::new()))
 }
@@ -96,14 +104,14 @@ pub fn make_message_event() -> MessageEvent<'static> {
 }
 
 pub fn make_notion_event() -> NotionEvent<'static> {
-	let content = Box::leak(Box::new(ReceiveLikeType { count: 1 }));
+	let content = Box::leak(Box::new(GroupRecallType { message_id: "msg-1".to_string() }));
 
-	NotionEvent::ReceiveLike(ReceiveLike::new(
+	NotionEvent::GroupRecall(GroupRecall::new(
 		leak_bot(),
 		"notion-event-1",
 		"123456",
-		leak_contact(),
-		leak_sender(),
+		leak_group_contact(),
+		leak_group_sender(),
 		2,
 		content,
 	))

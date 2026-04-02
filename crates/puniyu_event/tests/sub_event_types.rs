@@ -24,17 +24,16 @@ fn test_all_message_sub_types() {
 fn test_all_notion_sub_types() {
 	// 测试所有通知子类型
 	let types = vec![
-		(NotionSubEventType::ReceiveLike, "receiveLike"),
 		(NotionSubEventType::FriendAdd, "friendAdd"),
 		(NotionSubEventType::FriendDecrease, "friendDecrease"),
-		(NotionSubEventType::PrivatePoke, "privatePoke"),
 		(NotionSubEventType::PrivateRecall, "privateRecall"),
 		(NotionSubEventType::PrivateFileUpload, "privateFileUpload"),
-		(NotionSubEventType::GroupPoke, "groupPoke"),
+		(NotionSubEventType::GroupRecall, "groupRecall"),
 		(NotionSubEventType::GroupFileUpload, "groupFileUpload"),
-		(NotionSubEventType::GroupCardChange, "groupCardChange"),
 		(NotionSubEventType::GroupMemberAdd, "groupMemberAdd"),
-		(NotionSubEventType::GroupAdminChange, "groupAdminChange"),
+		(NotionSubEventType::GroupMemberDecrease, "groupMemberDecrease"),
+		(NotionSubEventType::GroupMemberBan, "groupMemberBan"),
+		(NotionSubEventType::GroupWholeBan, "groupWholeBan"),
 	];
 
 	for (sub_type, expected_str) in types {
@@ -65,7 +64,7 @@ fn test_sub_type_debug() {
 	let debug_str = format!("{:?}", msg_type);
 	assert!(!debug_str.is_empty());
 
-	let notion_type = NotionSubEventType::GroupPoke;
+	let notion_type = NotionSubEventType::GroupRecall;
 	let debug_str = format!("{:?}", notion_type);
 	assert!(!debug_str.is_empty());
 

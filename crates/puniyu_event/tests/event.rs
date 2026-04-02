@@ -36,8 +36,8 @@ fn root_event_notion_helpers_work() {
 	assert!(event.as_notion().is_some());
 	assert!(event.as_request().is_none());
 	assert_eq!(event.event_type(), &EventType::Notion);
-	assert_eq!(event.sub_event(), SubEventType::Notion(NotionSubEventType::ReceiveLike));
-	assert_eq!(event.contact().peer(), "123456");
+	assert_eq!(event.sub_event(), SubEventType::Notion(NotionSubEventType::GroupRecall));
+	assert_eq!(event.contact().peer(), "654321");
 	assert_eq!(event.sender().user_id(), "123456");
 }
 
