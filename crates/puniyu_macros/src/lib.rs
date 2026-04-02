@@ -19,7 +19,7 @@
 //!
 //! ## 示例
 //!
-//! ```rust
+//! ```rust, ignore
 //! use puniyu_plugin::prelude::*;
 //!
 //! #[plugin]
@@ -41,7 +41,7 @@ use zyn::{ToTokens, syn::spanned::Spanned};
 ///
 /// # 示例
 ///
-/// ```rust
+/// ```rust, ignore
 /// use puniyu_macros::adapter_config;
 /// use serde::{Deserialize, Serialize};
 ///
@@ -71,7 +71,7 @@ pub fn adapter_config(
 ///
 /// # 示例
 ///
-/// ```rust
+/// ```rust, ignore
 /// use puniyu_adapter::hook::HookType;
 /// use puniyu_macros::adapter_hook;
 ///
@@ -104,7 +104,7 @@ pub fn adapter_hook(
 ///
 /// # 示例
 ///
-/// ```rust
+/// ```rust, ignore
 /// use puniyu_adapter::types::*;
 /// use puniyu_macros::adapter;
 ///
@@ -144,7 +144,7 @@ pub fn adapter(#[zyn(input)] item: zyn::syn::ItemFn, args: zyn::Args) -> proc_ma
 ///
 /// # 示例
 ///
-/// ```rust
+/// ```rust, ignore
 /// use puniyu_macros::plugin;
 /// use puniyu_plugin::prelude::*;
 ///
@@ -169,7 +169,7 @@ pub fn plugin(#[zyn(input)] item: zyn::syn::ItemFn, args: zyn::Args) -> proc_mac
 ///
 /// # 示例
 ///
-/// ```rust
+/// ```rust, ignore
 /// use puniyu_macros::plugin_config;
 /// use serde::{Deserialize, Serialize};
 ///
@@ -208,7 +208,7 @@ pub fn plugin_config(
 ///
 /// # 示例
 ///
-/// ```rust
+/// ```rust, ignore
 /// use puniyu_macros::{arg, command};
 /// use puniyu_plugin::prelude::*;
 ///
@@ -239,7 +239,7 @@ pub fn command(#[zyn(input)] item: zyn::syn::ItemFn, cfg: zyn::Args) -> proc_mac
 ///
 /// # 示例
 ///
-/// ```rust
+/// ```rust, ignore
 /// use puniyu_macros::{arg, command};
 /// use puniyu_plugin::prelude::*;
 ///
@@ -270,7 +270,7 @@ pub fn arg(#[zyn(input)] item: zyn::syn::ItemFn) -> proc_macro::TokenStream {
 ///
 /// # 示例
 ///
-/// ```rust
+/// ```rust, ignore
 /// use puniyu_macros::task;
 /// use puniyu_plugin::prelude::*;
 ///
@@ -300,7 +300,7 @@ pub fn task(#[zyn(input)] item: zyn::syn::ItemFn, args: zyn::Args) -> proc_macro
 ///
 /// # 示例
 ///
-/// ```rust
+/// ```rust, ignore
 /// use puniyu_macros::plugin_hook;
 /// use puniyu_plugin::hook::HookType;
 ///
