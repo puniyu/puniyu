@@ -1,4 +1,18 @@
 # 变更日志
+
+## [0.8.0]
+
+### ⛰️ 新功能
+
+
+- 添加命令解析器和配置管理功能 - ([075d485](https://github.com/puniyu/puniyu/commit/075d48589a9da7ec45fbd88c60cbe5a3435a3163))
+
+### 🚜 重构
+
+
+- *(core)* 重构整个框架的核心实现 ([#165](https://github.com/puniyu/puniyu/pull/165)) - ([9482b34](https://github.com/puniyu/puniyu/commit/9482b34a76fecf05b3475aecf01df93d9e8994ff))
+- *(core)* 重构部分核心实现 ([#150](https://github.com/puniyu/puniyu/pull/150)) - ([e06459e](https://github.com/puniyu/puniyu/commit/e06459e40f1ec37f8e0de7427e6905c9bb295d5e))
+
 ## [0.7.8](https://github.com/puniyu/puniyu/compare/puniyu_event-v0.7.7...puniyu_event-v0.7.8) - 2026-01-12
 
 
