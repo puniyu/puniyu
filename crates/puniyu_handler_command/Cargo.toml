@@ -1,6 +1,6 @@
 [package]
 name = "puniyu_handler_command"
-version = "0.7.9"
+version = "0.8.0"
 description = "puniyu 命令处理器，统一命令匹配、权限检查与执行分发流程"
 authors.workspace = true
 license.workspace = true
@@ -21,7 +21,7 @@ puniyu_element.workspace = true
 puniyu_context.workspace = true
 puniyu_handler.workspace = true
 
-puniyu_cooldown = { version = "0.7.8", path = "../puniyu_cooldown" }
+puniyu_cooldown = { version = "0.8.0", path = "../puniyu_cooldown" }
 puniyu_error = { workspace = true, features = ["registry"] }
 puniyu_plugin_core = { workspace = true, features = ["registry"] }
 puniyu_command = { workspace = true, features = ["registry"] }

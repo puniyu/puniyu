@@ -1,6 +1,6 @@
 [package]
 name = "puniyu_handler_hook"
-version = "0.7.8"
+version = "0.8.0"
 description = "puniyu Hook 处理器，将事件分发到所有已注册的 Hook"
 authors.workspace = true
 license.workspace = true

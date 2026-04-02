@@ -1,6 +1,6 @@
 [package]
 name = "puniyu_adapter_console"
-version = "0.7.8"
+version = "0.8.0"
 description = "puniyu的控制台适配器"
 authors.workspace = true
 license.workspace = true

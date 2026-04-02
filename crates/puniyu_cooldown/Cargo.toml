@@ -1,6 +1,6 @@
 [package]
 name = "puniyu_cooldown"
-version = "0.7.8"
+version = "0.8.0"
 description = "puniyu 冷却管理库，统一命令与功能冷却控制"
 authors.workspace = true
 license.workspace = true

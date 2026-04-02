@@ -1,6 +1,6 @@
 [package]
 name = "puniyu_adapter_api"
-version = "0.7.8"
+version = "0.8.0"
 description = "puniyu 适配器 API 库，统一消息、群组、好友与账户操作接口"
 authors.workspace = true
 license.workspace = true
