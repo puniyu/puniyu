@@ -27,12 +27,31 @@ puniyu_adapter = "*"
 
 ### 实现适配器
 
-```rust
+```rust,ignore
+use std::{any::Any, sync::Arc};
+
 use puniyu_adapter::Adapter;
-use puniyu_adapter::api::AdapterApi;
+use puniyu_adapter::api::{AdapterApi, AdapterRuntime, Error};
 use puniyu_adapter::types::info::{AdapterInfo, AdapterInfoBuilder};
 use puniyu_adapter::types::info::{AdapterPlatform, AdapterProtocol};
+use puniyu_adapter::types::SendMsgType;
+use puniyu_contact::ContactType;
+use puniyu_message::Message;
 use puniyu_version::Version;
+
+struct MyRuntime;
+
+#[async_trait::async_trait]
+impl AdapterRuntime for MyRuntime {
+    async fn send_message(
+        &self,
+        _contact: &ContactType<'_>,
+        _message: &Message,
+    ) -> Result<SendMsgType, Error> {
+        Ok(SendMsgType { message_id: "msg-1".into(), time: 0 })
+    }
+
+}
 
 struct MyAdapter {
     info: AdapterInfo,
@@ -49,7 +68,7 @@ impl MyAdapter {
             .build()
             .unwrap();
 
-        let api = AdapterApi::default();
+        let api = AdapterApi::from_runtime(MyRuntime);
 
         Self { info, api }
     }
@@ -66,7 +85,6 @@ impl Adapter for MyAdapter {
     }
 
     async fn init(&self) -> puniyu_error::Result {
-        // 初始化逻辑
         puniyu_logger::info!("适配器初始化完成");
         Ok(())
     }
@@ -75,20 +93,15 @@ impl Adapter for MyAdapter {
 
 ### 使用适配器
 
-```rust
+```rust,ignore
 async fn use_adapter(adapter: &dyn Adapter) {
-    // 初始化适配器
     adapter.init().await?;
 
-    // 获取适配器信息
     let info = adapter.info();
     println!("适配器: {} v{}", info.name, info.VERSION);
 
-    // 获取 API
     let api = adapter.api();
-
-    // 发送消息
-    api.message().send_msg(&contact, &message).await?;
+    api.send_message(&contact, &message).await?;
 }
 ```
 
@@ -195,15 +208,33 @@ impl Adapter for MyAdapter {
 
 ## 完整示例
 
-```rust
+```rust,ignore
+use std::{any::Any, sync::Arc};
+
 use puniyu_adapter::Adapter;
-use puniyu_adapter::api::AdapterApi;
+use puniyu_adapter::api::{AdapterApi, AdapterRuntime, Error};
 use puniyu_adapter::types::info::{AdapterInfo, AdapterInfoBuilder};
 use puniyu_adapter::types::info::{
     AdapterPlatform, AdapterProtocol, AdapterCommunication
 };
+use puniyu_adapter::types::SendMsgType;
+use puniyu_contact::ContactType;
+use puniyu_message::Message;
 use puniyu_version::Version;
-use std::sync::Arc;
+
+struct NapCatRuntime;
+
+#[async_trait::async_trait]
+impl AdapterRuntime for NapCatRuntime {
+    async fn send_message(
+        &self,
+        _contact: &ContactType<'_>,
+        _message: &Message,
+    ) -> Result<SendMsgType, Error> {
+        Ok(SendMsgType { message_id: "msg-1".into(), time: 0 })
+    }
+
+}
 
 struct NapCatAdapter {
     info: AdapterInfo,
@@ -223,13 +254,12 @@ impl NapCatAdapter {
             .build()
             .unwrap();
 
-        let api = AdapterApi::default();
+        let api = AdapterApi::from_runtime(NapCatRuntime);
 
         Self { info, api }
     }
 
     async fn connect(&self) -> puniyu_error::Result {
-        // 连接到 NapCat
         puniyu_logger::info!("正在连接到 NapCat...");
         Ok(())
     }
@@ -255,11 +285,8 @@ impl Adapter for NapCatAdapter {
 #[tokio::main]
 async fn main() -> puniyu_error::Result {
     let adapter = NapCatAdapter::new();
-
-    // 初始化适配器
     adapter.init().await?;
 
-    // 使用适配器
     let info = adapter.info();
     println!("适配器: {} v{}", info.name, info.VERSION);
     println!("平台: {}", info.platform);

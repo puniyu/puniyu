@@ -1,5 +1,6 @@
-mod api;
 mod common;
+mod runtime;
+pub use runtime::ConsoleRuntime as Runtime;
 
 use crate::common::make_random_id;
 use log::info;
@@ -24,7 +25,7 @@ fn info() -> AdapterInfo {
 		communication: AdapterCommunication::Other
 	)
 }
-#[adapter(info = info, api = api::api)]
+#[adapter(info = info, api = runtime::api)]
 async fn main() -> puniyu_adapter::Result {
 	use std::time::{SystemTime, UNIX_EPOCH};
 
@@ -33,9 +34,9 @@ async fn main() -> puniyu_adapter::Result {
 	let account_info = account_info!(
 		uin: bot_id,
 		name: format!("{}/{}", name, bot_id),
-		avatar: api::AVATAR.clone()
+		avatar: runtime::AVATAR.clone()
 	);
-	let bot_index = register_bot!(adapter: info(), api: api::api(), account: account_info)?;
+	let bot_index = register_bot!(adapter: info(), api: runtime::api(), account: account_info)?;
 
 	info!("{} v{} 初始化完成", &info().name, info().version);
 

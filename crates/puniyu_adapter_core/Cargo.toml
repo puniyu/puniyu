@@ -32,3 +32,5 @@ registry = ["puniyu_error/registry"]
 async-trait.workspace = true
 puniyu_adapter_api.workspace = true
 puniyu_adapter_types.workspace = true
+puniyu_contact.workspace = true
+puniyu_message.workspace = true

@@ -22,6 +22,7 @@
 //!
 //! // 访问 API
 //! let api = bot_context.api();
+//! // api.send_message(&contact, &message).await?;
 //!
 //! // 访问账号信息
 //! let account = bot_context.account();

@@ -12,10 +12,28 @@
 ## 示例
 
 ```rust,ignore
+use std::{any::Any, sync::Arc};
+
 use async_trait::async_trait;
-use puniyu_adapter_api::AdapterApi;
+use puniyu_adapter_api::{AdapterApi, AdapterRuntime, Error};
 use puniyu_adapter_core::Adapter;
-use puniyu_adapter_types::{adapter_info, AdapterPlatform, AdapterProtocol};
+use puniyu_adapter_types::{adapter_info, AdapterPlatform, AdapterProtocol, SendMsgType};
+use puniyu_contact::ContactType;
+use puniyu_message::Message;
+
+struct MyRuntime;
+
+#[async_trait]
+impl AdapterRuntime for MyRuntime {
+    async fn send_message(
+        &self,
+        _contact: &ContactType<'_>,
+        _message: &Message,
+    ) -> Result<SendMsgType, Error> {
+        Ok(SendMsgType { message_id: "msg-1".into(), time: 0 })
+    }
+
+}
 
 struct MyAdapter;
 
@@ -26,7 +44,7 @@ impl Adapter for MyAdapter {
     }
 
     fn api(&self) -> AdapterApi {
-        AdapterApi::default()
+        AdapterApi::from_runtime(MyRuntime)
     }
 }
 ```

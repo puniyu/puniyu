@@ -99,12 +99,12 @@ impl<'c> MessageContext<'c> {
 	/// 向当前消息对应的联系人发送回复消息。
 	///
 	/// 参数 `message` 支持任意可转换为 [`Message`] 的类型。
-	pub async fn reply<M>(&self, message: M) -> puniyu_error::Result<SendMsgType>
+	pub async fn reply<M>(&self, message: M) -> Result<SendMsgType, puniyu_adapter_api::Error>
 	where
 		M: Into<Message>,
 	{
 		let contact = self._event.contact();
-		self._bot.api().message().send_msg(&contact, &message.into()).await
+		self._bot.api().send_message(&contact, &message.into()).await
 	}
 
 	/// 获取命令参数值

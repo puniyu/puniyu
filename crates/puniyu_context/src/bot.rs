@@ -62,7 +62,10 @@ impl<'c> BotContext<'c> {
 	///
 	/// ```rust,ignore
 	/// let api = bot_context.api();
-	/// api.message().send_msg(&contact, &message).await?;
+	/// api.send_message(&contact, &message).await?;
+	///
+	/// // 访问适配器私有能力
+	/// let runtime = api.runtime::<MyRuntime>();
 	/// ```
 	pub fn api(&self) -> &AdapterApi {
 		self.inner.api()

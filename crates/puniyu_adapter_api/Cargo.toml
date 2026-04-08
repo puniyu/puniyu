@@ -16,9 +16,7 @@ workspace = true
 [dependencies]
 async-trait.workspace = true
 thiserror.workspace = true
-derive_builder.workspace = true
 
 puniyu_adapter_types.workspace = true
 puniyu_contact.workspace = true
 puniyu_message.workspace = true
-puniyu_error.workspace = true

@@ -1,11 +1,13 @@
 #![allow(dead_code)]
 
+
+use async_trait::async_trait;
 use bytes::Bytes;
 use puniyu_account::AccountInfo;
-use puniyu_adapter_api::AdapterApi;
-use puniyu_adapter_types::{AdapterPlatform, AdapterProtocol, adapter_info};
+use puniyu_adapter_api::{AdapterApi, Runtime, Error};
+use puniyu_adapter_types::{AdapterPlatform, AdapterProtocol, SendMsgType, adapter_info};
 use puniyu_bot::Bot;
-use puniyu_contact::{Contact, contact_friend, contact_group};
+use puniyu_contact::{Contact, ContactType, contact_friend, contact_group};
 use puniyu_element::receive::Elements;
 use puniyu_event::{
 	Event, EventBase,
@@ -13,13 +15,32 @@ use puniyu_event::{
 	notion::{GroupRecall, GroupRecallType, NotionBase, NotionEvent},
 	request::{PrivateApply, PrivateApplyType, RequestBase, RequestEvent},
 };
+use puniyu_message::Message;
 use puniyu_sender::{Sender, sender_friend, sender_group};
+
+struct TestRuntime;
+
+#[async_trait]
+impl Runtime for TestRuntime {
+	async fn send_message(
+		&self,
+		_contact: &ContactType<'_>,
+		_message: &Message,
+	) -> Result<SendMsgType, Error> {
+		Ok(SendMsgType { message_id: "test-msg".to_string(), time: 0 })
+	}
+
+}
+
+fn test_api() -> AdapterApi {
+	AdapterApi::from_runtime(TestRuntime)
+}
 
 pub fn make_bot() -> Bot {
 	let adapter = adapter_info!("console", AdapterPlatform::QQ, AdapterProtocol::Console);
 	let account =
 		AccountInfo { uin: "10000".to_string(), name: "Puniyu".to_string(), avatar: Bytes::new() };
-	Bot::new(adapter, AdapterApi::default(), account)
+	Bot::new(adapter, test_api(), account)
 }
 
 pub fn base_snapshot<E>(event: &E) -> (u64, String, String, String, String)

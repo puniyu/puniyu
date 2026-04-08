@@ -1,12 +1,29 @@
 #![cfg(feature = "registry")]
 
-use async_trait::async_trait;
-use puniyu_adapter_api::AdapterApi;
-use puniyu_adapter_core::{Adapter, AdapterRegistry};
-use puniyu_adapter_types::{AdapterInfo, AdapterPlatform, AdapterProtocol, adapter_info};
 use std::sync::{Arc, Mutex, MutexGuard};
 
+use async_trait::async_trait;
+use puniyu_adapter_api::{AdapterApi, Runtime, Error};
+use puniyu_adapter_core::{Adapter, AdapterRegistry};
+use puniyu_adapter_types::{AdapterInfo, AdapterPlatform, AdapterProtocol, SendMsgType, adapter_info};
+use puniyu_contact::ContactType;
+use puniyu_message::Message;
+
 static TEST_LOCK: Mutex<()> = Mutex::new(());
+
+struct TestRuntime;
+
+#[async_trait]
+impl Runtime for TestRuntime {
+	async fn send_message(
+		&self,
+		_contact: &ContactType<'_>,
+		_message: &Message,
+	) -> Result<SendMsgType, Error> {
+		Ok(SendMsgType { message_id: "test-msg".to_string(), time: 0 })
+	}
+
+}
 
 struct TestAdapter {
 	info: AdapterInfo,
@@ -17,7 +34,7 @@ impl TestAdapter {
 	fn new() -> Self {
 		Self {
 			info: adapter_info!("console", AdapterPlatform::QQ, AdapterProtocol::Console),
-			api: AdapterApi::default(),
+			api: AdapterApi::from_runtime(TestRuntime),
 		}
 	}
 }

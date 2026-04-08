@@ -11,11 +11,30 @@
 
 ## 示例
 
-```rust
+```rust,ignore
+use std::{any::Any, sync::Arc};
+
+use async_trait::async_trait;
 use puniyu_account::AccountInfo;
-use puniyu_adapter_api::AdapterApi;
-use puniyu_adapter_types::{AdapterInfo, AdapterPlatform, AdapterProtocol};
+use puniyu_adapter_api::{AdapterApi, AdapterRuntime, Error};
+use puniyu_adapter_types::{AdapterInfo, AdapterPlatform, AdapterProtocol, SendMsgType};
 use puniyu_bot::{Bot, BotRegistry};
+use puniyu_contact::ContactType;
+use puniyu_message::Message;
+
+struct MyRuntime;
+
+#[async_trait]
+impl AdapterRuntime for MyRuntime {
+    async fn send_message(
+        &self,
+        _contact: &ContactType<'_>,
+        _message: &Message,
+    ) -> Result<SendMsgType, Error> {
+        Ok(SendMsgType { message_id: "msg-1".into(), time: 0 })
+    }
+
+}
 
 let mut adapter = AdapterInfo::default();
 adapter.name = "console".to_string();
@@ -28,7 +47,8 @@ let account = AccountInfo {
     avatar: Default::default(),
 };
 
-let bot = Bot::new(adapter, AdapterApi::default(), account);
+let api = AdapterApi::from_runtime(MyRuntime);
+let bot = Bot::new(adapter, api, account);
 let index = BotRegistry::register(bot.clone()).unwrap();
 
 assert_eq!(BotRegistry::get(index), Some(bot));

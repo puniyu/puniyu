@@ -1,20 +1,38 @@
+
+use async_trait::async_trait;
 use bytes::Bytes;
 use puniyu_account::AccountInfo;
-use puniyu_adapter_api::AdapterApi;
-use puniyu_adapter_types::{AdapterPlatform, AdapterProtocol, adapter_info};
+use puniyu_adapter_api::{AdapterApi, Runtime, Error};
+use puniyu_adapter_types::{AdapterPlatform, AdapterProtocol, SendMsgType, adapter_info};
 use puniyu_bot::Bot;
-use puniyu_contact::contact_friend;
+use puniyu_contact::{ContactType, contact_friend};
 use puniyu_event::Event;
 use puniyu_event::request::{PrivateApply, PrivateApplyType, RequestEvent};
 use puniyu_handler::Handler;
 use puniyu_handler_command::Handler as CommandHandler;
+use puniyu_message::Message;
 use puniyu_sender::{FriendSender, sender_friend};
+
+struct TestRuntime;
+
+#[async_trait]
+impl Runtime for TestRuntime {
+	async fn send_message(
+		&self,
+		_contact: &ContactType<'_>,
+		_message: &Message,
+	) -> Result<SendMsgType, Error> {
+		Ok(SendMsgType { message_id: "test-msg".to_string(), time: 0 })
+	}
+
+}
 
 fn make_request_event() -> Event<'static> {
 	let adapter = adapter_info!("console", AdapterPlatform::QQ, AdapterProtocol::Console);
 	let account =
 		AccountInfo { uin: "10000".to_string(), name: "Puniyu".to_string(), avatar: Bytes::new() };
-	let bot = Box::leak(Box::new(Bot::new(adapter, AdapterApi::default(), account)));
+	let api = AdapterApi::from_runtime(TestRuntime);
+	let bot = Box::leak(Box::new(Bot::new(adapter, api, account)));
 
 	let contact = Box::leak(Box::new(contact_friend!(peer: "123456", name: "Alice")));
 	let sender: &'static FriendSender<'static> =

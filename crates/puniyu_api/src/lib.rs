@@ -15,4 +15,8 @@ pub mod version;
 
 pub use inventory;
 pub use puniyu_common::app::{app_name, app_version};
-pub use puniyu_error::Result;
+
+#[macro_export]
+macro_rules! pkg_name {
+	() => {{ env!("CARGO_PKG_VERSION_MAJOR") }};
+}

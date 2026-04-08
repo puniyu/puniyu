@@ -1,117 +1,96 @@
 //! # puniyu_adapter_api
 //!
-//! 统一的 puniyu 适配器 API 库，覆盖消息、群组、好友与账户操作场景。
+//! 统一的 puniyu 适配器 API 库。
+//!
+//! 当前版本不再聚合固定的 message/group/friend/account 子 API，而是将
+//! [`AdapterApi`] 设计为具体适配器 runtime 的轻量包装层。
 //!
 //! ## 特性
 //!
-//! - 提供 [`AdapterApi`] 聚合消息、群组、好友和账户接口
-//! - 提供 [`MessageApi`] 统一消息发送、撤回与历史查询接口
-//! - 提供 [`GroupApi`]、[`FriendApi`]、[`AccountApi`]
-//! - 支持 `AdapterApiBuilder` 自定义各子 API 实现
+//! - 提供 [`AdapterApi`] 统一封装适配器 runtime
+//! - 提供 [`AdapterRuntime`] 作为跨适配器的最小运行时抽象
+//! - 提供 [`AdapterApi::send_message`] 统一消息发送入口
+//! - 提供 [`AdapterApi::runtime`] 下转型访问适配器私有能力
 //!
 //! ## 示例
 //!
 //! ```rust,ignore
-//! use std::sync::Arc;
-//! use puniyu_adapter_api::{AdapterApiBuilder, MessageApi};
+//! use std::{any::Any, sync::Arc};
 //!
-//! struct MyMessageApi;
-//! impl MessageApi for MyMessageApi {}
+//! use async_trait::async_trait;
+//! use puniyu_adapter_api::{AdapterApi, AdapterRuntime, Error};
+//! use puniyu_adapter_types::SendMsgType;
+//! use puniyu_contact::ContactType;
+//! use puniyu_message::Message;
 //!
-//! let api = AdapterApiBuilder::default()
-//!     .message_api(Arc::new(MyMessageApi))
-//!     .build()
-//!     .unwrap();
+//! struct MyRuntime;
 //!
-//! let _ = api.message();
+//! #[async_trait]
+//! impl AdapterRuntime for MyRuntime {
+//!     async fn send_message(
+//!         &self,
+//!         _contact: &ContactType<'_>,
+//!         _message: &Message,
+//!     ) -> Result<SendMsgType, Error> {
+//!         Ok(SendMsgType { message_id: "msg-1".into(), time: 0 })
+//!     }
+//!
+//! }
+//!
+//! let api = AdapterApi::from_runtime(MyRuntime);
+//! let _ = api.runtime::<MyRuntime>();
 //! ```
 
-#![allow(unused_variables)]
+mod error;
+#[doc(inline)]
+pub use error::Error;
+mod runtime;
+#[doc(inline)]
+pub use runtime::Runtime;
 
-mod group;
-#[doc(inline)]
-pub use group::GroupApi;
-mod friend;
-#[doc(inline)]
-pub use friend::FriendApi;
-mod account;
-#[doc(inline)]
-pub use account::AccountApi;
-mod message;
-#[doc(inline)]
-pub use message::MessageApi;
-mod inner;
+use puniyu_adapter_types::SendMsgType;
+use puniyu_contact::ContactType;
+use puniyu_message::Message;
+use std::{any::Any, sync::Arc};
 
-use derive_builder::Builder;
-use std::sync::Arc;
-
-/// 适配器 API 聚合入口。
-#[derive(Clone, Builder)]
-#[builder(pattern = "owned")]
+#[derive(Clone)]
 pub struct AdapterApi {
-	#[builder(default = "Arc::new(inner::DefaultGroupApi)")]
-	group_api: Arc<dyn GroupApi>,
-	#[builder(default = "Arc::new(inner::DefaultFriendApi)")]
-	friend_api: Arc<dyn FriendApi>,
-	#[builder(default = "Arc::new(inner::DefaultAccountApi)")]
-	account_api: Arc<dyn AccountApi>,
-	#[builder(default = "Arc::new(inner::DefaultMessageApi)")]
-	message_api: Arc<dyn MessageApi>,
+	inner: Arc<dyn Runtime>,
 }
 
-impl Default for AdapterApi {
-	#[inline]
-	fn default() -> Self {
-		Self {
-			group_api: Arc::new(inner::DefaultGroupApi),
-			friend_api: Arc::new(inner::DefaultFriendApi),
-			account_api: Arc::new(inner::DefaultAccountApi),
-			message_api: Arc::new(inner::DefaultMessageApi),
-		}
+impl AdapterApi {
+	pub fn new<R>(runtime: Arc<R>) -> Self
+	where
+		R: Runtime + 'static,
+	{
+		Self { inner: runtime }
+	}
+
+	pub fn from_runtime<R>(runtime: R) -> Self
+	where
+		R: Runtime + 'static,
+	{
+		Self { inner: Arc::new(runtime) }
+	}
+
+	pub async fn send_message(
+		&self,
+		contact: &ContactType<'_>,
+		message: &Message,
+	) -> Result<SendMsgType, Error> {
+		self.inner.send_message(contact, message).await
+	}
+
+	pub fn runtime<T>(&self) -> Option<&T>
+	where
+		T: Any + Send + Sync + 'static,
+	{
+		(self.inner.as_ref() as &dyn Any).downcast_ref::<T>()
 	}
 }
 
 impl PartialEq for AdapterApi {
 	fn eq(&self, other: &Self) -> bool {
-		Arc::ptr_eq(&self.group_api, &other.group_api)
-			&& Arc::ptr_eq(&self.friend_api, &other.friend_api)
-			&& Arc::ptr_eq(&self.account_api, &other.account_api)
-			&& Arc::ptr_eq(&self.message_api, &other.message_api)
-	}
-}
-
-impl AdapterApi {
-	pub fn builder() -> AdapterApiBuilder {
-		AdapterApiBuilder::default()
-	}
-
-	/// 使用指定子 API 创建实例。
-	pub fn new(
-		group_api: Arc<dyn GroupApi>,
-		friend_api: Arc<dyn FriendApi>,
-		account_api: Arc<dyn AccountApi>,
-		message_api: Arc<dyn MessageApi>,
-	) -> Self {
-		Self { group_api, friend_api, account_api, message_api }
-	}
-
-	/// 获取群组 API。
-	pub fn group(&self) -> &Arc<dyn GroupApi> {
-		&self.group_api
-	}
-
-	/// 获取好友 API。
-	pub fn friend(&self) -> &Arc<dyn FriendApi> {
-		&self.friend_api
-	}
-
-	/// 获取账户 API。
-	pub fn account(&self) -> &Arc<dyn AccountApi> {
-		&self.account_api
-	}
-
-	/// 获取消息 API。
-	pub fn message(&self) -> &Arc<dyn MessageApi> {
-		&self.message_api
+		Arc::ptr_eq(&self.inner, &other.inner)
 	}
 }
