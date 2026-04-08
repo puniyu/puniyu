@@ -1735,8 +1735,8 @@ dependencies = [
  "actix-web",
  "async-trait",
  "puniyu_account",
- "puniyu_adapter_api",
  "puniyu_adapter_core",
+ "puniyu_adapter_runtime",
  "puniyu_adapter_types",
  "puniyu_api",
  "puniyu_bot",
@@ -1756,17 +1756,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "puniyu_adapter_api"
-version = "0.8.0"
-dependencies = [
- "async-trait",
- "puniyu_adapter_types",
- "puniyu_contact",
- "puniyu_message",
- "thiserror 2.0.18",
-]
-
-[[package]]
 name = "puniyu_adapter_console"
 version = "0.8.0"
 dependencies = [
@@ -1783,7 +1772,7 @@ name = "puniyu_adapter_core"
 version = "0.8.0"
 dependencies = [
  "async-trait",
- "puniyu_adapter_api",
+ "puniyu_adapter_runtime",
  "puniyu_adapter_types",
  "puniyu_config",
  "puniyu_contact",
@@ -1792,6 +1781,18 @@ dependencies = [
  "puniyu_logger",
  "puniyu_message",
  "puniyu_server",
+]
+
+[[package]]
+name = "puniyu_adapter_runtime"
+version = "0.8.0"
+dependencies = [
+ "async-trait",
+ "puniyu_adapter_types",
+ "puniyu_contact",
+ "puniyu_error",
+ "puniyu_message",
+ "thiserror 2.0.18",
 ]
 
 [[package]]
@@ -1838,7 +1839,7 @@ name = "puniyu_bot"
 version = "0.8.0"
 dependencies = [
  "puniyu_account",
- "puniyu_adapter_api",
+ "puniyu_adapter_runtime",
  "puniyu_adapter_types",
  "puniyu_error",
 ]
@@ -1929,7 +1930,7 @@ dependencies = [
  "async-trait",
  "bytes",
  "puniyu_account",
- "puniyu_adapter_api",
+ "puniyu_adapter_runtime",
  "puniyu_adapter_types",
  "puniyu_bot",
  "puniyu_command_types",
@@ -2017,7 +2018,7 @@ dependencies = [
  "async-trait",
  "bytes",
  "puniyu_account",
- "puniyu_adapter_api",
+ "puniyu_adapter_runtime",
  "puniyu_adapter_types",
  "puniyu_bot",
  "puniyu_contact",
@@ -2046,7 +2047,7 @@ dependencies = [
  "bytes",
  "itertools",
  "puniyu_account",
- "puniyu_adapter_api",
+ "puniyu_adapter_runtime",
  "puniyu_adapter_types",
  "puniyu_bot",
  "puniyu_command",

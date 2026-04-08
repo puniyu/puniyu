@@ -18,7 +18,7 @@ mod types;
 pub use types::*;
 
 use puniyu_account::AccountInfo;
-use puniyu_adapter_api::AdapterApi;
+use puniyu_adapter_runtime::AdapterRuntime;
 use puniyu_adapter_types::AdapterInfo;
 use std::{
 	fmt::{Debug, Formatter},
@@ -29,7 +29,7 @@ use std::{
 #[derive(Clone, PartialEq)]
 pub struct Bot {
 	adapter: Arc<AdapterInfo>,
-	api: Arc<AdapterApi>,
+	runtime: Arc<AdapterRuntime>,
 	account: Arc<AccountInfo>,
 }
 
@@ -43,13 +43,13 @@ impl Debug for Bot {
 }
 
 impl Bot {
-	/// 使用适配器信息、适配器 API 与账户信息创建机器人实例。
+	/// 使用适配器信息、适配器运行时与账户信息创建机器人实例。
 	pub fn new(
 		adapter: impl Into<Arc<AdapterInfo>>,
-		api: impl Into<Arc<AdapterApi>>,
+		runtime: impl Into<Arc<AdapterRuntime>>,
 		account: impl Into<Arc<AccountInfo>>,
 	) -> Self {
-		Self { adapter: adapter.into(), api: api.into(), account: account.into() }
+		Self { adapter: adapter.into(), runtime: runtime.into(), account: account.into() }
 	}
 
 	/// 返回适配器信息引用。
@@ -57,9 +57,9 @@ impl Bot {
 		&self.adapter
 	}
 
-	/// 返回适配器 API 引用。
-	pub fn api(&self) -> &AdapterApi {
-		&self.api
+	/// 返回适配器运行时引用。
+	pub fn runtime(&self) -> &AdapterRuntime {
+		&self.runtime
 	}
 
 	/// 返回账户信息引用。

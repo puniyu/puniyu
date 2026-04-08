@@ -31,7 +31,7 @@ puniyu_adapter = "*"
 use std::{any::Any, sync::Arc};
 
 use puniyu_adapter::Adapter;
-use puniyu_adapter::api::{AdapterApi, AdapterRuntime, Error};
+use puniyu_adapter::runtime::{AdapterRuntime, AdapterRuntime, Error};
 use puniyu_adapter::types::info::{AdapterInfo, AdapterInfoBuilder};
 use puniyu_adapter::types::info::{AdapterPlatform, AdapterProtocol};
 use puniyu_adapter::types::SendMsgType;
@@ -55,7 +55,7 @@ impl AdapterRuntime for MyRuntime {
 
 struct MyAdapter {
     info: AdapterInfo,
-    api: AdapterApi,
+    api: AdapterRuntime,
 }
 
 impl MyAdapter {
@@ -68,9 +68,9 @@ impl MyAdapter {
             .build()
             .unwrap();
 
-        let api = AdapterApi::from_runtime(MyRuntime);
+        let runtime = AdapterRuntime::from_runtime(MyRuntime);
 
-        Self { info, api }
+        Self { info, runtime }
     }
 }
 
@@ -80,7 +80,7 @@ impl Adapter for MyAdapter {
         &self.info
     }
 
-    fn api(&self) -> &AdapterApi {
+    fn runtime(&self) -> &AdapterRuntime {
         &self.api
     }
 
@@ -100,7 +100,7 @@ async fn use_adapter(adapter: &dyn Adapter) {
     let info = adapter.info();
     println!("适配器: {} v{}", info.name, info.VERSION);
 
-    let api = adapter.api();
+    let runtime = adapter.runtime();
     api.send_message(&contact, &message).await?;
 }
 ```
@@ -114,7 +114,7 @@ async fn use_adapter(adapter: &dyn Adapter) {
 | 方法   | 说明           | 返回值         |
 | ------ | -------------- | -------------- |
 | `info` | 获取适配器信息 | `&AdapterInfo` |
-| `api`  | 获取适配器 API | `&AdapterApi`  |
+| `api`  | 获取适配器 API | `&AdapterRuntime`  |
 
 ### 可选方法
 
@@ -212,7 +212,7 @@ impl Adapter for MyAdapter {
 use std::{any::Any, sync::Arc};
 
 use puniyu_adapter::Adapter;
-use puniyu_adapter::api::{AdapterApi, AdapterRuntime, Error};
+use puniyu_adapter::runtime::{AdapterRuntime, AdapterRuntime, Error};
 use puniyu_adapter::types::info::{AdapterInfo, AdapterInfoBuilder};
 use puniyu_adapter::types::info::{
     AdapterPlatform, AdapterProtocol, AdapterCommunication
@@ -238,7 +238,7 @@ impl AdapterRuntime for NapCatRuntime {
 
 struct NapCatAdapter {
     info: AdapterInfo,
-    api: AdapterApi,
+    api: AdapterRuntime,
 }
 
 impl NapCatAdapter {
@@ -254,9 +254,9 @@ impl NapCatAdapter {
             .build()
             .unwrap();
 
-        let api = AdapterApi::from_runtime(NapCatRuntime);
+        let runtime = AdapterRuntime::from_runtime(NapCatRuntime);
 
-        Self { info, api }
+        Self { info, runtime }
     }
 
     async fn connect(&self) -> puniyu_error::Result {
@@ -271,7 +271,7 @@ impl Adapter for NapCatAdapter {
         &self.info
     }
 
-    fn api(&self) -> &AdapterApi {
+    fn runtime(&self) -> &AdapterRuntime {
         &self.api
     }
 

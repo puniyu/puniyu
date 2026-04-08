@@ -1,16 +1,16 @@
-//! # puniyu_adapter_api
+//! # puniyu_adapter_runtime
 //!
 //! 统一的 puniyu 适配器 API 库。
 //!
 //! 当前版本不再聚合固定的 message/group/friend/account 子 API，而是将
-//! [`AdapterApi`] 设计为具体适配器 runtime 的轻量包装层。
+//! [`AdapterRuntime`] 设计为具体适配器 runtime 的轻量包装层。
 //!
 //! ## 特性
 //!
-//! - 提供 [`AdapterApi`] 统一封装适配器 runtime
-//! - 提供 [`AdapterRuntime`] 作为跨适配器的最小运行时抽象
-//! - 提供 [`AdapterApi::send_message`] 统一消息发送入口
-//! - 提供 [`AdapterApi::runtime`] 下转型访问适配器私有能力
+//! - 提供 [`AdapterRuntime`] 统一封装适配器 runtime
+//! - 提供 [`Runtime`] 作为跨适配器的最小运行时抽象
+//! - 提供 [`AdapterRuntime::send_message`] 统一消息发送入口
+//! - 提供 [`AdapterRuntime::runtime`] 下转型访问适配器私有能力
 //!
 //! ## 示例
 //!
@@ -18,7 +18,7 @@
 //! use std::{any::Any, sync::Arc};
 //!
 //! use async_trait::async_trait;
-//! use puniyu_adapter_api::{AdapterApi, AdapterRuntime, Error};
+//! use puniyu_adapter_runtime::{AdapterRuntime, Error, Runtime};
 //! use puniyu_adapter_types::SendMsgType;
 //! use puniyu_contact::ContactType;
 //! use puniyu_message::Message;
@@ -26,7 +26,7 @@
 //! struct MyRuntime;
 //!
 //! #[async_trait]
-//! impl AdapterRuntime for MyRuntime {
+//! impl Runtime for MyRuntime {
 //!     async fn send_message(
 //!         &self,
 //!         _contact: &ContactType<'_>,
@@ -37,8 +37,8 @@
 //!
 //! }
 //!
-//! let api = AdapterApi::from_runtime(MyRuntime);
-//! let _ = api.runtime::<MyRuntime>();
+//! let runtime = AdapterRuntime::from_runtime(MyRuntime);
+//! let _ = runtime.runtime::<MyRuntime>();
 //! ```
 
 mod error;
@@ -54,11 +54,11 @@ use puniyu_message::Message;
 use std::{any::Any, sync::Arc};
 
 #[derive(Clone)]
-pub struct AdapterApi {
+pub struct AdapterRuntime {
 	inner: Arc<dyn Runtime>,
 }
 
-impl AdapterApi {
+impl AdapterRuntime {
 	pub fn new<R>(runtime: Arc<R>) -> Self
 	where
 		R: Runtime + 'static,
@@ -89,7 +89,7 @@ impl AdapterApi {
 	}
 }
 
-impl PartialEq for AdapterApi {
+impl PartialEq for AdapterRuntime {
 	fn eq(&self, other: &Self) -> bool {
 		Arc::ptr_eq(&self.inner, &other.inner)
 	}

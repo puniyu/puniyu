@@ -13,12 +13,12 @@ fn test_bot_context_creation() {
 }
 
 #[test]
-fn test_bot_context_api_access() {
+fn test_bot_context_runtime_access() {
 	let bot = common::make_bot();
 	let context = BotContext::new(&bot);
 
-	let _api = context.api();
-	// API 访问不应该 panic
+	let _runtime = context.runtime();
+	// Runtime 访问不应该 panic
 }
 
 #[test]

@@ -25,7 +25,7 @@ fn info() -> AdapterInfo {
 		communication: AdapterCommunication::Other
 	)
 }
-#[adapter(info = info, api = runtime::api)]
+#[adapter(info = info, runtime = runtime::runtime)]
 async fn main() -> puniyu_adapter::Result {
 	use std::time::{SystemTime, UNIX_EPOCH};
 
@@ -36,7 +36,8 @@ async fn main() -> puniyu_adapter::Result {
 		name: format!("{}/{}", name, bot_id),
 		avatar: runtime::AVATAR.clone()
 	);
-	let bot_index = register_bot!(adapter: info(), api: runtime::api(), account: account_info)?;
+	let bot_index =
+		register_bot!(adapter: info(), runtime: runtime::runtime(), account: account_info)?;
 
 	info!("{} v{} 初始化完成", &info().name, info().version);
 

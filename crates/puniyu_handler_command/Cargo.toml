@@ -32,7 +32,7 @@ async-trait.workspace = true
 bytes.workspace = true
 tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
 puniyu_account.workspace = true
-puniyu_adapter_api.workspace = true
+puniyu_adapter_runtime.workspace = true
 puniyu_adapter_types.workspace = true
 puniyu_bot.workspace = true
 puniyu_contact.workspace = true

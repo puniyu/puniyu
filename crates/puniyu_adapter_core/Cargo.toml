@@ -17,7 +17,7 @@ workspace = true
 async-trait.workspace = true
 
 puniyu_adapter_types.workspace = true
-puniyu_adapter_api.workspace = true
+puniyu_adapter_runtime.workspace = true
 puniyu_config.workspace = true
 puniyu_logger.workspace = true
 puniyu_error.workspace = true
@@ -30,7 +30,7 @@ registry = ["puniyu_error/registry"]
 
 [dev-dependencies]
 async-trait.workspace = true
-puniyu_adapter_api.workspace = true
+puniyu_adapter_runtime.workspace = true
 puniyu_adapter_types.workspace = true
 puniyu_contact.workspace = true
 puniyu_message.workspace = true

@@ -97,7 +97,7 @@ pub fn adapter_hook(
 ///
 /// 参数中需要提供：
 /// - `info`：返回 `AdapterInfo` 的函数
-/// - `api`：返回适配器 API 的函数
+/// - `runtime`：返回适配器运行时的函数
 ///
 /// 要求函数为 `async`。当函数体非空时，返回类型必须为 `puniyu_adapter::Result`；
 /// 当函数体为空时，可以省略返回值类型。
@@ -119,7 +119,7 @@ pub fn adapter_hook(
 ///     )
 /// }
 ///
-/// #[adapter(info = info, api = api::api)]
+/// #[adapter(info = info, runtime = runtime::runtime)]
 /// async fn main() -> puniyu_adapter::Result {
 ///     Ok(())
 /// }

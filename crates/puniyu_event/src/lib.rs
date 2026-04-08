@@ -1,15 +1,11 @@
 //! # puniyu_event
 //!
-//! 统一的事件类型，覆盖消息、通知与请求场景。
+//! 统一的事件类型，当前仅覆盖消息场景。
 //!
 //! ## 概述
 //!
-//! `puniyu_event` 提供了完整的事件类型定义，用于处理聊天机器人中的各种事件。
-//! 该库将事件分为三大类：
-//!
-//! - **消息事件（Message）** - 处理好友和群聊消息
-//! - **通知事件（Notion）** - 处理各类通知（戳一戳、撤回、文件上传等）
-//! - **请求事件（Request）** - 处理好友申请、群申请等请求
+//! `puniyu_event` 提供统一的消息事件类型定义，用于处理聊天机器人中的消息场景。
+//! 当前公共事件模型仅保留消息事件。
 //!
 //! ## 特性
 //!
@@ -17,7 +13,7 @@
 //! - 🔧 **统一接口** - 通过 trait 提供统一的事件访问接口
 //! - 📦 **序列化支持** - 内置 serde 支持
 //! - 🎨 **生命周期优化** - 使用生命周期参数避免不必要的内存分配
-//! - 🔄 **丰富的事件类型** - 支持消息、通知、请求等多种事件类型
+//! - 🔄 **聚焦消息事件** - 提供统一的消息事件抽象与访问接口
 //!
 //! ## 快速开始
 //!
@@ -29,17 +25,8 @@
 //! fn handle_event(event: Event) {
 //!     match event {
 //!         Event::Message(msg) => {
-//!             // 处理消息事件
 //!             let texts = msg.get_text();
 //!             println!("收到消息: {:?}", texts);
-//!         }
-//!         Event::Notion(notion) => {
-//!             // 处理通知事件
-//!             println!("收到通知");
-//!         }
-//!         Event::Request(request) => {
-//!             // 处理请求事件
-//!             println!("收到请求");
 //!         }
 //!     }
 //! }
@@ -98,29 +85,26 @@
 //! }
 //! ```
 
+pub mod extension;
 pub mod message;
-pub mod notion;
-pub mod request;
 mod types;
+#[doc(inline)]
+pub use extension::*;
 #[doc(inline)]
 pub use types::*;
 
 use message::MessageEvent;
-use notion::NotionEvent;
 use puniyu_bot::Bot;
 use puniyu_contact::ContactType;
 use puniyu_sender::SenderType;
-use request::RequestEvent;
 
 /// 事件枚举
 ///
-/// 统一的事件类型，包含所有可能的事件。
+/// 统一的事件类型，当前仅包含消息事件。
 ///
 /// # 变体
 ///
 /// - `Message(MessageEvent)` - 消息事件，包括好友消息和群消息
-/// - `Notion(NotionEvent)` - 通知事件，包括戳一戳、撤回等各类通知
-/// - `Request(RequestEvent)` - 请求事件，包括好友申请、群申请等
 ///
 /// # 示例
 ///
@@ -132,17 +116,8 @@ use request::RequestEvent;
 /// fn handle_event(event: Event) {
 ///     match event {
 ///         Event::Message(msg) => {
-///             // 处理消息事件
 ///             let texts = msg.get_text();
 ///             println!("收到消息: {:?}", texts);
-///         }
-///         Event::Notion(notion) => {
-///             // 处理通知事件
-///             println!("收到通知，类型: {:?}", notion.sub_event());
-///         }
-///         Event::Request(request) => {
-///             // 处理请求事件
-///             println!("收到请求，类型: {:?}", request.sub_event());
 ///         }
 ///     }
 /// }
@@ -156,10 +131,6 @@ use request::RequestEvent;
 /// fn check_event_type(event: &Event) {
 ///     if let Some(msg) = event.as_message() {
 ///         println!("这是消息事件");
-///     } else if let Some(notion) = event.as_notion() {
-///         println!("这是通知事件");
-///     } else if let Some(request) = event.as_request() {
-///         println!("这是请求事件");
 ///     }
 /// }
 /// ```
@@ -176,50 +147,41 @@ use request::RequestEvent;
 ///     println!("机器人 ID: {}", event.self_id());
 /// }
 /// ```
-#[derive(Clone)]
 pub enum Event<'e> {
 	/// 消息事件
 	Message(Box<MessageEvent<'e>>),
-	/// 通知事件
-	Notion(Box<NotionEvent<'e>>),
-	/// 请求事件
-	Request(Box<RequestEvent<'e>>),
+	/// 扩展事件
+	Extension(Box<dyn ExtensionEvent>),
 }
 
 impl Event<'_> {
-	/// 尝试将事件转换为消息事件
-	///
-	/// # 返回值
-	///
-	/// 如果是消息事件，返回 `Some(&MessageEvent)`，否则返回 `None`
+	/// 尝试将事件转换为消息事件。
 	pub fn as_message(&self) -> Option<&MessageEvent<'_>> {
 		match self {
-			Event::Message(m) => Some(m),
-			_ => None,
+			Event::Message(message) => Some(message),
+			Event::Extension(_) => None,
 		}
 	}
 
-	/// 尝试将事件转换为通知事件
-	///
-	/// # 返回值
-	///
-	/// 如果是通知事件，返回 [`Some(&NotionEvent)`]，否则返回 [`None`]
-	pub fn as_notion(&self) -> Option<&NotionEvent<'_>> {
+	/// 尝试将事件转换为扩展事件。
+	pub fn as_extension(&self) -> Option<&dyn ExtensionEvent> {
 		match self {
-			Event::Notion(n) => Some(n),
-			_ => None,
+			Event::Message(_) => None,
+			Event::Extension(extension) => Some(extension.as_ref()),
 		}
 	}
 
-	/// 尝试将事件转换为请求事件
-	///
-	/// # 返回值
-	///
-	/// 如果是请求事件，返回 `Some(&RequestEvent)`，否则返回 `None`
-	pub fn as_request(&self) -> Option<&RequestEvent<'_>> {
+	/// 尝试将扩展事件转换为指定类型。
+	pub fn extension<T>(&self) -> Option<&T>
+	where
+		T: ExtensionEvent + 'static,
+	{
 		match self {
-			Event::Request(r) => Some(r),
-			_ => None,
+			Event::Message(_) => None,
+			Event::Extension(extension) => {
+				let any = extension.as_ref() as &dyn std::any::Any;
+				any.downcast_ref::<T>()
+			}
 		}
 	}
 }
@@ -240,8 +202,7 @@ impl Event<'_> {
 	pub fn time(&self) -> u64 {
 		match self {
 			Self::Message(event) => event.time(),
-			Self::Notion(event) => event.time(),
-			Self::Request(event) => event.time(),
+			Self::Extension(event) => event.time(),
 		}
 	}
 
@@ -249,7 +210,7 @@ impl Event<'_> {
 	///
 	/// # 返回值
 	///
-	/// 返回事件类型枚举的引用（Message、Notion 或 Request）
+	/// 返回事件类型枚举的引用。
 	///
 	/// # 示例
 	///
@@ -258,16 +219,13 @@ impl Event<'_> {
 	///
 	/// match event.event_type() {
 	///     EventType::Message => println!("消息事件"),
-	///     EventType::Notion => println!("通知事件"),
-	///     EventType::Request => println!("请求事件"),
 	///     _ => {}
 	/// }
 	/// ```
-	pub fn event_type(&self) -> &EventType {
+	pub fn event_type(&self) -> EventType {
 		match self {
 			Self::Message(event) => event.event_type(),
-			Self::Notion(event) => event.event_type(),
-			Self::Request(event) => event.event_type(),
+			Self::Extension(_) => EventType::Extension,
 		}
 	}
 
@@ -286,8 +244,7 @@ impl Event<'_> {
 	pub fn event_id(&self) -> &str {
 		match self {
 			Self::Message(event) => event.event_id(),
-			Self::Notion(event) => event.event_id(),
-			Self::Request(event) => event.event_id(),
+			Self::Extension(event) => event.event_id(),
 		}
 	}
 
@@ -307,19 +264,12 @@ impl Event<'_> {
 	///     SubEventType::Message(msg_type) => {
 	///         println!("消息子类型: {:?}", msg_type);
 	///     }
-	///     SubEventType::Notion(notion_type) => {
-	///         println!("通知子类型: {:?}", notion_type);
-	///     }
-	///     SubEventType::Request(request_type) => {
-	///         println!("请求子类型: {:?}", request_type);
-	///     }
 	/// }
 	/// ```
 	pub fn sub_event(&self) -> SubEventType {
 		match self {
-			Self::Message(event) => SubEventType::from(event.sub_event()),
-			Self::Notion(event) => SubEventType::from(event.sub_event()),
-			Self::Request(event) => SubEventType::from(event.sub_event()),
+			Self::Message(event) => event.sub_event(),
+			Self::Extension(event) => event.sub_event(),
 		}
 	}
 
@@ -338,8 +288,7 @@ impl Event<'_> {
 	pub fn bot(&self) -> &Bot {
 		match self {
 			Self::Message(event) => event.bot(),
-			Self::Notion(event) => event.bot(),
-			Self::Request(event) => event.bot(),
+			Self::Extension(event) => event.bot(),
 		}
 	}
 
@@ -358,8 +307,7 @@ impl Event<'_> {
 	pub fn self_id(&self) -> &str {
 		match self {
 			Self::Message(event) => event.self_id(),
-			Self::Notion(event) => event.self_id(),
-			Self::Request(event) => event.self_id(),
+			Self::Extension(event) => event.self_id(),
 		}
 	}
 
@@ -378,8 +326,7 @@ impl Event<'_> {
 	pub fn user_id(&self) -> &str {
 		match self {
 			Self::Message(event) => event.user_id(),
-			Self::Notion(event) => event.user_id(),
-			Self::Request(event) => event.user_id(),
+			Self::Extension(event) => event.user_id(),
 		}
 	}
 
@@ -407,8 +354,7 @@ impl Event<'_> {
 	pub fn contact(&self) -> ContactType<'_> {
 		match self {
 			Self::Message(event) => event.contact(),
-			Self::Notion(event) => event.contact(),
-			Self::Request(event) => event.contact(),
+			Self::Extension(event) => event.contact(),
 		}
 	}
 
@@ -436,8 +382,7 @@ impl Event<'_> {
 	pub fn sender(&self) -> SenderType<'_> {
 		match self {
 			Self::Message(event) => event.sender(),
-			Self::Notion(event) => event.sender(),
-			Self::Request(event) => event.sender(),
+			Self::Extension(event) => event.sender(),
 		}
 	}
 }
@@ -447,5 +392,8 @@ impl Event<'_> {
 macro_rules! create_event {
 	(Message, $message:expr $(,)?) => {
 		$crate::Event::Message(Box::new($message))
+	};
+	(Extension, $event:expr $(,)?) => {
+		$crate::Event::Extension(Box::new($event))
 	};
 }

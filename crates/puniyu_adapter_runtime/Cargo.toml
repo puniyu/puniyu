@@ -1,5 +1,5 @@
 [package]
-name = "puniyu_adapter_api"
+name = "puniyu_adapter_runtime"
 version = "0.8.0"
 description = "puniyu 适配器 API 库，统一消息、群组、好友与账户操作接口"
 authors.workspace = true
@@ -17,6 +17,7 @@ workspace = true
 async-trait.workspace = true
 thiserror.workspace = true
 
+puniyu_error.workspace = true
 puniyu_adapter_types.workspace = true
 puniyu_contact.workspace = true
 puniyu_message.workspace = true

@@ -37,8 +37,8 @@ pub fn adapter(item: zyn::syn::ItemFn, cfg: AdapterArgs) -> zyn::TokenStream {
 			fn info(&self) -> ::puniyu_adapter::AdapterInfo {
 				{{ &cfg.info }}()
 			}
-			fn api(&self) -> ::puniyu_adapter::api::AdapterApi {
-				{{ &cfg.api }}()
+			fn runtime(&self) -> ::puniyu_adapter::runtime::AdapterRuntime {
+				{{ &cfg.runtime }}()
 			}
 			fn config(&self) -> Vec<::std::sync::Arc<dyn ::puniyu_adapter::__private::Config>> {
 				::puniyu_adapter::__private::inventory::iter::<crate::ConfigRegistry>

@@ -15,6 +15,6 @@ workspace = true
 
 [dependencies]
 puniyu_account.workspace = true
-puniyu_adapter_api.workspace = true
+puniyu_adapter_runtime.workspace = true
 puniyu_adapter_types.workspace = true
 puniyu_error = { workspace = true, features = ["registry"] }

@@ -38,6 +38,6 @@ impl Runtime for ConsoleRuntime {
 	}
 }
 
-pub(crate) fn api() -> AdapterApi {
-	AdapterApi::from_runtime(ConsoleRuntime)
+pub(crate) fn runtime() -> AdapterRuntime {
+	AdapterRuntime::from_runtime(ConsoleRuntime)
 }

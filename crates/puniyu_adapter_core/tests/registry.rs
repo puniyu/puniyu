@@ -3,7 +3,7 @@
 use std::sync::{Arc, Mutex, MutexGuard};
 
 use async_trait::async_trait;
-use puniyu_adapter_api::{AdapterApi, Runtime, Error};
+use puniyu_adapter_runtime::{AdapterRuntime, Runtime, Error};
 use puniyu_adapter_core::{Adapter, AdapterRegistry};
 use puniyu_adapter_types::{AdapterInfo, AdapterPlatform, AdapterProtocol, SendMsgType, adapter_info};
 use puniyu_contact::ContactType;
@@ -27,14 +27,14 @@ impl Runtime for TestRuntime {
 
 struct TestAdapter {
 	info: AdapterInfo,
-	api: AdapterApi,
+	runtime: AdapterRuntime,
 }
 
 impl TestAdapter {
 	fn new() -> Self {
 		Self {
 			info: adapter_info!("console", AdapterPlatform::QQ, AdapterProtocol::Console),
-			api: AdapterApi::from_runtime(TestRuntime),
+			runtime: AdapterRuntime::from_runtime(TestRuntime),
 		}
 	}
 }
@@ -45,8 +45,8 @@ impl Adapter for TestAdapter {
 		self.info.clone()
 	}
 
-	fn api(&self) -> AdapterApi {
-		self.api.clone()
+	fn runtime(&self) -> AdapterRuntime {
+		self.runtime.clone()
 	}
 }
 

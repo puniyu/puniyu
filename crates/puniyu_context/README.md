@@ -6,16 +6,17 @@
 
 `puniyu_context` 提供了统一的上下文管理系统，用于处理聊天机器人中的各种上下文信息。该库将上下文分为三个层次：
 
-- **机器人上下文（BotContext）** - 提供对机器人实例和 API 的访问
+- **机器人上下文（BotContext）** - 提供对机器人实例和运行时的访问
 - **事件上下文（EventContext）** - 提供对事件信息和命令参数的访问
 - **消息上下文（MessageContext）** - 提供对消息事件的专门处理
 
 ## 特性
 
 - 🎯 **分层设计** - 清晰的上下文层次结构，职责明确
-- 🔧 **便捷访问** - 提供简洁的 API 访问机器人功能
+- 🔧 **便捷访问** - 提供简洁的运行时访问能力
 - 🔄 **类型安全** - 使用 Rust 类型系统确保上下文的正确使用
 - 📦 **消息处理** - 专门的消息上下文，支持回复、参数获取等
+- 🧩 **扩展事件访问** - `EventContext` 支持读取 extension 事件
 - 🎨 **生命周期优化** - 使用生命周期参数避免不必要的内存分配
 
 ## 安装
@@ -38,8 +39,8 @@ use std::sync::Arc;
 
 let bot_context = BotContext::new(Arc::new(bot));
 
-// 访问 API
-let api = bot_context.api();
+// 访问运行时
+let runtime = bot_context.runtime();
 
 // 访问账号信息
 let account = bot_context.account();
@@ -49,23 +50,16 @@ println!("Bot UIN: {}", account.uin);
 ### 处理事件上下文
 
 ```rust
-use puniyu_context::{BotContext, EventContext};
+use puniyu_context::EventContext;
 
-let event_context = EventContext::new(&bot_context, &event, Some(args));
+let event_context = EventContext::new(&event);
 
-// 判断事件类型
-if event_context.is_message() {
-    if let Some(msg_ctx) = event_context.as_message() {
-        // 处理消息
-        msg_ctx.reply("收到消息").await?;
-    }
+if let Some(msg_ctx) = event_context.as_message() {
+    msg_ctx.reply("收到消息").await?;
 }
 
-// 判断场景类型
-if event_context.is_friend() {
-    println!("好友事件");
-} else if event_context.is_group() {
-    println!("群组事件");
+if let Some(ext) = event_context.as_extension() {
+    println!("扩展事件: {}", ext.sub_event());
 }
 ```
 
@@ -107,8 +101,8 @@ async fn handle_message(ctx: &MessageContext<'_>) -> Result<()> {
 
 | 类型             | 说明         | 主要功能                                   |
 | ---------------- | ------------ | ------------------------------------------ |
-| `BotContext`     | 机器人上下文 | 访问 API、账号信息                         |
-| `EventContext`   | 事件上下文   | 判断事件类型、转换为消息上下文             |
+| `BotContext`     | 机器人上下文 | 访问运行时、账号信息                       |
+| `EventContext`   | 事件上下文   | 判断事件类型、访问 extension、转换消息上下文 |
 | `MessageContext` | 消息上下文   | 回复消息、获取参数、发送者信息、消息元素等 |
 
 ## 消息上下文功能

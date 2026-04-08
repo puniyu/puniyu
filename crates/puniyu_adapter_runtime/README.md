@@ -1,12 +1,12 @@
-# puniyu_adapter_api
+# puniyu_adapter_runtime
 
 统一的 puniyu 适配器 API 库。
 
 ## 特性
 
-- 🧩 提供 `AdapterApi` 作为适配器 runtime 的轻量包装层
+- 🧩 提供 `AdapterRuntime` 作为适配器 runtime 的轻量包装层
 - 💬 提供 `AdapterRuntime::send_message` 统一消息发送能力
-- 🔍 支持通过 `AdapterApi::runtime::<T>()` 访问适配器私有能力
+- 🔍 支持通过 `AdapterRuntime::runtime::<T>()` 访问适配器私有能力
 - 🔄 支持多个适配器并存，且无需让 `Bot / Event / Context` 泛型化
 
 ## 示例
@@ -15,7 +15,7 @@
 use std::{any::Any, sync::Arc};
 
 use async_trait::async_trait;
-use puniyu_adapter_api::{AdapterApi, AdapterRuntime, Error};
+use puniyu_adapter_runtime::{AdapterRuntime, Error, Runtime};
 use puniyu_adapter_types::SendMsgType;
 use puniyu_contact::ContactType;
 use puniyu_message::Message;
@@ -23,7 +23,7 @@ use puniyu_message::Message;
 struct MyRuntime;
 
 #[async_trait]
-impl AdapterRuntime for MyRuntime {
+impl Runtime for MyRuntime {
     async fn send_message(
         &self,
         _contact: &ContactType<'_>,
@@ -34,14 +34,14 @@ impl AdapterRuntime for MyRuntime {
 
 }
 
-let api = AdapterApi::from_runtime(MyRuntime);
-let _ = api.runtime::<MyRuntime>();
+let runtime = AdapterRuntime::from_runtime(MyRuntime);
+let _ = runtime.runtime::<MyRuntime>();
 ```
 
 ## 接口
 
-- `AdapterApi`: 适配器 API 入口
-- `AdapterRuntime`: 跨适配器最小运行时抽象
+- `AdapterRuntime`: 适配器运行时入口
+- `Runtime`: 跨适配器最小运行时抽象
 - `Error`: runtime 调用边界错误
 
 ## 许可证

@@ -37,14 +37,9 @@ pub fn hook(item: zyn::syn::ItemFn, cfg: HookArgs) -> zyn::TokenStream {
 						::puniyu_plugin::hook::HookEventType::Message
 					)
 				},
-				["event", "notion"] => zyn! {
+				["event", "extension"] => zyn! {
 					::puniyu_plugin::hook::HookType::Event(
-						::puniyu_plugin::hook::HookEventType::Notion
-					)
-				},
-				["event", "request"] => zyn! {
-					::puniyu_plugin::hook::HookType::Event(
-						::puniyu_plugin::hook::HookEventType::Request
+						::puniyu_plugin::hook::HookEventType::Extension
 					)
 				},
 				["event", "all"] => zyn! {
@@ -69,8 +64,8 @@ pub fn hook(item: zyn::syn::ItemFn, cfg: HookArgs) -> zyn::TokenStream {
 				},
 				["event", subtype] => {
 					let err_msg = format!(
-						"Invalid event subtype '{}'. Valid event subtypes are: 'message', 'notion', 'request', 'all'. \
-						Examples: 'event.message', 'event.notion'",
+						"Invalid event subtype '{}'. Valid event subtypes are: 'message', 'extension', 'all'. \
+						Examples: 'event.message', 'event.all'",
 						subtype
 					);
 					return zyn::syn::Error::new(fn_sig.span(), err_msg).to_compile_error();

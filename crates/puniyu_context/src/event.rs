@@ -78,18 +78,26 @@ impl<'c> EventContext<'c> {
 	pub fn as_message(&self) -> Option<MessageContext<'_>> {
 		self.inner.as_message().map(|message| MessageContext::new(message, HashMap::new()))
 	}
+
+	/// 尝试获取当前事件中的扩展事件。
+	pub fn as_extension(&self) -> Option<&dyn puniyu_event::ExtensionEvent> {
+		self.inner.as_extension()
+	}
+
+	/// 尝试将扩展事件转换为指定类型。
+	pub fn extension<T>(&self) -> Option<&T>
+	where
+		T: puniyu_event::ExtensionEvent + 'static,
+	{
+		self.inner.extension::<T>()
+	}
 }
 impl<'c> EventBase for EventContext<'c> {
-	type EventType = EventType;
-	type SubEventType = SubEventType;
-	type Contact = ContactType<'c>;
-	type Sender = SenderType<'c>;
-
 	fn time(&self) -> u64 {
 		self.inner.time()
 	}
 
-	fn event_type(&self) -> &Self::EventType {
+	fn event_type(&self) -> EventType {
 		self.inner.event_type()
 	}
 
@@ -97,8 +105,8 @@ impl<'c> EventBase for EventContext<'c> {
 		self.inner.event_id()
 	}
 
-	fn sub_event(&self) -> &Self::SubEventType {
-		&self._sub_event
+	fn sub_event(&self) -> SubEventType {
+		self._sub_event
 	}
 
 	fn bot(&self) -> &Bot {
@@ -113,12 +121,12 @@ impl<'c> EventBase for EventContext<'c> {
 		self.inner.user_id()
 	}
 
-	fn contact(&self) -> &Self::Contact {
-		&self._contact
+	fn contact(&self) -> ContactType<'_> {
+		self._contact.clone()
 	}
 
-	fn sender(&self) -> &Self::Sender {
-		&self._sender
+	fn sender(&self) -> SenderType<'_> {
+		self._sender.clone()
 	}
 }
 

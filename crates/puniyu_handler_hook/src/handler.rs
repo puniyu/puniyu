@@ -23,7 +23,7 @@ impl Handler for HookHandler {
 
 	async fn handle(&self, event: &Event) -> puniyu_error::Result {
 		let context = EventContext::new(event);
-		let event_type = HookEventType::from(*context.event_type());
+		let event_type = HookEventType::from(context.event_type());
 		let mut hooks = HookRegistry::all();
 		hooks.retain(|x| {
 			matches!(x.builder.r#type(),

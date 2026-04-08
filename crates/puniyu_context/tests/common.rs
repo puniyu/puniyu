@@ -5,7 +5,7 @@ use std::collections::HashMap;
 use async_trait::async_trait;
 use bytes::Bytes;
 use puniyu_account::AccountInfo;
-use puniyu_adapter_api::{AdapterApi, Runtime, Error};
+use puniyu_adapter_runtime::{AdapterRuntime, Runtime, Error};
 use puniyu_adapter_types::{AdapterPlatform, AdapterProtocol, SendMsgType, adapter_info};
 use puniyu_bot::Bot;
 use puniyu_command_types::ArgValue;
@@ -33,8 +33,8 @@ impl Runtime for TestRuntime {
 
 }
 
-fn test_api() -> AdapterApi {
-	AdapterApi::from_runtime(TestRuntime)
+fn test_runtime() -> AdapterRuntime {
+	AdapterRuntime::from_runtime(TestRuntime)
 }
 
 pub fn make_bot() -> Bot {
@@ -49,7 +49,7 @@ pub fn make_bot_with_account(uin: &str, name: &str, avatar: Bytes) -> Bot {
 	);
 	let account = AccountInfo { uin: uin.to_string(), name: name.to_string(), avatar };
 
-	Bot::new(adapter, test_api(), account)
+	Bot::new(adapter, test_runtime(), account)
 }
 
 pub fn base_snapshot<E>(event: &E) -> (u64, String, String, String, String)

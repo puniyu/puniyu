@@ -4,9 +4,7 @@ use puniyu_bot::Bot;
 use puniyu_command_types::ArgValue;
 use puniyu_config::app_config;
 use puniyu_element::receive::Elements;
-use puniyu_event::message::{
-	FriendMessage, GroupMessage, MessageBase, MessageEvent, MessageSubEventType,
-};
+use puniyu_event::message::{FriendMessage, GroupMessage, MessageBase, MessageEvent};
 use puniyu_event::{EventBase, EventType};
 use puniyu_message::Message;
 
@@ -99,12 +97,12 @@ impl<'c> MessageContext<'c> {
 	/// 向当前消息对应的联系人发送回复消息。
 	///
 	/// 参数 `message` 支持任意可转换为 [`Message`] 的类型。
-	pub async fn reply<M>(&self, message: M) -> Result<SendMsgType, puniyu_adapter_api::Error>
+	pub async fn reply<M>(&self, message: M) -> Result<SendMsgType, puniyu_adapter_runtime::Error>
 	where
 		M: Into<Message>,
 	{
 		let contact = self._event.contact();
-		self._bot.api().send_message(&contact, &message.into()).await
+		self._bot.runtime().send_message(&contact, &message.into()).await
 	}
 
 	/// 获取命令参数值
@@ -145,23 +143,18 @@ impl<'c> MessageContext<'c> {
 }
 
 impl<'c> EventBase for MessageContext<'c> {
-	type EventType = EventType;
-	type SubEventType = MessageSubEventType;
-	type Contact = dyn puniyu_contact::Contact + 'c;
-	type Sender = dyn puniyu_sender::Sender + 'c;
-
 	fn time(&self) -> u64 {
 		self._event.time()
 	}
 
-	fn event_type(&self) -> &Self::EventType {
+	fn event_type(&self) -> EventType {
 		self._event.event_type()
 	}
 	fn event_id(&self) -> &str {
 		self._event.event_id()
 	}
 
-	fn sub_event(&self) -> &Self::SubEventType {
+	fn sub_event(&self) -> puniyu_event::SubEventType {
 		self._event.sub_event()
 	}
 
@@ -177,11 +170,11 @@ impl<'c> EventBase for MessageContext<'c> {
 		self._event.user_id()
 	}
 
-	fn contact(&self) -> &Self::Contact {
+	fn contact(&self) -> puniyu_contact::ContactType<'_> {
 		EventBase::contact(self._event)
 	}
 
-	fn sender(&self) -> &Self::Sender {
+	fn sender(&self) -> puniyu_sender::SenderType<'_> {
 		EventBase::sender(self._event)
 	}
 }

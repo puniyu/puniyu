@@ -6,7 +6,7 @@
 //!
 //! - 提供 [`Adapter`] trait 定义适配器行为
 //! - 提供 [`AdapterRegistry`] 管理适配器注册与查询
-//! - 组合 `puniyu_adapter_api` 与 `puniyu_adapter_types`
+//! - 组合 `puniyu_adapter_runtime` 与 `puniyu_adapter_types`
 //! - 支持配置、钩子、服务器与初始化流程扩展
 //!
 //! ## 示例
@@ -15,7 +15,7 @@
 //! use std::{any::Any, sync::Arc};
 //!
 //! use async_trait::async_trait;
-//! use puniyu_adapter_api::{AdapterApi, AdapterRuntime, Error};
+//! use puniyu_adapter_runtime::{AdapterRuntime, Error, Runtime};
 //! use puniyu_adapter_core::Adapter;
 //! use puniyu_adapter_types::{adapter_info, AdapterPlatform, AdapterProtocol, SendMsgType};
 //! use puniyu_contact::ContactType;
@@ -24,7 +24,7 @@
 //! struct MyRuntime;
 //!
 //! #[async_trait]
-//! impl AdapterRuntime for MyRuntime {
+//! impl Runtime for MyRuntime {
 //!     async fn send_message(
 //!         &self,
 //!         _contact: &ContactType<'_>,
@@ -43,8 +43,8 @@
 //!         adapter_info!("console", AdapterPlatform::QQ, AdapterProtocol::Console)
 //!     }
 //!
-//!     fn api(&self) -> AdapterApi {
-//!         AdapterApi::from_runtime(MyRuntime)
+//!     fn runtime(&self) -> AdapterRuntime {
+//!         AdapterRuntime::from_runtime(MyRuntime)
 //!     }
 //! }
 //! ```
@@ -56,7 +56,7 @@ mod types;
 #[doc(inline)]
 pub use types::*;
 
-use puniyu_adapter_api::AdapterApi;
+use puniyu_adapter_runtime::AdapterRuntime;
 use puniyu_adapter_types::AdapterInfo;
 use puniyu_config::Config;
 use puniyu_hook::Hook;
@@ -67,8 +67,8 @@ pub trait Adapter: Send + Sync + 'static {
 	/// 获取适配器信息。
 	fn info(&self) -> AdapterInfo;
 
-	/// 获取适配器 API。
-	fn api(&self) -> AdapterApi;
+	/// 获取适配器运行时。
+	fn runtime(&self) -> AdapterRuntime;
 
 	/// 获取配置列表。
 	fn config(&self) -> Vec<Arc<dyn Config>> {

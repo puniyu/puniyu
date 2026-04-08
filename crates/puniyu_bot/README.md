@@ -16,7 +16,7 @@ use std::{any::Any, sync::Arc};
 
 use async_trait::async_trait;
 use puniyu_account::AccountInfo;
-use puniyu_adapter_api::{AdapterApi, AdapterRuntime, Error};
+use puniyu_adapter_runtime::{AdapterRuntime, AdapterRuntime, Error};
 use puniyu_adapter_types::{AdapterInfo, AdapterPlatform, AdapterProtocol, SendMsgType};
 use puniyu_bot::{Bot, BotRegistry};
 use puniyu_contact::ContactType;
@@ -47,8 +47,8 @@ let account = AccountInfo {
     avatar: Default::default(),
 };
 
-let api = AdapterApi::from_runtime(MyRuntime);
-let bot = Bot::new(adapter, api, account);
+let runtime = AdapterRuntime::from_runtime(MyRuntime);
+let bot = Bot::new(adapter, runtime, account);
 let index = BotRegistry::register(bot.clone()).unwrap();
 
 assert_eq!(BotRegistry::get(index), Some(bot));

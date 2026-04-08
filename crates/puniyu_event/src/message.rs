@@ -23,52 +23,6 @@ pub use types::*;
 /// 定义所有消息事件的通用接口，提供消息内容访问和判断方法。
 ///
 /// 该 trait 继承自 `EventBase`，因此也可以访问所有事件的基础信息。
-///
-/// # 示例
-///
-/// ## 处理消息内容
-///
-/// ```rust,ignore
-/// use puniyu_event::message::MessageBase;
-///
-/// fn process_message<M: MessageBase>(msg: &M) {
-///     // 获取消息 ID
-///     let msg_id = msg.message_id();
-///     
-///     // 获取文本内容
-///     let texts = msg.get_text();
-///     println!("消息内容: {}", texts.join(" "));
-///
-///     // 获取回复消息 ID
-///     if let Some(reply_id) = msg.get_reply_id() {
-///         println!("回复消息 ID: {}", reply_id);
-///     }
-/// }
-/// ```
-///
-/// ## 处理消息元素
-///
-/// ```rust,ignore
-/// use puniyu_event::message::MessageBase;
-///
-/// fn handle_message_elements<M: MessageBase>(msg: &M) {
-///     // 获取图片
-///     if let Some(image) = msg.get_image() {
-///         println!("收到图片，大小: {} 字节", image.len());
-///     }
-///     
-///     // 获取艾特列表
-///     let at_list = msg.get_at();
-///     if !at_list.is_empty() {
-///         println!("艾特了: {:?}", at_list);
-///     }
-///     
-///     // 获取回复消息 ID
-///     if let Some(reply_id) = msg.get_reply_id() {
-///         println!("回复了消息: {}", reply_id);
-///     }
-/// }
-/// ```
 pub trait MessageBase: Send + Sync + EventBase {
 	/// 获取消息 ID
 	fn message_id(&self) -> &str;
@@ -77,10 +31,6 @@ pub trait MessageBase: Send + Sync + EventBase {
 	fn elements(&self) -> &Vec<Elements<'_>>;
 
 	/// 获取所有文本元素的内容
-	///
-	/// # 返回值
-	///
-	/// 返回消息中所有文本元素的字符串切片向量
 	fn get_text(&self) -> Vec<&str> {
 		self.elements()
 			.iter()
@@ -92,10 +42,6 @@ pub trait MessageBase: Send + Sync + EventBase {
 	}
 
 	/// 获取所有艾特元素的目标 ID
-	///
-	/// # 返回值
-	///
-	/// 返回被艾特的用户 ID 列表
 	fn get_at(&self) -> Vec<&str> {
 		self.elements()
 			.iter()
@@ -107,10 +53,6 @@ pub trait MessageBase: Send + Sync + EventBase {
 	}
 
 	/// 获取第一个图片元素
-	///
-	/// # 返回值
-	///
-	/// 如果消息包含图片，返回 `Some(&Bytes)`，否则返回 `None`
 	fn get_image(&self) -> Option<&Bytes> {
 		self.elements().iter().find_map(|e| match e {
 			Elements::Image(image) => Some(&image.file),
@@ -119,10 +61,6 @@ pub trait MessageBase: Send + Sync + EventBase {
 	}
 
 	/// 获取第一个语音元素
-	///
-	/// # 返回值
-	///
-	/// 如果消息包含语音，返回 `Some(&Bytes)`，否则返回 `None`
 	fn get_record(&self) -> Option<&Bytes> {
 		self.elements().iter().find_map(|e| match e {
 			Elements::Record(record) => Some(&record.file),
@@ -131,10 +69,6 @@ pub trait MessageBase: Send + Sync + EventBase {
 	}
 
 	/// 获取回复消息的 ID
-	///
-	/// # 返回值
-	///
-	/// 如果消息是回复消息，返回被回复消息的 ID，否则返回 `None`
 	fn get_reply_id(&self) -> Option<&str> {
 		self.elements()
 			.iter()
@@ -210,13 +144,6 @@ macro_rules! create_message {
 }
 
 /// 生成消息事件结构体及其 EventBase、MessageBase 实现
-///
-/// # 参数
-///
-/// - `$name`: 结构体名称
-/// - `$contact`: 联系人类型（如 `FriendContact`、`GroupContact`）
-/// - `$sender`: 发送者类型（如 `FriendSender`、`GroupSender`）
-/// - `$sub_event`: 消息子类型变体（如 `MessageSubEventType::Friend`）
 macro_rules! codegen_message {
 	(
 		$(#[$meta:meta])*
@@ -262,20 +189,15 @@ macro_rules! codegen_message {
 		}
 
 		impl<'e> $crate::EventBase for $name<'e> {
-			type EventType = $crate::EventType;
-			type SubEventType = super::MessageSubEventType;
-			type Contact = $contact<'e>;
-			type Sender = $sender<'e>;
-
 			fn time(&self) -> u64 { self.time }
-			fn event_type(&self) -> &$crate::EventType { &$crate::EventType::Message }
+			fn event_type(&self) -> $crate::EventType { $crate::EventType::Message }
 			fn event_id(&self) -> &str { self.event_id }
-			fn sub_event(&self) -> &super::MessageSubEventType { &$sub_event }
+			fn sub_event(&self) -> $crate::SubEventType { $crate::SubEventType::Message($sub_event) }
 			fn bot(&self) -> &puniyu_bot::Bot { self.bot }
 			fn self_id(&self) -> &str { self.bot.account().uin.as_str() }
 			fn user_id(&self) -> &str { self.user_id }
-			fn contact(&self) -> &Self::Contact { self.contact }
-			fn sender(&self) -> &Self::Sender { self.sender }
+			fn contact(&self) -> puniyu_contact::ContactType<'_> { self.contact.clone().into() }
+			fn sender(&self) -> puniyu_sender::SenderType<'_> { self.sender.clone().into() }
 		}
 
 		impl<'m> super::MessageBase for $name<'m> {

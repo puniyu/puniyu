@@ -1,5 +1,5 @@
 pub mod account;
-pub mod api;
+pub mod runtime;
 pub mod bot;
 pub mod contact;
 pub mod element;
