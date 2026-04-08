@@ -45,7 +45,7 @@ mod registry;
 pub use registry::ConfigRegistry;
 
 use puniyu_common::merge_config;
-use puniyu_logger::{debug, error, info};
+use log::{debug, error, info};
 use puniyu_path::{config_dir, log_dir};
 
 /// 配置 trait

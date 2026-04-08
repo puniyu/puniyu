@@ -29,6 +29,7 @@ jobs:
           pr-opened-msg: 🙌 你好，@{fc-author}！感谢你提交的第一个拉取请求！🛠️ 你正在帮助我们打造更好的项目，我们会认真审查并与你一起优化它。💡 如果你有任何问题或需要帮助，随时联系！✨ 很高兴与你合作，欢迎成为我们社区的一员！
           issue-reactions: eyes, heart
           pr-reactions: +1, rocket, heart
+          skip-internal-contributors: false
 
   add-contributor:
     if: github.event.pull_request.merged == true
@@ -47,3 +48,4 @@ jobs:
           token: ${{ steps.app-token.outputs.token }}
           pr-merged-msg: >
             @all-contributors please add @{fc-author} for code
+          skip-internal-contributors: false

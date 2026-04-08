@@ -14,6 +14,7 @@ rust-version.workspace = true
 workspace = true
 
 [dependencies]
+log.workspace = true
 bytes.workspace = true
 tokio.workspace = true
 convert_case.workspace = true

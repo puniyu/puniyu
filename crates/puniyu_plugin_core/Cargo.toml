@@ -13,8 +13,8 @@ rust-version.workspace = true
 workspace = true
 
 [dependencies]
+log.workspace = true
 async-trait.workspace = true
-puniyu_logger.workspace = true
 puniyu_error.workspace = true
 puniyu_version.workspace = true
 puniyu_hook.workspace = true

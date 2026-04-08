@@ -83,7 +83,7 @@ impl Adapter for MyAdapter {
     }
 
     async fn init(&self) -> puniyu_error::Result {
-        puniyu_logger::info!("适配器初始化完成");
+        log::info!("适配器初始化完成");
         Ok(())
     }
 }
@@ -198,7 +198,7 @@ impl Adapter for MyAdapter {
         // 注册事件处理器
         self.register_handlers().await?;
 
-        puniyu_logger::info!("适配器初始化完成");
+        log::info!("适配器初始化完成");
         Ok(())
     }
 }
@@ -255,7 +255,7 @@ impl NapCatAdapter {
     }
 
     async fn connect(&self) -> puniyu_error::Result {
-        puniyu_logger::info!("正在连接到 NapCat...");
+        log::info!("正在连接到 NapCat...");
         Ok(())
     }
 }
@@ -272,7 +272,7 @@ impl Adapter for NapCatAdapter {
 
     async fn init(&self) -> puniyu_error::Result {
         self.connect().await?;
-        puniyu_logger::info!("NapCat 适配器初始化完成");
+        log::info!("NapCat 适配器初始化完成");
         Ok(())
     }
 }
@@ -316,7 +316,7 @@ impl Adapter for MyAdapter {
     async fn init(&self) -> puniyu_error::Result {
         self.connect().await
             .map_err(|e| {
-                puniyu_logger::error!("连接失败: {}", e);
+                log::error!("连接失败: {}", e);
                 e
             })?;
 
@@ -325,28 +325,15 @@ impl Adapter for MyAdapter {
 }
 ```
 
-### 2. 资源清理
+### 2. 日志记录
 
-实现 Drop trait 来清理资源：
-
-```rust
-impl Drop for MyAdapter {
-    fn drop(&mut self) {
-        puniyu_logger::info!("适配器正在关闭");
-        // 清理资源
-    }
-}
-```
-
-### 3. 日志记录
-
-使用 `puniyu_logger` 记录重要事件：
+使用 log 模块记录日志：
 
 ```rust
 async fn init(&self) -> puniyu_error::Result {
-    puniyu_logger::info!("开始初始化适配器");
-    puniyu_logger::debug!("配置: {:?}", self.config);
-    puniyu_logger::info!("初始化完成");
+    log::info!("开始初始化适配器");
+    log::debug!("配置: {:?}", self.config);
+    log::info!("初始化完成");
     Ok(())
 }
 ```

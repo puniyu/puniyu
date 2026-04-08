@@ -11,7 +11,7 @@ edition.workspace = true
 rust-version.workspace = true
 
 [dependencies]
-puniyu_logger.workspace = true
+log.workspace = true
 async-trait.workspace = true
 puniyu_hook.workspace = true
 puniyu_handler.workspace = true

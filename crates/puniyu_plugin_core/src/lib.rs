@@ -15,7 +15,7 @@ use puniyu_server::ServerFunction;
 use puniyu_task::Task;
 use puniyu_version::Version;
 use std::sync::Arc;
-use puniyu_logger::info;
+use log::info;
 
 #[async_trait]
 pub trait Plugin: Send + Sync + 'static {

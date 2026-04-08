@@ -2,7 +2,7 @@ use puniyu_adapter_core::Adapter;
 use puniyu_adapter_core::AdapterRegistry;
 use puniyu_common::source::SourceType;
 use puniyu_config::ConfigRegistry;
-use puniyu_logger::error;
+use log::error;
 use puniyu_path::adapter::*;
 use std::sync::Arc;
 use tokio::fs::{create_dir_all, write};

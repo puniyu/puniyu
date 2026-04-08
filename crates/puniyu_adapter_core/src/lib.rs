@@ -87,7 +87,7 @@ pub trait Adapter: Send + Sync + 'static {
 
 	/// 初始化适配器。
 	async fn init(&self) -> puniyu_error::Result {
-		puniyu_logger::info!("Adapter: 初始化完成");
+		log::info!("Adapter: 初始化完成");
 		Ok(())
 	}
 }

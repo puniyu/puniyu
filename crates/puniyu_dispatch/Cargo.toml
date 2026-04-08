@@ -14,7 +14,7 @@ rust-version.workspace = true
 workspace = true
 
 [dependencies]
-puniyu_logger.workspace = true
+log.workspace = true
 thiserror.workspace = true
 puniyu_event.workspace = true
 puniyu_handler = { workspace = true, features = ["registry"] }

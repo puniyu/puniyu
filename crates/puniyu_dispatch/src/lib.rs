@@ -48,7 +48,7 @@ impl EventEmitter {
 		handlers.sort_by_key(|h| h.priority());
 		for handler in handlers {
 			if let Err(e) = handler.handle(&event).await {
-				puniyu_logger::error!("[{}] handler error: {}", handler.name(), e);
+				log::error!("[{}] handler error: {}", handler.name(), e);
 			}
 		}
 		Ok(())

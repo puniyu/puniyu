@@ -8,7 +8,7 @@ use puniyu_config::app_config;
 use puniyu_context::MessageContext;
 use puniyu_event::{Event, EventBase, message::MessageBase};
 use puniyu_handler::Handler;
-use puniyu_logger::info;
+use log::info;
 use puniyu_logger::owo_colors::OwoColorize;
 use puniyu_plugin_core::PluginRegistry;
 use std::collections::HashMap;

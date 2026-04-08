@@ -16,7 +16,7 @@ use puniyu_handler::Handler;
 use puniyu_hook::{HookType, StatusType};
 use puniyu_loader::Loader;
 use puniyu_logger::owo_colors::OwoColorize;
-use puniyu_logger::{debug, error, info};
+use log::{debug, error, info};
 use puniyu_plugin_core::Plugin;
 use std::path::PathBuf;
 use std::sync::Arc;

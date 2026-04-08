@@ -1,6 +1,6 @@
 use puniyu_config::app_config;
-use puniyu_logger::LoggerOptions;
-use std::env;
+use puniyu_logger::{LogLevel, LoggerOptions};
+use std::{env, str::FromStr};
 
 /// 初始化日志系统
 pub fn log_init() {
@@ -12,7 +12,7 @@ pub fn log_init() {
 	let log_retention_days = logger.retention_days();
 	let is_file_logging = logger.enable_file();
 	let options = LoggerOptions::default()
-		.with_level(&log_level)
+		.with_level(LogLevel::from_str(log_level.as_str()).unwrap_or(LogLevel::Info))
 		.with_file_logging(is_file_logging)
 		.with_log_directory(log_path)
 		.with_retention_days(log_retention_days);

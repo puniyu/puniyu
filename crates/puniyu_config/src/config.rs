@@ -1,5 +1,5 @@
 use puniyu_common::read_config;
-use puniyu_logger::{debug, error, info};
+use log::{debug, error, info};
 use puniyu_path::config_dir;
 use std::thread;
 use std::time::Duration;

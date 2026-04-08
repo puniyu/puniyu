@@ -5,13 +5,13 @@ macro_rules! server_info {
         {
             #[cfg(feature = "cli")]
             {
-                ::puniyu_logger::info!("{}", format!($($arg)*))
+                ::log::info!("{}", format!($($arg)*))
             }
             #[cfg(not(feature = "cli"))]
             {
                 use ::puniyu_logger::owo_colors::OwoColorize;
                 let prefix = "Server".fg_rgb::<132,112,255>();
-                ::puniyu_logger::info!("[{}] {}", prefix, format!($($arg)*))
+                ::log::info!("[{}] {}", prefix, format!($($arg)*))
             }
         }
     };
@@ -22,13 +22,13 @@ macro_rules! server_warn {
         {
             #[cfg(feature = "cli")]
             {
-                ::puniyu_logger::info!("{}", format!($($arg)*))
+                ::log::warn!("{}", format!($($arg)*))
             }
             #[cfg(not(feature = "cli"))]
             {
                 use ::puniyu_logger::owo_colors::OwoColorize;
                 let prefix = "Server".fg_rgb::<132,112,255>();
-                ::puniyu_logger::info!("[{}] {}", prefix, format!($($arg)*))
+                ::log::warn!("[{}] {}", prefix, format!($($arg)*))
             }
         }
     };
@@ -39,13 +39,13 @@ macro_rules! server_error {
         {
             #[cfg(feature = "cli")]
             {
-                ::puniyu_logger::info!("{}", format!($($arg)*))
+                ::log::error!("{}", format!($($arg)*))
             }
             #[cfg(not(feature = "cli"))]
             {
                 use ::puniyu_logger::owo_colors::OwoColorize;
                 let prefix = "Server".fg_rgb::<132,112,255>();
-                ::puniyu_logger::info!("[{}] {}", prefix, format!($($arg)*))
+                ::log::error!("[{}] {}", prefix, format!($($arg)*))
             }
         }
     };
@@ -56,13 +56,13 @@ macro_rules! server_debug {
         {
             #[cfg(feature = "cli")]
             {
-                ::puniyu_logger::info!("{}", format!($($arg)*))
+                ::log::debug!("{}", format!($($arg)*))
             }
             #[cfg(not(feature = "cli"))]
             {
                 use ::puniyu_logger::owo_colors::OwoColorize;
                 let prefix = "Server".fg_rgb::<132,112,255>();
-                ::puniyu_logger::info!("[{}] {}", prefix, format!($($arg)*))
+                ::log::debug!("[{}] {}", prefix, format!($($arg)*))
             }
         }
     };
