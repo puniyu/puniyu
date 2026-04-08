@@ -1,20 +1,41 @@
 #![allow(dead_code)]
 
+use std::collections::HashMap;
+
+use async_trait::async_trait;
 use bytes::Bytes;
 use puniyu_account::AccountInfo;
-use puniyu_adapter_api::AdapterApi;
-use puniyu_adapter_types::{AdapterPlatform, AdapterProtocol, adapter_info};
+use puniyu_adapter_runtime::{AdapterRuntime, Runtime};
+use puniyu_adapter_types::{AdapterPlatform, AdapterProtocol, SendMsgType, adapter_info};
 use puniyu_bot::Bot;
 use puniyu_command_types::ArgValue;
-use puniyu_contact::{Contact, contact_friend};
+use puniyu_contact::{Contact, ContactType, contact_friend};
 use puniyu_context::{EventContext, MessageContext};
 use puniyu_element::receive::{AtElement, Elements, ReplyElement, TextElement};
 use puniyu_event::{
 	Event, EventBase,
 	message::{FriendMessage, MessageBase, MessageEvent},
 };
+use puniyu_message::Message;
 use puniyu_sender::{Sender, sender_friend};
-use std::collections::HashMap;
+
+struct TestRuntime;
+
+#[async_trait]
+impl Runtime for TestRuntime {
+	async fn send_message(
+		&self,
+		_contact: &ContactType<'_>,
+		_message: &Message,
+	) -> puniyu_error::Result<SendMsgType> {
+		Ok(SendMsgType { message_id: "test-msg".to_string(), time: 0 })
+	}
+
+}
+
+fn test_runtime() -> AdapterRuntime {
+	AdapterRuntime::from_runtime(TestRuntime)
+}
 
 pub fn make_bot() -> Bot {
 	make_bot_with_account("10000", "Puniyu", Bytes::new())
@@ -28,7 +49,7 @@ pub fn make_bot_with_account(uin: &str, name: &str, avatar: Bytes) -> Bot {
 	);
 	let account = AccountInfo { uin: uin.to_string(), name: name.to_string(), avatar };
 
-	Bot::new(adapter, AdapterApi::default(), account)
+	Bot::new(adapter, test_runtime(), account)
 }
 
 pub fn base_snapshot<E>(event: &E) -> (u64, String, String, String, String)

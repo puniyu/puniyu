@@ -6,9 +6,9 @@ mod common;
 fn event_context_implements_event_base() {
 	let ctx: EventContext<'static> = common::make_event_context();
 
-	assert_eq!(ctx.event_type(), &EventType::Message);
+	assert_eq!(ctx.event_type(), EventType::Message);
 	assert_eq!(
-		*ctx.sub_event(),
+		ctx.sub_event(),
 		SubEventType::Message(puniyu_event::message::MessageSubEventType::Friend)
 	);
 	assert_eq!(

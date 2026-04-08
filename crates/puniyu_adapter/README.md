@@ -27,16 +27,33 @@ puniyu_adapter = "*"
 
 ### 实现适配器
 
-```rust
+```rust,ignore
+use async_trait::async_trait;
 use puniyu_adapter::Adapter;
-use puniyu_adapter::api::AdapterApi;
+use puniyu_adapter::runtime::{AdapterRuntime, Runtime};
 use puniyu_adapter::types::info::{AdapterInfo, AdapterInfoBuilder};
 use puniyu_adapter::types::info::{AdapterPlatform, AdapterProtocol};
+use puniyu_adapter::types::SendMsgType;
+use puniyu_contact::ContactType;
+use puniyu_message::Message;
 use puniyu_version::Version;
+
+struct MyRuntime;
+
+#[async_trait]
+impl Runtime for MyRuntime {
+    async fn send_message(
+        &self,
+        _contact: &ContactType<'_>,
+        _message: &Message,
+    ) -> puniyu_error::Result<SendMsgType> {
+        Ok(SendMsgType { message_id: "msg-1".into(), time: 0 })
+    }
+}
 
 struct MyAdapter {
     info: AdapterInfo,
-    api: AdapterApi,
+    runtime: AdapterRuntime,
 }
 
 impl MyAdapter {
@@ -49,24 +66,23 @@ impl MyAdapter {
             .build()
             .unwrap();
 
-        let api = AdapterApi::default();
+        let runtime = AdapterRuntime::from_runtime(MyRuntime);
 
-        Self { info, api }
+        Self { info, runtime }
     }
 }
 
-#[async_trait::async_trait]
+#[async_trait]
 impl Adapter for MyAdapter {
     fn info(&self) -> &AdapterInfo {
         &self.info
     }
 
-    fn api(&self) -> &AdapterApi {
-        &self.api
+    fn runtime(&self) -> &AdapterRuntime {
+        &self.runtime
     }
 
     async fn init(&self) -> puniyu_error::Result {
-        // 初始化逻辑
         puniyu_logger::info!("适配器初始化完成");
         Ok(())
     }
@@ -75,20 +91,15 @@ impl Adapter for MyAdapter {
 
 ### 使用适配器
 
-```rust
+```rust,ignore
 async fn use_adapter(adapter: &dyn Adapter) {
-    // 初始化适配器
     adapter.init().await?;
 
-    // 获取适配器信息
     let info = adapter.info();
     println!("适配器: {} v{}", info.name, info.VERSION);
 
-    // 获取 API
-    let api = adapter.api();
-
-    // 发送消息
-    api.message().send_msg(&contact, &message).await?;
+    let runtime = adapter.runtime();
+    runtime.send_message(&contact, &message).await?;
 }
 ```
 
@@ -100,8 +111,8 @@ async fn use_adapter(adapter: &dyn Adapter) {
 
 | 方法   | 说明           | 返回值         |
 | ------ | -------------- | -------------- |
-| `info` | 获取适配器信息 | `&AdapterInfo` |
-| `api`  | 获取适配器 API | `&AdapterApi`  |
+| `info`    | 获取适配器信息   | `&AdapterInfo`    |
+| `runtime` | 获取适配器运行时 | `&AdapterRuntime` |
 
 ### 可选方法
 
@@ -195,19 +206,34 @@ impl Adapter for MyAdapter {
 
 ## 完整示例
 
-```rust
+```rust,ignore
 use puniyu_adapter::Adapter;
-use puniyu_adapter::api::AdapterApi;
+use puniyu_adapter::runtime::{AdapterRuntime, Runtime};
 use puniyu_adapter::types::info::{AdapterInfo, AdapterInfoBuilder};
 use puniyu_adapter::types::info::{
     AdapterPlatform, AdapterProtocol, AdapterCommunication
 };
+use puniyu_adapter::types::SendMsgType;
+use puniyu_contact::ContactType;
+use puniyu_message::Message;
 use puniyu_version::Version;
-use std::sync::Arc;
+
+struct NapCatRuntime;
+
+#[async_trait::async_trait]
+impl Runtime for NapCatRuntime {
+    async fn send_message(
+        &self,
+        _contact: &ContactType<'_>,
+        _message: &Message,
+    ) -> puniyu_error::Result<SendMsgType> {
+        Ok(SendMsgType { message_id: "msg-1".into(), time: 0 })
+    }
+}
 
 struct NapCatAdapter {
     info: AdapterInfo,
-    api: AdapterApi,
+    runtime: AdapterRuntime,
 }
 
 impl NapCatAdapter {
@@ -223,13 +249,12 @@ impl NapCatAdapter {
             .build()
             .unwrap();
 
-        let api = AdapterApi::default();
+        let runtime = AdapterRuntime::from_runtime(NapCatRuntime);
 
-        Self { info, api }
+        Self { info, runtime }
     }
 
     async fn connect(&self) -> puniyu_error::Result {
-        // 连接到 NapCat
         puniyu_logger::info!("正在连接到 NapCat...");
         Ok(())
     }
@@ -241,8 +266,8 @@ impl Adapter for NapCatAdapter {
         &self.info
     }
 
-    fn api(&self) -> &AdapterApi {
-        &self.api
+    fn runtime(&self) -> &AdapterRuntime {
+        &self.runtime
     }
 
     async fn init(&self) -> puniyu_error::Result {
@@ -255,11 +280,8 @@ impl Adapter for NapCatAdapter {
 #[tokio::main]
 async fn main() -> puniyu_error::Result {
     let adapter = NapCatAdapter::new();
-
-    // 初始化适配器
     adapter.init().await?;
 
-    // 使用适配器
     let info = adapter.info();
     println!("适配器: {} v{}", info.name, info.VERSION);
     println!("平台: {}", info.platform);

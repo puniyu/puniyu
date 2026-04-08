@@ -1,6 +1,6 @@
 # puniyu_bot
 
-统一的机器人实例类型，封装适配器信息、适配器 API 与账户信息，并提供全局注册表。
+统一的机器人实例类型，封装适配器信息、适配器运行时与账户信息，并提供全局注册表。
 
 ## 特性
 
@@ -11,11 +11,28 @@
 
 ## 示例
 
-```rust
+```rust,ignore
+use async_trait::async_trait;
 use puniyu_account::AccountInfo;
-use puniyu_adapter_api::AdapterApi;
-use puniyu_adapter_types::{AdapterInfo, AdapterPlatform, AdapterProtocol};
+use puniyu_adapter_runtime::{AdapterRuntime, Runtime};
+use puniyu_adapter_types::{AdapterInfo, AdapterPlatform, AdapterProtocol, SendMsgType};
 use puniyu_bot::{Bot, BotRegistry};
+use puniyu_contact::ContactType;
+use puniyu_message::Message;
+
+struct MyRuntime;
+
+#[async_trait]
+impl Runtime for MyRuntime {
+    async fn send_message(
+        &self,
+        _contact: &ContactType<'_>,
+        _message: &Message,
+    ) -> puniyu_error::Result<SendMsgType> {
+        Ok(SendMsgType { message_id: "msg-1".into(), time: 0 })
+    }
+
+}
 
 let mut adapter = AdapterInfo::default();
 adapter.name = "console".to_string();
@@ -28,7 +45,8 @@ let account = AccountInfo {
     avatar: Default::default(),
 };
 
-let bot = Bot::new(adapter, AdapterApi::default(), account);
+let runtime = AdapterRuntime::from_runtime(MyRuntime);
+let bot = Bot::new(adapter, runtime, account);
 let index = BotRegistry::register(bot.clone()).unwrap();
 
 assert_eq!(BotRegistry::get(index), Some(bot));

@@ -7,7 +7,7 @@
 //! `puniyu_context` 提供了统一的上下文管理系统，用于处理聊天机器人中的各种上下文信息。
 //! 该库将上下文分为三个层次：
 //!
-//! - **机器人上下文（BotContext）** - 提供对机器人实例和 API 的访问
+//! - **机器人上下文（BotContext）** - 提供对机器人实例和运行时的访问
 //! - **事件上下文（EventContext）** - 提供对事件信息和命令参数的访问
 //! - **消息上下文（MessageContext）** - 提供对消息事件的专门处理
 //!
@@ -20,8 +20,9 @@
 //!
 //! let bot_context = BotContext::new(&bot);
 //!
-//! // 访问 API
-//! let api = bot_context.api();
+//! // 访问运行时
+//! let runtime = bot_context.runtime();
+//! // runtime.send_message(&contact, &message).await?;
 //!
 //! // 访问账号信息
 //! let account = bot_context.account();

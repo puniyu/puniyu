@@ -8,3 +8,4 @@ pub use puniyu_message::message;
 pub use puniyu_segment::segment;
 pub use puniyu_sender::{sender, sender_friend, sender_group};
 pub use puniyu_version::pkg_version;
+pub use puniyu_api::pkg_name;

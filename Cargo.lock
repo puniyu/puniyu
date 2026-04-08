@@ -1735,14 +1735,15 @@ dependencies = [
  "actix-web",
  "async-trait",
  "puniyu_account",
- "puniyu_adapter_api",
  "puniyu_adapter_core",
+ "puniyu_adapter_runtime",
  "puniyu_adapter_types",
  "puniyu_api",
  "puniyu_bot",
  "puniyu_config",
  "puniyu_contact",
  "puniyu_dispatch",
+ "puniyu_error",
  "puniyu_event",
  "puniyu_hook",
  "puniyu_macros",
@@ -1752,19 +1753,6 @@ dependencies = [
  "puniyu_server",
  "puniyu_version",
  "toml",
-]
-
-[[package]]
-name = "puniyu_adapter_api"
-version = "0.8.0"
-dependencies = [
- "async-trait",
- "derive_builder",
- "puniyu_adapter_types",
- "puniyu_contact",
- "puniyu_error",
- "puniyu_message",
- "thiserror 2.0.18",
 ]
 
 [[package]]
@@ -1784,13 +1772,27 @@ name = "puniyu_adapter_core"
 version = "0.8.0"
 dependencies = [
  "async-trait",
- "puniyu_adapter_api",
+ "puniyu_adapter_runtime",
  "puniyu_adapter_types",
  "puniyu_config",
+ "puniyu_contact",
  "puniyu_error",
  "puniyu_hook",
  "puniyu_logger",
+ "puniyu_message",
  "puniyu_server",
+]
+
+[[package]]
+name = "puniyu_adapter_runtime"
+version = "0.8.0"
+dependencies = [
+ "async-trait",
+ "puniyu_adapter_types",
+ "puniyu_contact",
+ "puniyu_error",
+ "puniyu_message",
+ "thiserror 2.0.18",
 ]
 
 [[package]]
@@ -1837,7 +1839,7 @@ name = "puniyu_bot"
 version = "0.8.0"
 dependencies = [
  "puniyu_account",
- "puniyu_adapter_api",
+ "puniyu_adapter_runtime",
  "puniyu_adapter_types",
  "puniyu_error",
 ]
@@ -1925,9 +1927,10 @@ dependencies = [
 name = "puniyu_context"
 version = "0.8.0"
 dependencies = [
+ "async-trait",
  "bytes",
  "puniyu_account",
- "puniyu_adapter_api",
+ "puniyu_adapter_runtime",
  "puniyu_adapter_types",
  "puniyu_bot",
  "puniyu_command_types",
@@ -2012,13 +2015,16 @@ dependencies = [
 name = "puniyu_event"
 version = "0.8.0"
 dependencies = [
+ "async-trait",
  "bytes",
  "puniyu_account",
- "puniyu_adapter_api",
+ "puniyu_adapter_runtime",
  "puniyu_adapter_types",
  "puniyu_bot",
  "puniyu_contact",
  "puniyu_element",
+ "puniyu_error",
+ "puniyu_message",
  "puniyu_sender",
  "serde",
  "serde_json",
@@ -2042,7 +2048,7 @@ dependencies = [
  "bytes",
  "itertools",
  "puniyu_account",
- "puniyu_adapter_api",
+ "puniyu_adapter_runtime",
  "puniyu_adapter_types",
  "puniyu_bot",
  "puniyu_command",

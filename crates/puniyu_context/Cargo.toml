@@ -16,7 +16,7 @@ workspace = true
 [dependencies]
 bytes.workspace = true
 puniyu_account.workspace = true
-puniyu_adapter_api.workspace = true
+puniyu_adapter_runtime.workspace = true
 puniyu_adapter_types.workspace = true
 puniyu_bot.workspace = true
 puniyu_sender.workspace = true
@@ -27,3 +27,6 @@ puniyu_command_types.workspace = true
 puniyu_event.workspace = true
 puniyu_message.workspace = true
 puniyu_config.workspace = true
+
+[dev-dependencies]
+async-trait.workspace = true

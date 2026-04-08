@@ -1,11 +1,11 @@
 use puniyu_account::AccountInfo;
-use puniyu_adapter_api::AdapterApi;
+use puniyu_adapter_runtime::AdapterRuntime;
 use puniyu_adapter_types::AdapterInfo;
 use puniyu_bot::Bot;
 
 /// 机器人上下文
 ///
-/// 提供对机器人实例的访问，包括 API 和账号信息。
+/// 提供对机器人实例的访问，包括运行时和账号信息。
 ///
 /// # 示例
 ///
@@ -14,8 +14,8 @@ use puniyu_bot::Bot;
 ///
 /// let bot_context = BotContext::new(&bot);
 ///
-/// // 访问 API
-/// let api = bot_context.api();
+/// // 访问运行时
+/// let runtime = bot_context.runtime();
 ///
 /// // 访问账号信息
 /// let account = bot_context.account();
@@ -54,18 +54,21 @@ impl<'c> BotContext<'c> {
 		self.inner.adapter()
 	}
 
-	/// 获取适配器 API
+	/// 获取适配器运行时
 	///
-	/// 返回适配器 API 的引用，用于调用各种 API 方法。
+	/// 返回适配器运行时的引用，用于调用运行时方法。
 	///
 	/// # 示例
 	///
 	/// ```rust,ignore
-	/// let api = bot_context.api();
-	/// api.message().send_msg(&contact, &message).await?;
+	/// let runtime = bot_context.runtime();
+	/// runtime.send_message(&contact, &message).await?;
+	///
+	/// // 访问适配器私有能力
+	/// let concrete = runtime.runtime::<MyRuntime>();
 	/// ```
-	pub fn api(&self) -> &AdapterApi {
-		self.inner.api()
+	pub fn runtime(&self) -> &AdapterRuntime {
+		self.inner.runtime()
 	}
 
 	/// 获取账号信息

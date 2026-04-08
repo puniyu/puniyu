@@ -21,7 +21,7 @@ struct LogHook;
 #[async_trait]
 impl Hook for LogHook {
     fn name(&self) -> &'static str { "log_hook" }
-    fn r#type(&self) -> &HookType { &HookType::Event(HookEventType::Message) }
+    fn r#type(&self) -> &HookType { &HookType::Event(HookEventType::Extension) }
     fn priority(&self) -> u32 { 100 }
     async fn run(&self, _ctx: Option<&EventContext>) -> puniyu_error::Result { Ok(()) }
 }

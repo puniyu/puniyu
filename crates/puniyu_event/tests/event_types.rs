@@ -3,8 +3,6 @@ use puniyu_event::EventType;
 #[test]
 fn test_event_type_display() {
 	assert_eq!(EventType::Message.to_string(), "message");
-	assert_eq!(EventType::Notion.to_string(), "notion");
-	assert_eq!(EventType::Request.to_string(), "request");
 	assert_eq!(EventType::Unknown.to_string(), "unknown");
 }
 
@@ -19,6 +17,4 @@ fn test_event_type_from_str() {
 	use std::str::FromStr;
 
 	assert_eq!(EventType::from_str("message").unwrap(), EventType::Message);
-	assert_eq!(EventType::from_str("notion").unwrap(), EventType::Notion);
-	assert_eq!(EventType::from_str("request").unwrap(), EventType::Request);
 }

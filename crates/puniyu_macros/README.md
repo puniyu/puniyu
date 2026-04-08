@@ -234,8 +234,6 @@ async fn on_start(event: &HookType) -> puniyu_plugin::Result {
 `hook_type` 支持的常见值：
 - `event`
 - `event.message`
-- `event.notion`
-- `event.request`
 - `event.all`
 - `status`
 - `status.start`
@@ -249,7 +247,7 @@ async fn on_start(event: &HookType) -> puniyu_plugin::Result {
 
 常用参数：
 - `info`：返回适配器信息的函数，必填
-- `api`：返回适配器 API 的函数，必填
+- `runtime`：返回适配器运行时的函数，必填
 
 要求：
 - 函数必须是 `async`
@@ -261,9 +259,9 @@ async fn on_start(event: &HookType) -> puniyu_plugin::Result {
 ```rust
 use puniyu_adapter::types::*;
 
-mod api {
-	use puniyu_adapter::api::AdapterApi;
-	pub fn api() -> AdapterApi {
+mod runtime {
+	use puniyu_adapter::runtime::AdapterRuntime;
+	pub fn runtime() -> AdapterRuntime {
 		unimplemented!()
 	}
 }
@@ -279,7 +277,7 @@ fn info() -> AdapterInfo {
 	)
 }
 
-#[adapter(info = info, api = api::api)]
+#[adapter(info = info, runtime = runtime::runtime)]
 async fn main() -> puniyu_adapter::Result {
 	Ok(())
 }
@@ -356,8 +354,6 @@ async fn on_event_message(event: &HookType) -> puniyu_adapter::Result {
 `hook_type` 支持的常见值：
 - `event`
 - `event.message`
-- `event.notion`
-- `event.request`
 - `event.all`
 - `status`
 - `status.start`

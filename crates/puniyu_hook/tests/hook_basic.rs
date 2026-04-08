@@ -193,8 +193,8 @@ fn test_hook_different_types() {
 
 	let executed2 = Arc::new(AtomicBool::new(false));
 	let hook2 = TestHook {
-		name: "notion_hook",
-		hook_type: HookType::Event(HookEventType::Notion),
+		name: "extension_hook",
+		hook_type: HookType::Event(HookEventType::Extension),
 		priority: 100,
 		executed: executed2,
 	};

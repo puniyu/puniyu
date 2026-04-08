@@ -1,8 +1,10 @@
+use puniyu_contact::Contact;
 use puniyu_context::MessageContext;
 use puniyu_event::{
-	EventBase, EventType,
+	EventBase, EventType, SubEventType,
 	message::{MessageBase, MessageSubEventType},
 };
+use puniyu_sender::Sender;
 
 mod common;
 
@@ -10,8 +12,8 @@ mod common;
 fn message_context_implements_event_and_message_traits() {
 	let ctx: MessageContext<'static> = common::make_message_context();
 
-	assert_eq!(ctx.event_type(), &EventType::Message);
-	assert_eq!(ctx.sub_event(), &MessageSubEventType::Friend);
+	assert_eq!(ctx.event_type(), EventType::Message);
+	assert_eq!(ctx.sub_event(), SubEventType::Message(MessageSubEventType::Friend));
 	assert_eq!(
 		common::base_snapshot(&ctx),
 		(
