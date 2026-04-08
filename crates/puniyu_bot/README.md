@@ -1,6 +1,6 @@
 # puniyu_bot
 
-统一的机器人实例类型，封装适配器信息、适配器 API 与账户信息，并提供全局注册表。
+统一的机器人实例类型，封装适配器信息、适配器运行时与账户信息，并提供全局注册表。
 
 ## 特性
 
@@ -12,11 +12,9 @@
 ## 示例
 
 ```rust,ignore
-use std::{any::Any, sync::Arc};
-
 use async_trait::async_trait;
 use puniyu_account::AccountInfo;
-use puniyu_adapter_runtime::{AdapterRuntime, AdapterRuntime, Error};
+use puniyu_adapter_runtime::{AdapterRuntime, Runtime};
 use puniyu_adapter_types::{AdapterInfo, AdapterPlatform, AdapterProtocol, SendMsgType};
 use puniyu_bot::{Bot, BotRegistry};
 use puniyu_contact::ContactType;
@@ -25,12 +23,12 @@ use puniyu_message::Message;
 struct MyRuntime;
 
 #[async_trait]
-impl AdapterRuntime for MyRuntime {
+impl Runtime for MyRuntime {
     async fn send_message(
         &self,
         _contact: &ContactType<'_>,
         _message: &Message,
-    ) -> Result<SendMsgType, Error> {
+    ) -> puniyu_error::Result<SendMsgType> {
         Ok(SendMsgType { message_id: "msg-1".into(), time: 0 })
     }
 

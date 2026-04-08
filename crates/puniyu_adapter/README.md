@@ -28,10 +28,9 @@ puniyu_adapter = "*"
 ### 实现适配器
 
 ```rust,ignore
-use std::{any::Any, sync::Arc};
-
+use async_trait::async_trait;
 use puniyu_adapter::Adapter;
-use puniyu_adapter::runtime::{AdapterRuntime, AdapterRuntime, Error};
+use puniyu_adapter::runtime::{AdapterRuntime, Runtime};
 use puniyu_adapter::types::info::{AdapterInfo, AdapterInfoBuilder};
 use puniyu_adapter::types::info::{AdapterPlatform, AdapterProtocol};
 use puniyu_adapter::types::SendMsgType;
@@ -41,21 +40,20 @@ use puniyu_version::Version;
 
 struct MyRuntime;
 
-#[async_trait::async_trait]
-impl AdapterRuntime for MyRuntime {
+#[async_trait]
+impl Runtime for MyRuntime {
     async fn send_message(
         &self,
         _contact: &ContactType<'_>,
         _message: &Message,
-    ) -> Result<SendMsgType, Error> {
+    ) -> puniyu_error::Result<SendMsgType> {
         Ok(SendMsgType { message_id: "msg-1".into(), time: 0 })
     }
-
 }
 
 struct MyAdapter {
     info: AdapterInfo,
-    api: AdapterRuntime,
+    runtime: AdapterRuntime,
 }
 
 impl MyAdapter {
@@ -74,14 +72,14 @@ impl MyAdapter {
     }
 }
 
-#[async_trait::async_trait]
+#[async_trait]
 impl Adapter for MyAdapter {
     fn info(&self) -> &AdapterInfo {
         &self.info
     }
 
     fn runtime(&self) -> &AdapterRuntime {
-        &self.api
+        &self.runtime
     }
 
     async fn init(&self) -> puniyu_error::Result {
@@ -101,7 +99,7 @@ async fn use_adapter(adapter: &dyn Adapter) {
     println!("适配器: {} v{}", info.name, info.VERSION);
 
     let runtime = adapter.runtime();
-    api.send_message(&contact, &message).await?;
+    runtime.send_message(&contact, &message).await?;
 }
 ```
 
@@ -113,8 +111,8 @@ async fn use_adapter(adapter: &dyn Adapter) {
 
 | 方法   | 说明           | 返回值         |
 | ------ | -------------- | -------------- |
-| `info` | 获取适配器信息 | `&AdapterInfo` |
-| `api`  | 获取适配器 API | `&AdapterRuntime`  |
+| `info`    | 获取适配器信息   | `&AdapterInfo`    |
+| `runtime` | 获取适配器运行时 | `&AdapterRuntime` |
 
 ### 可选方法
 
@@ -209,10 +207,8 @@ impl Adapter for MyAdapter {
 ## 完整示例
 
 ```rust,ignore
-use std::{any::Any, sync::Arc};
-
 use puniyu_adapter::Adapter;
-use puniyu_adapter::runtime::{AdapterRuntime, AdapterRuntime, Error};
+use puniyu_adapter::runtime::{AdapterRuntime, Runtime};
 use puniyu_adapter::types::info::{AdapterInfo, AdapterInfoBuilder};
 use puniyu_adapter::types::info::{
     AdapterPlatform, AdapterProtocol, AdapterCommunication
@@ -225,20 +221,19 @@ use puniyu_version::Version;
 struct NapCatRuntime;
 
 #[async_trait::async_trait]
-impl AdapterRuntime for NapCatRuntime {
+impl Runtime for NapCatRuntime {
     async fn send_message(
         &self,
         _contact: &ContactType<'_>,
         _message: &Message,
-    ) -> Result<SendMsgType, Error> {
+    ) -> puniyu_error::Result<SendMsgType> {
         Ok(SendMsgType { message_id: "msg-1".into(), time: 0 })
     }
-
 }
 
 struct NapCatAdapter {
     info: AdapterInfo,
-    api: AdapterRuntime,
+    runtime: AdapterRuntime,
 }
 
 impl NapCatAdapter {
@@ -272,7 +267,7 @@ impl Adapter for NapCatAdapter {
     }
 
     fn runtime(&self) -> &AdapterRuntime {
-        &self.api
+        &self.runtime
     }
 
     async fn init(&self) -> puniyu_error::Result {

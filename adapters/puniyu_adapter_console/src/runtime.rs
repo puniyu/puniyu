@@ -21,7 +21,7 @@ impl Runtime for ConsoleRuntime {
 		&self,
 		contact: &ContactType<'_>,
 		message: &Message,
-	) -> Result<SendMsgType, Error> {
+	) -> puniyu_adapter::Result<SendMsgType> {
 		let (msg_type, source) = match contact {
 			ContactType::Friend(friend) => ("私聊消息", &friend.scene()),
 			ContactType::Group(group) => ("群聊消息", &group.scene()),
@@ -29,7 +29,7 @@ impl Runtime for ConsoleRuntime {
 		let message_id = make_random_id();
 		let timestamp = SystemTime::now()
 			.duration_since(UNIX_EPOCH)
-			.map_err(|e| Error::Adapter(Box::new(e)))?
+			.map_err(Box::<dyn std::error::Error + Send + Sync>::from)?
 			.as_secs();
 
 		debug!("[发送{}:{}]\n{:#?}", msg_type, source, message);

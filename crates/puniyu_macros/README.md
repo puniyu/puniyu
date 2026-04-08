@@ -259,7 +259,7 @@ async fn on_start(event: &HookType) -> puniyu_plugin::Result {
 ```rust
 use puniyu_adapter::types::*;
 
-mod api {
+mod runtime {
 	use puniyu_adapter::runtime::AdapterRuntime;
 	pub fn runtime() -> AdapterRuntime {
 		unimplemented!()
@@ -277,7 +277,7 @@ fn info() -> AdapterInfo {
 	)
 }
 
-#[adapter(info = info, api = api::api)]
+#[adapter(info = info, runtime = runtime::runtime)]
 async fn main() -> puniyu_adapter::Result {
 	Ok(())
 }

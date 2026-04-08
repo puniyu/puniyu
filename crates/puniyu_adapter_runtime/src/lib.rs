@@ -1,6 +1,6 @@
 //! # puniyu_adapter_runtime
 //!
-//! 统一的 puniyu 适配器 API 库。
+//! 统一的 puniyu 适配器运行时库。
 //!
 //! 当前版本不再聚合固定的 message/group/friend/account 子 API，而是将
 //! [`AdapterRuntime`] 设计为具体适配器 runtime 的轻量包装层。
@@ -15,10 +15,9 @@
 //! ## 示例
 //!
 //! ```rust,ignore
-//! use std::{any::Any, sync::Arc};
 //!
 //! use async_trait::async_trait;
-//! use puniyu_adapter_runtime::{AdapterRuntime, Error, Runtime};
+//! use puniyu_adapter_runtime::{AdapterRuntime, Runtime};
 //! use puniyu_adapter_types::SendMsgType;
 //! use puniyu_contact::ContactType;
 //! use puniyu_message::Message;
@@ -31,7 +30,7 @@
 //!         &self,
 //!         _contact: &ContactType<'_>,
 //!         _message: &Message,
-//!     ) -> Result<SendMsgType, Error> {
+//!     ) -> puniyu_error::Result<SendMsgType> {
 //!         Ok(SendMsgType { message_id: "msg-1".into(), time: 0 })
 //!     }
 //!
@@ -41,9 +40,6 @@
 //! let _ = runtime.runtime::<MyRuntime>();
 //! ```
 
-mod error;
-#[doc(inline)]
-pub use error::Error;
 mod runtime;
 #[doc(inline)]
 pub use runtime::Runtime;
@@ -77,7 +73,7 @@ impl AdapterRuntime {
 		&self,
 		contact: &ContactType<'_>,
 		message: &Message,
-	) -> Result<SendMsgType, Error> {
+	) -> puniyu_error::Result<SendMsgType> {
 		self.inner.send_message(contact, message).await
 	}
 

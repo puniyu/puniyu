@@ -2023,6 +2023,7 @@ dependencies = [
  "puniyu_bot",
  "puniyu_contact",
  "puniyu_element",
+ "puniyu_error",
  "puniyu_message",
  "puniyu_sender",
  "serde",

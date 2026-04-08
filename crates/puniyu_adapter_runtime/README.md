@@ -1,6 +1,6 @@
 # puniyu_adapter_runtime
 
-统一的 puniyu 适配器 API 库。
+统一的 puniyu 适配器运行时库。
 
 ## 特性
 
@@ -12,10 +12,8 @@
 ## 示例
 
 ```rust,ignore
-use std::{any::Any, sync::Arc};
-
 use async_trait::async_trait;
-use puniyu_adapter_runtime::{AdapterRuntime, Error, Runtime};
+use puniyu_adapter_runtime::{AdapterRuntime, Runtime};
 use puniyu_adapter_types::SendMsgType;
 use puniyu_contact::ContactType;
 use puniyu_message::Message;
@@ -28,7 +26,7 @@ impl Runtime for MyRuntime {
         &self,
         _contact: &ContactType<'_>,
         _message: &Message,
-    ) -> Result<SendMsgType, Error> {
+    ) -> puniyu_error::Result<SendMsgType> {
         Ok(SendMsgType { message_id: "msg-1".into(), time: 0 })
     }
 
@@ -42,7 +40,6 @@ let _ = runtime.runtime::<MyRuntime>();
 
 - `AdapterRuntime`: 适配器运行时入口
 - `Runtime`: 跨适配器最小运行时抽象
-- `Error`: runtime 调用边界错误
 
 ## 许可证
 

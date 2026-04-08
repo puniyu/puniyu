@@ -4,8 +4,7 @@ use async_trait::async_trait;
 use puniyu_adapter_types::SendMsgType;
 use puniyu_contact::ContactType;
 use puniyu_message::Message;
-
-use crate::Error;
+use puniyu_error::Result;
 
 #[async_trait]
 pub trait Runtime: Any + Send + Sync {
@@ -13,5 +12,5 @@ pub trait Runtime: Any + Send + Sync {
         &self,
         contact: &ContactType<'_>,
         message: &Message,
-    ) -> Result<SendMsgType, Error>;
+    ) -> Result<SendMsgType>;
 }

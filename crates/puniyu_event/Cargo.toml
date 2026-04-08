@@ -24,6 +24,7 @@ puniyu_sender.workspace = true
 puniyu_element.workspace = true
 
 [dev-dependencies]
+puniyu_error.workspace = true
 async-trait.workspace = true
 serde_json.workspace = true
 puniyu_account.workspace = true

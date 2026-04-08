@@ -97,7 +97,7 @@ impl<'c> MessageContext<'c> {
 	/// 向当前消息对应的联系人发送回复消息。
 	///
 	/// 参数 `message` 支持任意可转换为 [`Message`] 的类型。
-	pub async fn reply<M>(&self, message: M) -> Result<SendMsgType, puniyu_adapter_runtime::Error>
+	pub async fn reply<M>(&self, message: M) -> puniyu_error::Result<SendMsgType>
 	where
 		M: Into<Message>,
 	{

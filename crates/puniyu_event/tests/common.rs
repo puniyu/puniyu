@@ -4,7 +4,7 @@
 use async_trait::async_trait;
 use bytes::Bytes;
 use puniyu_account::AccountInfo;
-use puniyu_adapter_runtime::{AdapterRuntime, Runtime, Error};
+use puniyu_adapter_runtime::{AdapterRuntime, Runtime};
 use puniyu_adapter_types::{AdapterPlatform, AdapterProtocol, SendMsgType, adapter_info};
 use puniyu_bot::Bot;
 use puniyu_contact::{Contact, ContactType, contact_friend, contact_group};
@@ -25,7 +25,7 @@ impl Runtime for TestRuntime {
 		&self,
 		_contact: &ContactType<'_>,
 		_message: &Message,
-	) -> Result<SendMsgType, Error> {
+	) -> puniyu_error::Result<SendMsgType> {
 		Ok(SendMsgType { message_id: "test-msg".to_string(), time: 0 })
 	}
 

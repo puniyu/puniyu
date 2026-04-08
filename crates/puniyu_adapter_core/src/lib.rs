@@ -15,7 +15,7 @@
 //! use std::{any::Any, sync::Arc};
 //!
 //! use async_trait::async_trait;
-//! use puniyu_adapter_runtime::{AdapterRuntime, Error, Runtime};
+//! use puniyu_adapter_runtime::{AdapterRuntime, Runtime};
 //! use puniyu_adapter_core::Adapter;
 //! use puniyu_adapter_types::{adapter_info, AdapterPlatform, AdapterProtocol, SendMsgType};
 //! use puniyu_contact::ContactType;
@@ -29,7 +29,7 @@
 //!         &self,
 //!         _contact: &ContactType<'_>,
 //!         _message: &Message,
-//!     ) -> Result<SendMsgType, Error> {
+//!     ) -> puniyu_error::Result<SendMsgType> {
 //!         Ok(SendMsgType { message_id: "msg-1".into(), time: 0 })
 //!     }
 //!

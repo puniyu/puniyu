@@ -1,7 +1,7 @@
 [package]
 name = "puniyu_adapter_runtime"
 version = "0.8.0"
-description = "puniyu 适配器 API 库，统一消息、群组、好友与账户操作接口"
+description = "puniyu 适配器运行时库，提供统一的运行时抽象与消息发送能力"
 authors.workspace = true
 license.workspace = true
 readme = "README.md"

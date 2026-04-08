@@ -3,7 +3,7 @@
 use std::sync::{Arc, Mutex, MutexGuard};
 
 use async_trait::async_trait;
-use puniyu_adapter_runtime::{AdapterRuntime, Runtime, Error};
+use puniyu_adapter_runtime::{AdapterRuntime, Runtime};
 use puniyu_adapter_core::{Adapter, AdapterRegistry};
 use puniyu_adapter_types::{AdapterInfo, AdapterPlatform, AdapterProtocol, SendMsgType, adapter_info};
 use puniyu_contact::ContactType;
@@ -19,7 +19,7 @@ impl Runtime for TestRuntime {
 		&self,
 		_contact: &ContactType<'_>,
 		_message: &Message,
-	) -> Result<SendMsgType, Error> {
+	) -> puniyu_error::Result<SendMsgType> {
 		Ok(SendMsgType { message_id: "test-msg".to_string(), time: 0 })
 	}
 
