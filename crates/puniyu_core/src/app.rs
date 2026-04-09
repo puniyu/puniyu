@@ -20,6 +20,7 @@ use log::{debug, error, info};
 use puniyu_plugin_core::Plugin;
 use std::path::PathBuf;
 use std::sync::Arc;
+use std::time::Instant;
 use std::{env, io};
 use tokio::{fs, signal};
 
@@ -229,6 +230,7 @@ impl App {
 		use puniyu_path::resource_dir;
 		use std::time::Duration;
 
+		let start_time = Instant::now();
 		let info = AppInfo::new(self.name, &VERSION, self.working_dir);
 		set_app_info(info);
 
@@ -250,19 +252,12 @@ impl App {
 			}
 		}
 
-		let start_time = std::time::Instant::now();
 		if let Err(e) = init_app(self.plugins, self.adapters, LoaderRegistry::all()).await {
 			error!("Failed to init app: {}", e);
 		}
-		let duration_str = format_duration(start_time.elapsed());
 		execute_hooks(StatusType::Start).await;
 
 		let app_name = app_name().to_case(Case::Lower);
-		info!(
-			"{} 初始化完成，耗时: {}",
-			app_name.fg_rgb::<64, 224, 208>(),
-			duration_str.fg_rgb::<255, 127, 80>()
-		);
 
 		if let Err(e) = puniyu_dispatch::EventEmitter::run() {
 			error!("Failed to start event emitter: {}", e);
@@ -285,6 +280,13 @@ impl App {
 			let port = config.port();
 			puniyu_server::run_server_spawn(host, port);
 		}
+
+		let duration_str = format_duration(start_time.elapsed());
+		info!(
+			"{} 初始化完成，耗时: {}",
+			app_name.fg_rgb::<64, 224, 208>(),
+			duration_str.fg_rgb::<255, 127, 80>()
+		);
 
 		signal::ctrl_c().await?;
 		debug!("接收到中断信号，正在关闭...");

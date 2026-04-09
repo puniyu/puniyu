@@ -9,7 +9,6 @@ use std::sync::Arc;
 use std::time::Instant;
 #[cfg(feature = "registry")]
 use tokio_cron_scheduler::JobBuilder;
-
 /// 任务信息
 ///
 /// 包含任务的插件 ID 和任务构建器。
@@ -17,7 +16,7 @@ use tokio_cron_scheduler::JobBuilder;
 /// # 字段
 ///
 /// - `plugin_id` - 关联的插件 ID
-/// - `builder` - 任务构建器（实现了 `Task` trait）
+/// - `builder` - 任务构建器
 #[derive(Clone)]
 pub struct TaskInfo {
 	/// 关联的插件 ID
@@ -31,7 +30,7 @@ impl From<&TaskInfo> for tokio_cron_scheduler::Job {
 	fn from(task: &TaskInfo) -> Self {
 		let cron_str = task.builder.cron().to_string();
 		JobBuilder::new()
-			.with_timezone(chrono_tz::Asia::Shanghai)
+			.with_timezone(chrono::Local)
 			.with_cron_job_type()
 			.with_schedule(&cron_str)
 			.expect("Invalid cron schedule")
