@@ -1,9 +1,9 @@
-use bytes::Bytes;
-use puniyu_adapter::prelude::*;
-use std::sync::LazyLock;
 use crate::common::make_random_id;
 use async_trait::async_trait;
+use bytes::Bytes;
 use log::debug;
+use puniyu_adapter::prelude::*;
+use std::sync::LazyLock;
 
 pub(crate) static AVATAR: LazyLock<Bytes> = LazyLock::new(|| {
 	let logo_path = resource_dir().join("logo.png");
@@ -12,11 +12,10 @@ pub(crate) static AVATAR: LazyLock<Bytes> = LazyLock::new(|| {
 
 use std::time::{SystemTime, UNIX_EPOCH};
 
-pub struct ConsoleRuntime;
-
+pub struct Runtime;
 
 #[async_trait]
-impl Runtime for ConsoleRuntime {
+impl puniyu_adapter::runtime::Runtime for Runtime {
 	async fn send_message(
 		&self,
 		contact: &ContactType<'_>,
@@ -39,6 +38,6 @@ impl Runtime for ConsoleRuntime {
 	}
 }
 
-pub(crate) fn runtime() -> AdapterRuntime {
-	AdapterRuntime::from_runtime(ConsoleRuntime)
+pub(crate) fn runtime() -> puniyu_adapter::runtime::AdapterRuntime {
+	puniyu_adapter::runtime::AdapterRuntime::from_runtime(Runtime)
 }

@@ -1,6 +1,6 @@
 mod common;
 mod runtime;
-pub use runtime::ConsoleRuntime as Runtime;
+pub use runtime::Runtime;
 
 use crate::common::make_random_id;
 use log::info;
