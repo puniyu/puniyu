@@ -25,6 +25,7 @@ impl puniyu_adapter::runtime::Runtime for Runtime {
 			ContactType::Friend(friend) => ("私聊消息", &friend.scene()),
 			ContactType::Group(group) => ("群聊消息", &group.scene()),
 			ContactType::GroupTemp(group) => ("群临时消息", &group.scene()),
+			ContactType::Guild(guild) => ("频道消息", &guild.scene()),
 		};
 		let message_id = make_random_id();
 		let timestamp = SystemTime::now()

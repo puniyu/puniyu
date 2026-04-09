@@ -1,6 +1,6 @@
 //! 消息事件模块
 //!
-//! 提供好友消息和群聊消息的事件类型定义。
+//! 提供好友消息、群聊消息、群临时消息和频道消息的事件类型定义。
 
 mod friend;
 #[doc(inline)]
@@ -8,6 +8,9 @@ pub use friend::FriendMessage;
 mod group;
 #[doc(inline)]
 pub use group::{GroupMessage, GroupTempMessage};
+mod guild;
+#[doc(inline)]
+pub use guild::GuildMessage;
 mod event;
 #[doc(inline)]
 pub use event::MessageEvent;
@@ -100,6 +103,11 @@ pub trait MessageBase: Send + Sync + EventBase {
 	fn is_group_temp(&self) -> bool {
 		matches!(self.sub_event(), SubEventType::Message(MessageSubEventType::GroupTemp))
 	}
+
+	/// 判断是否为频道消息。
+	fn is_guild(&self) -> bool {
+		matches!(self.sub_event(), SubEventType::Message(MessageSubEventType::Guild))
+	}
 }
 
 /// 快速构建好友消息事件。
@@ -180,6 +188,32 @@ macro_rules! crate_group_temp_message {
 	};
 }
 
+/// 快速构建频道消息事件。
+#[macro_export]
+macro_rules! crate_guild_message {
+	(
+		bot: $bot:expr,
+		event_id: $event_id:expr,
+		user_id: $user_id:expr,
+		contact: $contact:expr,
+		sender: $sender:expr,
+		time: $time:expr,
+		message_id: $message_id:expr,
+		elements: $elements:expr $(,)?
+	) => {
+		$crate::message::GuildMessage::new(
+			$bot,
+			$event_id,
+			$user_id,
+			$contact,
+			$sender,
+			$time,
+			$message_id,
+			$elements,
+		)
+	};
+}
+
 /// 快速构建消息事件枚举。
 #[macro_export]
 macro_rules! create_message {
@@ -191,6 +225,9 @@ macro_rules! create_message {
 	};
 	(GroupTemp, $message:expr $(,)?) => {
 		$crate::message::MessageEvent::GroupTemp($message)
+	};
+	(Guild, $message:expr $(,)?) => {
+		$crate::message::MessageEvent::Guild($message)
 	};
 }
 

@@ -16,34 +16,67 @@ use std::borrow::Cow;
 pub struct GroupTempSender<'s> {
 	/// 发送者 ID
 	#[serde(borrow)]
-	pub user_id: Cow<'s, str>,
+	user_id: Cow<'s, str>,
 	/// 用户昵称
 	#[builder(default, setter(into, strip_option))]
 	#[serde(borrow)]
-	pub nick: Option<Cow<'s, str>>,
+	nick: Option<Cow<'s, str>>,
 	/// 性别
 	#[builder(default)]
-	pub sex: Sex,
+	sex: Sex,
 	/// 年龄
 	#[builder(default)]
-	pub age: Option<u32>,
+	age: Option<u32>,
 	/// 角色
 	#[builder(default)]
-	pub role: Role,
+	role: Role,
 	/// 群名片
 	#[builder(default, setter(into, strip_option))]
 	#[serde(borrow)]
-	pub card: Option<Cow<'s, str>>,
+	card: Option<Cow<'s, str>>,
 	/// 等级
 	#[builder(default)]
-	pub level: Option<u32>,
+	level: Option<u32>,
 	/// 专属头衔
 	#[builder(default, setter(into, strip_option))]
 	#[serde(borrow)]
-	pub title: Option<Cow<'s, str>>,
+	title: Option<Cow<'s, str>>,
 }
 
 impl<'s> GroupTempSender<'s> {
+    #[allow(clippy::too_many_arguments)]
+	pub fn new<U, N, C, T>(
+		user_id: U,
+		nick: Option<N>,
+		sex: Sex,
+		age: Option<u32>,
+		role: Role,
+		card: Option<C>,
+		level: Option<u32>,
+		title: Option<T>,
+	) -> Self
+	where
+		U: Into<Cow<'s, str>>,
+		N: Into<Cow<'s, str>>,
+		C: Into<Cow<'s, str>>,
+		T: Into<Cow<'s, str>>,
+	{
+		Self {
+			user_id: user_id.into(),
+			nick: nick.map(Into::into),
+			sex,
+			age,
+			role,
+			card: card.map(Into::into),
+			level,
+			title: title.map(Into::into),
+		}
+	}
+
+	pub fn builder() -> GroupTempSenderBuilder<'s> {
+		GroupTempSenderBuilder::default()
+	}
+
 	pub fn role(&self) -> &Role {
 		&self.role
 	}

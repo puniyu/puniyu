@@ -1,13 +1,13 @@
 //! # puniyu_contact
 //!
-//! 统一的联系人类型，覆盖好友与群聊场景。
+//! 统一的联系人类型，覆盖好友、群聊、群临时与频道场景。
 //!
 //! ## 特性
 //!
-//! - 提供 `FriendContact`、`GroupContact` 与 `GroupTempContact`
+//! - 提供 `FriendContact`、`GroupContact`、`GroupTempContact` 与 `GuildContact`
 //! - 提供统一接口 `Contact`
 //! - 提供统一枚举 `ContactType`
-//! - 提供构建宏 `contact!`、`contact_friend!`、`contact_group!` 与 `contact_group_temp!`
+//! - 提供构建宏 `contact!`、`contact_friend!`、`contact_group!`、`contact_group_temp!` 与 `contact_guild!`
 //!
 //! ## 示例
 //!
@@ -17,12 +17,14 @@
 //! let friend = contact!(Friend, peer: "123456", name: "Alice");
 //! let group = contact!(Group, peer: "789012", name: "Dev Team");
 //! let group_temp = contact!(GroupTemp, peer: "789012", name: "Temp Team");
+//! let guild = contact!(Guild, peer: "123", name: "Guild Channel", sub_name: "General");
 //!
 //! assert!(friend.is_friend());
 //! assert_eq!(friend.peer(), "123456");
 //!
 //! assert!(group.is_group());
 //! assert!(group_temp.is_group_temp());
+//! assert!(guild.is_guild());
 //! ```
 
 mod friend;
@@ -31,6 +33,9 @@ pub use friend::*;
 mod group;
 #[doc(inline)]
 pub use group::*;
+mod guild;
+#[doc(inline)]
+pub use guild::*;
 mod types;
 #[doc(inline)]
 pub use types::*;
@@ -80,6 +85,8 @@ pub enum ContactType<'c> {
 	Group(GroupContact<'c>),
 	/// 群临时联系人
 	GroupTemp(GroupTempContact<'c>),
+	/// 频道联系人
+	Guild(GuildContact<'c>),
 }
 
 impl<'c> ContactType<'c> {
@@ -113,9 +120,66 @@ impl<'c> ContactType<'c> {
 		let name = name.map(Into::into);
 
 		match scene {
-			SceneType::Friend => ContactType::Friend(FriendContact { peer, name }),
-			SceneType::Group => ContactType::Group(GroupContact { peer, name }),
-			SceneType::GroupTemp => ContactType::GroupTemp(GroupTempContact { peer, name }),
+			SceneType::Friend => match name {
+				Some(name) => ContactType::Friend(
+					FriendContactBuilder::default()
+						.peer(peer)
+						.name(name)
+						.build()
+						.expect("Failed to build FriendContact"),
+				),
+				None => ContactType::Friend(
+					FriendContactBuilder::default()
+						.peer(peer)
+						.build()
+						.expect("Failed to build FriendContact"),
+				),
+			},
+			SceneType::Group => match name {
+				Some(name) => ContactType::Group(
+					GroupContactBuilder::default()
+						.peer(peer)
+						.name(name)
+						.build()
+						.expect("Failed to build GroupContact"),
+				),
+				None => ContactType::Group(
+					GroupContactBuilder::default()
+						.peer(peer)
+						.build()
+						.expect("Failed to build GroupContact"),
+				),
+			},
+			SceneType::GroupTemp => match name {
+				Some(name) => ContactType::GroupTemp(
+					GroupTempContactBuilder::default()
+						.peer(peer)
+						.name(name)
+						.build()
+						.expect("Failed to build GroupTempContact"),
+				),
+				None => ContactType::GroupTemp(
+					GroupTempContactBuilder::default()
+						.peer(peer)
+						.build()
+						.expect("Failed to build GroupTempContact"),
+				),
+			},
+			SceneType::Guild => match name {
+				Some(name) => ContactType::Guild(
+					GuildContact::builder()
+						.peer(peer)
+						.name(name)
+						.build()
+						.expect("Failed to build GuildContact"),
+				),
+				None => ContactType::Guild(
+					GuildContact::builder()
+						.peer(peer)
+						.build()
+						.expect("Failed to build GuildContact"),
+				),
+			},
 		}
 	}
 
@@ -179,47 +243,12 @@ impl<'c> ContactType<'c> {
 		}
 	}
 
-	/// 判断是否为好友联系人
-	///
-	/// # 示例
-	///
-	/// ```rust
-	/// use puniyu_contact::{ContactType, FriendContact};
-	///
-	/// let friend = FriendContact {
-	///     peer: "123456".into(),
-	///     name: Some("Alice".into()),
-	/// };
-	/// let contact = ContactType::Friend(friend);
-	///
-	/// assert!(contact.is_friend());
-	/// ```
-	pub fn is_friend(&self) -> bool {
-		matches!(self, ContactType::Friend(_))
-	}
-
-	/// 判断是否为群聊联系人
-	///
-	/// # 示例
-	///
-	/// ```rust
-	/// use puniyu_contact::{ContactType, GroupContact};
-	///
-	/// let group = GroupContact {
-	///     peer: "789012".into(),
-	///     name: Some("Dev Team".into()),
-	/// };
-	/// let contact = ContactType::Group(group);
-	///
-	/// assert!(contact.is_group());
-	/// ```
-	pub fn is_group(&self) -> bool {
-		matches!(self, ContactType::Group(_))
-	}
-
-	/// 判断是否为群临时联系人
-	pub fn is_group_temp(&self) -> bool {
-		matches!(self, ContactType::GroupTemp(_))
+	/// 尝试获取频道联系人的引用
+	pub fn as_guild(&self) -> Option<&GuildContact<'c>> {
+		match self {
+			ContactType::Guild(g) => Some(g),
+			_ => None,
+		}
 	}
 }
 
@@ -229,6 +258,7 @@ impl<'c> Contact for ContactType<'c> {
 			ContactType::Friend(_) => &SceneType::Friend,
 			ContactType::Group(_) => &SceneType::Group,
 			ContactType::GroupTemp(_) => &SceneType::GroupTemp,
+			ContactType::Guild(_) => &SceneType::Guild,
 		}
 	}
 
@@ -237,6 +267,7 @@ impl<'c> Contact for ContactType<'c> {
 			ContactType::Friend(f) => f.peer(),
 			ContactType::Group(g) => g.peer(),
 			ContactType::GroupTemp(g) => g.peer(),
+			ContactType::Guild(g) => g.peer(),
 		}
 	}
 
@@ -245,6 +276,7 @@ impl<'c> Contact for ContactType<'c> {
 			ContactType::Friend(f) => f.name(),
 			ContactType::Group(g) => g.name(),
 			ContactType::GroupTemp(g) => g.name(),
+			ContactType::Guild(g) => g.name(),
 		}
 	}
 }
@@ -264,6 +296,12 @@ impl<'c> From<GroupContact<'c>> for ContactType<'c> {
 impl<'c> From<GroupTempContact<'c>> for ContactType<'c> {
 	fn from(contact: GroupTempContact<'c>) -> Self {
 		Self::GroupTemp(contact)
+	}
+}
+
+impl<'c> From<GuildContact<'c>> for ContactType<'c> {
+	fn from(contact: GuildContact<'c>) -> Self {
+		Self::Guild(contact)
 	}
 }
 
@@ -345,5 +383,9 @@ macro_rules! contact {
 
     (GroupTemp, $( $key:ident : $value:expr ),+ $(,)?) => {
         $crate::ContactType::GroupTemp($crate::contact_group_temp!( $( $key : $value ),+ ))
+    };
+
+    (Guild, $( $key:ident : $value:expr ),+ $(,)?) => {
+        $crate::ContactType::Guild($crate::contact_guild!( $( $key : $value ),+ ))
     };
 }

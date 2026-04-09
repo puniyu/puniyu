@@ -13,6 +13,7 @@ fn test_contact_macro_flows_through_contact_type() {
 		contact!(Friend, peer: "123456", name: "Alice"),
 		contact!(Group, peer: "789012", name: "Dev Team"),
 		contact!(GroupTemp, peer: "246810", name: "Temp Team"),
+		contact!(Guild, peer: "9527", name: "Guild Channel"),
 	];
 
 	assert_eq!(
@@ -26,6 +27,10 @@ fn test_contact_macro_flows_through_contact_type() {
 	assert_eq!(
 		snapshot(&contacts[2]),
 		(SceneType::GroupTemp, "246810".to_string(), Some("Temp Team".to_string()))
+	);
+	assert_eq!(
+		snapshot(&contacts[3]),
+		(SceneType::Guild, "9527".to_string(), Some("Guild Channel".to_string()))
 	);
 }
 
@@ -70,10 +75,12 @@ fn test_contact_type_deserializes_borrowed_fields_from_json() {
 
 	match contact {
 		ContactType::Friend(friend) => {
-			assert!(matches!(friend.peer, Cow::Borrowed("123456")));
+			assert_eq!(friend.peer(), "123456");
 			assert_eq!(friend.name.as_deref(), Some("Alice"));
 		}
-		ContactType::Group(_) | ContactType::GroupTemp(_) => panic!("expected friend contact"),
+		ContactType::Group(_) | ContactType::GroupTemp(_) | ContactType::Guild(_) => {
+			panic!("expected friend contact")
+		}
 	}
 }
 
@@ -82,10 +89,12 @@ fn test_scene_type_supports_string_and_json_roundtrip() {
 	assert_eq!(SceneType::Friend.to_string(), "friend");
 	assert_eq!(SceneType::from_str("group").unwrap(), SceneType::Group);
 	assert_eq!(SceneType::from_str("grouptemp").unwrap(), SceneType::GroupTemp);
+	assert_eq!(SceneType::from_str("guild").unwrap(), SceneType::Guild);
 
 	let json = serde_json::to_string(&SceneType::Friend).unwrap();
 	assert_eq!(json, r#""friend""#);
 	assert_eq!(serde_json::to_string(&SceneType::GroupTemp).unwrap(), r#""grouptemp""#);
+	assert_eq!(serde_json::to_string(&SceneType::Guild).unwrap(), r#""guild""#);
 
 	let decoded: SceneType = serde_json::from_str(&json).unwrap();
 	assert_eq!(decoded, SceneType::Friend);

@@ -9,11 +9,13 @@ use std::fmt::{self, Debug, Formatter};
 ///
 /// # 方法
 ///
-/// - `scene()` - 获取场景类型（好友或群聊）
+/// - `scene()` - 获取场景类型（好友、群聊、群临时或频道）
 /// - `peer()` - 获取联系人 ID
 /// - `name()` - 获取联系人名称（可选）
 /// - `is_friend()` - 判断是否为好友场景
 /// - `is_group()` - 判断是否为群聊场景
+/// - `is_group_temp()` - 判断是否为群临时场景
+/// - `is_guild()` - 判断是否为频道场景
 ///
 /// # 示例
 ///
@@ -106,6 +108,15 @@ pub trait Contact: Send + Sync {
 	/// 如果是群临时场景返回 [`true`]，否则返回 [`false`]。
 	fn is_group_temp(&self) -> bool {
 		matches!(self.scene(), SceneType::GroupTemp)
+	}
+
+	/// 判断是否为频道场景
+	///
+	/// # 返回值
+	///
+	/// 如果是频道场景返回 [`true`]，否则返回 [`false`]。
+	fn is_guild(&self) -> bool {
+		matches!(self.scene(), SceneType::Guild)
 	}
 }
 impl PartialEq for dyn Contact {

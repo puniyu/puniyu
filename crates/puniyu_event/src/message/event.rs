@@ -1,5 +1,6 @@
 use super::friend::FriendMessage;
 use super::group::{GroupMessage, GroupTempMessage};
+use super::guild::GuildMessage;
 use super::MessageBase;
 use crate::{
 	ContactType, EventBase, EventType, SenderType, SubEventType, codegen_delegate_to_variants,
@@ -23,6 +24,8 @@ pub enum MessageEvent<'m> {
 	Group(GroupMessage<'m>),
 	/// 群临时消息事件
 	GroupTemp(GroupTempMessage<'m>),
+	/// 频道消息事件
+	Guild(GuildMessage<'m>),
 }
 
 codegen_impl_as! {
@@ -30,61 +33,54 @@ codegen_impl_as! {
 		Friend(FriendMessage) => as_friend,
 		Group(GroupMessage) => as_group,
 		GroupTemp(GroupTempMessage) => as_group_temp,
+		Guild(GuildMessage) => as_guild,
 	}
 }
 
 impl<'m> EventBase for MessageEvent<'m> {
 	fn time(&self) -> u64 {
-		codegen_delegate_to_variants!(self, time, Friend, Group, GroupTemp)
+		codegen_delegate_to_variants!(self, time, Friend, Group, GroupTemp, Guild)
 	}
 
 	fn event_type(&self) -> EventType {
-		codegen_delegate_to_variants!(self, event_type, Friend, Group, GroupTemp)
+		codegen_delegate_to_variants!(self, event_type, Friend, Group, GroupTemp, Guild)
 	}
 
 	fn event_id(&self) -> &str {
-		codegen_delegate_to_variants!(self, event_id, Friend, Group, GroupTemp)
+		codegen_delegate_to_variants!(self, event_id, Friend, Group, GroupTemp, Guild)
 	}
 
 	fn sub_event(&self) -> SubEventType {
-		codegen_delegate_to_variants_convert!(self, sub_event, SubEventType, Friend, Group, GroupTemp)
+		codegen_delegate_to_variants_convert!(self, sub_event, SubEventType, Friend, Group, GroupTemp, Guild)
 	}
 
 	fn bot(&self) -> &Bot {
-		codegen_delegate_to_variants!(self, bot, Friend, Group, GroupTemp)
+		codegen_delegate_to_variants!(self, bot, Friend, Group, GroupTemp, Guild)
 	}
 
 	fn self_id(&self) -> &str {
-		codegen_delegate_to_variants!(self, self_id, Friend, Group, GroupTemp)
+		codegen_delegate_to_variants!(self, self_id, Friend, Group, GroupTemp, Guild)
 	}
 
 	fn user_id(&self) -> &str {
-		codegen_delegate_to_variants!(self, user_id, Friend, Group, GroupTemp)
+		codegen_delegate_to_variants!(self, user_id, Friend, Group, GroupTemp, Guild)
 	}
 
 	fn contact(&self) -> ContactType<'_> {
-		match self {
-			Self::Friend(inner) => inner.contact(),
-			Self::Group(inner) => inner.contact(),
-			Self::GroupTemp(inner) => inner.contact(),
-		}
+		codegen_delegate_to_variants!(self, contact, Friend, Group, GroupTemp, Guild)
 	}
 
 	fn sender(&self) -> SenderType<'_> {
-		match self {
-			Self::Friend(inner) => inner.sender(),
-			Self::Group(inner) => inner.sender(),
-			Self::GroupTemp(inner) => inner.sender(),
-		}
+		codegen_delegate_to_variants!(self, sender, Friend, Group, GroupTemp, Guild)
 	}
 }
 
 impl<'m> MessageBase for MessageEvent<'m> {
 	fn message_id(&self) -> &str {
-		codegen_delegate_to_variants!(self, message_id, Friend, Group, GroupTemp)
+		codegen_delegate_to_variants!(self, message_id, Friend, Group, GroupTemp, Guild)
 	}
 
 	fn elements(&self) -> &Vec<Elements<'_>> {
-		codegen_delegate_to_variants!(self, elements, Friend, Group, GroupTemp)
+		codegen_delegate_to_variants!(self, elements, Friend, Group, GroupTemp, Guild)
 	}
 }

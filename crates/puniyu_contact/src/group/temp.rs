@@ -39,6 +39,19 @@ pub struct GroupTempContact<'c> {
 	pub name: Option<Cow<'c, str>>,
 }
 
+impl<'c> GroupTempContact<'c> {
+	pub fn new<N>(peer: N, name: N) -> Self
+	where
+		N: Into<Cow<'c, str>>,
+	{
+		Self { peer: peer.into(), name: Some(name.into()) }
+	}
+
+	pub fn builder() -> GroupTempContactBuilder<'c> {
+		GroupTempContactBuilder::default()
+	}
+}
+
 impl<'c> Contact for GroupTempContact<'c> {
 	fn scene(&self) -> &SceneType {
 		&SceneType::GroupTemp

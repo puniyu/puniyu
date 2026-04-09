@@ -1,4 +1,6 @@
-use puniyu_contact::{Contact, ContactType, FriendContact, GroupContact, GroupTempContact, SceneType};
+use puniyu_contact::{
+	Contact, ContactType, FriendContact, GroupContact, GroupTempContact, GuildContact, SceneType,
+};
 
 #[test]
 fn test_new_friend() {
@@ -23,6 +25,15 @@ fn test_new_group_temp() {
 	assert!(!contact.is_group());
 	assert_eq!(contact.peer(), "246810");
 	assert_eq!(contact.name(), Some("Temp Team"));
+}
+
+#[test]
+fn test_new_guild() {
+	let contact = ContactType::new(SceneType::Guild, "9527", Some("Guild Channel"));
+	assert!(contact.is_guild());
+	assert!(!contact.is_group());
+	assert_eq!(contact.peer(), "9527");
+	assert_eq!(contact.name(), Some("Guild Channel"));
 }
 
 #[test]
@@ -80,6 +91,20 @@ fn test_as_group_temp() {
 	let contact = ContactType::GroupTemp(group);
 
 	assert!(contact.as_group_temp().is_some());
+	assert!(contact.as_group().is_none());
+	assert!(contact.as_friend().is_none());
+}
+
+#[test]
+fn test_as_guild() {
+	let guild = GuildContact {
+		peer: "9527".into(),
+		name: Some("Guild Channel".into()),
+		sub_name: None,
+	};
+	let contact = ContactType::Guild(guild);
+
+	assert!(contact.as_guild().is_some());
 	assert!(contact.as_group().is_none());
 	assert!(contact.as_friend().is_none());
 }

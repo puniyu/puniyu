@@ -18,11 +18,11 @@ impl GroupTempMessage<'_> {
 
 	/// 判断发送者是否为管理员
 	pub fn is_admin(&self) -> bool {
-		matches!(self.sender.role, Role::Admin)
+		matches!(self.sender.role(), Role::Admin)
 	}
 
 	/// 判断发送者是否为群主
 	pub fn is_owner(&self) -> bool {
-		matches!(self.sender.role, Role::Owner)
+		matches!(self.sender.role(), Role::Owner)
 	}
 }

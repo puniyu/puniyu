@@ -38,6 +38,18 @@ pub struct FriendContact<'c> {
 	#[serde(borrow)]
 	pub name: Option<Cow<'c, str>>,
 }
+impl<'c> FriendContact<'c> {
+	pub fn new<N>(peer: N, name: N) -> Self
+	where
+		N: Into<Cow<'c, str>>,
+	{
+		Self { peer: peer.into(), name: Some(name.into()) }
+	}
+
+	pub fn builder() -> FriendContactBuilder<'c> {
+		FriendContactBuilder::default()
+	}
+}
 
 impl<'c> Contact for FriendContact<'c> {
 	fn scene(&self) -> &SceneType {

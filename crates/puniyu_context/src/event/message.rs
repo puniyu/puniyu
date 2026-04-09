@@ -4,7 +4,9 @@ use puniyu_bot::Bot;
 use puniyu_command_types::ArgValue;
 use puniyu_config::app_config;
 use puniyu_element::receive::Elements;
-use puniyu_event::message::{FriendMessage, GroupMessage, GroupTempMessage, MessageBase, MessageEvent};
+use puniyu_event::message::{
+	FriendMessage, GroupMessage, GroupTempMessage, GuildMessage, MessageBase, MessageEvent,
+};
 use puniyu_event::{EventBase, EventType};
 use puniyu_message::Message;
 
@@ -95,6 +97,13 @@ impl<'c> MessageContext<'c> {
 	/// 如果当前消息为群临时消息则返回 [`Some`]，否则返回 [`None`]。
 	pub fn as_group_temp(&self) -> Option<&GroupTempMessage<'_>> {
 		self._event.as_group_temp()
+	}
+
+	/// 获取频道消息引用。
+	///
+	/// 如果当前消息为频道消息则返回 [`Some`]，否则返回 [`None`]。
+	pub fn as_guild(&self) -> Option<&GuildMessage<'_>> {
+		self._event.as_guild()
 	}
 
 	/// 向当前消息对应的联系人发送回复消息。
