@@ -1,5 +1,5 @@
-use chrono::{DateTime, Utc};
 use derive_builder::Builder;
+use jiff::Timestamp;
 use puniyu_version::Version;
 use serde::{Deserialize, Serialize};
 use strum::{Display, EnumString, IntoStaticStr};
@@ -30,6 +30,8 @@ pub enum AdapterPlatform {
 #[derive(
 	Debug, Default, Clone, PartialEq, Eq, Display, Deserialize, Serialize, EnumString, IntoStaticStr,
 )]
+#[strum(serialize_all = "lowercase")]
+#[serde(rename_all = "lowercase")]
 pub enum AdapterStandard {
 	/// OneBot v11。
 	OneBotV11,
@@ -39,6 +41,10 @@ pub enum AdapterStandard {
 	Oicq,
 	/// ICQQ。
 	Icqq,
+	/// Milky。
+	Milky,
+	/// Satori。
+	Satori,
 	/// 其他标准。
 	#[default]
 	Other,
@@ -48,6 +54,8 @@ pub enum AdapterStandard {
 #[derive(
 	Debug, Default, Clone, PartialEq, Eq, Display, Deserialize, Serialize, EnumString, IntoStaticStr,
 )]
+#[strum(serialize_all = "lowercase")]
+#[serde(rename_all = "lowercase")]
 pub enum AdapterProtocol {
 	/// QQ 官方机器人协议。
 	QQBot,
@@ -65,6 +73,8 @@ pub enum AdapterProtocol {
 	Conwechat,
 	/// Lagrange。
 	Lagrange,
+	/// Yogurt。
+	Yogurt,
 	/// 控制台协议。
 	Console,
 	/// 其他协议。
@@ -76,15 +86,19 @@ pub enum AdapterProtocol {
 #[derive(
 	Debug, Default, Clone, PartialEq, Eq, Display, Deserialize, Serialize, EnumString, IntoStaticStr,
 )]
+#[strum(serialize_all = "lowercase")]
+#[serde(rename_all = "lowercase")]
 pub enum AdapterCommunication {
-	/// HTTP。
+	/// HTTP
 	Http,
-	/// WebSocket 服务端。
+	/// WebSocket 服务端
 	WebSocketServer,
-	/// WebSocket 客户端。
+	/// WebSocket 客户端
 	WebSocketClient,
-	/// gRPC。
+	/// gRPC
 	Grpc,
+	/// SSE
+	Sse,
 	/// 其他通信方式。
 	#[default]
 	Other,
@@ -120,7 +134,7 @@ pub struct AdapterInfo {
 	pub address: Option<String>,
 	/// 连接时间。
 	#[builder(default = "Self::default_connect_time()")]
-	pub connect_time: DateTime<Utc>,
+	pub connect_time: Timestamp,
 	/// 鉴权密钥。
 	#[builder(default)]
 	pub secret: Option<String>,
@@ -153,8 +167,8 @@ impl AdapterInfoBuilder {
 	const fn default_version() -> Version {
 		Version::new(0, 1, 0)
 	}
-	fn default_connect_time() -> DateTime<Utc> {
-		DateTime::<Utc>::default()
+	fn default_connect_time() -> Timestamp {
+		Timestamp::now()
 	}
 }
 

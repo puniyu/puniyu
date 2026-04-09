@@ -1,7 +1,7 @@
 mod store;
 
 use crate::CooldownScope;
-use chrono::Utc;
+use jiff::Timestamp;
 use puniyu_error::registry::Error;
 use std::sync::LazyLock;
 use std::time::Duration;
@@ -153,11 +153,6 @@ impl CooldownRegistry {
 	}
 }
 
-/// 获取当前时间戳（毫秒）
-///
-/// # 返回值
-///
-/// 返回当前 UTC 时间的毫秒时间戳。
 pub(crate) fn timestamp() -> u64 {
-	Utc::now().timestamp_millis() as u64
+	Timestamp::now().as_millisecond() as u64
 }

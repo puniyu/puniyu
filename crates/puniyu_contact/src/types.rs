@@ -99,7 +99,6 @@ pub trait Contact: Send + Sync {
 		matches!(self.scene(), SceneType::Group)
 	}
 }
-
 impl PartialEq for dyn Contact {
 	fn eq(&self, other: &Self) -> bool {
 		self.scene() == other.scene() && self.peer() == other.peer() && self.name() == other.name()

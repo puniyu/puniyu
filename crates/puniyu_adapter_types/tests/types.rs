@@ -1,5 +1,5 @@
 use bytes::Bytes;
-use chrono::Utc;
+use jiff::Timestamp;
 use puniyu_adapter_types::{
 	AdapterInfo, AdapterPlatform, AdapterProtocol, Avatar, MessageType, adapter_info,
 };
@@ -33,14 +33,16 @@ fn adapter_info_named_macro_applies_custom_fields() {
 
 #[test]
 fn adapter_info_default_uses_expected_defaults() {
-	let now = Utc::now();
+	let before = Timestamp::now();
 	let info = AdapterInfo::default();
+	let after = Timestamp::now();
 
 	assert_eq!(info.name, "");
 	assert_eq!(info.platform, AdapterPlatform::Other);
 	assert_eq!(info.protocol, AdapterProtocol::Other);
 	assert_eq!(info.version, Version::new(0, 1, 0));
-	assert!(info.connect_time <= now);
+	assert!(info.connect_time >= before);
+	assert!(info.connect_time <= after);
 }
 
 #[test]

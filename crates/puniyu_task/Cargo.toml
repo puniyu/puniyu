@@ -21,7 +21,7 @@ puniyu_error.workspace = true
 puniyu_logger = { workspace = true, optional = true }
 tokio = { workspace = true, optional = true }
 uuid = { version = "1.20.0", features = ["v4"], optional = true }
-chrono-tz = { version = "0.10.4", optional = true }
+chrono = { version = "0.4.42", optional = true }
 tokio-cron-scheduler = { version = "0.15.1", optional = true }
 
 [dev-dependencies]
@@ -34,7 +34,7 @@ registry = [
     "dep:log",
     "dep:tokio",
     "dep:uuid",
-    "dep:chrono-tz",
+    "dep:chrono",
     "dep:puniyu_logger",
     "dep:tokio-cron-scheduler",
 ]
