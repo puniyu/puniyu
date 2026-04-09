@@ -1,1 +1,1 @@
-pub use puniyu_sender::{FriendSender, GroupSender, Role, Sender, SenderType, Sex};
+pub use puniyu_sender::{FriendSender, GroupSender, GroupTempSender, Role, Sender, SenderType, Sex};

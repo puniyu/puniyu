@@ -1,3 +1,6 @@
+mod temp;
+pub use temp::GroupTempMessage;
+
 use puniyu_contact::GroupContact;
 use puniyu_sender::{GroupSender, Role};
 

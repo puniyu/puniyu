@@ -12,6 +12,7 @@ fn test_contact_macro_flows_through_contact_type() {
 	let contacts = [
 		contact!(Friend, peer: "123456", name: "Alice"),
 		contact!(Group, peer: "789012", name: "Dev Team"),
+		contact!(GroupTemp, peer: "246810", name: "Temp Team"),
 	];
 
 	assert_eq!(
@@ -21,6 +22,10 @@ fn test_contact_macro_flows_through_contact_type() {
 	assert_eq!(
 		snapshot(&contacts[1]),
 		(SceneType::Group, "789012".to_string(), Some("Dev Team".to_string()))
+	);
+	assert_eq!(
+		snapshot(&contacts[2]),
+		(SceneType::GroupTemp, "246810".to_string(), Some("Temp Team".to_string()))
 	);
 }
 
@@ -45,6 +50,17 @@ fn test_contact_type_serde_roundtrip_preserves_variant_and_fields() {
 		snapshot(&group_roundtrip),
 		(SceneType::Group, "789012".to_string(), Some("Dev Team".to_string()))
 	);
+
+	let group_temp = contact!(GroupTemp, peer: "246810", name: "Temp Team");
+	let group_temp_json = serde_json::to_string(&group_temp).unwrap();
+	assert_eq!(group_temp_json, r#"{"type":"grouptemp","field0":{"peer":"246810","name":"Temp Team"}}"#);
+	let group_temp_roundtrip: ContactType<'_> = serde_json::from_str(&group_temp_json).unwrap();
+	assert!(group_temp_roundtrip.is_group_temp());
+	assert!(!group_temp_roundtrip.is_group());
+	assert_eq!(
+		snapshot(&group_temp_roundtrip),
+		(SceneType::GroupTemp, "246810".to_string(), Some("Temp Team".to_string()))
+	);
 }
 
 #[test]
@@ -57,7 +73,7 @@ fn test_contact_type_deserializes_borrowed_fields_from_json() {
 			assert!(matches!(friend.peer, Cow::Borrowed("123456")));
 			assert_eq!(friend.name.as_deref(), Some("Alice"));
 		}
-		ContactType::Group(_) => panic!("expected friend contact"),
+		ContactType::Group(_) | ContactType::GroupTemp(_) => panic!("expected friend contact"),
 	}
 }
 
@@ -65,9 +81,11 @@ fn test_contact_type_deserializes_borrowed_fields_from_json() {
 fn test_scene_type_supports_string_and_json_roundtrip() {
 	assert_eq!(SceneType::Friend.to_string(), "friend");
 	assert_eq!(SceneType::from_str("group").unwrap(), SceneType::Group);
+	assert_eq!(SceneType::from_str("grouptemp").unwrap(), SceneType::GroupTemp);
 
 	let json = serde_json::to_string(&SceneType::Friend).unwrap();
 	assert_eq!(json, r#""friend""#);
+	assert_eq!(serde_json::to_string(&SceneType::GroupTemp).unwrap(), r#""grouptemp""#);
 
 	let decoded: SceneType = serde_json::from_str(&json).unwrap();
 	assert_eq!(decoded, SceneType::Friend);

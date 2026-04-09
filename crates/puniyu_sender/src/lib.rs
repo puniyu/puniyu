@@ -4,10 +4,10 @@
 //!
 //! ## 特性
 //!
-//! - 提供 `FriendSender` 与 `GroupSender`
+//! - 提供 `FriendSender`、`GroupSender` 与 `GroupTempSender`
 //! - 提供统一接口 `Sender`
 //! - 提供统一枚举 `SenderType`
-//! - 提供构建宏 `sender!`、`sender_friend!` 和 `sender_group!`
+//! - 提供构建宏 `sender!`、`sender_friend!`、`sender_group!` 和 `sender_group_temp!`
 //!
 //! ## 示例
 //!
@@ -16,11 +16,13 @@
 //!
 //! let friend = sender!(Friend, user_id: "123456", nick: "Alice");
 //! let group = sender!(Group, user_id: "789012", nick: "Bob");
+//! let group_temp = sender!(GroupTemp, user_id: "789012", nick: "Bob");
 //!
 //! assert!(friend.is_friend());
 //! assert_eq!(friend.user_id(), "123456");
 //!
 //! assert!(group.is_group());
+//! assert!(group_temp.is_group_temp());
 //! ```
 
 mod friend;
@@ -29,6 +31,9 @@ pub use friend::*;
 mod group;
 #[doc(inline)]
 pub use group::*;
+mod group_temp;
+#[doc(inline)]
+pub use group_temp::*;
 mod types;
 #[doc(inline)]
 pub use types::*;
@@ -43,7 +48,7 @@ use strum::{Display, IntoStaticStr};
 /// # 示例
 ///
 /// ```rust
-/// use puniyu_sender::{FriendSender, GroupSender, Role, SenderType, Sex};
+/// use puniyu_sender::{FriendSender, GroupSender, GroupTempSender, Role, SenderType, Sex};
 ///
 /// // 创建好友发送者
 /// let friend = FriendSender {
@@ -66,6 +71,19 @@ use strum::{Display, IntoStaticStr};
 ///     title: Some("活跃成员".into()),
 /// };
 /// let sender = SenderType::Group(group);
+///
+/// // 创建群临时发送者
+/// let group_temp = GroupTempSender {
+///     user_id: "246810".into(),
+///     nick: Some("Carol".into()),
+///     sex: Sex::Female,
+///     age: Some(22),
+///     role: Role::Member,
+///     card: None,
+///     level: None,
+///     title: None,
+/// };
+/// let sender = SenderType::GroupTemp(group_temp);
 /// ```
 #[derive(Debug, Clone, PartialEq, Display, IntoStaticStr, Deserialize, Serialize)]
 #[serde(rename_all = "lowercase", tag = "type", content = "field0", bound(deserialize = "'de: 's"))]
@@ -74,6 +92,8 @@ pub enum SenderType<'s> {
 	Friend(FriendSender<'s>),
 	/// 群聊发送者
 	Group(GroupSender<'s>),
+	/// 群临时发送者
+	GroupTemp(GroupTempSender<'s>),
 }
 
 impl SenderType<'_> {
@@ -121,6 +141,14 @@ impl SenderType<'_> {
 		}
 	}
 
+	/// 获取群临时发送者引用
+	pub fn as_group_temp(&self) -> Option<&GroupTempSender<'_>> {
+		match self {
+			SenderType::GroupTemp(sender) => Some(sender),
+			_ => None,
+		}
+	}
+
 	/// 判断是否为好友发送者
 	///
 	/// # 示例
@@ -148,6 +176,11 @@ impl SenderType<'_> {
 	pub fn is_group(&self) -> bool {
 		matches!(self, SenderType::Group(_))
 	}
+
+	/// 判断是否为群临时发送者
+	pub fn is_group_temp(&self) -> bool {
+		matches!(self, SenderType::GroupTemp(_))
+	}
 }
 
 impl<'s> Sender for SenderType<'s> {
@@ -155,24 +188,28 @@ impl<'s> Sender for SenderType<'s> {
 		match self {
 			SenderType::Friend(sender) => sender.user_id(),
 			SenderType::Group(sender) => sender.user_id(),
+			SenderType::GroupTemp(sender) => sender.user_id(),
 		}
 	}
 	fn name(&self) -> Option<&str> {
 		match self {
 			SenderType::Friend(sender) => sender.name(),
 			SenderType::Group(sender) => sender.name(),
+			SenderType::GroupTemp(sender) => sender.name(),
 		}
 	}
 	fn sex(&self) -> &Sex {
 		match &self {
 			SenderType::Friend(sender) => sender.sex(),
 			SenderType::Group(sender) => sender.sex(),
+			SenderType::GroupTemp(sender) => sender.sex(),
 		}
 	}
 	fn age(&self) -> Option<u32> {
 		match self {
 			SenderType::Friend(sender) => sender.age(),
 			SenderType::Group(sender) => sender.age(),
+			SenderType::GroupTemp(sender) => sender.age(),
 		}
 	}
 }
@@ -186,6 +223,12 @@ impl<'s> From<FriendSender<'s>> for SenderType<'s> {
 impl<'s> From<GroupSender<'s>> for SenderType<'s> {
 	fn from(sender: GroupSender<'s>) -> Self {
 		Self::Group(sender)
+	}
+}
+
+impl<'s> From<GroupTempSender<'s>> for SenderType<'s> {
+	fn from(sender: GroupTempSender<'s>) -> Self {
+		Self::GroupTemp(sender)
 	}
 }
 
@@ -263,5 +306,9 @@ macro_rules! sender {
 
     (Group, $( $key:ident : $value:expr ),+ $(,)?) => {
         $crate::SenderType::Group($crate::sender_group!( $( $key : $value ),+ ))
+    };
+
+    (GroupTemp, $( $key:ident : $value:expr ),+ $(,)?) => {
+        $crate::SenderType::GroupTemp($crate::sender_group_temp!( $( $key : $value ),+ ))
     };
 }

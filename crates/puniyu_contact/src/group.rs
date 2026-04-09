@@ -1,6 +1,9 @@
 //! 群聊联系人模块
 //!
-//! 提供群聊联系人的类型定义和构建宏。
+//! 提供群聊联系人与群临时联系人的类型定义和构建宏。
+
+mod temp;
+pub use temp::*;
 
 use crate::{Contact, SceneType};
 use derive_builder::Builder;

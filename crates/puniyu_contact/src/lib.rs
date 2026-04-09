@@ -4,10 +4,10 @@
 //!
 //! ## 特性
 //!
-//! - 提供 `FriendContact` 与 `GroupContact`
+//! - 提供 `FriendContact`、`GroupContact` 与 `GroupTempContact`
 //! - 提供统一接口 `Contact`
 //! - 提供统一枚举 `ContactType`
-//! - 提供构建宏 `contact!`、`contact_friend!` 与 `contact_group!`
+//! - 提供构建宏 `contact!`、`contact_friend!`、`contact_group!` 与 `contact_group_temp!`
 //!
 //! ## 示例
 //!
@@ -16,11 +16,13 @@
 //!
 //! let friend = contact!(Friend, peer: "123456", name: "Alice");
 //! let group = contact!(Group, peer: "789012", name: "Dev Team");
+//! let group_temp = contact!(GroupTemp, peer: "789012", name: "Temp Team");
 //!
 //! assert!(friend.is_friend());
 //! assert_eq!(friend.peer(), "123456");
 //!
 //! assert!(group.is_group());
+//! assert!(group_temp.is_group_temp());
 //! ```
 
 mod friend;
@@ -45,7 +47,7 @@ use strum::{Display, IntoStaticStr};
 /// # 示例
 ///
 /// ```rust
-/// use puniyu_contact::{ContactType, FriendContact, GroupContact};
+/// use puniyu_contact::{ContactType, FriendContact, GroupContact, GroupTempContact};
 ///
 /// // 创建好友联系人
 /// let friend = FriendContact {
@@ -60,6 +62,13 @@ use strum::{Display, IntoStaticStr};
 ///     name: Some("Dev Team".into()),
 /// };
 /// let contact = ContactType::Group(group);
+///
+/// // 创建群临时联系人
+/// let group_temp = GroupTempContact {
+///     peer: "246810".into(),
+///     name: Some("Temp Team".into()),
+/// };
+/// let contact = ContactType::GroupTemp(group_temp);
 /// ```
 #[derive(Debug, Clone, PartialEq, Display, IntoStaticStr, Deserialize, Serialize)]
 #[serde(rename_all = "lowercase", tag = "type", content = "field0", bound(deserialize = "'de: 'c"))]
@@ -69,6 +78,8 @@ pub enum ContactType<'c> {
 	Friend(FriendContact<'c>),
 	/// 群聊联系人
 	Group(GroupContact<'c>),
+	/// 群临时联系人
+	GroupTemp(GroupTempContact<'c>),
 }
 
 impl<'c> ContactType<'c> {
@@ -104,6 +115,7 @@ impl<'c> ContactType<'c> {
 		match scene {
 			SceneType::Friend => ContactType::Friend(FriendContact { peer, name }),
 			SceneType::Group => ContactType::Group(GroupContact { peer, name }),
+			SceneType::GroupTemp => ContactType::GroupTemp(GroupTempContact { peer, name }),
 		}
 	}
 
@@ -159,6 +171,14 @@ impl<'c> ContactType<'c> {
 		}
 	}
 
+	/// 尝试获取群临时联系人的引用
+	pub fn as_group_temp(&self) -> Option<&GroupTempContact<'c>> {
+		match self {
+			ContactType::GroupTemp(g) => Some(g),
+			_ => None,
+		}
+	}
+
 	/// 判断是否为好友联系人
 	///
 	/// # 示例
@@ -196,13 +216,19 @@ impl<'c> ContactType<'c> {
 	pub fn is_group(&self) -> bool {
 		matches!(self, ContactType::Group(_))
 	}
+
+	/// 判断是否为群临时联系人
+	pub fn is_group_temp(&self) -> bool {
+		matches!(self, ContactType::GroupTemp(_))
+	}
 }
 
 impl<'c> Contact for ContactType<'c> {
 	fn scene(&self) -> &SceneType {
 		match self {
-			ContactType::Friend(f) => f.scene(),
-			ContactType::Group(g) => g.scene(),
+			ContactType::Friend(_) => &SceneType::Friend,
+			ContactType::Group(_) => &SceneType::Group,
+			ContactType::GroupTemp(_) => &SceneType::GroupTemp,
 		}
 	}
 
@@ -210,6 +236,7 @@ impl<'c> Contact for ContactType<'c> {
 		match self {
 			ContactType::Friend(f) => f.peer(),
 			ContactType::Group(g) => g.peer(),
+			ContactType::GroupTemp(g) => g.peer(),
 		}
 	}
 
@@ -217,6 +244,7 @@ impl<'c> Contact for ContactType<'c> {
 		match self {
 			ContactType::Friend(f) => f.name(),
 			ContactType::Group(g) => g.name(),
+			ContactType::GroupTemp(g) => g.name(),
 		}
 	}
 }
@@ -230,6 +258,12 @@ impl<'c> From<FriendContact<'c>> for ContactType<'c> {
 impl<'c> From<GroupContact<'c>> for ContactType<'c> {
 	fn from(contact: GroupContact<'c>) -> Self {
 		Self::Group(contact)
+	}
+}
+
+impl<'c> From<GroupTempContact<'c>> for ContactType<'c> {
+	fn from(contact: GroupTempContact<'c>) -> Self {
+		Self::GroupTemp(contact)
 	}
 }
 
@@ -307,5 +341,9 @@ macro_rules! contact {
 
     (Group, $( $key:ident : $value:expr ),+ $(,)?) => {
         $crate::ContactType::Group($crate::contact_group!( $( $key : $value ),+ ))
+    };
+
+    (GroupTemp, $( $key:ident : $value:expr ),+ $(,)?) => {
+        $crate::ContactType::GroupTemp($crate::contact_group_temp!( $( $key : $value ),+ ))
     };
 }

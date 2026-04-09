@@ -25,6 +25,7 @@ impl Runtime for ConsoleRuntime {
 		let (msg_type, source) = match contact {
 			ContactType::Friend(friend) => ("私聊消息", &friend.scene()),
 			ContactType::Group(group) => ("群聊消息", &group.scene()),
+			ContactType::GroupTemp(group) => ("群临时消息", &group.scene()),
 		};
 		let message_id = make_random_id();
 		let timestamp = SystemTime::now()

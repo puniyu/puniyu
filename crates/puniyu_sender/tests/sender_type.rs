@@ -1,4 +1,4 @@
-use puniyu_sender::{FriendSender, GroupSender, Role, Sender, SenderType, Sex};
+use puniyu_sender::{FriendSender, GroupSender, GroupTempSender, Role, Sender, SenderType, Sex};
 
 #[test]
 fn test_from_friend() {
@@ -86,4 +86,25 @@ fn test_trait_methods() {
 	assert_eq!(sender.name(), Some("Alice"));
 	assert_eq!(sender.sex(), &Sex::Female);
 	assert_eq!(sender.age(), Some(25));
+}
+
+#[test]
+fn test_group_temp_sender() {
+	let group_temp = GroupTempSender {
+		user_id: "123456".into(),
+		nick: Some("Alice".into()),
+		sex: Sex::Female,
+		age: Some(25),
+		role: Role::Admin,
+		card: Some("临时管理员".into()),
+		level: Some(10),
+		title: Some("临时成员".into()),
+	};
+	let sender = SenderType::GroupTemp(group_temp);
+
+	assert!(sender.is_group_temp());
+	assert!(!sender.is_group());
+	assert!(sender.as_group_temp().is_some());
+	assert!(sender.as_group().is_none());
+	assert_eq!(sender.user_id(), "123456");
 }

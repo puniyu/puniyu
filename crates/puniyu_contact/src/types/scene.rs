@@ -54,6 +54,8 @@ pub enum SceneType {
 	#[default]
 	/// 群聊场景
 	Group,
+	/// 群临时场景
+	GroupTemp,
 	/// 好友场景
 	Friend,
 }

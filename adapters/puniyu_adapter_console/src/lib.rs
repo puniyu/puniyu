@@ -68,6 +68,7 @@ async fn main() -> puniyu_adapter::Result {
 
 			let (msg_type, content) = match message.split_once(':') {
 				Some(("group", rest)) => ("group", rest.to_string()),
+				Some(("grouptemp", rest)) => ("grouptemp", rest.to_string()),
 				Some(("friend", rest)) => ("friend", rest.to_string()),
 				_ => ("friend", message.clone()),
 			};
@@ -137,6 +138,30 @@ async fn main() -> puniyu_adapter::Result {
 								user_id: &name,
 								contact: &contact,
 								sender: &sender,
+								time: timestamp,
+								message_id: &message_id,
+								elements: &elements,
+							)
+						)
+					);
+					send_event(event).await
+				}
+				"grouptemp" => {
+					let contact = contact_group_temp!(name, name);
+					let sender = sender_group_temp!(user_id: name, nick: name, sex: Sex::Unknown, age: 0, role: Role::Member);
+
+					let group_contact = &contact;
+					let group_sender = &sender;
+					let event = create_event!(
+						Message,
+						create_message!(
+							GroupTemp,
+							crate_group_temp_message!(
+								bot: &bot,
+								event_id: &event_id,
+								user_id: &name,
+								contact: group_contact,
+								sender: group_sender,
 								time: timestamp,
 								message_id: &message_id,
 								elements: &elements,

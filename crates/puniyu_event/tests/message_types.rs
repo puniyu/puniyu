@@ -4,6 +4,7 @@ use puniyu_event::message::MessageSubEventType;
 fn test_message_sub_type_display() {
 	assert_eq!(MessageSubEventType::Friend.to_string(), "friend");
 	assert_eq!(MessageSubEventType::Group.to_string(), "group");
+	assert_eq!(MessageSubEventType::GroupTemp.to_string(), "grouptemp");
 	assert_eq!(MessageSubEventType::Guild.to_string(), "guild");
 }
 

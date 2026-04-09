@@ -98,6 +98,15 @@ pub trait Contact: Send + Sync {
 	fn is_group(&self) -> bool {
 		matches!(self.scene(), SceneType::Group)
 	}
+
+	/// 判断是否为群临时场景
+	///
+	/// # 返回值
+	///
+	/// 如果是群临时场景返回 [`true`]，否则返回 [`false`]。
+	fn is_group_temp(&self) -> bool {
+		matches!(self.scene(), SceneType::GroupTemp)
+	}
 }
 impl PartialEq for dyn Contact {
 	fn eq(&self, other: &Self) -> bool {

@@ -27,11 +27,18 @@ fn root_event_extension_helpers_work() {
 
 	assert!(event.as_message().is_none());
 	assert!(event.as_extension().is_some());
-	assert!(event.extension::<common::TestExtensionEvent>().is_some());
+	assert!(
+		event
+			.as_extension()
+			.and_then(|extension| extension.extension::<common::TestExtensionEvent>())
+			.is_some()
+	);
 	assert_eq!(event.event_type(), EventType::Extension);
 	assert_eq!(
 		event.sub_event(),
-		SubEventType::Extension(puniyu_event::extension::ExtensionSubEventType::new("test.extension"))
+		SubEventType::Extension(puniyu_event::extension::ExtensionSubEventType::new(
+			"test.extension"
+		))
 	);
 	assert_eq!(
 		common::event_snapshot(&event),

@@ -9,15 +9,15 @@ use puniyu_adapter_runtime::{AdapterRuntime, Runtime};
 use puniyu_adapter_types::{AdapterPlatform, AdapterProtocol, SendMsgType, adapter_info};
 use puniyu_bot::Bot;
 use puniyu_command_types::ArgValue;
-use puniyu_contact::{Contact, ContactType, contact_friend};
+use puniyu_contact::{Contact, ContactType, contact_friend, contact_group_temp};
 use puniyu_context::{EventContext, MessageContext};
 use puniyu_element::receive::{AtElement, Elements, ReplyElement, TextElement};
 use puniyu_event::{
 	Event, EventBase,
-	message::{FriendMessage, MessageBase, MessageEvent},
+	message::{FriendMessage, GroupTempMessage, MessageBase, MessageEvent},
 };
 use puniyu_message::Message;
-use puniyu_sender::{Sender, sender_friend};
+use puniyu_sender::{Sender, SenderType, sender_friend, sender_group_temp};
 
 struct TestRuntime;
 
@@ -112,6 +112,40 @@ pub fn make_message_event(elements: &'static Vec<Elements<'static>>) -> MessageE
 pub fn make_message_context() -> MessageContext<'static> {
 	let event = Box::leak(Box::new(make_message_event(leak_message_elements())));
 	MessageContext::new(event, HashMap::<String, ArgValue>::new())
+}
+
+pub fn leak_group_temp_contact() -> &'static puniyu_contact::GroupTempContact<'static> {
+	Box::leak(Box::new(contact_group_temp!(peer: "654321", name: "Temp Group")))
+}
+
+pub fn leak_group_temp_sender() -> &'static puniyu_sender::GroupTempSender<'static> {
+	Box::leak(Box::new(sender_group_temp!(user_id: "123456")))
+}
+
+pub fn make_group_temp_message_event(elements: &'static Vec<Elements<'static>>) -> MessageEvent<'static> {
+	MessageEvent::GroupTemp(GroupTempMessage::new(
+		leak_bot(),
+		"msg-event-temp-1",
+		"123456",
+		leak_group_temp_contact(),
+		leak_group_temp_sender(),
+		2,
+		"msg-temp-1",
+		elements,
+	))
+}
+
+pub fn make_group_temp_message_context() -> MessageContext<'static> {
+	let event = Box::leak(Box::new(make_group_temp_message_event(leak_message_elements())));
+	MessageContext::new(event, HashMap::<String, ArgValue>::new())
+}
+
+pub fn sender_variant_name(ctx: &MessageContext<'_>) -> &'static str {
+	match ctx.sender() {
+		SenderType::Friend(_) => "friend",
+		SenderType::Group(_) => "group",
+		SenderType::GroupTemp(_) => "grouptemp",
+	}
 }
 
 pub fn make_event_context() -> EventContext<'static> {
