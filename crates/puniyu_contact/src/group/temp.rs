@@ -11,20 +11,13 @@ use std::borrow::Cow;
 ///
 /// 表示一个群临时会话的联系信息。
 ///
-/// # 字段
-///
-/// - `peer` - 群 ID
-/// - `name` - 群名称（可选）
-///
 /// # 示例
 ///
 /// ```rust
-/// use puniyu_contact::GroupTempContact;
+/// use puniyu_contact::{Contact, GroupTempContact};
 ///
-/// let group_temp = GroupTempContact {
-///     peer: "789012".into(),
-///     name: Some("Temp Team".into()),
-/// };
+/// let group_temp = GroupTempContact::new("789012", "Temp Team");
+/// assert_eq!(group_temp.peer(), "789012");
 /// ```
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, Builder)]
 #[serde(bound(deserialize = "'de: 'c"))]
@@ -32,11 +25,11 @@ use std::borrow::Cow;
 pub struct GroupTempContact<'c> {
 	/// 群 ID
 	#[serde(borrow)]
-	pub peer: Cow<'c, str>,
+	peer: Cow<'c, str>,
 	/// 群名称
 	#[builder(default, setter(into, strip_option))]
 	#[serde(borrow)]
-	pub name: Option<Cow<'c, str>>,
+	name: Option<Cow<'c, str>>,
 }
 
 impl<'c> GroupTempContact<'c> {

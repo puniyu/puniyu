@@ -11,20 +11,13 @@ use std::borrow::Cow;
 ///
 /// 表示一个好友的联系信息。
 ///
-/// # 字段
-///
-/// - `peer` - 好友 ID
-/// - `name` - 好友名称（可选）
-///
 /// # 示例
 ///
 /// ```rust
-/// use puniyu_contact::FriendContact;
+/// use puniyu_contact::{Contact, FriendContact};
 ///
-/// let friend = FriendContact {
-///     peer: "123456".into(),
-///     name: Some("Alice".into()),
-/// };
+/// let friend = FriendContact::new("123456", "Alice");
+/// assert_eq!(friend.peer(), "123456");
 /// ```
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, Builder)]
 #[serde(bound(deserialize = "'de: 'c"))]
@@ -32,11 +25,11 @@ use std::borrow::Cow;
 pub struct FriendContact<'c> {
 	/// 好友ID
 	#[serde(borrow)]
-	pub peer: Cow<'c, str>,
+	peer: Cow<'c, str>,
 	/// 好友名称
 	#[builder(default, setter(into, strip_option))]
 	#[serde(borrow)]
-	pub name: Option<Cow<'c, str>>,
+	name: Option<Cow<'c, str>>,
 }
 impl<'c> FriendContact<'c> {
 	pub fn new<N>(peer: N, name: N) -> Self

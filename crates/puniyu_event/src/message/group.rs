@@ -1,7 +1,7 @@
 mod temp;
 pub use temp::GroupTempMessage;
 
-use puniyu_contact::GroupContact;
+use puniyu_contact::{Contact, GroupContact};
 use puniyu_sender::{GroupSender, Role};
 
 use super::MessageSubEventType;
@@ -16,7 +16,7 @@ super::codegen_message! {
 impl GroupMessage<'_> {
 	/// 获取群 ID
 	pub fn group_id(&self) -> &str {
-		self.contact.peer.as_ref()
+		self.contact.peer()
 	}
 
 	/// 判断发送者是否为管理员

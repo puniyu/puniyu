@@ -11,15 +11,15 @@ use crate::{Contact, SceneType};
 pub struct GuildContact<'c> {
 	/// 频道id
 	#[serde(borrow)]
-	pub peer: Cow<'c, str>,
+	peer: Cow<'c, str>,
 	/// 频道名称
 	#[builder(default, setter(into, strip_option))]
 	#[serde(borrow)]
-	pub name: Option<Cow<'c, str>>,
+	name: Option<Cow<'c, str>>,
 	/// 子频道名称
 	#[builder(default, setter(into, strip_option))]
 	#[serde(borrow)]
-	pub sub_name: Option<Cow<'c, str>>,
+	sub_name: Option<Cow<'c, str>>,
 }
 
 impl<'c> GuildContact<'c> {
@@ -62,7 +62,14 @@ macro_rules! contact_guild {
 		.build()
 		.expect("Failed to build GuildContact")
     }};
-
+    ($peer:expr, $name:expr, sub_name: $sub_name:expr) => {{
+        $crate::GuildContactBuilder::default()
+            .peer($peer)
+            .name($name)
+			.sub_name($sub_name)
+            .build()
+            .expect("Failed to build GuildContact")
+    }};
     ($peer:expr, $name:expr) => {{
         $crate::GuildContactBuilder::default()
             .peer($peer)

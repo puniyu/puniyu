@@ -1,7 +1,7 @@
 use puniyu_contact::{
 	Contact, ContactType, FriendContact, SceneType, contact, contact_friend, contact_group,
 };
-use std::{borrow::Cow, str::FromStr};
+use std::str::FromStr;
 
 fn snapshot(contact: impl Contact) -> (SceneType, String, Option<String>) {
 	(*contact.scene(), contact.peer().to_string(), contact.name().map(str::to_string))
@@ -76,7 +76,7 @@ fn test_contact_type_deserializes_borrowed_fields_from_json() {
 	match contact {
 		ContactType::Friend(friend) => {
 			assert_eq!(friend.peer(), "123456");
-			assert_eq!(friend.name.as_deref(), Some("Alice"));
+			assert_eq!(friend.name(), Some("Alice"));
 		}
 		ContactType::Group(_) | ContactType::GroupTemp(_) | ContactType::Guild(_) => {
 			panic!("expected friend contact")
@@ -133,9 +133,6 @@ fn test_friend_contact_roundtrip_through_public_api_layers() {
 	assert_eq!(borrowed_view.peer(), "friend-001");
 	assert_eq!(borrowed_view.name(), Some("Alice"));
 
-	let expected = FriendContact {
-		peer: Cow::Owned("friend-001".to_string()),
-		name: Some(Cow::Owned("Alice".to_string())),
-	};
+	let expected = FriendContact::new("friend-001", "Alice");
 	assert_eq!(contact, ContactType::Friend(expected));
 }

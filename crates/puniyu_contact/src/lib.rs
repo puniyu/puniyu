@@ -55,24 +55,15 @@ use strum::{Display, IntoStaticStr};
 /// use puniyu_contact::{ContactType, FriendContact, GroupContact, GroupTempContact};
 ///
 /// // 创建好友联系人
-/// let friend = FriendContact {
-///     peer: "123456".into(),
-///     name: Some("Alice".into()),
-/// };
+/// let friend = FriendContact::new("123456", "Alice");
 /// let contact = ContactType::Friend(friend);
 ///
 /// // 创建群聊联系人
-/// let group = GroupContact {
-///     peer: "789012".into(),
-///     name: Some("Dev Team".into()),
-/// };
+/// let group = GroupContact::new("789012", "Dev Team");
 /// let contact = ContactType::Group(group);
 ///
 /// // 创建群临时联系人
-/// let group_temp = GroupTempContact {
-///     peer: "246810".into(),
-///     name: Some("Temp Team".into()),
-/// };
+/// let group_temp = GroupTempContact::new("246810", "Temp Team");
 /// let contact = ContactType::GroupTemp(group_temp);
 /// ```
 #[derive(Debug, Clone, PartialEq, Display, IntoStaticStr, Deserialize, Serialize)]
@@ -192,10 +183,7 @@ impl<'c> ContactType<'c> {
 	/// ```rust
 	/// use puniyu_contact::{ContactType, FriendContact, Contact};
 	///
-	/// let friend = FriendContact {
-	///     peer: "123456".into(),
-	///     name: Some("Alice".into()),
-	/// };
+	/// let friend = FriendContact::new("123456", "Alice");
 	/// let contact = ContactType::Friend(friend);
 	///
 	/// if let Some(f) = contact.as_friend() {
@@ -218,10 +206,7 @@ impl<'c> ContactType<'c> {
 	/// ```rust
 	/// use puniyu_contact::{ContactType, GroupContact, Contact};
 	///
-	/// let group = GroupContact {
-	///     peer: "789012".into(),
-	///     name: Some("Dev Team".into()),
-	/// };
+	/// let group = GroupContact::new("789012", "Dev Team");
 	/// let contact = ContactType::Group(group);
 	///
 	/// if let Some(g) = contact.as_group() {
