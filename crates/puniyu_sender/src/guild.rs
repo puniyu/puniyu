@@ -12,7 +12,7 @@ pub struct GuildSender<'s> {
 	#[serde(borrow)]
 	user_id: Cow<'s, str>,
 	/// 用户昵称
-	#[builder(default, setter(into, strip_option))]
+	#[builder(default, setter(strip_option))]
 	#[serde(borrow)]
 	nick: Option<Cow<'s, str>>,
 	/// 性别
@@ -25,14 +25,14 @@ pub struct GuildSender<'s> {
 	#[builder(default)]
 	role: Role,
 	/// 频道名片
-	#[builder(default, setter(into, strip_option))]
+	#[builder(default, setter(strip_option))]
 	#[serde(borrow)]
 	card: Option<Cow<'s, str>>,
 	/// 等级
 	#[builder(default)]
 	level: Option<u32>,
 	/// 专属头衔
-	#[builder(default, setter(into, strip_option))]
+	#[builder(default, setter(strip_option))]
 	#[serde(borrow)]
 	title: Option<Cow<'s, str>>,
 }

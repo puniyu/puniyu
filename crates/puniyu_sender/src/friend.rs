@@ -17,7 +17,7 @@ pub struct FriendSender<'s> {
 	#[serde(borrow)]
 	user_id: Cow<'s, str>,
 	/// 用户昵称
-	#[builder(default, setter(into, strip_option))]
+	#[builder(default, setter(strip_option))]
 	#[serde(borrow)]
 	nick: Option<Cow<'s, str>>,
 	/// 性别

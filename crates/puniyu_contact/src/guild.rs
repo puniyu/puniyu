@@ -13,19 +13,21 @@ pub struct GuildContact<'c> {
 	#[serde(borrow)]
 	peer: Cow<'c, str>,
 	/// 频道名称
-	#[builder(default, setter(into, strip_option))]
+	#[builder(default, setter(strip_option))]
 	#[serde(borrow)]
 	name: Option<Cow<'c, str>>,
 	/// 子频道名称
-	#[builder(default, setter(into, strip_option))]
+	#[builder(default, setter(strip_option))]
 	#[serde(borrow)]
 	sub_name: Option<Cow<'c, str>>,
 }
 
 impl<'c> GuildContact<'c> {
-	pub fn new<N>(peer: N, name: N, sub_name: N) -> Self
+	pub fn new<P, N, S>(peer: P, name: N, sub_name: S) -> Self
 	where
+		P: Into<Cow<'c, str>>,
 		N: Into<Cow<'c, str>>,
+		S: Into<Cow<'c, str>>,
 	{
 		Self { peer: peer.into(), name: Some(name.into()), sub_name: Some(sub_name.into()) }
 	}

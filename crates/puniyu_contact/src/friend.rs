@@ -27,13 +27,14 @@ pub struct FriendContact<'c> {
 	#[serde(borrow)]
 	peer: Cow<'c, str>,
 	/// 好友名称
-	#[builder(default, setter(into, strip_option))]
+	#[builder(default, setter(strip_option))]
 	#[serde(borrow)]
 	name: Option<Cow<'c, str>>,
 }
 impl<'c> FriendContact<'c> {
-	pub fn new<N>(peer: N, name: N) -> Self
+	pub fn new<P, N>(peer: P, name: N) -> Self
 	where
+		P: Into<Cow<'c, str>>,
 		N: Into<Cow<'c, str>>,
 	{
 		Self { peer: peer.into(), name: Some(name.into()) }
