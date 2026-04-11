@@ -5,8 +5,9 @@ use std::collections::HashMap;
 use async_trait::async_trait;
 use bytes::Bytes;
 use puniyu_account::AccountInfo;
-use puniyu_adapter_runtime::{AdapterRuntime, Runtime};
+use puniyu_runtime::{FrameworkRuntime, SendMessage};
 use puniyu_adapter_types::{AdapterPlatform, AdapterProtocol, SendMsgType, adapter_info};
+use std::sync::Arc;
 use puniyu_bot::Bot;
 use puniyu_command_types::ArgValue;
 use puniyu_contact::{Contact, ContactType, contact_friend, contact_guild, contact_group, contact_group_temp};
@@ -22,7 +23,7 @@ use puniyu_sender::{Sender, SenderType, sender_friend, sender_guild, sender_grou
 struct TestRuntime;
 
 #[async_trait]
-impl Runtime for TestRuntime {
+impl SendMessage for TestRuntime {
 	async fn send_message(
 		&self,
 		_contact: &ContactType<'_>,
@@ -30,11 +31,10 @@ impl Runtime for TestRuntime {
 	) -> puniyu_error::Result<SendMsgType> {
 		Ok(SendMsgType { message_id: "test-msg".to_string(), time: 0 })
 	}
-
 }
 
-fn test_runtime() -> AdapterRuntime {
-	AdapterRuntime::from_runtime(TestRuntime)
+fn test_runtime() -> Arc<dyn FrameworkRuntime> {
+	Arc::new(TestRuntime)
 }
 
 pub fn make_bot() -> Bot {

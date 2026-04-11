@@ -3,7 +3,7 @@ use async_trait::async_trait;
 use bytes::Bytes;
 use log::debug;
 use puniyu_adapter::prelude::*;
-use std::sync::LazyLock;
+use std::sync::{Arc, LazyLock};
 
 pub(crate) static AVATAR: LazyLock<Bytes> = LazyLock::new(|| {
 	let logo_path = resource_dir().join("logo.png");
@@ -15,7 +15,7 @@ use std::time::{SystemTime, UNIX_EPOCH};
 pub struct Runtime;
 
 #[async_trait]
-impl puniyu_adapter::runtime::Runtime for Runtime {
+impl puniyu_adapter::runtime::SendMessage for Runtime {
 	async fn send_message(
 		&self,
 		contact: &ContactType<'_>,
@@ -39,6 +39,6 @@ impl puniyu_adapter::runtime::Runtime for Runtime {
 	}
 }
 
-pub(crate) fn runtime() -> puniyu_adapter::runtime::AdapterRuntime {
-	puniyu_adapter::runtime::AdapterRuntime::from_runtime(Runtime)
+pub(crate) fn runtime() -> Arc<dyn puniyu_adapter::__private::FrameworkRuntime> {
+	Arc::new(Runtime)
 }

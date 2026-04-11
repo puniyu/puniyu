@@ -12,9 +12,11 @@
 ## 示例
 
 ```rust,ignore
+use std::sync::Arc;
+
 use async_trait::async_trait;
 use puniyu_account::AccountInfo;
-use puniyu_adapter_runtime::{AdapterRuntime, Runtime};
+use puniyu_runtime::{SendMessage, FrameworkRuntime};
 use puniyu_adapter_types::{AdapterInfo, AdapterPlatform, AdapterProtocol, SendMsgType};
 use puniyu_bot::{Bot, BotRegistry};
 use puniyu_contact::ContactType;
@@ -23,7 +25,7 @@ use puniyu_message::Message;
 struct MyRuntime;
 
 #[async_trait]
-impl Runtime for MyRuntime {
+impl SendMessage for MyRuntime {
     async fn send_message(
         &self,
         _contact: &ContactType<'_>,
@@ -31,7 +33,6 @@ impl Runtime for MyRuntime {
     ) -> puniyu_error::Result<SendMsgType> {
         Ok(SendMsgType { message_id: "msg-1".into(), time: 0 })
     }
-
 }
 
 let mut adapter = AdapterInfo::default();
@@ -45,7 +46,7 @@ let account = AccountInfo {
     avatar: Default::default(),
 };
 
-let runtime = AdapterRuntime::from_runtime(MyRuntime);
+let runtime: Arc<dyn FrameworkRuntime> = Arc::new(MyRuntime);
 let bot = Bot::new(adapter, runtime, account);
 let index = BotRegistry::register(bot.clone()).unwrap();
 

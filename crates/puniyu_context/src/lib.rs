@@ -22,7 +22,10 @@
 //!
 //! // 访问运行时
 //! let runtime = bot_context.runtime();
-//! // runtime.send_message(&contact, &message).await?;
+//! // let concrete = runtime.downcast_ref::<MyRuntime>();
+//!
+//! // 发送消息
+//! // bot_context.send_message(&contact, message).await?;
 //!
 //! // 访问账号信息
 //! let account = bot_context.account();

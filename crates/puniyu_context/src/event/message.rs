@@ -114,7 +114,7 @@ impl<'c> MessageContext<'c> {
 		M: Into<Message>,
 	{
 		let contact = self._event.contact();
-		self._bot.runtime().send_message(&contact, &message.into()).await
+		self._bot.send_message(&contact, message).await
 	}
 
 	/// 获取命令参数值

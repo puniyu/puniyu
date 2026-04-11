@@ -1,7 +1,9 @@
 use puniyu_account::AccountInfo;
-use puniyu_adapter_runtime::AdapterRuntime;
-use puniyu_adapter_types::AdapterInfo;
+use puniyu_runtime::Runtime;
+use puniyu_adapter_types::{AdapterInfo, SendMsgType};
 use puniyu_bot::Bot;
+use puniyu_contact::ContactType;
+use puniyu_message::Message;
 
 /// 机器人上下文
 ///
@@ -54,21 +56,33 @@ impl<'c> BotContext<'c> {
 		self.inner.adapter()
 	}
 
-	/// 获取适配器运行时
+	/// 获取适配器运行时。
 	///
-	/// 返回适配器运行时的引用，用于调用运行时方法。
+	/// 返回适配器运行时的只读视图，可用于访问适配器私有能力。
 	///
 	/// # 示例
 	///
 	/// ```rust,ignore
 	/// let runtime = bot_context.runtime();
-	/// runtime.send_message(&contact, &message).await?;
 	///
 	/// // 访问适配器私有能力
-	/// let concrete = runtime.runtime::<MyRuntime>();
+	/// let concrete = runtime.downcast_ref::<MyRuntime>();
 	/// ```
-	pub fn runtime(&self) -> &AdapterRuntime {
+	pub fn runtime(&self) -> &dyn Runtime {
 		self.inner.runtime()
+	}
+
+	/// 向指定联系人发送消息。
+	pub async fn send_message<M>(
+		&self,
+		contact: &ContactType<'_>,
+		message: M,
+	) -> puniyu_error::Result<SendMsgType>
+	where
+		M: Into<Message>,
+	{
+		let message = message.into();
+		self.inner.send_message(contact, &message).await
 	}
 
 	/// 获取账号信息

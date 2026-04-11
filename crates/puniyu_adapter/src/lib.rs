@@ -24,6 +24,7 @@ pub use puniyu_api::pkg_name;
 pub mod __private {
 	pub use async_trait::async_trait;
 	pub use puniyu_adapter_core::Adapter;
+	pub use puniyu_runtime::FrameworkRuntime;
 	pub use puniyu_api::inventory;
 	pub use puniyu_config::{Config, ConfigInfo};
 	pub use puniyu_hook::Hook;
