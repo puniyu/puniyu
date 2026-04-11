@@ -6,14 +6,16 @@
 
 - 🧩 提供 `Adapter` trait 定义适配器行为
 - 📦 提供 `AdapterRegistry` 管理适配器注册与查询
-- 🔌 组合 `puniyu_adapter_runtime` 与 `puniyu_adapter_types`
+- 🔌 组合 `puniyu_runtime` 与 `puniyu_adapter_types`
 - 🔄 支持配置、钩子、服务器与初始化流程扩展
 
 ## 示例
 
 ```rust,ignore
 use async_trait::async_trait;
-use puniyu_adapter_runtime::{AdapterRuntime, Runtime};
+use std::sync::Arc;
+
+use puniyu_runtime::{FrameworkRuntime, SendMessage};
 use puniyu_adapter_core::Adapter;
 use puniyu_adapter_types::{adapter_info, AdapterPlatform, AdapterProtocol, SendMsgType};
 use puniyu_contact::ContactType;
@@ -22,7 +24,7 @@ use puniyu_message::Message;
 struct MyRuntime;
 
 #[async_trait]
-impl Runtime for MyRuntime {
+impl SendMessage for MyRuntime {
     async fn send_message(
         &self,
         _contact: &ContactType<'_>,
@@ -40,8 +42,8 @@ impl Adapter for MyAdapter {
         adapter_info!("console", AdapterPlatform::QQ, AdapterProtocol::Console)
     }
 
-    fn runtime(&self) -> AdapterRuntime {
-        AdapterRuntime::from_runtime(MyRuntime)
+    fn runtime(&self) -> Arc<dyn FrameworkRuntime> {
+        Arc::new(MyRuntime)
     }
 }
 ```

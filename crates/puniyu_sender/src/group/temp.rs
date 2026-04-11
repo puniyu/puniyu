@@ -1,21 +1,20 @@
-//! 群聊发送者模块
+//! 群临时发送者模块
 //!
-//! 提供群聊发送者的类型定义和构建宏。
-mod temp;
-#[doc(inline)]
-pub use temp::*;
+//! 提供群临时发送者的类型定义和构建宏。
 
 use crate::{Role, Sender, Sex};
 use derive_builder::Builder;
 use serde::{Deserialize, Serialize};
 use std::borrow::Cow;
 
-/// 群聊发送者信息。
+/// 群临时发送者信息。
+///
+/// 表示群临时会话中的发送者资料。
 #[derive(Debug, Default, Clone, PartialEq, Deserialize, Serialize, Builder)]
 #[serde(bound(deserialize = "'de: 's"))]
 #[builder(setter(into), pattern = "owned")]
-pub struct GroupSender<'s> {
-	/// 发送者id
+pub struct GroupTempSender<'s> {
+	/// 发送者 ID
 	#[serde(borrow)]
 	user_id: Cow<'s, str>,
 	/// 用户昵称
@@ -44,8 +43,8 @@ pub struct GroupSender<'s> {
 	title: Option<Cow<'s, str>>,
 }
 
-impl<'s> GroupSender<'s> {
-	#[allow(clippy::too_many_arguments)]
+impl<'s> GroupTempSender<'s> {
+    #[allow(clippy::too_many_arguments)]
 	pub fn new<U, N, C, T>(
 		user_id: U,
 		nick: Option<N>,
@@ -74,32 +73,28 @@ impl<'s> GroupSender<'s> {
 		}
 	}
 
-	pub fn builder() -> GroupSenderBuilder<'s> {
-		GroupSenderBuilder::default()
+	pub fn builder() -> GroupTempSenderBuilder<'s> {
+		GroupTempSenderBuilder::default()
 	}
 
-	/// 获取群角色。
 	pub fn role(&self) -> &Role {
 		&self.role
 	}
 
-	/// 获取群名片。
 	pub fn card(&self) -> Option<&str> {
 		self.card.as_deref()
 	}
 
-	/// 获取等级。
 	pub fn level(&self) -> Option<u32> {
 		self.level
 	}
 
-	/// 获取专属头衔。
 	pub fn title(&self) -> Option<&str> {
 		self.title.as_deref()
 	}
 }
 
-impl<'s> Sender for GroupSender<'s> {
+impl<'s> Sender for GroupTempSender<'s> {
 	fn user_id(&self) -> &str {
 		self.user_id.as_ref()
 	}
@@ -114,36 +109,20 @@ impl<'s> Sender for GroupSender<'s> {
 	}
 }
 
-
-/// 构建群聊发送者。
-///
-/// ```rust
-/// use puniyu_sender::{sender_group, Sex, Role};
-///
-/// let sender = sender_group!(
-///     user_id: "123456",
-///     nick: "Alice",
-///     sex: Sex::Female,
-///     age: 25u32,
-///     role: Role::Admin,
-///     card: "Group Admin",
-/// );
-/// ```
 #[macro_export]
-macro_rules! sender_group {
+macro_rules! sender_group_temp {
     ( $( $key:ident : $value:expr ),+ $(,)? ) => {{
-        $crate::GroupSenderBuilder::default()
+        $crate::GroupTempSenderBuilder::default()
         $(
             .$key($value)
         )*
         .build()
-		.expect("Failed to build GroupSender")
+			.expect("Failed to build GroupTempSender")
     }};
 	($user_id:expr) => {{
-		$crate::GroupSenderBuilder::default()
+		$crate::GroupTempSenderBuilder::default()
 			.user_id($user_id)
 			.build()
-			.expect("Failed to build GroupSender")
+			.expect("Failed to build GroupTempSender")
 	}};
 }
-

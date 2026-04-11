@@ -170,20 +170,6 @@ impl Event<'_> {
 			Event::Extension(extension) => Some(extension.as_ref()),
 		}
 	}
-
-	/// 尝试将扩展事件转换为指定类型。
-	pub fn extension<T>(&self) -> Option<&T>
-	where
-		T: ExtensionEvent + 'static,
-	{
-		match self {
-			Event::Message(_) => None,
-			Event::Extension(extension) => {
-				let any = extension.as_ref() as &dyn std::any::Any;
-				any.downcast_ref::<T>()
-			}
-		}
-	}
 }
 
 impl Event<'_> {
@@ -334,7 +320,7 @@ impl Event<'_> {
 	///
 	/// # 返回值
 	///
-	/// 返回事件发生的联系人信息（好友或群聊）
+	/// 返回事件发生的联系人信息（好友、群聊或群临时）
 	///
 	/// # 示例
 	///
@@ -348,6 +334,9 @@ impl Event<'_> {
 	///     }
 	///     ContactType::Group(group) => {
 	///         println!("群聊联系人");
+	///     }
+	///     ContactType::GroupTemp(group_temp) => {
+	///         println!("群临时联系人");
 	///     }
 	/// }
 	/// ```
@@ -376,6 +365,9 @@ impl Event<'_> {
 	///     }
 	///     SenderType::Group(group_sender) => {
 	///         println!("群成员发送者");
+	///     }
+	///     SenderType::GroupTemp(group_temp_sender) => {
+	///         println!("群临时发送者");
 	///     }
 	/// }
 	/// ```

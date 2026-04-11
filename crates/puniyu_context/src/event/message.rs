@@ -4,13 +4,18 @@ use puniyu_bot::Bot;
 use puniyu_command_types::ArgValue;
 use puniyu_config::app_config;
 use puniyu_element::receive::Elements;
-use puniyu_event::message::{FriendMessage, GroupMessage, MessageBase, MessageEvent};
+use puniyu_event::message::{
+	FriendMessage, GroupMessage, GroupTempMessage, GuildMessage, MessageBase, MessageEvent,
+};
 use puniyu_event::{EventBase, EventType};
 use puniyu_message::Message;
 
 /// 消息上下文
 ///
 /// 提供对消息事件的专门处理，包括消息回复、参数获取、发送者信息等。
+///
+/// 消息类型判断方法（如 `is_friend()`、`is_group()`、`is_group_temp()`）
+/// 由 [`MessageBase`] trait 默认提供。
 ///
 /// # 示例
 ///
@@ -65,22 +70,15 @@ impl<'c> MessageContext<'c> {
 		self._event
 	}
 
-	/// 判断当前消息是否为好友消息。
-	pub fn is_friend(&self) -> bool {
-		matches!(self._event, MessageEvent::Friend(_))
-	}
-
-	/// 判断当前消息是否为群消息。
-	pub fn is_group(&self) -> bool {
-		matches!(self._event, MessageEvent::Group(_))
-	}
-
 	/// 获取当前消息关联的机器人上下文。
 	pub fn as_bot(&self) -> &BotContext<'_> {
 		&self._bot
 	}
 
 	/// 获取好友消息引用。
+	///
+	/// 如需仅做消息类型判断，优先使用 [`MessageBase`] 提供的
+	/// `is_friend()` / `is_group()` / `is_group_temp()`。
 	///
 	/// 如果当前消息为好友消息则返回 [`Some`]，否则返回 [`None`]。
 	pub fn as_friend(&self) -> Option<&FriendMessage<'_>> {
@@ -94,6 +92,20 @@ impl<'c> MessageContext<'c> {
 		self._event.as_group()
 	}
 
+	/// 获取群临时消息引用。
+	///
+	/// 如果当前消息为群临时消息则返回 [`Some`]，否则返回 [`None`]。
+	pub fn as_group_temp(&self) -> Option<&GroupTempMessage<'_>> {
+		self._event.as_group_temp()
+	}
+
+	/// 获取频道消息引用。
+	///
+	/// 如果当前消息为频道消息则返回 [`Some`]，否则返回 [`None`]。
+	pub fn as_guild(&self) -> Option<&GuildMessage<'_>> {
+		self._event.as_guild()
+	}
+
 	/// 向当前消息对应的联系人发送回复消息。
 	///
 	/// 参数 `message` 支持任意可转换为 [`Message`] 的类型。
@@ -102,7 +114,7 @@ impl<'c> MessageContext<'c> {
 		M: Into<Message>,
 	{
 		let contact = self._event.contact();
-		self._bot.runtime().send_message(&contact, &message.into()).await
+		self._bot.send_message(&contact, message).await
 	}
 
 	/// 获取命令参数值

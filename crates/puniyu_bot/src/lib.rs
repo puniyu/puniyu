@@ -16,20 +16,23 @@ mod macros;
 mod types;
 #[doc(inline)]
 pub use types::*;
-
+#[doc(hidden)]
+pub use puniyu_runtime::FrameworkRuntime;
 use puniyu_account::AccountInfo;
-use puniyu_adapter_runtime::AdapterRuntime;
-use puniyu_adapter_types::AdapterInfo;
+use puniyu_runtime::Runtime;
+use puniyu_adapter_types::{AdapterInfo, SendMsgType};
+use puniyu_contact::ContactType;
+use puniyu_message::Message;
 use std::{
 	fmt::{Debug, Formatter},
 	sync::Arc,
 };
 
 /// 机器人实例。
-#[derive(Clone, PartialEq)]
+#[derive(Clone)]
 pub struct Bot {
 	adapter: Arc<AdapterInfo>,
-	runtime: Arc<AdapterRuntime>,
+	runtime: Arc<dyn FrameworkRuntime>,
 	account: Arc<AccountInfo>,
 }
 
@@ -42,11 +45,19 @@ impl Debug for Bot {
 	}
 }
 
+impl PartialEq for Bot {
+	fn eq(&self, other: &Self) -> bool {
+		self.adapter == other.adapter
+			&& Arc::ptr_eq(&self.runtime, &other.runtime)
+			&& self.account == other.account
+	}
+}
+
 impl Bot {
 	/// 使用适配器信息、适配器运行时与账户信息创建机器人实例。
 	pub fn new(
 		adapter: impl Into<Arc<AdapterInfo>>,
-		runtime: impl Into<Arc<AdapterRuntime>>,
+		runtime: impl Into<Arc<dyn FrameworkRuntime>>,
 		account: impl Into<Arc<AccountInfo>>,
 	) -> Self {
 		Self { adapter: adapter.into(), runtime: runtime.into(), account: account.into() }
@@ -58,8 +69,16 @@ impl Bot {
 	}
 
 	/// 返回适配器运行时引用。
-	pub fn runtime(&self) -> &AdapterRuntime {
-		&self.runtime
+	pub fn runtime(&self) -> &dyn Runtime {
+		self.runtime.as_ref()
+	}
+
+	pub async fn send_message(
+		&self,
+		contact: &ContactType<'_>,
+		message: &Message,
+	) -> puniyu_error::Result<SendMsgType> {
+		self.runtime.send_message(contact, message).await
 	}
 
 	/// 返回账户信息引用。

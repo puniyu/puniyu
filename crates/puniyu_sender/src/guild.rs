@@ -1,20 +1,13 @@
-//! 群聊发送者模块
-//!
-//! 提供群聊发送者的类型定义和构建宏。
-mod temp;
-#[doc(inline)]
-pub use temp::*;
-
 use crate::{Role, Sender, Sex};
 use derive_builder::Builder;
 use serde::{Deserialize, Serialize};
 use std::borrow::Cow;
 
-/// 群聊发送者信息。
+/// 频道发送者信息。
 #[derive(Debug, Default, Clone, PartialEq, Deserialize, Serialize, Builder)]
 #[serde(bound(deserialize = "'de: 's"))]
 #[builder(setter(into), pattern = "owned")]
-pub struct GroupSender<'s> {
+pub struct GuildSender<'s> {
 	/// 发送者id
 	#[serde(borrow)]
 	user_id: Cow<'s, str>,
@@ -31,7 +24,7 @@ pub struct GroupSender<'s> {
 	/// 角色
 	#[builder(default)]
 	role: Role,
-	/// 群名片
+	/// 频道名片
 	#[builder(default, setter(strip_option))]
 	#[serde(borrow)]
 	card: Option<Cow<'s, str>>,
@@ -44,7 +37,7 @@ pub struct GroupSender<'s> {
 	title: Option<Cow<'s, str>>,
 }
 
-impl<'s> GroupSender<'s> {
+impl<'s> GuildSender<'s> {
 	#[allow(clippy::too_many_arguments)]
 	pub fn new<U, N, C, T>(
 		user_id: U,
@@ -74,16 +67,16 @@ impl<'s> GroupSender<'s> {
 		}
 	}
 
-	pub fn builder() -> GroupSenderBuilder<'s> {
-		GroupSenderBuilder::default()
+	pub fn builder() -> GuildSenderBuilder<'s> {
+		GuildSenderBuilder::default()
 	}
 
-	/// 获取群角色。
+	/// 获取频道角色。
 	pub fn role(&self) -> &Role {
 		&self.role
 	}
 
-	/// 获取群名片。
+	/// 获取频道名片。
 	pub fn card(&self) -> Option<&str> {
 		self.card.as_deref()
 	}
@@ -99,7 +92,7 @@ impl<'s> GroupSender<'s> {
 	}
 }
 
-impl<'s> Sender for GroupSender<'s> {
+impl<'s> Sender for GuildSender<'s> {
 	fn user_id(&self) -> &str {
 		self.user_id.as_ref()
 	}
@@ -114,36 +107,21 @@ impl<'s> Sender for GroupSender<'s> {
 	}
 }
 
-
-/// 构建群聊发送者。
-///
-/// ```rust
-/// use puniyu_sender::{sender_group, Sex, Role};
-///
-/// let sender = sender_group!(
-///     user_id: "123456",
-///     nick: "Alice",
-///     sex: Sex::Female,
-///     age: 25u32,
-///     role: Role::Admin,
-///     card: "Group Admin",
-/// );
-/// ```
 #[macro_export]
-macro_rules! sender_group {
+macro_rules! sender_guild {
     ( $( $key:ident : $value:expr ),+ $(,)? ) => {{
-        $crate::GroupSenderBuilder::default()
+        $crate::GuildSenderBuilder::default()
         $(
             .$key($value)
         )*
         .build()
-		.expect("Failed to build GroupSender")
+		.expect("Failed to build GuildSender")
     }};
 	($user_id:expr) => {{
-		$crate::GroupSenderBuilder::default()
+		$crate::GuildSenderBuilder::default()
 			.user_id($user_id)
 			.build()
-			.expect("Failed to build GroupSender")
+			.expect("Failed to build GuildSender")
 	}};
 }
 

@@ -89,7 +89,7 @@ impl<'c> EventContext<'c> {
 	where
 		T: puniyu_event::ExtensionEvent + 'static,
 	{
-		self.inner.extension::<T>()
+		self.inner.as_extension().and_then(|extension| extension.extension::<T>())
 	}
 }
 impl<'c> EventBase for EventContext<'c> {

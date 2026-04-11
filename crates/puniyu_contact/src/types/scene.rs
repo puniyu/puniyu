@@ -3,12 +3,14 @@ use strum::{Display, EnumString, IntoStaticStr};
 
 /// 场景类型
 ///
-/// 定义联系人所属的场景类型，用于区分好友和群聊。
+/// 定义联系人所属的场景类型，用于区分好友、群聊、群临时和频道消息。
 ///
 /// # 变体
 ///
 /// - `Friend` - 好友场景，表示一对一聊天
 /// - `Group` - 群聊场景，表示群组聊天
+/// - `GroupTemp` - 群临时场景
+/// - `Guild` - 频道消息场景
 ///
 /// # 示例
 ///
@@ -54,6 +56,10 @@ pub enum SceneType {
 	#[default]
 	/// 群聊场景
 	Group,
+	/// 群临时场景
+	GroupTemp,
 	/// 好友场景
 	Friend,
+	/// 频道消息场景
+	Guild,
 }

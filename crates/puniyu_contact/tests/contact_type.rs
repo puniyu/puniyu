@@ -1,4 +1,6 @@
-use puniyu_contact::{Contact, ContactType, FriendContact, GroupContact, SceneType};
+use puniyu_contact::{
+	Contact, ContactType, FriendContact, GroupContact, GroupTempContact, GuildContact, SceneType,
+};
 
 #[test]
 fn test_new_friend() {
@@ -17,6 +19,24 @@ fn test_new_group() {
 }
 
 #[test]
+fn test_new_group_temp() {
+	let contact = ContactType::new(SceneType::GroupTemp, "246810", Some("Temp Team"));
+	assert!(contact.is_group_temp());
+	assert!(!contact.is_group());
+	assert_eq!(contact.peer(), "246810");
+	assert_eq!(contact.name(), Some("Temp Team"));
+}
+
+#[test]
+fn test_new_guild() {
+	let contact = ContactType::new(SceneType::Guild, "9527", Some("Guild Channel"));
+	assert!(contact.is_guild());
+	assert!(!contact.is_group());
+	assert_eq!(contact.peer(), "9527");
+	assert_eq!(contact.name(), Some("Guild Channel"));
+}
+
+#[test]
 fn test_new_with_owned_strings() {
 	let contact =
 		ContactType::new(SceneType::Friend, String::from("123456"), Some(String::from("Alice")));
@@ -28,7 +48,7 @@ fn test_new_with_owned_strings() {
 
 #[test]
 fn test_from_friend() {
-	let friend = FriendContact { peer: "123456".into(), name: Some("Alice".into()) };
+	let friend = FriendContact::new("123456", "Alice");
 	let contact = ContactType::from(friend);
 
 	assert!(contact.is_friend());
@@ -38,7 +58,7 @@ fn test_from_friend() {
 
 #[test]
 fn test_from_group() {
-	let group = GroupContact { peer: "789012".into(), name: Some("Dev Team".into()) };
+	let group = GroupContact::new("789012", "Dev Team");
 	let contact = ContactType::from(group);
 
 	assert!(contact.is_group());
@@ -48,7 +68,7 @@ fn test_from_group() {
 
 #[test]
 fn test_as_friend() {
-	let friend = FriendContact { peer: "123456".into(), name: Some("Alice".into()) };
+	let friend = FriendContact::new("123456", "Alice");
 	let contact = ContactType::Friend(friend);
 
 	assert!(contact.as_friend().is_some());
@@ -57,16 +77,37 @@ fn test_as_friend() {
 
 #[test]
 fn test_as_group() {
-	let group = GroupContact { peer: "789012".into(), name: Some("Dev Team".into()) };
+	let group = GroupContact::new("789012", "Dev Team");
 	let contact = ContactType::Group(group);
 
 	assert!(contact.as_group().is_some());
+	assert!(contact.as_friend().is_none());
+	assert!(contact.as_group_temp().is_none());
+}
+
+#[test]
+fn test_as_group_temp() {
+	let group = GroupTempContact::new("246810", "Temp Team");
+	let contact = ContactType::GroupTemp(group);
+
+	assert!(contact.as_group_temp().is_some());
+	assert!(contact.as_group().is_none());
+	assert!(contact.as_friend().is_none());
+}
+
+#[test]
+fn test_as_guild() {
+	let guild = GuildContact::builder().peer("9527").name("Guild Channel").build().unwrap();
+	let contact = ContactType::Guild(guild);
+
+	assert!(contact.as_guild().is_some());
+	assert!(contact.as_group().is_none());
 	assert!(contact.as_friend().is_none());
 }
 
 #[test]
 fn test_trait_methods() {
-	let friend = FriendContact { peer: "123456".into(), name: Some("Alice".into()) };
+	let friend = FriendContact::new("123456", "Alice");
 	let contact = ContactType::Friend(friend);
 
 	assert_eq!(contact.peer(), "123456");

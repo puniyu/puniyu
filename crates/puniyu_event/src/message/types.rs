@@ -70,6 +70,8 @@ pub enum MessageSubEventType {
 	Friend,
 	/// 群消息
 	Group,
+	/// 群临时消息
+	GroupTemp,
 	/// 频道消息
 	Guild,
 }

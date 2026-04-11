@@ -3,7 +3,7 @@
 use std::sync::{Arc, Mutex, MutexGuard};
 
 use async_trait::async_trait;
-use puniyu_adapter_runtime::{AdapterRuntime, Runtime};
+use puniyu_runtime::{FrameworkRuntime, SendMessage};
 use puniyu_adapter_core::{Adapter, AdapterRegistry};
 use puniyu_adapter_types::{AdapterInfo, AdapterPlatform, AdapterProtocol, SendMsgType, adapter_info};
 use puniyu_contact::ContactType;
@@ -14,7 +14,7 @@ static TEST_LOCK: Mutex<()> = Mutex::new(());
 struct TestRuntime;
 
 #[async_trait]
-impl Runtime for TestRuntime {
+impl SendMessage for TestRuntime {
 	async fn send_message(
 		&self,
 		_contact: &ContactType<'_>,
@@ -22,19 +22,18 @@ impl Runtime for TestRuntime {
 	) -> puniyu_error::Result<SendMsgType> {
 		Ok(SendMsgType { message_id: "test-msg".to_string(), time: 0 })
 	}
-
 }
 
 struct TestAdapter {
 	info: AdapterInfo,
-	runtime: AdapterRuntime,
+	runtime: Arc<dyn FrameworkRuntime>,
 }
 
 impl TestAdapter {
 	fn new() -> Self {
 		Self {
 			info: adapter_info!("console", AdapterPlatform::QQ, AdapterProtocol::Console),
-			runtime: AdapterRuntime::from_runtime(TestRuntime),
+			runtime: Arc::new(TestRuntime),
 		}
 	}
 }
@@ -45,7 +44,7 @@ impl Adapter for TestAdapter {
 		self.info.clone()
 	}
 
-	fn runtime(&self) -> AdapterRuntime {
+	fn runtime(&self) -> Arc<dyn FrameworkRuntime> {
 		self.runtime.clone()
 	}
 }

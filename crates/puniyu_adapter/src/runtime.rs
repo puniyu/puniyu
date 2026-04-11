@@ -1,1 +1,1 @@
-pub use puniyu_adapter_runtime::*;
+pub use puniyu_runtime::*;

@@ -15,17 +15,31 @@ use std::borrow::Cow;
 pub struct FriendSender<'s> {
 	/// 发送者id
 	#[serde(borrow)]
-	pub user_id: Cow<'s, str>,
+	user_id: Cow<'s, str>,
 	/// 用户昵称
-	#[builder(default, setter(into, strip_option))]
+	#[builder(default, setter(strip_option))]
 	#[serde(borrow)]
-	pub nick: Option<Cow<'s, str>>,
+	nick: Option<Cow<'s, str>>,
 	/// 性别
 	#[builder(default)]
-	pub sex: Sex,
+	sex: Sex,
 	/// 年龄
 	#[builder(default)]
-	pub age: Option<u32>,
+	age: Option<u32>,
+}
+
+impl<'s> FriendSender<'s> {
+	pub fn new<U, N>(user_id: U, nick: Option<N>, sex: Sex, age: Option<u32>) -> Self
+	where
+		U: Into<Cow<'s, str>>,
+		N: Into<Cow<'s, str>>,
+	{
+		Self { user_id: user_id.into(), nick: nick.map(Into::into), sex, age }
+	}
+
+	pub fn builder() -> FriendSenderBuilder<'s> {
+		FriendSenderBuilder::default()
+	}
 }
 
 impl<'s> Sender for FriendSender<'s> {

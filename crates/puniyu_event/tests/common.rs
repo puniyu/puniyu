@@ -4,23 +4,28 @@
 use async_trait::async_trait;
 use bytes::Bytes;
 use puniyu_account::AccountInfo;
-use puniyu_adapter_runtime::{AdapterRuntime, Runtime};
+use puniyu_runtime::{FrameworkRuntime, SendMessage};
 use puniyu_adapter_types::{AdapterPlatform, AdapterProtocol, SendMsgType, adapter_info};
+use std::sync::Arc;
 use puniyu_bot::Bot;
-use puniyu_contact::{Contact, ContactType, contact_friend, contact_group};
+use puniyu_contact::{
+	Contact, ContactType, contact_friend, contact_guild, contact_group, contact_group_temp,
+};
 use puniyu_element::receive::Elements;
 use puniyu_event::{
 	Event, EventBase,
 	extension::{ExtensionEvent, ExtensionSubEventType},
-	message::{FriendMessage, MessageBase, MessageEvent},
+	message::{FriendMessage, GroupTempMessage, GuildMessage, MessageBase, MessageEvent},
 };
 use puniyu_message::Message;
-use puniyu_sender::{Sender, sender_friend, sender_group};
+use puniyu_sender::{
+	Sender, SenderType, sender_friend, sender_guild, sender_group, sender_group_temp,
+};
 
 struct TestRuntime;
 
 #[async_trait]
-impl Runtime for TestRuntime {
+impl SendMessage for TestRuntime {
 	async fn send_message(
 		&self,
 		_contact: &ContactType<'_>,
@@ -28,11 +33,10 @@ impl Runtime for TestRuntime {
 	) -> puniyu_error::Result<SendMsgType> {
 		Ok(SendMsgType { message_id: "test-msg".to_string(), time: 0 })
 	}
-
 }
 
-fn test_runtime() -> AdapterRuntime {
-	AdapterRuntime::from_runtime(TestRuntime)
+fn test_runtime() -> Arc<dyn FrameworkRuntime> {
+	Arc::new(TestRuntime)
 }
 
 pub fn make_bot() -> Bot {
@@ -89,8 +93,24 @@ pub fn leak_group_contact() -> &'static puniyu_contact::GroupContact<'static> {
 	Box::leak(Box::new(contact_group!(peer: "654321", name: "Dev Group")))
 }
 
+pub fn leak_guild_contact() -> &'static puniyu_contact::GuildContact<'static> {
+	Box::leak(Box::new(contact_guild!(peer: "9527", name: "Guild Channel")))
+}
+
+pub fn leak_group_temp_contact() -> &'static puniyu_contact::GroupTempContact<'static> {
+	Box::leak(Box::new(contact_group_temp!(peer: "654321", name: "Temp Group")))
+}
+
 pub fn leak_group_sender() -> &'static puniyu_sender::GroupSender<'static> {
 	Box::leak(Box::new(sender_group!(user_id: "123456")))
+}
+
+pub fn leak_guild_sender() -> &'static puniyu_sender::GuildSender<'static> {
+	Box::leak(Box::new(sender_guild!(user_id: "123456")))
+}
+
+pub fn leak_group_temp_sender() -> &'static puniyu_sender::GroupTempSender<'static> {
+	Box::leak(Box::new(sender_group_temp!(user_id: "123456")))
 }
 
 pub fn leak_empty_elements() -> &'static Vec<Elements<'static>> {
@@ -108,6 +128,41 @@ pub fn make_message_event() -> MessageEvent<'static> {
 		"msg-1",
 		leak_empty_elements(),
 	))
+}
+
+pub fn make_group_temp_message_event() -> MessageEvent<'static> {
+	MessageEvent::GroupTemp(GroupTempMessage::new(
+		leak_bot(),
+		"msg-event-temp-1",
+		"123456",
+		leak_group_temp_contact(),
+		leak_group_temp_sender(),
+		2,
+		"msg-temp-1",
+		leak_empty_elements(),
+	))
+}
+
+pub fn make_guild_message_event() -> MessageEvent<'static> {
+	MessageEvent::Guild(GuildMessage::new(
+		leak_bot(),
+		"msg-event-guild-1",
+		"123456",
+		leak_guild_contact(),
+		leak_guild_sender(),
+		3,
+		"msg-guild-1",
+		leak_empty_elements(),
+	))
+}
+
+pub fn sender_variant_name(event: &MessageEvent<'_>) -> &'static str {
+	match event.sender() {
+		SenderType::Friend(_) => "friend",
+		SenderType::Group(_) => "group",
+		SenderType::GroupTemp(_) => "grouptemp",
+		SenderType::Guild(_) => "guild",
+	}
 }
 
 pub fn make_event_message() -> Event<'static> {
