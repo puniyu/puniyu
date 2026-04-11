@@ -1,0 +1,28 @@
+# 变更日志
+
+## [0.8.0]
+
+### ⛰️ 新功能
+
+
+- *(puniyu_element)* 添加多种消息段类型支持 - ([b71247b](https://github.com/puniyu/puniyu/commit/b71247beb4cac298e2acffe63b92ec146277730e))
+- 添加命令解析器和配置管理功能 - ([075d485](https://github.com/puniyu/puniyu/commit/075d48589a9da7ec45fbd88c60cbe5a3435a3163))
+
+### 🐛 Bug 修复
+
+
+- *(plugin)* 修复插件宏中空函数体的返回类型验证 - ([da7f237](https://github.com/puniyu/puniyu/commit/da7f2379b0f7860c04cc0e28df423e534b48b60b))
+
+### 🚜 重构
+
+
+- *(adapter)* 独立account模块 - ([0f4c175](https://github.com/puniyu/puniyu/commit/0f4c1758ecc817c2048fec38265edbf630252cb0))
+- *(contact)* 重构联系人类型系统，引入 trait 抽象 - ([c403f08](https://github.com/puniyu/puniyu/commit/c403f08b8aaebfa071995c8179c9d75a8ae532d9))
+- *(core)* 重构整个框架的核心实现 ([#165](https://github.com/puniyu/puniyu/pull/165)) - ([9482b34](https://github.com/puniyu/puniyu/commit/9482b34a76fecf05b3475aecf01df93d9e8994ff))
+- *(core)* 重构部分核心实现 ([#150](https://github.com/puniyu/puniyu/pull/150)) - ([e06459e](https://github.com/puniyu/puniyu/commit/e06459e40f1ec37f8e0de7427e6905c9bb295d5e))
+- *(error)* 统一错误处理机制 - ([586272d](https://github.com/puniyu/puniyu/commit/586272ddf8828cfa7af809bc01de95d1245c4d9b))
+- *(workspace)* 重构项目结构和依赖管理 - ([520087e](https://github.com/puniyu/puniyu/commit/520087e38b49ff9e3aabe04be946038b81114b4d))
+- 重构事件/适配器api/上下文 ([#178](https://github.com/puniyu/puniyu/pull/178)) - ([fe74041](https://github.com/puniyu/puniyu/commit/fe74041525fac5102ed96ed2a7389ecd1a27f7ed))
+- 重构工作区crates ([#53](https://github.com/puniyu/puniyu/pull/53)) - ([f55ab51](https://github.com/puniyu/puniyu/commit/f55ab519b9275c19773f16acfddff0c44db8e48c))
+- 使用jiff替换chrono库并优化时间处理 ([#179](https://github.com/puniyu/puniyu/pull/179)) - ([8d0257a](https://github.com/puniyu/puniyu/commit/8d0257a9663c43dceafa6e35f7e6f382425df727))
+
