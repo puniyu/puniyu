@@ -1,14 +1,12 @@
-use log::error;
 use puniyu_command::Command;
 use puniyu_common::source::SourceType;
-use puniyu_config::ConfigRegistry;
 use puniyu_error::registry::Error;
 use puniyu_path::plugin::*;
 use puniyu_plugin_core::Plugin;
 use puniyu_plugin_core::PluginRegistry;
 use puniyu_task::Task;
 use std::sync::Arc;
-use tokio::fs::{create_dir_all, write};
+use tokio::fs::create_dir_all;
 
 pub async fn init_plugin(plugin: Arc<dyn Plugin>) {
 	let name = plugin.name();
@@ -17,77 +15,63 @@ pub async fn init_plugin(plugin: Arc<dyn Plugin>) {
 	let tasks = plugin.tasks();
 	#[cfg(feature = "server")]
 	let servers = plugin.server();
-	let index = match PluginRegistry::register(Arc::clone(&plugin)) {
-		Ok(index) => index,
-		Err(e) => {
-			return error!("Failed to register plugin: {:?}", e);
-		}
-	};
+	let index = PluginRegistry::register(Arc::clone(&plugin))
+		.unwrap_or_else(|e| panic!("Failed to register plugin {}: {:?}", name, e));
 	let source = SourceType::Plugin(index);
-	if !hooks.is_empty()
-		&& let Err(e) = super::hook::init_hook(source, hooks)
-	{
-		error!("Failed to register hook for plugin: {:?}", e);
+	if !hooks.is_empty() {
+		super::hook::init_hook(source, hooks)
+			.unwrap_or_else(|e| panic!("Failed to register hook for plugin {}: {:?}", name, e));
 	}
 
-	if !commands.is_empty()
-		&& let Err(e) = init_command(index, commands)
-	{
-		error!("Failed to register command for plugin: {:?}", e);
-	};
+	if !commands.is_empty() {
+		init_command(index, commands)
+			.unwrap_or_else(|e| panic!("Failed to register command for plugin {}: {:?}", name, e));
+	}
 
-	if !tasks.is_empty()
-		&& let Err(e) = init_task(index, tasks).await
-	{
-		error!("Failed to register task for plugin: {:?}", e);
-	};
+	if !tasks.is_empty() {
+		init_task(index, tasks)
+			.await
+			.unwrap_or_else(|e| panic!("Failed to register task for plugin {}: {:?}", name, e));
+	}
 	#[cfg(feature = "server")]
 	{
-		if let Some(server) = servers
-			&& let Err(e) = super::server::init_server(source, server)
-		{
-			error!("Failed to register server for plugin: {:?}", e);
+		if let Some(server) = servers {
+			super::server::init_server(source, server).unwrap_or_else(|e| {
+				panic!("Failed to register server for plugin {}: {:?}", name, e)
+			});
 		}
 	}
 	if !config_dir().join(name).exists() {
-		let _ = create_dir_all(config_dir().join(name)).await;
+		create_dir_all(config_dir().join(name))
+			.await
+			.unwrap_or_else(|e| panic!("Failed to create config dir for plugin {}: {}", name, e));
 	}
 	if !data_dir().join(name).exists() {
-		let _ = create_dir_all(data_dir().join(name)).await;
+		create_dir_all(data_dir().join(name))
+			.await
+			.unwrap_or_else(|e| panic!("Failed to create data dir for plugin {}: {}", name, e));
 	}
 	if !resource_dir().join(name).exists() {
-		let _ = create_dir_all(resource_dir().join(name)).await;
+		create_dir_all(resource_dir().join(name))
+			.await
+			.unwrap_or_else(|e| panic!("Failed to create resource dir for plugin {}: {}", name, e));
 	}
 	if !temp_dir().join(name).exists() {
-		let _ = create_dir_all(temp_dir().join(name)).await;
+		create_dir_all(temp_dir().join(name))
+			.await
+			.unwrap_or_else(|e| panic!("Failed to create temp dir for plugin {}: {}", name, e));
 	}
-	if let Err(e) = plugin.init().await {
-		error!("Failed to init plugin: {:?}", e);
-	}
-	let configs = plugin.config();
-	if !configs.is_empty() {
-		for config in configs {
-			let config = config.config();
-			let path = config_dir().join(name).join(&config.name);
-			if let Some(parent) = path.parent()
-				&& !parent.exists()
-			{
-				let _ = create_dir_all(parent).await;
-			}
-			if !path.exists() {
-				let _ = write(&path, config.value.to_string()).await;
-			}
-			let _ = ConfigRegistry::register(config);
-		}
-	}
+	plugin
+		.init()
+		.await
+		.unwrap_or_else(|e| panic!("Failed to init plugin {}: {:?}", name, e));
+	super::config::init_config(name, plugin.config()).await;
 }
 
 fn init_command(plugin_id: u64, commands: Vec<Arc<dyn Command>>) -> Result<(), Error> {
 	use puniyu_command::CommandRegistry;
 	for command in commands {
-		if let Err(e) = CommandRegistry::register(plugin_id, command) {
-			error!("Failed to register command: {:?}", e);
-		}
+		CommandRegistry::register(plugin_id, command)?;
 	}
 	Ok(())
 }
@@ -95,9 +79,7 @@ fn init_command(plugin_id: u64, commands: Vec<Arc<dyn Command>>) -> Result<(), E
 async fn init_task(plugin_id: u64, tasks: Vec<Arc<dyn Task>>) -> Result<(), Error> {
 	use puniyu_task::TaskRegistry;
 	for task in tasks {
-		if let Err(e) = TaskRegistry::register(plugin_id, task).await {
-			error!("Failed to register task: {:?}", e);
-		}
+		TaskRegistry::register(plugin_id, task).await?;
 	}
 	Ok(())
 }

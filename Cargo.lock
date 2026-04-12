@@ -1887,6 +1887,7 @@ dependencies = [
  "log",
  "puniyu_account",
  "puniyu_adapter",
+ "puniyu_runtime",
  "rand 0.10.1",
  "tokio",
 ]
@@ -1950,10 +1951,12 @@ dependencies = [
 name = "puniyu_bot"
 version = "0.8.0"
 dependencies = [
+ "log",
  "puniyu_account",
  "puniyu_adapter_types",
  "puniyu_contact",
  "puniyu_error",
+ "puniyu_logger",
  "puniyu_message",
  "puniyu_runtime",
 ]
@@ -2020,6 +2023,7 @@ dependencies = [
  "notify-debouncer-full",
  "puniyu_common",
  "puniyu_error",
+ "puniyu_logger",
  "puniyu_path",
  "serde",
  "serde_repr",
@@ -2094,6 +2098,7 @@ dependencies = [
  "puniyu_task",
  "puniyu_version",
  "tokio",
+ "toml",
  "vergen-git2",
 ]
 

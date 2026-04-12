@@ -1,24 +1,13 @@
 # puniyu_command_parser
 
-Puniyu 命令解析器，统一命令文本解析、别名剥离与参数验证流程
+命令解析器，负责解析命令文本、别名和参数。
 
-## 定位
+## 特征
 
-`puniyu_command_parser` 是 Puniyu 工作区中的一个 crate。
+- 支持命令文本解析
+- 支持别名剥离与参数验证
+- 与 `puniyu_command`、`puniyu_command_types` 配合使用
 
-## 提供内容
+## 快速开始
 
-- 围绕当前领域提供统一类型或抽象。
-- 与工作区其他模块协同组成完整框架能力。
-
-## 何时使用
-
-当你需要复用该领域的基础类型、trait 或工具能力。
-
-## 相关模块
-
-- `puniyu_command_types`
-- `puniyu_command`
-
-> [!NOTE]
-> README 以当前工作区代码结构为准，适合快速了解模块职责；更细的 API 细节请直接阅读源码。
+从命令解析流程开始阅读，了解文本命令如何转换为可执行结构。

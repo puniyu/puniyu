@@ -1,28 +1,13 @@
 # puniyu_handler_command
 
-Puniyu 命令处理器，统一命令匹配、权限检查与执行分发流程
+命令处理器，实现命令匹配、权限检查和执行分发流程。
 
-## 定位
+## 特征
 
-`puniyu_handler_command` 是 Puniyu 工作区中的一个 crate。
+- 负责命令匹配与执行分发
+- 支持权限检查
+- 可作为默认命令处理器使用
 
-## 提供内容
+## 快速开始
 
-- 围绕当前领域提供统一类型或抽象。
-- 与工作区其他模块协同组成完整框架能力。
-
-## 何时使用
-
-当你需要复用该领域的基础类型、trait 或工具能力。
-
-## 相关模块
-
-- `puniyu_logger`
-- `puniyu_config`
-- `puniyu_event`
-- `puniyu_message`
-- `puniyu_element`
-- `puniyu_context`
-
-> [!NOTE]
-> README 以当前工作区代码结构为准，适合快速了解模块职责；更细的 API 细节请直接阅读源码。
+在应用中通过 `App::builder().with_handler(...)` 注册它，作为命令处理入口。

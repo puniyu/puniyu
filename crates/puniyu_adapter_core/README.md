@@ -1,28 +1,14 @@
 # puniyu_adapter_core
 
-Puniyu 适配器核心库，统一适配器定义、API 聚合与注册表管理流程
+适配器协议层，定义适配器在 Puniyu 中的核心抽象和运行边界。
 
-## 定位
+## 特征
 
-`puniyu_adapter_core` 是 Puniyu 工作区中的一个 crate。
+- 提供 `Adapter` trait
+- 支持 runtime、config、hook、server 和 init 能力
+- 负责适配器注册与管理相关能力
+- 与 `puniyu_runtime`、`puniyu_hook`、`puniyu_server` 等模块协同工作
 
-## 提供内容
+## 快速开始
 
-- 围绕当前领域提供统一类型或抽象。
-- 与工作区其他模块协同组成完整框架能力。
-
-## 何时使用
-
-当你需要复用该领域的基础类型、trait 或工具能力。
-
-## 相关模块
-
-- `puniyu_adapter_types`
-- `puniyu_runtime`
-- `puniyu_config`
-- `puniyu_error`
-- `puniyu_server`
-- `puniyu_hook`
-
-> [!NOTE]
-> README 以当前工作区代码结构为准，适合快速了解模块职责；更细的 API 细节请直接阅读源码。
+从 `Adapter` trait 开始阅读，理解适配器如何接入运行时与服务能力。具体实现可以继续查看 `puniyu_adapter` 和 `puniyu_adapter_console`。

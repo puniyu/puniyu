@@ -10,6 +10,7 @@
 //! - 提供宏 `register_bot!` 与 `unregister_bot!`
 
 mod registry;
+use log::debug;
 #[doc(inline)]
 pub use registry::BotRegistry;
 mod macros;
@@ -18,7 +19,8 @@ mod types;
 pub use types::*;
 
 use puniyu_adapter_types::AdapterInfo;
-use puniyu_contact::ContactType;
+use puniyu_contact::{Contact, ContactType};
+use puniyu_logger::owo_colors::OwoColorize;
 use puniyu_message::Message;
 use puniyu_runtime::BotRuntime;
 use std::fmt::Debug;
@@ -45,6 +47,13 @@ impl dyn Bot + '_ {
 		contact: &ContactType<'_>,
 		message: &Message,
 	) -> puniyu_error::Result<puniyu_adapter_types::SendMsgType> {
+		let (msg_type, user_id) = match contact {
+			ContactType::Friend(friend) => ("PrivateMessage", &friend.peer()),
+			ContactType::Group(group) => ("GroupMssage", &group.peer()),
+			ContactType::GroupTemp(group) => ("Group TempMessage", &group.peer()),
+			ContactType::Guild(guild) => ("GuildMessage", &guild.peer()),
+		};
+		debug!("[{}:{}]\n{:#?}", format!("Send {}", msg_type).yellow(), user_id.green(), message);
 		self.runtime().send_message(contact, message).await
 	}
 }

@@ -1,27 +1,13 @@
 # puniyu_handler_hook
 
-Puniyu Hook 处理器，将事件分发到所有已注册的 Hook
+Hook 处理器，负责把事件分发到已注册的 Hook。
 
-## 定位
+## 特征
 
-`puniyu_handler_hook` 是 Puniyu 工作区中的一个 crate。
+- 负责 Hook 分发流程
+- 支持事件和状态 Hook 处理
+- 与 `puniyu_hook`、`puniyu_handler` 配合使用
 
-## 提供内容
+## 快速开始
 
-- 围绕当前领域提供统一类型或抽象。
-- 与工作区其他模块协同组成完整框架能力。
-
-## 何时使用
-
-当你需要复用该领域的基础类型、trait 或工具能力。
-
-## 相关模块
-
-- `puniyu_hook`
-- `puniyu_handler`
-- `puniyu_event`
-- `puniyu_error`
-- `puniyu_context`
-
-> [!NOTE]
-> README 以当前工作区代码结构为准，适合快速了解模块职责；更细的 API 细节请直接阅读源码。
+从 Hook 分发流程开始阅读，理解已注册 Hook 如何在处理链路中被执行。

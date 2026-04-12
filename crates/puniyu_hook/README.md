@@ -1,26 +1,13 @@
 # puniyu_hook
 
-Puniyu 钩子系统库，提供 Hook trait 与事件/状态钩子类型
+钩子系统库，提供 Hook trait 和事件 / 状态钩子类型。
 
-## 定位
+## 特征
 
-`puniyu_hook` 是 Puniyu 工作区中的一个 crate。
+- 提供 Hook 抽象
+- 支持事件钩子和状态钩子
+- 适合作为扩展处理链路的基础层
 
-## 提供内容
+## 快速开始
 
-- 围绕当前领域提供统一类型或抽象。
-- 与工作区其他模块协同组成完整框架能力。
-
-## 何时使用
-
-当你需要复用该领域的基础类型、trait 或工具能力。
-
-## 相关模块
-
-- `puniyu_context`
-- `puniyu_error`
-- `puniyu_event`
-- `puniyu_common`
-
-> [!NOTE]
-> README 以当前工作区代码结构为准，适合快速了解模块职责；更细的 API 细节请直接阅读源码。
+从 Hook 类型和 Hook trait 开始阅读，理解扩展逻辑如何接入处理流程。

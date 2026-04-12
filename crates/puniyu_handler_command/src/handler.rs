@@ -100,13 +100,13 @@ impl CommandHandler {
 
 		let commands = CommandRegistry::get_with_command_name(&command_name);
 		if let Some(cmd) = commands.first() {
-			let current_permission = if let Some(group) = event.as_group() {
+			let current_permission = if event.is_master() {
+				Permission::Master
+			} else if let Some(group) = event.as_group() {
 				if group.is_owner() {
 					Permission::Owner
 				} else if group.is_admin() {
 					Permission::Admin
-				} else if event.is_master() {
-					Permission::Master
 				} else {
 					Permission::All
 				}
@@ -115,8 +115,6 @@ impl CommandHandler {
 					Permission::Owner
 				} else if group_temp.is_admin() {
 					Permission::Admin
-				} else if event.is_master() {
-					Permission::Master
 				} else {
 					Permission::All
 				}
@@ -125,13 +123,9 @@ impl CommandHandler {
 					Permission::Owner
 				} else if guild.is_admin() {
 					Permission::Admin
-				} else if event.is_master() {
-					Permission::Master
 				} else {
 					Permission::All
 				}
-			} else if event.is_master() {
-				Permission::Master
 			} else {
 				Permission::All
 			};

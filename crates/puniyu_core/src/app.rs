@@ -2,6 +2,7 @@ mod adapter;
 mod hook;
 mod loader;
 mod plugin;
+mod config;
 #[cfg(feature = "server")]
 mod server;
 

@@ -1,19 +1,19 @@
 # puniyu_macros
 
-Puniyu crate for proc-macro
+过程宏库，提供插件、适配器、命令和任务等声明式入口。
 
-## 定位
+## 特征
 
-`puniyu_macros` 是 Puniyu 工作区中的一个 crate。
+- 提供 `#[plugin]` 和 `#[adapter]` 宏
+- 提供 `#[command]`、`#[task]`、配置与 Hook 相关宏
+- 用于减少插件和适配器开发中的样板代码
 
-## 提供内容
+## 快速开始
 
-- 围绕当前领域提供统一类型或抽象。
-- 与工作区其他模块协同组成完整框架能力。
+```rust
+use puniyu_plugin::prelude::*;
+use puniyu_macros::plugin;
 
-## 何时使用
-
-当你需要复用该领域的基础类型、trait 或工具能力。
-
-> [!NOTE]
-> README 以当前工作区代码结构为准，适合快速了解模块职责；更细的 API 细节请直接阅读源码。
+#[plugin]
+async fn __main() {}
+```

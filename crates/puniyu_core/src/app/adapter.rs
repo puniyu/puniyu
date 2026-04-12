@@ -1,66 +1,54 @@
-use log::error;
 use puniyu_adapter_core::Adapter;
 use puniyu_adapter_core::AdapterRegistry;
 use puniyu_common::source::SourceType;
-use puniyu_config::ConfigRegistry;
 use puniyu_path::adapter::*;
 use std::sync::Arc;
-use tokio::fs::{create_dir_all, write};
+use tokio::fs::create_dir_all;
 
 pub async fn init_adapter(adapter: Arc<dyn Adapter>) {
 	let name = adapter.runtime().adapter_info().name.clone();
 	let hooks = adapter.hook();
 	#[cfg(feature = "server")]
 	let servers = adapter.server();
-	let index = match AdapterRegistry::register(Arc::clone(&adapter)) {
-		Ok(index) => index,
-		Err(e) => return error!("Failed to register adapter {}: {}", name, e),
-	};
+	let index = AdapterRegistry::register(Arc::clone(&adapter))
+		.unwrap_or_else(|e| panic!("Failed to register adapter {}: {}", name, e));
 	let source = SourceType::Adapter(index);
-	if !hooks.is_empty()
-		&& let Err(e) = super::hook::init_hook(source, hooks)
-	{
-		error!("Failed to init hook for adapter {}: {}", name, e);
+	if !hooks.is_empty() {
+		super::hook::init_hook(source, hooks)
+			.unwrap_or_else(|e| panic!("Failed to init hook for adapter {}: {}", name, e));
 	}
 	#[cfg(feature = "server")]
 	{
-		if let Some(server) = servers
-			&& let Err(e) = super::server::init_server(source, server)
-		{
-			error!("Failed to init server for adapter {}: {}", name, e);
+		if let Some(server) = servers {
+			super::server::init_server(source, server)
+				.unwrap_or_else(|e| panic!("Failed to init server for adapter {}: {}", name, e));
 		}
 	}
 	if !config_dir().join(&name).exists() {
-		let _ = create_dir_all(config_dir().join(&name)).await;
+		create_dir_all(config_dir().join(&name))
+			.await
+			.unwrap_or_else(|e| panic!("Failed to create config dir for adapter {}: {}", name, e));
 	}
 	if !data_dir().join(&name).exists() {
-		let _ = create_dir_all(data_dir().join(&name)).await;
+		create_dir_all(data_dir().join(&name))
+			.await
+			.unwrap_or_else(|e| panic!("Failed to create data dir for adapter {}: {}", name, e));
 	}
 	if !resource_dir().join(&name).exists() {
-		let _ = create_dir_all(resource_dir().join(&name)).await;
+		create_dir_all(resource_dir().join(&name))
+			.await
+			.unwrap_or_else(|e| panic!("Failed to create resource dir for adapter {}: {}", name, e));
 	}
 	if !temp_dir().join(&name).exists() {
-		let _ = create_dir_all(temp_dir().join(&name)).await;
+		create_dir_all(temp_dir().join(&name))
+			.await
+			.unwrap_or_else(|e| panic!("Failed to create temp dir for adapter {}: {}", name, e));
 	}
 
-	if let Err(e) = adapter.init().await {
-		error!("Failed to init adapter: {}", e);
-	}
+	adapter
+		.init()
+		.await
+		.unwrap_or_else(|e| panic!("Failed to init adapter {}: {}", name, e));
 
-	let configs = adapter.config();
-	if !configs.is_empty() {
-		for config in configs {
-			let config = config.config();
-			let path = config_dir().join(&name).join(&config.name);
-			if let Some(parent) = path.parent()
-				&& !parent.exists()
-			{
-				let _ = create_dir_all(parent).await;
-			}
-			if !path.exists() {
-				let _ = write(&path, config.value.to_string()).await;
-			}
-			let _ = ConfigRegistry::register(config);
-		}
-	}
+	super::config::init_config(&name, adapter.config()).await;
 }

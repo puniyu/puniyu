@@ -11,11 +11,12 @@ use puniyu_element::receive::Elements;
 
 /// 消息事件枚举
 ///
-/// 统一的消息事件类型，包含好友消息、群消息和群临时消息。
+/// 统一的消息事件类型，包含好友消息、群消息、群临时消息和频道消息。
 ///
 /// 如果只需要判断消息类别，优先使用 [`MessageBase`] 提供的
-/// `is_friend()` / `is_group()` / `is_group_temp()`；
-/// 如果需要获取具体消息类型，再使用 `as_friend()` / `as_group()` / `as_group_temp()`。
+/// `is_friend()` / `is_group()` / `is_group_temp()` / `is_guild()`；
+/// 如果需要获取具体消息类型，再使用
+/// `as_friend()` / `as_group()` / `as_group_temp()` / `as_guild()`。
 #[derive(Debug, Clone)]
 pub enum MessageEvent<'m> {
 	/// 好友消息事件

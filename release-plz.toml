@@ -6,6 +6,12 @@ release = true
 git_release_enable = false
 git_release_body = """
 {{ changelog }}
+{% if remote.contributors %}
+### 贡献者
+{% for contributor in remote.contributors %}
+* @{{ contributor.username }}
+{% endfor %}
+{% endif %}
 """
 git_tag_enable = false
 pr_branch_prefix = "release-"
@@ -311,7 +317,9 @@ changelog_include = ["puniyu_plugin", "puniyu_common"]
 name = "puniyu"
 publish = false
 git_tag_enable = true
-git_tag_name = "puniyu-v{{ version }}"
+git_tag_name = "v{{ version }}"
 git_only = true
+git_release_name = "v{{ version }}"
+git_release_latest = true
 version_group = "puniyu"
 changelog_include = ["puniyu_core"]

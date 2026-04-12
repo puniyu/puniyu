@@ -1,26 +1,13 @@
 # puniyu_common
 
-Puniyu crate for common
+通用能力库，提供应用信息等高频公共能力。
 
-## 定位
+## 特征
 
-`puniyu_common` 是 Puniyu 工作区中的一个 crate。
+- 提供公共应用信息入口
+- 暴露 `source`、`app` 等通用模块
+- 适合作为基础公共能力层复用
 
-## 提供内容
+## 快速开始
 
-- 围绕当前领域提供统一类型或抽象。
-- 与工作区其他模块协同组成完整框架能力。
-- 公开的模块入口包括 `source`、`app`。
-
-## 何时使用
-
-当你需要复用该领域的基础类型、trait 或工具能力。
-
-## 相关模块
-
-- `puniyu_system_info`
-- `puniyu_version`
-- `puniyu_error`
-
-> [!NOTE]
-> README 以当前工作区代码结构为准，适合快速了解模块职责；更细的 API 细节请直接阅读源码。
+从 `app` 和 `source` 模块开始阅读，了解通用公共能力如何被其他模块复用。
