@@ -1,29 +1,19 @@
 # puniyu_version
 
-轻量版本号类型，统一表示 `major.minor.patch`。
+Puniyu 轻量版本号类型，提供三段式语义版本表示与 semver 互转
 
-## 特性
+## 定位
 
-- 🔢 **三段版本**: 仅表示 `major.minor.patch`
-- ✍️ **易用接口**: 支持构造、显示、解析
-- 🔄 **类型互转**: 支持与 `semver` 互转
-- 🧩 **序列化**: 支持 `serde` 序列化与反序列化
+`puniyu_version` 是 Puniyu 工作区中的一个 crate。
 
-## 示例
+## 提供内容
 
-```rust
-use std::str::FromStr;
-use puniyu_version::Version;
+- 围绕当前领域提供统一类型或抽象。
+- 与工作区其他模块协同组成完整框架能力。
 
-let v = Version::new(1, 2, 3);
-assert_eq!(v.to_string(), "1.2.3");
+## 何时使用
 
-let parsed = Version::from_str("1.2.3-beta.1+build.9").unwrap();
-assert_eq!(parsed, Version::new(1, 2, 3));
-```
+当你需要复用该领域的基础类型、trait 或工具能力。
 
-说明：预发布和构建元数据会被忽略，只保留核心三段版本。
-
-## 许可证
-
-本项目采用 [LGPL-3.0](../../LICENSE) 许可证。
+> [!NOTE]
+> README 以当前工作区代码结构为准，适合快速了解模块职责；更细的 API 细节请直接阅读源码。

@@ -2,13 +2,13 @@ use crate::tools::cooldown;
 use crate::{config, message, tools};
 use async_trait::async_trait;
 use itertools::Itertools as _;
-use puniyu_command::{CommandAction, CommandRegistry, Permission};
+use log::info;
+use puniyu_command::{CommandAction, CommandRegistry, Permission, has_permission};
 use puniyu_command_parser::CommandParser;
 use puniyu_config::app_config;
 use puniyu_context::MessageContext;
 use puniyu_event::{Event, EventBase, message::MessageBase};
 use puniyu_handler::Handler;
-use log::info;
 use puniyu_logger::owo_colors::OwoColorize;
 use puniyu_plugin_core::PluginRegistry;
 use std::collections::HashMap;
@@ -35,7 +35,6 @@ impl CommandHandler {
 		prefixes
 	}
 
-	/// 检查消息是否匹配命令
 	fn matches_command(event: &MessageContext) -> bool {
 		if !tools::check_perm(event) {
 			return false;
@@ -77,10 +76,10 @@ impl CommandHandler {
 		}
 	}
 
-	/// 处理命令执行
 	async fn handle_command(&self, event: &MessageContext<'_>) {
 		let original_text = Self::get_text(event);
-		let aliases = config::get_bot_alias(event.self_id());
+		let bot_id = event.self_id();
+		let aliases = config::get_bot_alias(bot_id);
 
 		let parser = match CommandParser::builder()
 			.aliases(aliases)
@@ -99,15 +98,54 @@ impl CommandHandler {
 		let command_name = parser.command_name().to_string();
 		let parsed_args = parser.into_inner();
 
-		// 检查权限
 		let commands = CommandRegistry::get_with_command_name(&command_name);
-		if let Some(cmd) = commands.first()
-			&& cmd.builder.permission() == Permission::Master
-			&& !event.is_master()
-		{
-			let msg = puniyu_message::Message::from("呜喵～这是只有主人才能用的命令哦!");
-			let _ = event.reply(msg).await;
-			return;
+		if let Some(cmd) = commands.first() {
+			let current_permission = if let Some(group) = event.as_group() {
+				if group.is_owner() {
+					Permission::Owner
+				} else if group.is_admin() {
+					Permission::Admin
+				} else if event.is_master() {
+					Permission::Master
+				} else {
+					Permission::All
+				}
+			} else if let Some(group_temp) = event.as_group_temp() {
+				if group_temp.is_owner() {
+					Permission::Owner
+				} else if group_temp.is_admin() {
+					Permission::Admin
+				} else if event.is_master() {
+					Permission::Master
+				} else {
+					Permission::All
+				}
+			} else if let Some(guild) = event.as_guild() {
+				if guild.is_owner() {
+					Permission::Owner
+				} else if guild.is_admin() {
+					Permission::Admin
+				} else if event.is_master() {
+					Permission::Master
+				} else {
+					Permission::All
+				}
+			} else if event.is_master() {
+				Permission::Master
+			} else {
+				Permission::All
+			};
+
+			if !has_permission!(current_permission, cmd.builder.permission()) {
+				let msg = match cmd.builder.permission() {
+					Permission::Master => "暂无权限, 只有主人才能操作",
+					Permission::Owner => "暂无权限, 只有群主或频道主才能操作",
+					Permission::Admin => "暂无权限, 只有管理员才能操作!",
+					Permission::All => unreachable!(),
+				};
+				let _ = event.reply(puniyu_message::Message::from(msg)).await;
+				return;
+			}
 		}
 
 		let message_ctx = MessageContext::new(event.event(), parsed_args);

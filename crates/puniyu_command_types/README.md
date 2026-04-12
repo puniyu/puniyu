@@ -1,37 +1,23 @@
 # puniyu_command_types
 
-统一的 puniyu 命令类型库，覆盖命令参数、参数值、权限与执行动作场景。
+Puniyu 命令类型库，统一命令参数、参数值、权限与执行动作模型
 
-## 特性
+## 定位
 
-- 🧩 提供 `Arg`、`ArgValue`、`ArgType`、`ArgMode`
-- 🔐 提供 `Permission` 与 `CommandAction`
-- 🔗 支持链式定义命令参数
-- 🔄 支持 `serde` 序列化和 `strum` 字符串转换
+`puniyu_command_types` 是 Puniyu 工作区中的一个 crate。
 
-## 示例
+## 提供内容
 
-```rust
-use puniyu_command_types::{Arg, ArgMode, ArgType, ArgValue, CommandAction, Permission};
+- 围绕当前领域提供统一类型或抽象。
+- 与工作区其他模块协同组成完整框架能力。
 
-let arg = Arg::string("name").required().description("用户名");
-assert_eq!(arg.arg_type, ArgType::String);
-assert_eq!(arg.mode, ArgMode::Positional);
+## 何时使用
 
-let value = ArgValue::from("Alice");
-assert_eq!(value.as_str(), Some("Alice"));
+当你需要复用该领域的基础类型、trait 或工具能力。
 
-assert_eq!(Permission::default(), Permission::All);
-assert_eq!(CommandAction::done().unwrap(), CommandAction::Done);
-```
+## 相关模块
 
-## 类型
+- `puniyu_error`
 
-- `Arg` / `ArgValue`: 命令参数定义和运行时参数值
-- `ArgType` / `ArgMode`: 参数数据类型和匹配模式
-- `Permission`: 命令权限级别
-- `CommandAction`: 命令执行后的传播动作
-
-## 许可证
-
-本项目采用 [LGPL-3.0](../../LICENSE) 许可证。
+> [!NOTE]
+> README 以当前工作区代码结构为准，适合快速了解模块职责；更细的 API 细节请直接阅读源码。

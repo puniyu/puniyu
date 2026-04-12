@@ -1,59 +1,28 @@
 # puniyu_adapter_core
 
-统一的 puniyu 适配器核心库，覆盖适配器定义、元信息与注册表管理场景。
+Puniyu 适配器核心库，统一适配器定义、API 聚合与注册表管理流程
 
-## 特性
+## 定位
 
-- 🧩 提供 `Adapter` trait 定义适配器行为
-- 📦 提供 `AdapterRegistry` 管理适配器注册与查询
-- 🔌 组合 `puniyu_runtime` 与 `puniyu_adapter_types`
-- 🔄 支持配置、钩子、服务器与初始化流程扩展
+`puniyu_adapter_core` 是 Puniyu 工作区中的一个 crate。
 
-## 示例
+## 提供内容
 
-```rust,ignore
-use async_trait::async_trait;
-use std::sync::Arc;
+- 围绕当前领域提供统一类型或抽象。
+- 与工作区其他模块协同组成完整框架能力。
 
-use puniyu_runtime::{FrameworkRuntime, SendMessage};
-use puniyu_adapter_core::Adapter;
-use puniyu_adapter_types::{adapter_info, AdapterPlatform, AdapterProtocol, SendMsgType};
-use puniyu_contact::ContactType;
-use puniyu_message::Message;
+## 何时使用
 
-struct MyRuntime;
+当你需要复用该领域的基础类型、trait 或工具能力。
 
-#[async_trait]
-impl SendMessage for MyRuntime {
-    async fn send_message(
-        &self,
-        _contact: &ContactType<'_>,
-        _message: &Message,
-    ) -> puniyu_error::Result<SendMsgType> {
-        Ok(SendMsgType { message_id: "msg-1".into(), time: 0 })
-    }
-}
+## 相关模块
 
-struct MyAdapter;
+- `puniyu_adapter_types`
+- `puniyu_runtime`
+- `puniyu_config`
+- `puniyu_error`
+- `puniyu_server`
+- `puniyu_hook`
 
-#[async_trait]
-impl Adapter for MyAdapter {
-    fn info(&self) -> puniyu_adapter_types::AdapterInfo {
-        adapter_info!("console", AdapterPlatform::QQ, AdapterProtocol::Console)
-    }
-
-    fn runtime(&self) -> Arc<dyn FrameworkRuntime> {
-        Arc::new(MyRuntime)
-    }
-}
-```
-
-## 主要类型
-
-- `Adapter`: 适配器行为接口
-- `AdapterRegistry`: 适配器注册与查询入口
-- `AdapterId`: 适配器标识符
-
-## 许可证
-
-本项目采用 [LGPL-3.0](../../LICENSE) 许可证。
+> [!NOTE]
+> README 以当前工作区代码结构为准，适合快速了解模块职责；更细的 API 细节请直接阅读源码。

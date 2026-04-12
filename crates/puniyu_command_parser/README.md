@@ -1,36 +1,24 @@
 # puniyu_command_parser
 
-统一的 puniyu 命令解析器，覆盖命令文本解析、别名剥离、前缀处理与参数验证场景。
+Puniyu 命令解析器，统一命令文本解析、别名剥离与参数验证流程
 
-## 特性
+## 定位
 
-- 🧩 提供 `CommandParser` 与 `CommandParserBuilder`
-- ✂️ 支持按顺序剥离 bot 别名和命令前缀
-- ✅ 支持结合 `puniyu_command` 注册表做参数验证
-- 🔢 支持字符串、整数、浮点数和布尔参数
+`puniyu_command_parser` 是 Puniyu 工作区中的一个 crate。
 
-## 示例
+## 提供内容
 
-```rust,no_run
-use puniyu_command_parser::CommandParser;
+- 围绕当前领域提供统一类型或抽象。
+- 与工作区其他模块协同组成完整框架能力。
 
-let parser = CommandParser::builder()
-    .aliases(vec!["@bot".to_string()])
-    .prefix(vec!["!".to_string()])
-    .parse("@bot !greet --name Alice")?;
+## 何时使用
 
-assert_eq!(parser.command_name(), "greet");
-assert!(parser.contains("name"));
-# Ok::<(), puniyu_command_parser::Error>(())
-```
+当你需要复用该领域的基础类型、trait 或工具能力。
 
-## 输出
+## 相关模块
 
-- `command_name()`: 获取解析后的命令名
-- `get()`: 获取指定参数值
-- `keys()`: 遍历已解析参数名
-- `into_inner()`: 取出完整参数表
+- `puniyu_command_types`
+- `puniyu_command`
 
-## 许可证
-
-本项目采用 [LGPL-3.0](../../LICENSE) 许可证。
+> [!NOTE]
+> README 以当前工作区代码结构为准，适合快速了解模块职责；更细的 API 细节请直接阅读源码。

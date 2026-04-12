@@ -5,43 +5,18 @@
 //! ## 特性
 //!
 //! - 提供 [`Runtime`] 作为只读运行时访问视图
-//! - 提供 [`SendMessage`] 作为适配器发送能力 trait
-//! - 提供 [`FrameworkRuntime`] 供框架内部组合 runtime 与发送能力
+//! - 提供 [`AdapterProvider`] 访问适配器信息
+//! - 提供 [`AdapterRuntime`] 作为适配器级运行时
+//! - 提供 [`AccountProvider`] 访问 bot 账号信息
+//! - 提供 [`BotRuntime`] 作为 bot 级运行时
+//! - 提供 [`SendMessage`] 作为发送能力 trait
 //! - 提供 [`Runtime::downcast_ref`] 访问适配器私有运行时能力
-//!
-//! ## 示例
-//!
-//! ```rust,ignore
-//! use async_trait::async_trait;
-//! use puniyu_runtime::{FrameworkRuntime, Runtime, SendMessage};
-//! use puniyu_adapter_types::SendMsgType;
-//! use puniyu_contact::ContactType;
-//! use puniyu_message::Message;
-//!
-//! struct MyRuntime;
-//!
-//! #[async_trait]
-//! impl SendMessage for MyRuntime {
-//!     async fn send_message(
-//!         &self,
-//!         _contact: &ContactType<'_>,
-//!         _message: &Message,
-//!     ) -> puniyu_error::Result<SendMsgType> {
-//!         Ok(SendMsgType { message_id: "msg-1".into(), time: 0 })
-//!     }
-//! }
-//!
-//! let runtime: &dyn Runtime = &MyRuntime;
-//! let _ = runtime.downcast_ref::<MyRuntime>();
-//!
-//! let framework_runtime: &dyn FrameworkRuntime = &MyRuntime;
-//! let _ = framework_runtime;
-//! ```
 
 use std::any::Any;
 
 use async_trait::async_trait;
-use puniyu_adapter_types::SendMsgType;
+use puniyu_account::AccountInfo;
+use puniyu_adapter_types::{AdapterInfo, SendMsgType};
 use puniyu_contact::ContactType;
 use puniyu_error::Result;
 use puniyu_message::Message;
@@ -60,6 +35,18 @@ impl dyn Runtime {
 	}
 }
 
+pub trait AdapterProvider: Send + Sync {
+	fn adapter_info(&self) -> &AdapterInfo;
+}
+
+pub trait AdapterRuntime: Runtime + AdapterProvider + SendMessage {}
+
+impl<T> AdapterRuntime for T where T: Runtime + AdapterProvider + SendMessage {}
+
+pub trait AccountProvider: Send + Sync {
+	fn account_info(&self) -> &AccountInfo;
+}
+
 #[async_trait]
 pub trait SendMessage: Send + Sync {
 	async fn send_message(
@@ -69,8 +56,6 @@ pub trait SendMessage: Send + Sync {
 	) -> Result<SendMsgType>;
 }
 
-#[doc(hidden)]
-#[async_trait]
-pub trait FrameworkRuntime: Runtime + SendMessage {}
+pub trait BotRuntime: AdapterRuntime + AccountProvider {}
 
-impl<T> FrameworkRuntime for T where T: Runtime + SendMessage {}
+impl<T> BotRuntime for T where T: AdapterRuntime + AccountProvider {}

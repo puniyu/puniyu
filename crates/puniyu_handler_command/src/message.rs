@@ -1,7 +1,7 @@
+use log::info;
 use puniyu_context::MessageContext;
 use puniyu_element::receive::Elements;
 use puniyu_event::{EventBase, message::MessageBase};
-use log::info;
 pub fn log(event: &MessageContext) {
 	let raw_message = event
 		.elements()

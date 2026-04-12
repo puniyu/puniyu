@@ -137,7 +137,6 @@ impl From<&MessageSubEventType> for SubEventType {
 	}
 }
 
-
 /// 事件基础 trait
 ///
 /// 定义所有事件类型的通用接口，提供事件的基本信息访问方法。
@@ -181,7 +180,7 @@ pub trait EventBase: Send + Sync {
 	fn sub_event(&self) -> SubEventType;
 
 	/// 获取机器人实例。
-	fn bot(&self) -> &Bot;
+	fn bot(&self) -> &dyn Bot;
 
 	/// 获取机器人 ID。
 	fn self_id(&self) -> &str;

@@ -1,4 +1,5 @@
 use async_trait::async_trait;
+use log::error;
 use puniyu_context::EventContext;
 use puniyu_event::Event;
 use puniyu_event::EventBase;
@@ -6,7 +7,6 @@ use puniyu_handler::Handler;
 use puniyu_hook::HookEventType;
 use puniyu_hook::HookRegistry;
 use puniyu_hook::HookType;
-use log::error;
 
 /// Hook 处理器，将事件按优先级分发到所有匹配的已注册 Hook。
 pub struct HookHandler;

@@ -44,7 +44,7 @@ pub struct GroupTempSender<'s> {
 }
 
 impl<'s> GroupTempSender<'s> {
-    #[allow(clippy::too_many_arguments)]
+	#[allow(clippy::too_many_arguments)]
 	pub fn new<U, N, C, T>(
 		user_id: U,
 		nick: Option<N>,

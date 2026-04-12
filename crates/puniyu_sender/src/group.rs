@@ -114,7 +114,6 @@ impl<'s> Sender for GroupSender<'s> {
 	}
 }
 
-
 /// 构建群聊发送者。
 ///
 /// ```rust
@@ -146,4 +145,3 @@ macro_rules! sender_group {
 			.expect("Failed to build GroupSender")
 	}};
 }
-

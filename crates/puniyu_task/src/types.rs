@@ -1,8 +1,8 @@
 use crate::Task;
 #[cfg(feature = "registry")]
-use puniyu_logger::owo_colors::OwoColorize;
-#[cfg(feature = "registry")]
 use log::{error, info};
+#[cfg(feature = "registry")]
+use puniyu_logger::owo_colors::OwoColorize;
 use std::borrow::Cow;
 use std::sync::Arc;
 #[cfg(feature = "registry")]

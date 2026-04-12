@@ -1,34 +1,24 @@
 # puniyu_dispatch
 
-puniyu 事件分发库，提供全局事件发射器用于异步事件处理。
+Puniyu 事件分发库，提供全局事件发射器用于异步事件处理
 
-## 特性
+## 定位
 
-- ⚡ **异步分发**: 基于 tokio 异步运行时，支持高并发事件处理
-- 📊 **优先级调度**: 处理器按 `priority()` 升序依次执行
-- 🌐 **全局单例**: 通过 `EventEmitter` 在任意位置发送事件
-- 🛡️ **容错处理**: 单个处理器出错不影响后续处理器执行
+`puniyu_dispatch` 是 Puniyu 工作区中的一个 crate。
 
-## 示例
+## 提供内容
 
-```rust
-use puniyu_dispatch::EventEmitter;
-use puniyu_event::Event;
+- 围绕当前领域提供统一类型或抽象。
+- 与工作区其他模块协同组成完整框架能力。
 
-#[tokio::main]
-async fn main() {
-    // 启动事件发射器
-    EventEmitter::run().expect("启动失败");
+## 何时使用
 
-    // 分发事件到所有已注册处理器
-    let event = Event::Message(message_event);
-    EventEmitter::emit(event).await.unwrap();
+当你需要复用该领域的基础类型、trait 或工具能力。
 
-    // 停止事件发射器
-    EventEmitter::stop();
-}
-```
+## 相关模块
 
-## 许可证
+- `puniyu_event`
+- `puniyu_handler`
 
-本项目采用 [LGPL-3.0](../../LICENSE) 许可证。
+> [!NOTE]
+> README 以当前工作区代码结构为准，适合快速了解模块职责；更细的 API 细节请直接阅读源码。

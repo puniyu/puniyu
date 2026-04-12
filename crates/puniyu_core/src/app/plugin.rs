@@ -1,8 +1,8 @@
+use log::error;
 use puniyu_command::Command;
 use puniyu_common::source::SourceType;
 use puniyu_config::ConfigRegistry;
 use puniyu_error::registry::Error;
-use log::error;
 use puniyu_path::plugin::*;
 use puniyu_plugin_core::Plugin;
 use puniyu_plugin_core::PluginRegistry;

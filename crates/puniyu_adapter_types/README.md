@@ -1,41 +1,26 @@
 # puniyu_adapter_types
 
-统一的 puniyu 适配器类型库，覆盖适配器信息、消息结果与群好友资料场景。
+Puniyu 适配器类型库，统一适配器信息、消息结果与群好友资料模型
 
-## 特性
+## 定位
 
-- 🧩 提供 `AdapterInfo` 和 `adapter_info!` 宏
-- 💬 提供 `MessageType`、`SendMsgType`、`MessageInfo`
-- 👥 提供群聊、成员、好友资料类型
-- 🌐 提供平台、标准、协议与通信方式枚举
+`puniyu_adapter_types` 是 Puniyu 工作区中的一个 crate。
 
-## 示例
+## 提供内容
 
-```rust
-use puniyu_adapter_types::{adapter_info, AdapterPlatform, AdapterProtocol, MessageType};
+- 围绕当前领域提供统一类型或抽象。
+- 与工作区其他模块协同组成完整框架能力。
 
-let info = adapter_info!(
-    "console",
-    AdapterPlatform::QQ,
-    AdapterProtocol::Console
-);
+## 何时使用
 
-assert_eq!(info.name, "console");
+当你需要复用该领域的基础类型、trait 或工具能力。
 
-let message = MessageType::from("12345");
-match message {
-    MessageType::Id(id) => assert_eq!(id, "12345"),
-    MessageType::Seq(_) => unreachable!(),
-}
-```
+## 相关模块
 
-## 类型
+- `puniyu_sender`
+- `puniyu_contact`
+- `puniyu_version`
+- `puniyu_element`
 
-- `AdapterInfo`: 适配器元信息
-- `MessageType` / `SendMsgType` / `MessageInfo`: 消息标识和消息结果
-- `GroupInfo` / `MemberInfo` / `UserInfo`: 群聊和好友资料
-- `AdapterPlatform` / `AdapterProtocol` / `AdapterCommunication`: 适配器能力标识
-
-## 许可证
-
-本项目采用 [LGPL-3.0](../../LICENSE) 许可证。
+> [!NOTE]
+> README 以当前工作区代码结构为准，适合快速了解模块职责；更细的 API 细节请直接阅读源码。

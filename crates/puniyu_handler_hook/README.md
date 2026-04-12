@@ -1,24 +1,27 @@
 # puniyu_handler_hook
 
-puniyu Hook 处理器，将事件分发到所有已注册的 Hook。
+Puniyu Hook 处理器，将事件分发到所有已注册的 Hook
 
-## 特性
+## 定位
 
-- 🔌 **统一入口**: 提供 `Handler`（即 `HookHandler`）实现 `puniyu_handler::Handler` trait
-- 📊 **优先级调度**: Hook 按 `priority()` 升序依次执行
-- 🎯 **事件过滤**: 仅将事件分发到类型匹配的 Hook
-- 🛡️ **容错处理**: 单个 Hook 出错不影响后续 Hook 执行
+`puniyu_handler_hook` 是 Puniyu 工作区中的一个 crate。
 
-## 示例
+## 提供内容
 
-```rust,ignore
-use puniyu_handler::Handler;
-use puniyu_handler_hook::Handler as HookHandler;
+- 围绕当前领域提供统一类型或抽象。
+- 与工作区其他模块协同组成完整框架能力。
 
-let handler = HookHandler;
-assert_eq!(handler.name(), "hook");
-```
+## 何时使用
 
-## 许可证
+当你需要复用该领域的基础类型、trait 或工具能力。
 
-本项目采用 [LGPL-3.0](../../LICENSE) 许可证。
+## 相关模块
+
+- `puniyu_hook`
+- `puniyu_handler`
+- `puniyu_event`
+- `puniyu_error`
+- `puniyu_context`
+
+> [!NOTE]
+> README 以当前工作区代码结构为准，适合快速了解模块职责；更细的 API 细节请直接阅读源码。

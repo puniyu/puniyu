@@ -1,32 +1,26 @@
 # puniyu_hook
 
-钩子系统库，提供统一的 `Hook` 接口和钩子类型定义。
+Puniyu 钩子系统库，提供 Hook trait 与事件/状态钩子类型
 
-## 特性
+## 定位
 
-- 🎣 **统一接口**: 通过 `Hook` trait 定义名称、类型、优先级和执行逻辑
-- ⚡ **异步执行**: 基于 `async_trait` 的异步钩子调用
-- 🧩 **类型系统**: 提供 `HookType`、`HookEventType`、`StatusType` 等类型
-- 📚 **注册管理**: 启用 `registry` feature 后可使用 `HookRegistry`
+`puniyu_hook` 是 Puniyu 工作区中的一个 crate。
 
-## 示例
+## 提供内容
 
-```rust,ignore
-use async_trait::async_trait;
-use puniyu_context::EventContext;
-use puniyu_hook::{Hook, HookEventType, HookType};
+- 围绕当前领域提供统一类型或抽象。
+- 与工作区其他模块协同组成完整框架能力。
 
-struct LogHook;
+## 何时使用
 
-#[async_trait]
-impl Hook for LogHook {
-    fn name(&self) -> &'static str { "log_hook" }
-    fn r#type(&self) -> &HookType { &HookType::Event(HookEventType::Extension) }
-    fn priority(&self) -> u32 { 100 }
-    async fn run(&self, _ctx: Option<&EventContext>) -> puniyu_error::Result { Ok(()) }
-}
-```
+当你需要复用该领域的基础类型、trait 或工具能力。
 
-## 许可证
+## 相关模块
 
-本项目采用 [LGPL-3.0](../../LICENSE) 许可证。
+- `puniyu_context`
+- `puniyu_error`
+- `puniyu_event`
+- `puniyu_common`
+
+> [!NOTE]
+> README 以当前工作区代码结构为准，适合快速了解模块职责；更细的 API 细节请直接阅读源码。

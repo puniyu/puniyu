@@ -1,28 +1,20 @@
 # puniyu_error
 
-错误类型库，提供配置与注册表场景的统一错误定义。
+Puniyu 错误类型库，提供配置与注册表场景的统一错误定义
 
-## 特性
+## 定位
 
-- 🧱 **统一错误模型**: 提供 `config::Error` 与 `registry::Error`
-- 🔧 **按需启用**: 支持 `config`、`registry`、`full` feature
-- 🔄 **统一结果类型**: 提供通用 `Result<T>` 别名
-- 📝 **清晰错误信息**: 基于 `thiserror` 输出可读错误消息
+`puniyu_error` 是 Puniyu 工作区中的一个 crate。
 
-## 示例
+## 提供内容
 
-```rust
-use puniyu_error::{registry, Result};
+- 围绕当前领域提供统一类型或抽象。
+- 与工作区其他模块协同组成完整框架能力。
+- 公开的模块入口包括 `config`、`registry`。
 
-fn check(name: &str, exists: bool) -> Result {
-    if exists {
-        Err(Box::new(registry::Error::Exists(name.to_string())))
-    } else {
-        Ok(())
-    }
-}
-```
+## 何时使用
 
-## 许可证
+当你需要复用该领域的基础类型、trait 或工具能力。
 
-本项目采用 [LGPL-3.0](../../LICENSE) 许可证。
+> [!NOTE]
+> README 以当前工作区代码结构为准，适合快速了解模块职责；更细的 API 细节请直接阅读源码。

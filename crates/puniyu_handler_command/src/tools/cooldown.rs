@@ -39,7 +39,7 @@ pub fn is_cooling_down(event: &MessageContext) -> bool {
 /// 设置消息冷却时间
 pub fn set_cooldown(event: &MessageContext) -> Result<(), Error> {
 	let bot_id = event.self_id();
-	bot::set_cooldown(event.self_id())?;
+	bot::set_cooldown(bot_id)?;
 	if let Some(event) = event.as_group() {
 		group::set_cooldown(event.group_id(), event.user_id(), bot_id)?;
 	} else {

@@ -26,6 +26,8 @@ pub fn command(item: zyn::syn::ItemFn, cfg: CommandArgs) -> zyn::TokenStream {
 		None => zyn! { None },
 	};
 	let command_permission = match cfg.permission.as_deref().unwrap_or("all") {
+		"master" => zyn! { ::puniyu_plugin::command::Permission::Master },
+		"owner" => zyn! { ::puniyu_plugin::command::Permission::Owner },
 		"admin" => zyn! { ::puniyu_plugin::command::Permission::Admin },
 		_ => zyn! { ::puniyu_plugin::command::Permission::All },
 	};

@@ -1,26 +1,20 @@
 # puniyu_element
 
-消息元素类型库，统一定义接收与发送元素模型。
+Puniyu 消息元素类型库，统一定义接收与发送元素模型
 
-## 特性
+## 定位
 
-- 📨 **双模型支持**: 提供 `receive` 与 `send` 两套元素类型
-- 🧱 **统一抽象**: 通过 `Element` trait 与 `ElementType` 统一访问
-- 🔄 **序列化友好**: 内置 `serde` 支持
-- ⚡ **便捷访问**: `Elements` 提供 `as_*` 方法快速匹配元素
+`puniyu_element` 是 Puniyu 工作区中的一个 crate。
 
-## 示例
+## 提供内容
 
-```rust
-use puniyu_element::send::{Elements, TextElement, FaceElement};
+- 围绕当前领域提供统一类型或抽象。
+- 与工作区其他模块协同组成完整框架能力。
+- 公开的模块入口包括 `receive`、`send`。
 
-let text = Elements::Text(TextElement::new("hello"));
-let face = Elements::Face(FaceElement::new(123u64));
+## 何时使用
 
-assert_eq!(text.as_text(), Some("hello"));
-assert!(face.as_face().is_some());
-```
+当你需要复用该领域的基础类型、trait 或工具能力。
 
-## 许可证
-
-本项目采用 [LGPL-3.0](../../LICENSE) 许可证。
+> [!NOTE]
+> README 以当前工作区代码结构为准，适合快速了解模块职责；更细的 API 细节请直接阅读源码。

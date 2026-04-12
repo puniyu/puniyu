@@ -58,7 +58,10 @@ fn test_contact_type_serde_roundtrip_preserves_variant_and_fields() {
 
 	let group_temp = contact!(GroupTemp, peer: "246810", name: "Temp Team");
 	let group_temp_json = serde_json::to_string(&group_temp).unwrap();
-	assert_eq!(group_temp_json, r#"{"type":"grouptemp","field0":{"peer":"246810","name":"Temp Team"}}"#);
+	assert_eq!(
+		group_temp_json,
+		r#"{"type":"grouptemp","field0":{"peer":"246810","name":"Temp Team"}}"#
+	);
 	let group_temp_roundtrip: ContactType<'_> = serde_json::from_str(&group_temp_json).unwrap();
 	assert!(group_temp_roundtrip.is_group_temp());
 	assert!(!group_temp_roundtrip.is_group());

@@ -1,31 +1,24 @@
 # puniyu_handler
 
-事件处理器库，提供统一的 `Handler` 接口。
+Puniyu 事件处理器库，提供 Handler trait 与可选注册表管理
 
-## 特性
+## 定位
 
-- 🎯 **统一接口**: 通过 `Handler` trait 定义名称、优先级和处理逻辑
-- ⚡ **异步处理**: 基于 `async_trait` 执行异步事件处理
-- 🧩 **事件集成**: 直接处理 `puniyu_event::Event`
-- 📚 **注册管理**: 启用 `registry` feature 后可使用 `HandlerRegistry`
+`puniyu_handler` 是 Puniyu 工作区中的一个 crate。
 
-## 示例
+## 提供内容
 
-```rust,ignore
-use async_trait::async_trait;
-use puniyu_event::Event;
-use puniyu_handler::Handler;
+- 围绕当前领域提供统一类型或抽象。
+- 与工作区其他模块协同组成完整框架能力。
 
-struct LogHandler;
+## 何时使用
 
-#[async_trait]
-impl Handler for LogHandler {
-    fn name(&self) -> &'static str { "log_handler" }
-    fn priority(&self) -> u32 { 5 }
-    async fn handle(&self, _event: &Event) -> puniyu_error::Result { Ok(()) }
-}
-```
+当你需要复用该领域的基础类型、trait 或工具能力。
 
-## 许可证
+## 相关模块
 
-本项目采用 [LGPL-3.0](../../LICENSE) 许可证。
+- `puniyu_event`
+- `puniyu_error`
+
+> [!NOTE]
+> README 以当前工作区代码结构为准，适合快速了解模块职责；更细的 API 细节请直接阅读源码。

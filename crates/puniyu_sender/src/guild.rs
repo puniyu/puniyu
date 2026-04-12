@@ -124,4 +124,3 @@ macro_rules! sender_guild {
 			.expect("Failed to build GuildSender")
 	}};
 }
-

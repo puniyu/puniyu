@@ -240,7 +240,7 @@ macro_rules! codegen_message {
 		$(#[$meta])*
 		#[derive(Debug, Clone)]
 		pub struct $name<'m> {
-			bot: &'m puniyu_bot::Bot,
+			bot: &'m dyn puniyu_bot::Bot,
 			event_id: &'m str,
 			time: u64,
 			user_id: &'m str,
@@ -254,7 +254,7 @@ macro_rules! codegen_message {
 			#[doc = concat!("使用完整参数构建 [`", stringify!($name), "`]。")]
 			#[allow(clippy::too_many_arguments)]
 			pub fn new(
-				bot: &'m puniyu_bot::Bot,
+				bot: &'m dyn puniyu_bot::Bot,
 				event_id: &'m str,
 				user_id: &'m str,
 				contact: &'m $contact<'m>,
@@ -281,7 +281,7 @@ macro_rules! codegen_message {
 			fn event_type(&self) -> $crate::EventType { $crate::EventType::Message }
 			fn event_id(&self) -> &str { self.event_id }
 			fn sub_event(&self) -> $crate::SubEventType { $crate::SubEventType::Message($sub_event) }
-			fn bot(&self) -> &puniyu_bot::Bot { self.bot }
+			fn bot(&self) -> &dyn puniyu_bot::Bot { self.bot }
 			fn self_id(&self) -> &str { self.bot.account().uin.as_str() }
 			fn user_id(&self) -> &str { self.user_id }
 			fn contact(&self) -> puniyu_contact::ContactType<'_> { self.contact.clone().into() }

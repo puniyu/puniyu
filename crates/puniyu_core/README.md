@@ -1,66 +1,37 @@
 # puniyu_core
 
-puniyu_core 是一个基于 Rust 开发的高性能机器人框架核心库，提供了插件化架构、事件驱动模型和丰富的扩展能力。
+`puniyu_core` 是应用装配层，负责把插件、适配器、处理器与加载器组织到同一个运行入口中。
 
-## 🌟 特性
+## 定位
 
-- **模块化设计**: 基于插件和适配器的可扩展架构
-- **异步支持**: 完全基于 Tokio 异步运行时
-- **配置管理**: 灵活的配置系统支持热重载
-- **日志系统**: 彩色输出和文件日志记录
-- **任务调度**: 内置定时任务调度器
-- **事件总线**: 高效的事件发布订阅机制
+在整个工作区里，`puniyu_core` 更像“框架启动器”。如果说 `puniyu_plugin_core` 和 `puniyu_adapter_core` 定义了能力边界，那么 `puniyu_core` 负责把这些边界对应的实现真正组合起来并运行。
 
-## 📦 核心模块
+## 提供内容
 
-### App 应用入口
+- `App`：应用实例与运行入口
+- `AppBuilder`：链式装配入口
+- 应用名称、Logo、工作目录等基础启动配置
+- 统一的初始化与运行流程
 
-- 提供 `App` 结构体作为应用主入口
-- 支持动态注册插件和适配器
-- 自动加载 `PLUGIN_DIR` 和 `ADAPTER_DIR` 中的动态库
+## 典型使用方式
 
-### 配置系统
+适合在你需要构建完整应用时使用，例如：
 
-- 使用 `Config` 结构体管理应用配置
-- 支持环境变量覆盖配置项
-- 提供配置热重载功能
+- 注册一个或多个插件
+- 注册一个或多个适配器
+- 挂载处理器或加载器
+- 调整应用名、Logo 或工作目录
 
-### 日志系统
+## 为什么重要
 
-- 基于环境变量的日志级别控制 (`LOGGER_LEVEL`)
-- 支持文件日志记录 (`LOGGER_FILE_ENABLE`)
-- 可配置日志保留天数 (`LOGGER_RETENTION_DAYS`)
+这个 crate 决定了“框架如何启动”，而不是“某个能力如何定义”。阅读它通常能最快建立对 Puniyu 整体运行方式的认识。
 
-### 插件系统
+## 相关模块
 
-- 动态加载插件
-- 提供 `get_plugin_info` 函数获取插件信息
-- 支持通过 `PluginRegistry` 管理插件生命周期
+- `puniyu_adapter_core`
+- `puniyu_plugin_core`
+- `puniyu_handler`
+- `puniyu_loader`
 
-### Bot 管理
-
-- 通过 `get_bot` 函数获取 Bot 实例
-- 支持按索引或 ID 查找 Bot
-
-## 🚀 快速开始
-
-```rust
-use puniyu_core::App;
-
-#[tokio::main]
-async fn main() {
-	let mut app = App::new();
-	app.add_plugin(&MyPlugin);
-	app.run().await;
-}
-```
-
-## 🛠 构建要求
-
-- Rust 1.70+
-- Cargo 包管理器
-- Tokio 运行时
-
-## 📄 许可证
-
-本项目采用 [LGPL](../../LICENSE) 许可证。
+> [!NOTE]
+> 如果你刚开始阅读仓库，`puniyu_core` 通常是仅次于 `packages/puniyu` 的第二个推荐入口。

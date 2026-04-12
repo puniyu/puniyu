@@ -1,8 +1,10 @@
-use crate::common::make_random_id;
-use async_trait::async_trait;
+mod bot;
+pub(crate) use bot::ConsoleBotRuntime;
+mod adapter;
+pub(crate) use adapter::ConsoleAdapterRuntime;
+
 use bytes::Bytes;
-use log::debug;
-use puniyu_adapter::prelude::*;
+use puniyu_adapter::{path::resource_dir, runtime::AdapterRuntime};
 use std::sync::{Arc, LazyLock};
 
 pub(crate) static AVATAR: LazyLock<Bytes> = LazyLock::new(|| {
@@ -10,35 +12,6 @@ pub(crate) static AVATAR: LazyLock<Bytes> = LazyLock::new(|| {
 	std::fs::read(logo_path).unwrap_or_default().into()
 });
 
-use std::time::{SystemTime, UNIX_EPOCH};
-
-pub struct Runtime;
-
-#[async_trait]
-impl puniyu_adapter::runtime::SendMessage for Runtime {
-	async fn send_message(
-		&self,
-		contact: &ContactType<'_>,
-		message: &Message,
-	) -> puniyu_adapter::Result<SendMsgType> {
-		let (msg_type, source) = match contact {
-			ContactType::Friend(friend) => ("私聊消息", &friend.scene()),
-			ContactType::Group(group) => ("群聊消息", &group.scene()),
-			ContactType::GroupTemp(group) => ("群临时消息", &group.scene()),
-			ContactType::Guild(guild) => ("频道消息", &guild.scene()),
-		};
-		let message_id = make_random_id();
-		let timestamp = SystemTime::now()
-			.duration_since(UNIX_EPOCH)
-			.map_err(Box::<dyn std::error::Error + Send + Sync>::from)?
-			.as_secs();
-
-		debug!("[发送{}:{}]\n{:#?}", msg_type, source, message);
-
-		Ok(SendMsgType { message_id, time: timestamp })
-	}
-}
-
-pub(crate) fn runtime() -> Arc<dyn puniyu_adapter::__private::FrameworkRuntime> {
-	Arc::new(Runtime)
+pub(crate) fn runtime() -> Arc<dyn AdapterRuntime> {
+	Arc::new(ConsoleAdapterRuntime::new())
 }

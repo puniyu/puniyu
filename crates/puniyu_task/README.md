@@ -1,32 +1,24 @@
 # puniyu_task
 
-轻量定时任务接口，基于 Cron 表达式定义任务执行时间。
+Puniyu 定时任务管理库，提供基于 Cron 表达式的任务调度功能
 
-## 特性
+## 定位
 
-- ⏰ **Cron 调度**: 使用标准 Cron 表达式定义任务执行时间
-- 🚀 **异步执行**: 基于 Tokio 的异步任务执行
-- 📝 **任务管理**: 支持注册、查询与卸载任务
-- 🔗 **插件集成**: 关联插件 ID，支持执行日志与时区调度
+`puniyu_task` 是 Puniyu 工作区中的一个 crate。
 
-## 示例
+## 提供内容
 
-```rust
-use async_trait::async_trait;
-use puniyu_task::Task;
+- 围绕当前领域提供统一类型或抽象。
+- 与工作区其他模块协同组成完整框架能力。
 
-struct CleanupTask;
+## 何时使用
 
-#[async_trait]
-impl Task for CleanupTask {
-    fn name(&self) -> &'static str { "cleanup" }
-    fn cron(&self) -> &'static str { "0 0 3 * * *" }
-    async fn run(&self) -> puniyu_error::Result { Ok(()) }
-}
-```
+当你需要复用该领域的基础类型、trait 或工具能力。
 
-说明：启用 `registry` feature 后可使用 `TaskRegistry` 进行注册、查询和卸载。
+## 相关模块
 
-## 许可证
+- `puniyu_error`
+- `puniyu_logger`
 
-本项目采用 [LGPL-3.0](../../LICENSE) 许可证。
+> [!NOTE]
+> README 以当前工作区代码结构为准，适合快速了解模块职责；更细的 API 细节请直接阅读源码。

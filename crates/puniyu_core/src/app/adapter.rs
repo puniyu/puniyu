@@ -1,14 +1,14 @@
+use log::error;
 use puniyu_adapter_core::Adapter;
 use puniyu_adapter_core::AdapterRegistry;
 use puniyu_common::source::SourceType;
 use puniyu_config::ConfigRegistry;
-use log::error;
 use puniyu_path::adapter::*;
 use std::sync::Arc;
 use tokio::fs::{create_dir_all, write};
 
 pub async fn init_adapter(adapter: Arc<dyn Adapter>) {
-	let name = adapter.info().name;
+	let name = adapter.runtime().adapter_info().name.clone();
 	let hooks = adapter.hook();
 	#[cfg(feature = "server")]
 	let servers = adapter.server();

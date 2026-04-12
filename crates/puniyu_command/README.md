@@ -1,50 +1,25 @@
 # puniyu_command
 
-统一的 puniyu 命令库，覆盖命令定义、元信息与注册表管理场景。
+Puniyu 命令库，统一命令定义、元信息与注册表管理流程
 
-## 特性
+## 定位
 
-- 🧩 提供 `Command` trait 定义命令行为
-- 📦 提供 `CommandRegistry` 管理命令注册与查询
-- 🔐 复用 `puniyu_command_types` 中的参数、权限和动作类型
-- 🔄 支持命令别名、优先级和权限控制
+`puniyu_command` 是 Puniyu 工作区中的一个 crate。
 
-## 示例
+## 提供内容
 
-```rust,ignore
-use async_trait::async_trait;
-use puniyu_command::{Arg, Command, CommandAction, Permission};
-use puniyu_context::MessageContext;
+- 围绕当前领域提供统一类型或抽象。
+- 与工作区其他模块协同组成完整框架能力。
 
-struct HelloCommand;
+## 何时使用
 
-#[async_trait]
-impl Command for HelloCommand {
-    fn name(&self) -> &'static str {
-        "hello"
-    }
+当你需要复用该领域的基础类型、trait 或工具能力。
 
-    fn args(&self) -> Vec<Arg<'static>> {
-        vec![Arg::string("name").required()]
-    }
+## 相关模块
 
-    fn permission(&self) -> Permission {
-        Permission::All
-    }
+- `puniyu_command_types`
+- `puniyu_context`
+- `puniyu_error`
 
-    async fn run(&self, _ctx: &MessageContext) -> puniyu_error::Result<CommandAction> {
-        CommandAction::done()
-    }
-}
-```
-
-## 主要类型
-
-- `Command`: 命令行为接口
-- `CommandRegistry`: 命令注册与查询入口
-- `CommandInfo`: 已注册命令的元信息
-- `CommandId`: 按索引或名称访问命令的标识符
-
-## 许可证
-
-本项目采用 [LGPL-3.0](../../LICENSE) 许可证。
+> [!NOTE]
+> README 以当前工作区代码结构为准，适合快速了解模块职责；更细的 API 细节请直接阅读源码。

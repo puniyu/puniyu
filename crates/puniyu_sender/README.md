@@ -1,39 +1,19 @@
 # puniyu_sender
 
-统一的消息发送者类型，覆盖好友和群聊场景。
+Puniyu 发送者类型库，统一好友、群聊与频道发送者信息模型
 
-## 特性
+## 定位
 
-- 👤 **双类型模型**: 提供 `FriendSender` 与 `GroupSender`
-- 🔌 **统一接口**: 通过 `Sender` trait 统一读取发送者信息
-- 🔄 **统一枚举**: 使用 `SenderType` 在两种发送者间切换
-- ⚡ **便捷构建**: 支持 `sender_friend!` 与 `sender_group!` 宏
+`puniyu_sender` 是 Puniyu 工作区中的一个 crate。
 
-## 示例
+## 提供内容
 
-```rust
-use puniyu_sender::{sender_friend, sender_group, Role, Sender, SenderType, Sex};
+- 围绕当前领域提供统一类型或抽象。
+- 与工作区其他模块协同组成完整框架能力。
 
-let friend = sender_friend!(
-    user_id: "123456",
-    nick: "Alice",
-    sex: Sex::Female,
-);
+## 何时使用
 
-let group = sender_group!(
-    user_id: "789012",
-    nick: "Bob",
-    role: Role::Admin,
-);
+当你需要复用该领域的基础类型、trait 或工具能力。
 
-let sender = SenderType::from(friend);
-assert_eq!(sender.user_id(), "123456");
-assert!(sender.is_friend());
-
-let sender = SenderType::from(group);
-assert!(sender.is_group());
-```
-
-## 许可证
-
-本项目采用 [LGPL-3.0](../../LICENSE) 许可证。
+> [!NOTE]
+> README 以当前工作区代码结构为准，适合快速了解模块职责；更细的 API 细节请直接阅读源码。

@@ -170,7 +170,7 @@ impl<'c> EventBase for MessageContext<'c> {
 		self._event.sub_event()
 	}
 
-	fn bot(&self) -> &Bot {
+	fn bot(&self) -> &dyn Bot {
 		self._event.bot()
 	}
 

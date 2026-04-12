@@ -1,6 +1,6 @@
 mod common;
 mod runtime;
-pub use runtime::Runtime;
+mod bot;
 
 use crate::common::make_random_id;
 use log::info;
@@ -11,35 +11,35 @@ use puniyu_adapter::event::send_event;
 use puniyu_adapter::macros::*;
 use puniyu_adapter::sender::{Role, Sex};
 use puniyu_adapter::types::*;
+use puniyu_runtime::AdapterProvider;
+use std::sync::Arc;
 
-const VERSION: puniyu_adapter::Version = pkg_version!();
+pub(crate) const VERSION: puniyu_adapter::Version = pkg_version!();
+pub(crate) const NAME: &str = pkg_name!();
 
-#[inline]
-fn info() -> AdapterInfo {
-	adapter_info!(
-		name: env!("CARGO_PKG_NAME"),
-		version: VERSION,
-		platform: AdapterPlatform::Other,
-		standard: AdapterStandard::Other,
-		protocol: AdapterProtocol::Console,
-		communication: AdapterCommunication::Other
-	)
-}
-#[adapter(info = info, runtime = runtime::runtime)]
+#[adapter(runtime = runtime::runtime)]
 async fn main() -> puniyu_adapter::Result {
 	use std::time::{SystemTime, UNIX_EPOCH};
 
 	let bot_id = "console";
 	let name = app_name();
-	let account_info = account_info!(
-		uin: bot_id,
-		name: format!("{}/{}", name, bot_id),
-		avatar: runtime::AVATAR.clone()
-	);
-	let bot_index =
-		register_bot!(adapter: info(), runtime: runtime::runtime(), account: account_info)?;
+	let adapter_runtime = Arc::new(runtime::ConsoleAdapterRuntime::new());
+	let bot_runtime = Arc::new(runtime::ConsoleBotRuntime::new(
+		Arc::clone(&adapter_runtime),
+		account_info!(
+			uin: bot_id,
+			name: format!("{}/{}", name, bot_id),
+			avatar: runtime::AVATAR.clone()
+		),
+	));
+	let bot: Arc<dyn puniyu_adapter::bot::Bot> = Arc::new(bot::ConsoleBot::new(bot_runtime));
+	let bot_index = register_bot!(bot: bot)?;
 
-	info!("{} v{} 初始化完成", &info().name, info().version);
+	info!(
+		"{} v{} 初始化完成",
+		adapter_runtime.adapter_info().name,
+		adapter_runtime.adapter_info().version
+	);
 
 	let bot = get_bot(bot_index).expect("bot just registered");
 
@@ -133,7 +133,7 @@ async fn main() -> puniyu_adapter::Result {
 						create_message!(
 							Group,
 							crate_group_message!(
-								bot: &bot,
+								bot: bot.as_ref(),
 								event_id: &event_id,
 								user_id: &name,
 								contact: &contact,
@@ -157,7 +157,7 @@ async fn main() -> puniyu_adapter::Result {
 						create_message!(
 							GroupTemp,
 							crate_group_temp_message!(
-								bot: &bot,
+								bot: bot.as_ref(),
 								event_id: &event_id,
 								user_id: &name,
 								contact: group_contact,
@@ -178,7 +178,7 @@ async fn main() -> puniyu_adapter::Result {
 						create_message!(
 							Friend,
 							crate_friend_message!(
-								bot: &bot,
+								bot: bot.as_ref(),
 								event_id: &event_id,
 								user_id: &name,
 								contact: &contact,
@@ -199,7 +199,7 @@ async fn main() -> puniyu_adapter::Result {
 						create_message!(
 							Friend,
 							crate_friend_message!(
-								bot: &bot,
+								bot: bot.as_ref(),
 								event_id: &event_id,
 								user_id: &name,
 								contact: &contact,

@@ -8,7 +8,6 @@ pub(crate) struct ConfigArgs {
 #[derive(zyn::Attribute)]
 #[zyn("adapter")]
 pub(crate) struct AdapterArgs {
-	pub info: zyn::syn::Expr,
 	pub runtime: zyn::syn::Expr,
 	#[zyn(default)]
 	pub server: Option<zyn::syn::Expr>,

@@ -1,30 +1,23 @@
 # puniyu_cooldown
 
-统一的冷却管理类型，覆盖全局、机器人、好友、群组与群成员场景。
+Puniyu 冷却管理库，统一命令与功能冷却控制
 
-## 特性
+## 定位
 
-- 🎯 **统一范围**: 使用 `CooldownScope` 描述冷却范围
-- 🔌 **统一接口**: 通过 `CooldownRegistry` 管理冷却状态
-- ⏱️ **灵活时长**: 支持任意 `Duration` 冷却时间
-- 🧹 **自动清理**: 支持清理过期冷却记录
+`puniyu_cooldown` 是 Puniyu 工作区中的一个 crate。
 
-## 示例
+## 提供内容
 
-```rust
-use puniyu_cooldown::{CooldownRegistry, CooldownScope};
-use std::time::Duration;
+- 围绕当前领域提供统一类型或抽象。
+- 与工作区其他模块协同组成完整框架能力。
 
-let scope = CooldownScope::Friend { bot_id: "123456", user_id: "789012" };
+## 何时使用
 
-if !CooldownRegistry::is_cooling_down(&scope) {
-    CooldownRegistry::set_cooldown(&scope, Duration::from_secs(30)).unwrap();
-}
+当你需要复用该领域的基础类型、trait 或工具能力。
 
-CooldownRegistry::clear_cooldown(&scope).unwrap();
-CooldownRegistry::cleanup_expired();
-```
+## 相关模块
 
-## 许可证
+- `puniyu_error`
 
-本项目采用 [LGPL-3.0](../../LICENSE) 许可证。
+> [!NOTE]
+> README 以当前工作区代码结构为准，适合快速了解模块职责；更细的 API 细节请直接阅读源码。

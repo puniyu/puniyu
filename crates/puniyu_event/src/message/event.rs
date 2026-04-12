@@ -1,7 +1,7 @@
+use super::MessageBase;
 use super::friend::FriendMessage;
 use super::group::{GroupMessage, GroupTempMessage};
 use super::guild::GuildMessage;
-use super::MessageBase;
 use crate::{
 	ContactType, EventBase, EventType, SenderType, SubEventType, codegen_delegate_to_variants,
 	codegen_delegate_to_variants_convert, codegen_impl_as,
@@ -51,10 +51,18 @@ impl<'m> EventBase for MessageEvent<'m> {
 	}
 
 	fn sub_event(&self) -> SubEventType {
-		codegen_delegate_to_variants_convert!(self, sub_event, SubEventType, Friend, Group, GroupTemp, Guild)
+		codegen_delegate_to_variants_convert!(
+			self,
+			sub_event,
+			SubEventType,
+			Friend,
+			Group,
+			GroupTemp,
+			Guild
+		)
 	}
 
-	fn bot(&self) -> &Bot {
+	fn bot(&self) -> &dyn Bot {
 		codegen_delegate_to_variants!(self, bot, Friend, Group, GroupTemp, Guild)
 	}
 

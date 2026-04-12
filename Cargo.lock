@@ -1885,7 +1885,9 @@ dependencies = [
  "async-trait",
  "bytes",
  "log",
+ "puniyu_account",
  "puniyu_adapter",
+ "puniyu_runtime",
  "rand 0.10.0",
  "tokio",
 ]
@@ -2311,6 +2313,7 @@ name = "puniyu_runtime"
 version = "0.8.0"
 dependencies = [
  "async-trait",
+ "puniyu_account",
  "puniyu_adapter_types",
  "puniyu_contact",
  "puniyu_error",

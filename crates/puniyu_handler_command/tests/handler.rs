@@ -7,4 +7,3 @@ fn command_handler_name_matches_expected() {
 	assert_eq!(handler.name(), "command");
 	assert_eq!(handler.priority(), 5);
 }
-
