@@ -12,7 +12,7 @@ static SERVER_HANDLE: LazyLock<Arc<Mutex<Option<ServerHandle>>>> =
 	LazyLock::new(|| Arc::new(Mutex::new(None)));
 
 pub async fn run_server(host: IpAddr, port: u16) -> std::io::Result<()> {
-	info!("服务器在 {} 运行", format!("{}:{}", host, port));
+	info!("Server running on {}", format!("{}:{}", host, port));
 
 	let server = HttpServer::new(|| {
 		let app = App::new()
