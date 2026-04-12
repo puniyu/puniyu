@@ -1,4 +1,4 @@
-use crate::tools::cooldown;
+use crate::tools::{cooldown, get_permission};
 use crate::{config, message, tools};
 use async_trait::async_trait;
 use itertools::Itertools as _;
@@ -97,64 +97,35 @@ impl CommandHandler {
 
 		let command_name = parser.command_name().to_string();
 		let parsed_args = parser.into_inner();
-
-		let commands = CommandRegistry::get_with_command_name(&command_name);
-		if let Some(cmd) = commands.first() {
-			let current_permission = if event.is_master() {
-				Permission::Master
-			} else if let Some(group) = event.as_group() {
-				if group.is_owner() {
-					Permission::Owner
-				} else if group.is_admin() {
-					Permission::Admin
-				} else {
-					Permission::All
-				}
-			} else if let Some(group_temp) = event.as_group_temp() {
-				if group_temp.is_owner() {
-					Permission::Owner
-				} else if group_temp.is_admin() {
-					Permission::Admin
-				} else {
-					Permission::All
-				}
-			} else if let Some(guild) = event.as_guild() {
-				if guild.is_owner() {
-					Permission::Owner
-				} else if guild.is_admin() {
-					Permission::Admin
-				} else {
-					Permission::All
-				}
-			} else {
-				Permission::All
-			};
-
-			if !has_permission!(current_permission, cmd.builder.permission()) {
-				let msg = match cmd.builder.permission() {
-					Permission::Master => "暂无权限, 只有主人才能操作",
-					Permission::Owner => "暂无权限, 只有群主或频道主才能操作",
-					Permission::Admin => "暂无权限, 只有管理员才能操作!",
-					Permission::All => unreachable!(),
-				};
-				let _ = event.reply(puniyu_message::Message::from(msg)).await;
-				return;
-			}
-		}
-
 		let message_ctx = MessageContext::new(event.event(), parsed_args);
 
 		Self::execute_command(&message_ctx, &command_name).await;
 	}
 
 	/// 执行命令
-	async fn execute_command(ctx: &MessageContext<'_>, command_name: &str) {
+	async fn execute_command(
+		ctx: &MessageContext<'_>,
+		command_name: &str,
+	) {
 		let commands = CommandRegistry::all()
 			.into_iter()
 			.filter(|cmd| cmd.builder.name() == command_name)
 			.sorted_by_key(|cmd| cmd.builder.priority());
 
+		let perm = get_permission(ctx);
+
 		for command in commands {
+			if !has_permission!(&perm, command.builder.permission()) {
+				let msg = match command.builder.permission() {
+					Permission::Master => "暂无权限, 只有主人才能操作",
+					Permission::Owner => "暂无权限, 只有群主或频道主才能操作",
+					Permission::Admin => "暂无权限, 只有管理员才能操作!",
+					Permission::All => unreachable!(),
+				};
+				let _ = ctx.reply(puniyu_message::Message::from(msg)).await;
+				continue;
+			}
+
 			let start_time = std::time::Instant::now();
 			info!("[{}] 开始执行", format!("command:{}", command_name).yellow());
 

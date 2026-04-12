@@ -1,3 +1,4 @@
+use puniyu_command::Permission;
 use puniyu_config::{ReactiveMode, app_config};
 use puniyu_context::MessageContext;
 use puniyu_event::EventBase;
@@ -35,5 +36,37 @@ pub fn check_mode(event: &MessageContext, mode: &ReactiveMode, has_alias: bool) 
 		ReactiveMode::Alias => has_alias,
 		ReactiveMode::AtOrAlias => event.mentions_bot() || has_alias,
 		ReactiveMode::Master => event.is_master(),
+	}
+}
+
+pub fn get_permission(event: &MessageContext) -> Permission {
+	if event.is_master() {
+		Permission::Master
+	} else if let Some(group) = event.as_group() {
+		if group.is_owner() {
+			Permission::Owner
+		} else if group.is_admin() {
+			Permission::Admin
+		} else {
+			Permission::All
+		}
+	} else if let Some(group_temp) = event.as_group_temp() {
+		if group_temp.is_owner() {
+			Permission::Owner
+		} else if group_temp.is_admin() {
+			Permission::Admin
+		} else {
+			Permission::All
+		}
+	} else if let Some(guild) = event.as_guild() {
+		if guild.is_owner() {
+			Permission::Owner
+		} else if guild.is_admin() {
+			Permission::Admin
+		} else {
+			Permission::All
+		}
+	} else {
+		Permission::All
 	}
 }

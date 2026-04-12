@@ -1,9 +1,8 @@
 mod adapter;
+mod config;
 mod hook;
 mod loader;
 mod plugin;
-mod config;
-#[cfg(feature = "server")]
 mod server;
 
 use crate::VERSION;
@@ -238,7 +237,7 @@ impl App {
 		print_start_log();
 		puniyu_config::init();
 
-		#[cfg(feature = "logger")]
+		#[cfg(feature = "log")]
 		{
 			crate::logger::log_init();
 		}
@@ -269,18 +268,13 @@ impl App {
 			if !logo_path.exists() {
 				fs::write(&logo_path, &logo).await.expect("Failed to write");
 			}
-			#[cfg(feature = "server")]
-			puniyu_server::set_logo(logo)
 		}
-		#[cfg(feature = "server")]
-		{
-			use puniyu_config::app_config;
-			let config = app_config();
-			let config = config.server();
-			let host = config.host();
-			let port = config.port();
-			puniyu_server::run_server_spawn(host, port);
-		}
+
+		let config = puniyu_config::app_config();
+		let config = config.server();
+		let host = config.host();
+		let port = config.port();
+		let _ = puniyu_server::run_server_spawn(host, port).await?;
 
 		let duration_str = format_duration(start_time.elapsed());
 		info!(
@@ -338,12 +332,16 @@ async fn init_app(
 
 	debug!("adapter loading...");
 	for adapter in adapters {
-		adapter::init_adapter(adapter).await
+		if let Err(e) = adapter::init_adapter(adapter).await {
+			error!("Failed to init adapter: {}", e);
+		}
 	}
 	debug!("adapter loaded!");
 	debug!("plugin loading...");
 	for plugin in plugins {
-		plugin::init_plugin(plugin).await
+		if let Err(e) = plugin::init_plugin(plugin).await {
+			error!("Failed to init plugin: {}", e);
+		}
 	}
 	debug!("plugin loaded!");
 	debug!("loader loading...");
