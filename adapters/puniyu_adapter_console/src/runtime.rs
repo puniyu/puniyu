@@ -1,7 +1,7 @@
 mod bot;
 pub(crate) use bot::ConsoleBotRuntime;
 mod adapter;
-pub(crate) use adapter::ConsoleAdapterRuntime;
+pub use adapter::ConsoleAdapterRuntime;
 
 use bytes::Bytes;
 use puniyu_adapter::{path::resource_dir, runtime::AdapterRuntime};

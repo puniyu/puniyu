@@ -1,5 +1,6 @@
 mod common;
 mod runtime;
+pub use runtime::ConsoleAdapterRuntime as Runtime;
 mod bot;
 
 use crate::common::make_random_id;

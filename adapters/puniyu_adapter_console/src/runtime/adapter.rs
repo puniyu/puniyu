@@ -27,7 +27,7 @@ pub(crate) fn adapter_info() -> AdapterInfo {
 }
 
 #[derive(Debug)]
-pub(crate) struct ConsoleAdapterRuntime {
+pub struct ConsoleAdapterRuntime {
 	adapter: AdapterInfo,
 }
 
