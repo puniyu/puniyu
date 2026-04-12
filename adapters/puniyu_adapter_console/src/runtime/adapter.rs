@@ -5,7 +5,8 @@ use puniyu_adapter::adapter_info;
 use puniyu_adapter::contact::ContactType;
 use puniyu_adapter::message::Message;
 use puniyu_adapter::{
-	AdapterCommunication, AdapterInfo, AdapterPlatform, AdapterProtocol, AdapterStandard, SendMsgType,
+	AdapterCommunication, AdapterInfo, AdapterPlatform, AdapterProtocol, AdapterStandard,
+	SendMsgType,
 };
 use puniyu_runtime::{AdapterProvider, SendMessage};
 
