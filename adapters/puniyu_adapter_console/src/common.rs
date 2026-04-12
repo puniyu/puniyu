@@ -1,20 +1,17 @@
-use rand::RngExt;
-use rand::distr::Alphanumeric;
 use crate::input::{ConsolePayload, ParsedConsoleInput};
 use puniyu_adapter::bot::Bot;
+use puniyu_adapter::contact::SceneType;
 use puniyu_adapter::element::receive::*;
 use puniyu_adapter::event::send_event;
 use puniyu_adapter::macros::*;
 use puniyu_adapter::sender::{Role, Sex};
 use puniyu_adapter::types::*;
+use rand::distr::{Alphanumeric, SampleString};
 use std::time::{SystemTime, UNIX_EPOCH};
-use puniyu_adapter::contact::SceneType;
 
 pub(crate) fn make_random_id() -> String {
-	rand::rng().sample_iter(&Alphanumeric).take(32).map(char::from).collect()
+	Alphanumeric.sample_string(&mut rand::rng(), 32)
 }
-
-
 
 const DEFAULT_GUILD_ID: &str = "test_guild";
 const DEFAULT_GUILD_NAME: &str = "test_guild";
