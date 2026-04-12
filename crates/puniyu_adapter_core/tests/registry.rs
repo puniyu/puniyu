@@ -2,19 +2,27 @@
 
 use std::sync::{Arc, Mutex, MutexGuard};
 
-use async_trait::async_trait;
-use puniyu_adapter_runtime::{AdapterRuntime, Runtime};
 use puniyu_adapter_core::{Adapter, AdapterRegistry};
 use puniyu_adapter_types::{AdapterInfo, AdapterPlatform, AdapterProtocol, SendMsgType, adapter_info};
 use puniyu_contact::ContactType;
 use puniyu_message::Message;
+use puniyu_runtime::{AdapterProvider, AdapterRuntime, SendMessage};
 
 static TEST_LOCK: Mutex<()> = Mutex::new(());
 
-struct TestRuntime;
+#[derive(Debug)]
+struct TestRuntime {
+	info: AdapterInfo,
+}
 
-#[async_trait]
-impl Runtime for TestRuntime {
+impl AdapterProvider for TestRuntime {
+	fn adapter_info(&self) -> &AdapterInfo {
+		&self.info
+	}
+}
+
+#[async_trait::async_trait]
+impl SendMessage for TestRuntime {
 	async fn send_message(
 		&self,
 		_contact: &ContactType<'_>,
@@ -22,30 +30,25 @@ impl Runtime for TestRuntime {
 	) -> puniyu_error::Result<SendMsgType> {
 		Ok(SendMsgType { message_id: "test-msg".to_string(), time: 0 })
 	}
-
 }
 
 struct TestAdapter {
-	info: AdapterInfo,
-	runtime: AdapterRuntime,
+	runtime: Arc<TestRuntime>,
 }
 
 impl TestAdapter {
 	fn new() -> Self {
 		Self {
-			info: adapter_info!("console", AdapterPlatform::QQ, AdapterProtocol::Console),
-			runtime: AdapterRuntime::from_runtime(TestRuntime),
+			runtime: Arc::new(TestRuntime {
+				info: adapter_info!("console", AdapterPlatform::QQ, AdapterProtocol::Console),
+			}),
 		}
 	}
 }
 
-#[async_trait]
+#[async_trait::async_trait]
 impl Adapter for TestAdapter {
-	fn info(&self) -> AdapterInfo {
-		self.info.clone()
-	}
-
-	fn runtime(&self) -> AdapterRuntime {
+	fn runtime(&self) -> Arc<dyn AdapterRuntime> {
 		self.runtime.clone()
 	}
 }
@@ -67,7 +70,7 @@ fn register_returns_index_and_makes_adapter_queryable() {
 	let index = AdapterRegistry::register(adapter).expect("failed to register adapter");
 
 	let by_index = AdapterRegistry::get_with_index(index).expect("adapter should exist by index");
-	assert_eq!(by_index.info().name, "console");
+	assert_eq!(by_index.runtime().adapter_info().name, "console");
 
 	let by_name = AdapterRegistry::get_with_adapter_name("console");
 	assert_eq!(by_name.len(), 1);

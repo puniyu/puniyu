@@ -1,7 +1,8 @@
+use log::info;
 use puniyu_context::MessageContext;
 use puniyu_element::receive::Elements;
 use puniyu_event::{EventBase, message::MessageBase};
-use log::info;
+use puniyu_logger::owo_colors::OwoColorize;
 pub fn log(event: &MessageContext) {
 	let raw_message = event
 		.elements()
@@ -22,12 +23,46 @@ pub fn log(event: &MessageContext) {
 		.join("");
 	if let Some(event) = event.as_group() {
 		info!(
-			"[Bot:{}][群消息:{}-{}]: {}",
-			event.self_id(),
-			event.group_id(),
-			event.user_id(),
+			"[{}:{}][{}:{}-{}]: {}",
+			"Bot".yellow(),
+			event.self_id().green(),
+			"GroupMessage".yellow(),
+			event.group_id().green(),
+			event.user_id().green(),
 			raw_message
 		);
+		return;
 	}
-	info!("[Bot:{}][好友消息:{}]: {}", event.self_id(), event.user_id(), raw_message);
+	if let Some(event) = event.as_group_temp() {
+		info!(
+			"[{}:{}][{}:{}-{}]: {}",
+			"Bot".yellow(),
+			event.self_id().green(),
+			"GroupTempMessage".yellow(),
+			event.group_id().green(),
+			event.user_id().green(),
+			raw_message
+		);
+		return;
+	}
+	if let Some(event) = event.as_guild() {
+		info!(
+			"[{}:{}][{}:{}-{}]: {}",
+			"Bot".yellow(),
+			event.self_id().green(),
+			"GuildMessage".yellow(),
+			event.guild_id().green(),
+			event.user_id().green(),
+			raw_message
+		);
+		return;
+	}
+	info!(
+		"[{}:{}][{}:{}]: {}",
+		"Bot".yellow(),
+		event.self_id().green(),
+		"FriendMessage".yellow(),
+		event.user_id().green(),
+		raw_message
+	);
 }

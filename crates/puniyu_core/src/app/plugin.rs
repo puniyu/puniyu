@@ -1,103 +1,98 @@
+use puniyu_error::Result;
 use puniyu_command::Command;
 use puniyu_common::source::SourceType;
-use puniyu_config::ConfigRegistry;
 use puniyu_error::registry::Error;
-use log::error;
 use puniyu_path::plugin::*;
 use puniyu_plugin_core::Plugin;
 use puniyu_plugin_core::PluginRegistry;
 use puniyu_task::Task;
-use std::sync::Arc;
-use tokio::fs::{create_dir_all, write};
+use std::{io::Error as IoError, sync::Arc};
+use tokio::fs::create_dir_all;
 
-pub async fn init_plugin(plugin: Arc<dyn Plugin>) {
+pub async fn init_plugin(plugin: Arc<dyn Plugin>) -> Result {
 	let name = plugin.name();
 	let hooks = plugin.hooks();
 	let commands = plugin.commands();
 	let tasks = plugin.tasks();
-	#[cfg(feature = "server")]
-	let servers = plugin.server();
-	let index = match PluginRegistry::register(Arc::clone(&plugin)) {
-		Ok(index) => index,
-		Err(e) => {
-			return error!("Failed to register plugin: {:?}", e);
-		}
-	};
+	let server = plugin.server();
+
+	init_dir(config_dir().join(name), name, "config").await?;
+	init_dir(data_dir().join(name), name, "data").await?;
+	init_dir(resource_dir().join(name), name, "resource").await?;
+	init_dir(temp_dir().join(name), name, "temp").await?;
+
+	plugin
+		.init()
+		.await
+		.map_err(|e| IoError::other(format!("Failed to init plugin {}: {:?}", name, e)))?;
+	super::config::init_config(name, plugin.config()).await?;
+
+	let index = PluginRegistry::register(Arc::clone(&plugin))
+		.unwrap_or_else(|e| panic!("Failed to register plugin {}: {:?}", name, e));
 	let source = SourceType::Plugin(index);
-	if !hooks.is_empty()
-		&& let Err(e) = super::hook::init_hook(source, hooks)
-	{
-		error!("Failed to register hook for plugin: {:?}", e);
-	}
 
-	if !commands.is_empty()
-		&& let Err(e) = init_command(index, commands)
-	{
-		error!("Failed to register command for plugin: {:?}", e);
-	};
+	register_plugin_components(index, source, hooks, commands, tasks, server).await;
 
-	if !tasks.is_empty()
-		&& let Err(e) = init_task(index, tasks).await
-	{
-		error!("Failed to register task for plugin: {:?}", e);
-	};
-	#[cfg(feature = "server")]
-	{
-		if let Some(server) = servers
-			&& let Err(e) = super::server::init_server(source, server)
-		{
-			error!("Failed to register server for plugin: {:?}", e);
-		}
-	}
-	if !config_dir().join(name).exists() {
-		let _ = create_dir_all(config_dir().join(name)).await;
-	}
-	if !data_dir().join(name).exists() {
-		let _ = create_dir_all(data_dir().join(name)).await;
-	}
-	if !resource_dir().join(name).exists() {
-		let _ = create_dir_all(resource_dir().join(name)).await;
-	}
-	if !temp_dir().join(name).exists() {
-		let _ = create_dir_all(temp_dir().join(name)).await;
-	}
-	if let Err(e) = plugin.init().await {
-		error!("Failed to init plugin: {:?}", e);
-	}
-	let configs = plugin.config();
-	if !configs.is_empty() {
-		for config in configs {
-			let config = config.config();
-			let path = config_dir().join(name).join(&config.name);
-			if let Some(parent) = path.parent()
-				&& !parent.exists()
-			{
-				let _ = create_dir_all(parent).await;
-			}
-			if !path.exists() {
-				let _ = write(&path, config.value.to_string()).await;
-			}
-			let _ = ConfigRegistry::register(config);
-		}
-	}
+	Ok(())
 }
 
-fn init_command(plugin_id: u64, commands: Vec<Arc<dyn Command>>) -> Result<(), Error> {
-	use puniyu_command::CommandRegistry;
-	for command in commands {
-		if let Err(e) = CommandRegistry::register(plugin_id, command) {
-			error!("Failed to register command: {:?}", e);
-		}
+async fn init_dir(path: std::path::PathBuf, plugin_name: &str, dir_kind: &str) -> Result {
+	if !path.exists() {
+		create_dir_all(&path).await.map_err(|e| {
+			IoError::other(format!("Failed to create {} dir for plugin {}: {}", dir_kind, plugin_name, e))
+		})?;
 	}
 	Ok(())
 }
 
-async fn init_task(plugin_id: u64, tasks: Vec<Arc<dyn Task>>) -> Result<(), Error> {
+async fn register_plugin_components(
+	plugin_id: u64,
+	source: SourceType,
+	hooks: Vec<Arc<dyn puniyu_hook::Hook>>,
+	commands: Vec<Arc<dyn Command>>,
+	tasks: Vec<Arc<dyn Task>>,
+	server: Option<puniyu_server::ServerFunction>,
+) {
+	if !hooks.is_empty() {
+		super::hook::init_hook(source, hooks)
+			.unwrap_or_else(|e| panic!("Failed to register hook for plugin {}: {:?}", plugin_id, e));
+	}
+
+	if !commands.is_empty() {
+		init_command(plugin_id, commands)
+			.unwrap_or_else(|e| panic!("Failed to register command for plugin {}: {:?}", plugin_id, e));
+	}
+
+	if !tasks.is_empty() {
+		init_task(plugin_id, tasks)
+			.await
+			.unwrap_or_else(|e| panic!("Failed to register task for plugin {}: {:?}", plugin_id, e));
+	}
+
+	if let Some(server) = server {
+		super::server::init_server(source, server)
+			.unwrap_or_else(|e| panic!("Failed to register server for plugin {}: {:?}", plugin_id, e));
+	}
+}
+
+fn init_command(
+	plugin_id: u64,
+	commands: Vec<Arc<dyn Command>>,
+) -> std::result::Result<(), Error> {
+	use puniyu_command::CommandRegistry;
+	for command in commands {
+		CommandRegistry::register(plugin_id, command)?;
+	}
+	Ok(())
+}
+
+async fn init_task(
+	plugin_id: u64,
+	tasks: Vec<Arc<dyn Task>>,
+) -> std::result::Result<(), Error> {
 	use puniyu_task::TaskRegistry;
 	for task in tasks {
-		if let Err(e) = TaskRegistry::register(plugin_id, task).await {
-			error!("Failed to register task: {:?}", e);
-		}
+		TaskRegistry::register(plugin_id, task).await?;
 	}
 	Ok(())
 }

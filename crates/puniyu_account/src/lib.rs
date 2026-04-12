@@ -59,7 +59,6 @@ use serde::{Deserialize, Serialize};
 /// assert_eq!(account.name, "Puniyu");
 /// ```
 #[derive(Debug, Default, Clone, PartialEq, Eq, Serialize, Deserialize, Builder)]
-#[builder_struct_attr(doc = "机器人账户信息构建器。")]
 #[builder(setter(into))]
 pub struct AccountInfo {
 	/// 机器人账号的唯一标识 UIN。

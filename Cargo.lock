@@ -1859,7 +1859,6 @@ dependencies = [
  "async-trait",
  "puniyu_account",
  "puniyu_adapter_core",
- "puniyu_adapter_runtime",
  "puniyu_adapter_types",
  "puniyu_api",
  "puniyu_bot",
@@ -1871,6 +1870,7 @@ dependencies = [
  "puniyu_hook",
  "puniyu_macros",
  "puniyu_message",
+ "puniyu_runtime",
  "puniyu_segment",
  "puniyu_sender",
  "puniyu_server",
@@ -1885,7 +1885,9 @@ dependencies = [
  "async-trait",
  "bytes",
  "log",
+ "puniyu_account",
  "puniyu_adapter",
+ "puniyu_runtime",
  "rand 0.10.1",
  "tokio",
 ]
@@ -1896,26 +1898,14 @@ version = "0.8.0"
 dependencies = [
  "async-trait",
  "log",
- "puniyu_adapter_runtime",
  "puniyu_adapter_types",
  "puniyu_config",
  "puniyu_contact",
  "puniyu_error",
  "puniyu_hook",
  "puniyu_message",
+ "puniyu_runtime",
  "puniyu_server",
-]
-
-[[package]]
-name = "puniyu_adapter_runtime"
-version = "0.8.0"
-dependencies = [
- "async-trait",
- "puniyu_adapter_types",
- "puniyu_contact",
- "puniyu_error",
- "puniyu_message",
- "thiserror 2.0.18",
 ]
 
 [[package]]
@@ -1961,10 +1951,14 @@ dependencies = [
 name = "puniyu_bot"
 version = "0.8.0"
 dependencies = [
+ "log",
  "puniyu_account",
- "puniyu_adapter_runtime",
  "puniyu_adapter_types",
+ "puniyu_contact",
  "puniyu_error",
+ "puniyu_logger",
+ "puniyu_message",
+ "puniyu_runtime",
 ]
 
 [[package]]
@@ -2029,6 +2023,7 @@ dependencies = [
  "notify-debouncer-full",
  "puniyu_common",
  "puniyu_error",
+ "puniyu_logger",
  "puniyu_path",
  "serde",
  "serde_repr",
@@ -2053,7 +2048,6 @@ dependencies = [
  "async-trait",
  "bytes",
  "puniyu_account",
- "puniyu_adapter_runtime",
  "puniyu_adapter_types",
  "puniyu_bot",
  "puniyu_command_types",
@@ -2063,6 +2057,7 @@ dependencies = [
  "puniyu_error",
  "puniyu_event",
  "puniyu_message",
+ "puniyu_runtime",
  "puniyu_sender",
 ]
 
@@ -2103,6 +2098,7 @@ dependencies = [
  "puniyu_task",
  "puniyu_version",
  "tokio",
+ "toml",
  "vergen-git2",
 ]
 
@@ -2142,13 +2138,13 @@ dependencies = [
  "async-trait",
  "bytes",
  "puniyu_account",
- "puniyu_adapter_runtime",
  "puniyu_adapter_types",
  "puniyu_bot",
  "puniyu_contact",
  "puniyu_element",
  "puniyu_error",
  "puniyu_message",
+ "puniyu_runtime",
  "puniyu_sender",
  "serde",
  "serde_json",
@@ -2173,7 +2169,6 @@ dependencies = [
  "itertools",
  "log",
  "puniyu_account",
- "puniyu_adapter_runtime",
  "puniyu_adapter_types",
  "puniyu_bot",
  "puniyu_command",
@@ -2189,6 +2184,7 @@ dependencies = [
  "puniyu_logger",
  "puniyu_message",
  "puniyu_plugin_core",
+ "puniyu_runtime",
  "puniyu_sender",
  "tokio",
 ]
@@ -2314,6 +2310,18 @@ dependencies = [
  "puniyu_server",
  "puniyu_task",
  "puniyu_version",
+]
+
+[[package]]
+name = "puniyu_runtime"
+version = "0.8.0"
+dependencies = [
+ "async-trait",
+ "puniyu_account",
+ "puniyu_adapter_types",
+ "puniyu_contact",
+ "puniyu_error",
+ "puniyu_message",
 ]
 
 [[package]]

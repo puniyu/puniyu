@@ -1,18 +1,21 @@
 //! 消息事件模块
 //!
-//! 提供好友消息和群聊消息的事件类型定义。
+//! 提供好友消息、群聊消息、群临时消息和频道消息的事件类型定义。
 
 mod friend;
 #[doc(inline)]
 pub use friend::FriendMessage;
 mod group;
 #[doc(inline)]
-pub use group::GroupMessage;
+pub use group::{GroupMessage, GroupTempMessage};
+mod guild;
+#[doc(inline)]
+pub use guild::GuildMessage;
 mod event;
 #[doc(inline)]
 pub use event::MessageEvent;
 mod types;
-use super::EventBase;
+use super::{EventBase, SubEventType};
 use bytes::Bytes;
 use puniyu_element::receive::Elements;
 #[doc(inline)]
@@ -23,6 +26,13 @@ pub use types::*;
 /// 定义所有消息事件的通用接口，提供消息内容访问和判断方法。
 ///
 /// 该 trait 继承自 `EventBase`，因此也可以访问所有事件的基础信息。
+///
+/// 对于仅做消息类型判断的场景，优先使用此 trait 提供的：
+/// - [`MessageBase::is_friend`]
+/// - [`MessageBase::is_group`]
+/// - [`MessageBase::is_group_temp`]
+///
+/// 如需提取具体消息类型，再使用 `MessageEvent::as_xxx()` 等接口。
 pub trait MessageBase: Send + Sync + EventBase {
 	/// 获取消息 ID
 	fn message_id(&self) -> &str;
@@ -78,6 +88,26 @@ pub trait MessageBase: Send + Sync + EventBase {
 			})
 			.next()
 	}
+
+	/// 判断是否为好友消息。
+	fn is_friend(&self) -> bool {
+		matches!(self.sub_event(), SubEventType::Message(MessageSubEventType::Friend))
+	}
+
+	/// 判断是否为群消息。
+	fn is_group(&self) -> bool {
+		matches!(self.sub_event(), SubEventType::Message(MessageSubEventType::Group))
+	}
+
+	/// 判断是否为群临时消息。
+	fn is_group_temp(&self) -> bool {
+		matches!(self.sub_event(), SubEventType::Message(MessageSubEventType::GroupTemp))
+	}
+
+	/// 判断是否为频道消息。
+	fn is_guild(&self) -> bool {
+		matches!(self.sub_event(), SubEventType::Message(MessageSubEventType::Guild))
+	}
 }
 
 /// 快速构建好友消息事件。
@@ -132,6 +162,58 @@ macro_rules! crate_group_message {
 	};
 }
 
+/// 快速构建群临时消息事件。
+#[macro_export]
+macro_rules! crate_group_temp_message {
+	(
+		bot: $bot:expr,
+		event_id: $event_id:expr,
+		user_id: $user_id:expr,
+		contact: $contact:expr,
+		sender: $sender:expr,
+		time: $time:expr,
+		message_id: $message_id:expr,
+		elements: $elements:expr $(,)?
+	) => {
+		$crate::message::GroupTempMessage::new(
+			$bot,
+			$event_id,
+			$user_id,
+			$contact,
+			$sender,
+			$time,
+			$message_id,
+			$elements,
+		)
+	};
+}
+
+/// 快速构建频道消息事件。
+#[macro_export]
+macro_rules! crate_guild_message {
+	(
+		bot: $bot:expr,
+		event_id: $event_id:expr,
+		user_id: $user_id:expr,
+		contact: $contact:expr,
+		sender: $sender:expr,
+		time: $time:expr,
+		message_id: $message_id:expr,
+		elements: $elements:expr $(,)?
+	) => {
+		$crate::message::GuildMessage::new(
+			$bot,
+			$event_id,
+			$user_id,
+			$contact,
+			$sender,
+			$time,
+			$message_id,
+			$elements,
+		)
+	};
+}
+
 /// 快速构建消息事件枚举。
 #[macro_export]
 macro_rules! create_message {
@@ -140,6 +222,12 @@ macro_rules! create_message {
 	};
 	(Group, $message:expr $(,)?) => {
 		$crate::message::MessageEvent::Group($message)
+	};
+	(GroupTemp, $message:expr $(,)?) => {
+		$crate::message::MessageEvent::GroupTemp($message)
+	};
+	(Guild, $message:expr $(,)?) => {
+		$crate::message::MessageEvent::Guild($message)
 	};
 }
 
@@ -152,7 +240,7 @@ macro_rules! codegen_message {
 		$(#[$meta])*
 		#[derive(Debug, Clone)]
 		pub struct $name<'m> {
-			bot: &'m puniyu_bot::Bot,
+			bot: &'m dyn puniyu_bot::Bot,
 			event_id: &'m str,
 			time: u64,
 			user_id: &'m str,
@@ -166,7 +254,7 @@ macro_rules! codegen_message {
 			#[doc = concat!("使用完整参数构建 [`", stringify!($name), "`]。")]
 			#[allow(clippy::too_many_arguments)]
 			pub fn new(
-				bot: &'m puniyu_bot::Bot,
+				bot: &'m dyn puniyu_bot::Bot,
 				event_id: &'m str,
 				user_id: &'m str,
 				contact: &'m $contact<'m>,
@@ -193,14 +281,14 @@ macro_rules! codegen_message {
 			fn event_type(&self) -> $crate::EventType { $crate::EventType::Message }
 			fn event_id(&self) -> &str { self.event_id }
 			fn sub_event(&self) -> $crate::SubEventType { $crate::SubEventType::Message($sub_event) }
-			fn bot(&self) -> &puniyu_bot::Bot { self.bot }
+			fn bot(&self) -> &dyn puniyu_bot::Bot { self.bot }
 			fn self_id(&self) -> &str { self.bot.account().uin.as_str() }
 			fn user_id(&self) -> &str { self.user_id }
 			fn contact(&self) -> puniyu_contact::ContactType<'_> { self.contact.clone().into() }
 			fn sender(&self) -> puniyu_sender::SenderType<'_> { self.sender.clone().into() }
 		}
 
-		impl<'m> super::MessageBase for $name<'m> {
+		impl<'m> $crate::message::MessageBase for $name<'m> {
 			fn message_id(&self) -> &str { self.message_id }
 			fn elements(&self) -> &Vec<puniyu_element::receive::Elements<'_>> { self.elements }
 		}

@@ -20,6 +20,7 @@ serde.workspace = true
 sugar_path.workspace = true
 serde_repr.workspace = true
 
+puniyu_logger.workspace = true
 puniyu_path.workspace = true
 puniyu_common.workspace = true
 

@@ -13,6 +13,10 @@ pub enum Permission {
 	/// 所有人都可以执行。
 	#[default]
 	All,
+	/// 仅管理员可以执行。
+	Admin,
+	/// 仅群主/频道主可以执行。
+	Owner,
 	/// 仅主人可以执行。
 	Master,
 }

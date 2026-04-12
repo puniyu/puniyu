@@ -18,5 +18,5 @@ pub use puniyu_common::app::{app_name, app_version};
 
 #[macro_export]
 macro_rules! pkg_name {
-	() => {{ env!("CARGO_PKG_VERSION_MAJOR") }};
+	() => {{ env!("CARGO_PKG_NAME") }};
 }

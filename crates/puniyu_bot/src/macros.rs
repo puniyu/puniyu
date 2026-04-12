@@ -2,8 +2,8 @@
 ///
 #[macro_export]
 macro_rules! register_bot {
-	(adapter: $adapter:expr, runtime: $runtime:expr, account: $account:expr $(,)?) => {{
-		let bot = $crate::Bot::new($adapter, $runtime, $account);
+	(bot: $bot:expr $(,)?) => {{
+		let bot: ::std::sync::Arc<dyn $crate::Bot> = $bot;
 		$crate::BotRegistry::register(bot)
 	}};
 }

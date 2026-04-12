@@ -1,6 +1,9 @@
 //! 群聊联系人模块
 //!
-//! 提供群聊联系人的类型定义和构建宏。
+//! 提供群聊联系人与群临时联系人的类型定义和构建宏。
+
+mod temp;
+pub use temp::*;
 
 use crate::{Contact, SceneType};
 use derive_builder::Builder;
@@ -11,20 +14,13 @@ use std::borrow::Cow;
 ///
 /// 表示一个群聊的联系信息。
 ///
-/// # 字段
-///
-/// - `peer` - 群聊 ID
-/// - `name` - 群名称（可选）
-///
 /// # 示例
 ///
 /// ```rust
-/// use puniyu_contact::GroupContact;
+/// use puniyu_contact::{Contact, GroupContact};
 ///
-/// let group = GroupContact {
-///     peer: "789012".into(),
-///     name: Some("Dev Team".into()),
-/// };
+/// let group = GroupContact::new("789012", "Dev Team");
+/// assert_eq!(group.peer(), "789012");
 /// ```
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, Builder)]
 #[serde(bound(deserialize = "'de: 'c"))]
@@ -32,11 +28,25 @@ use std::borrow::Cow;
 pub struct GroupContact<'c> {
 	/// 群聊id
 	#[serde(borrow)]
-	pub peer: Cow<'c, str>,
+	peer: Cow<'c, str>,
 	/// 群名称
-	#[builder(default, setter(into, strip_option))]
+	#[builder(default, setter(strip_option))]
 	#[serde(borrow)]
-	pub name: Option<Cow<'c, str>>,
+	name: Option<Cow<'c, str>>,
+}
+
+impl<'c> GroupContact<'c> {
+	pub fn new<P, N>(peer: P, name: N) -> Self
+	where
+		P: Into<Cow<'c, str>>,
+		N: Into<Cow<'c, str>>,
+	{
+		Self { peer: peer.into(), name: Some(name.into()) }
+	}
+
+	pub fn builder() -> GroupContactBuilder<'c> {
+		GroupContactBuilder::default()
+	}
 }
 
 impl<'c> Contact for GroupContact<'c> {

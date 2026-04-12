@@ -1,58 +1,13 @@
 # puniyu_bot
 
-统一的机器人实例类型，封装适配器信息、适配器运行时与账户信息，并提供全局注册表。
+机器人实例库，统一机器人实例和注册访问模型。
 
-## 特性
+## 特征
 
-- 🤖 **统一实例模型**: 提供 `Bot`
-- 📚 **注册表管理**: 提供 `BotRegistry` 与 `BotId`
-- 🔍 **便捷查询**: 提供 `get_bot`、`get_bot_count` 与 `get_all_bot`
-- ⚡ **便捷宏**: 支持 `register_bot!` 与 `unregister_bot!`
+- 提供机器人实例相关类型
+- 支持机器人注册与访问能力
+- 与运行时、联系人和消息模块协同工作
 
-## 示例
+## 快速开始
 
-```rust,ignore
-use async_trait::async_trait;
-use puniyu_account::AccountInfo;
-use puniyu_adapter_runtime::{AdapterRuntime, Runtime};
-use puniyu_adapter_types::{AdapterInfo, AdapterPlatform, AdapterProtocol, SendMsgType};
-use puniyu_bot::{Bot, BotRegistry};
-use puniyu_contact::ContactType;
-use puniyu_message::Message;
-
-struct MyRuntime;
-
-#[async_trait]
-impl Runtime for MyRuntime {
-    async fn send_message(
-        &self,
-        _contact: &ContactType<'_>,
-        _message: &Message,
-    ) -> puniyu_error::Result<SendMsgType> {
-        Ok(SendMsgType { message_id: "msg-1".into(), time: 0 })
-    }
-
-}
-
-let mut adapter = AdapterInfo::default();
-adapter.name = "console".to_string();
-adapter.platform = AdapterPlatform::QQ;
-adapter.protocol = AdapterProtocol::Console;
-
-let account = AccountInfo {
-    uin: "123456789".to_string(),
-    name: "Puniyu".to_string(),
-    avatar: Default::default(),
-};
-
-let runtime = AdapterRuntime::from_runtime(MyRuntime);
-let bot = Bot::new(adapter, runtime, account);
-let index = BotRegistry::register(bot.clone()).unwrap();
-
-assert_eq!(BotRegistry::get(index), Some(bot));
-BotRegistry::unregister(index).unwrap();
-```
-
-## 许可证
-
-本项目采用 [LGPL-3.0](../../LICENSE) 许可证。
+从机器人实例类型开始阅读，理解 Bot 对象在框架中的表示和访问方式。

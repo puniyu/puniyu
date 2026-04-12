@@ -1,28 +1,13 @@
 # puniyu_contact
 
-统一的联系人类型，覆盖好友与群聊场景。
+联系人类型库，统一好友和群聊联系人模型。
 
-## 特性
+## 特征
 
-- 👥 **双类型模型**: 提供 `FriendContact` 与 `GroupContact`
-- 🔌 **统一接口**: 通过 `Contact` trait 统一读取联系人信息
-- 🔄 **统一枚举**: 使用 `ContactType` 在两种联系人间切换
-- ⚡ **便捷构建**: 支持 `contact!`、`contact_friend!` 与 `contact_group!` 宏
+- 提供统一的联系人数据模型
+- 覆盖好友与群聊联系人场景
+- 适合作为事件和上下文中的基础类型层
 
-## 示例
+## 快速开始
 
-```rust
-use puniyu_contact::{contact, Contact};
-
-let friend = contact!(Friend, peer: "123456", name: "Alice");
-let group = contact!(Group, peer: "789012", name: "Dev Team");
-
-assert!(friend.is_friend());
-assert_eq!(friend.peer(), "123456");
-
-assert!(group.is_group());
-```
-
-## 许可证
-
-本项目采用 [LGPL-3.0](../../LICENSE) 许可证。
+从联系人类型定义开始阅读，理解好友和群聊对象的统一表示。

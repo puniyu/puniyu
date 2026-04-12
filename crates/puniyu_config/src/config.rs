@@ -1,5 +1,6 @@
-use puniyu_common::read_config;
 use log::{debug, error, info};
+use puniyu_common::read_config;
+use puniyu_logger::owo_colors::OwoColorize;
 use puniyu_path::config_dir;
 use std::thread;
 use std::time::Duration;
@@ -27,10 +28,15 @@ pub fn start_config_watcher() {
 						for path in event.event.paths.iter() {
 							match std::env::current_dir() {
 								Ok(cwd) => info!(
-									"[Config] File changed: {}",
+									"[{}] File changed: {}",
+									"Config".yellow(),
 									path.relative(&cwd).to_slash_lossy()
 								),
-								Err(_) => info!("[Config] File changed: {}", path.to_slash_lossy()),
+								Err(_) => info!(
+									"[{}] File changed: {}",
+									"Config".yellow(),
+									path.to_slash_lossy()
+								),
 							}
 
 							use crate::ConfigRegistry;
@@ -42,9 +48,14 @@ pub fn start_config_watcher() {
 								&& let Ok(value) = read_config::<toml::Value>(dir, name)
 							{
 								if let Err(e) = ConfigRegistry::update(path.as_path(), value) {
-									error!("[Config] Failed to update config: {}, {}", name, e);
+									error!(
+										"[{}] Failed to update config: {}, {}",
+										"Config".yellow(),
+										name,
+										e
+									);
 								} else {
-									info!("[Config] Config updated: {}", name);
+									info!("[{}] Config updated: {}", "Config".yellow(), name);
 								}
 							}
 						}

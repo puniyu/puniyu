@@ -1,28 +1,13 @@
 # puniyu_segment
 
-消息段构建库，统一生成 `puniyu_element::send::Elements`。
+消息段构建库，提供 `Segment` API 和消息段构建宏。
 
-## 特性
+## 特征
 
-- 🧱 **双构建方式**: 支持 `Segment` 方法和 `segment!` 宏
-- 📨 **覆盖常见消息段**: 文本、At、表情、图片、回复、文件、语音、视频、JSON、XML
-- 🔗 **易于组合**: 直接构建 `Vec<Elements>`
+- 提供消息段构建能力
+- 支持通过宏快速生成消息段
+- 与消息元素模块协同使用
 
-## 示例
+## 快速开始
 
-```rust
-use puniyu_segment::segment;
-use puniyu_element::send::Elements;
-
-let message = vec![
-    segment!(at, "123456"),
-    segment!(text, " hello"),
-    segment!(face, 178u64),
-];
-
-let _message: Vec<Elements> = message;
-```
-
-## 许可证
-
-本项目采用 [LGPL-3.0](../../LICENSE) 许可证。
+从 `Segment` API 和构建宏开始阅读，理解消息段如何被组合与生成。

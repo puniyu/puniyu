@@ -29,6 +29,7 @@ impl std::fmt::Display for ExtensionSubEventType {
 pub trait ExtensionEvent: EventBase + Any + Send + Sync + 'static {}
 
 impl dyn ExtensionEvent {
+	/// 尝试将扩展事件转换为指定类型。
 	pub fn extension<T>(&self) -> Option<&T>
 	where
 		T: ExtensionEvent + 'static,
@@ -36,4 +37,3 @@ impl dyn ExtensionEvent {
 		(self as &dyn Any).downcast_ref::<T>()
 	}
 }
-

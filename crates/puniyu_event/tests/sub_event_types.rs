@@ -8,6 +8,7 @@ fn test_all_message_sub_types() {
 	let types = vec![
 		(MessageSubEventType::Friend, "friend"),
 		(MessageSubEventType::Group, "group"),
+		(MessageSubEventType::GroupTemp, "grouptemp"),
 		(MessageSubEventType::Guild, "guild"),
 	];
 

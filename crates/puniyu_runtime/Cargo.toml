@@ -1,23 +1,22 @@
 [package]
-name = "puniyu_adapter_runtime"
+name = "puniyu_runtime"
 version = "0.8.0"
-description = "puniyu 适配器运行时库，提供统一的运行时抽象与消息发送能力"
+description = "puniyu 统一运行时 trait 库，提供运行时视图、消息发送能力与框架复合运行时"
 authors.workspace = true
 license.workspace = true
-readme = "README.md"
+readme.workspace = true
 homepage.workspace = true
 repository.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 
-[lints]
-workspace = true
-
 [dependencies]
 async-trait.workspace = true
-thiserror.workspace = true
-
 puniyu_error.workspace = true
+puniyu_account.workspace = true
 puniyu_adapter_types.workspace = true
 puniyu_contact.workspace = true
 puniyu_message.workspace = true
+
+[lints]
+workspace = true

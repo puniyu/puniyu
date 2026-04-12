@@ -26,8 +26,17 @@ pub fn command(item: zyn::syn::ItemFn, cfg: CommandArgs) -> zyn::TokenStream {
 		None => zyn! { None },
 	};
 	let command_permission = match cfg.permission.as_deref().unwrap_or("all") {
+		"all" => zyn! { ::puniyu_plugin::command::Permission::All },
+		"master" => zyn! { ::puniyu_plugin::command::Permission::Master },
+		"owner" => zyn! { ::puniyu_plugin::command::Permission::Owner },
 		"admin" => zyn! { ::puniyu_plugin::command::Permission::Admin },
-		_ => zyn! { ::puniyu_plugin::command::Permission::All },
+		invalid => {
+			return zyn::syn::Error::new_spanned(
+				&item.sig.ident,
+				format!("invalid command permission: {invalid}"),
+			)
+			.to_compile_error();
+		}
 	};
 	let command_alias = {
 		let aliases = cfg.alias.as_deref().unwrap_or(&[]);

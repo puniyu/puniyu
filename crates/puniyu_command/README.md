@@ -1,50 +1,13 @@
 # puniyu_command
 
-统一的 puniyu 命令库，覆盖命令定义、元信息与注册表管理场景。
+命令系统库，统一命令定义、元信息和注册管理流程。
 
-## 特性
+## 特征
 
-- 🧩 提供 `Command` trait 定义命令行为
-- 📦 提供 `CommandRegistry` 管理命令注册与查询
-- 🔐 复用 `puniyu_command_types` 中的参数、权限和动作类型
-- 🔄 支持命令别名、优先级和权限控制
+- 提供命令定义与注册相关能力
+- 与命令类型、上下文和错误处理协同工作
+- 适合作为命令系统的基础入口
 
-## 示例
+## 快速开始
 
-```rust,ignore
-use async_trait::async_trait;
-use puniyu_command::{Arg, Command, CommandAction, Permission};
-use puniyu_context::MessageContext;
-
-struct HelloCommand;
-
-#[async_trait]
-impl Command for HelloCommand {
-    fn name(&self) -> &'static str {
-        "hello"
-    }
-
-    fn args(&self) -> Vec<Arg<'static>> {
-        vec![Arg::string("name").required()]
-    }
-
-    fn permission(&self) -> Permission {
-        Permission::All
-    }
-
-    async fn run(&self, _ctx: &MessageContext) -> puniyu_error::Result<CommandAction> {
-        CommandAction::done()
-    }
-}
-```
-
-## 主要类型
-
-- `Command`: 命令行为接口
-- `CommandRegistry`: 命令注册与查询入口
-- `CommandInfo`: 已注册命令的元信息
-- `CommandId`: 按索引或名称访问命令的标识符
-
-## 许可证
-
-本项目采用 [LGPL-3.0](../../LICENSE) 许可证。
+从命令定义和注册流程开始阅读，配合 `puniyu_command_types` 理解命令系统结构。

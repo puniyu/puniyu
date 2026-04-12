@@ -1,26 +1,34 @@
+![puniyu](packages/puniyu/assets/logo.png)
+
 # puniyu
-速糖， 一个高效·稳定·可高度灵活扩展 的机器人框架
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/puniyu/puniyu)
 
-## 社区
+一个基于 Rust 的模块化机器人框架，围绕事件、适配器、插件和处理器构建
 
-[![QQ群](https://img.shields.io/badge/QQ群-1022851882-blue.svg)](https://qm.qq.com/q/vnVbBH7IIg)
+## 特性
+
+- 模块化 workspace 架构，核心能力按 crate 拆分
+- 统一的事件、上下文、命令与运行时抽象
+- 支持适配器、插件、处理器、Hook、任务等扩展点
+- 内置控制台适配器与基础插件，可直接本地运行
+
+## 快速开始
+
+### 环境要求
+
+- Rust `1.88.0` 或更高版本
+- Cargo
+
+### 运行示例
+
+```bash
+cargo run -p puniyu
+```
+
+默认启动入口位于 [packages/puniyu/src/main.rs](packages/puniyu/src/main.rs)
 
 
-## 贡献者
+## 社区与链接
 
-<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
-<!-- prettier-ignore-start -->
-<!-- markdownlint-disable -->
-<table>
-  <tbody>
-    <tr>
-      <td align="center" valign="top" width="14.28%"><a href="http://wuliya.cn"><img src="https://avatars.githubusercontent.com/u/71247360?v=4?s=100" width="100px;" alt="wuliya"/><br /><sub><b>wuliya</b></sub></a><br /><a href="#design-shiwuliya" title="Design">🎨</a></td>
-    </tr>
-  </tbody>
-</table>
-
-<!-- markdownlint-restore -->
-<!-- prettier-ignore-end -->
-
-<!-- ALL-CONTRIBUTORS-LIST:END -->
+- GitHub：<https://github.com/puniyu/puniyu>
+- DeepWiki：<https://deepwiki.com/puniyu/puniyu>
+- QQ 群：`1022851882`

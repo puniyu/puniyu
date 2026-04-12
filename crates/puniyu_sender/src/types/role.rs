@@ -18,11 +18,11 @@ use strum::{Display, EnumString, IntoStaticStr};
 #[serde(rename_all = "lowercase")]
 #[strum(serialize_all = "lowercase")]
 pub enum Role {
-	/// 群主
+	/// 群主/频道主
 	Owner,
 	/// 管理员
 	Admin,
-	/// 普通成员
+	/// 群成员、频道成员
 	Member,
 	/// 未知角色
 	#[default]

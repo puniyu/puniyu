@@ -108,18 +108,7 @@ pub fn adapter_hook(
 /// use puniyu_adapter::types::*;
 /// use puniyu_macros::adapter;
 ///
-/// fn info() -> AdapterInfo {
-///     adapter_info!(
-///         name: env!("CARGO_PKG_NAME"),
-///         version: pkg_version!(),
-///         platform: AdapterPlatform::Other,
-///         standard: AdapterStandard::Other,
-///         protocol: AdapterProtocol::Console,
-///         communication: AdapterCommunication::Other
-///     )
-/// }
-///
-/// #[adapter(info = info, runtime = runtime::runtime)]
+/// #[adapter(runtime = runtime::runtime)]
 /// async fn main() -> puniyu_adapter::Result {
 ///     Ok(())
 /// }

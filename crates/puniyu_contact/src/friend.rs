@@ -11,20 +11,13 @@ use std::borrow::Cow;
 ///
 /// 表示一个好友的联系信息。
 ///
-/// # 字段
-///
-/// - `peer` - 好友 ID
-/// - `name` - 好友名称（可选）
-///
 /// # 示例
 ///
 /// ```rust
-/// use puniyu_contact::FriendContact;
+/// use puniyu_contact::{Contact, FriendContact};
 ///
-/// let friend = FriendContact {
-///     peer: "123456".into(),
-///     name: Some("Alice".into()),
-/// };
+/// let friend = FriendContact::new("123456", "Alice");
+/// assert_eq!(friend.peer(), "123456");
 /// ```
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, Builder)]
 #[serde(bound(deserialize = "'de: 'c"))]
@@ -32,11 +25,24 @@ use std::borrow::Cow;
 pub struct FriendContact<'c> {
 	/// 好友ID
 	#[serde(borrow)]
-	pub peer: Cow<'c, str>,
+	peer: Cow<'c, str>,
 	/// 好友名称
-	#[builder(default, setter(into, strip_option))]
+	#[builder(default, setter(strip_option))]
 	#[serde(borrow)]
-	pub name: Option<Cow<'c, str>>,
+	name: Option<Cow<'c, str>>,
+}
+impl<'c> FriendContact<'c> {
+	pub fn new<P, N>(peer: P, name: N) -> Self
+	where
+		P: Into<Cow<'c, str>>,
+		N: Into<Cow<'c, str>>,
+	{
+		Self { peer: peer.into(), name: Some(name.into()) }
+	}
+
+	pub fn builder() -> FriendContactBuilder<'c> {
+		FriendContactBuilder::default()
+	}
 }
 
 impl<'c> Contact for FriendContact<'c> {

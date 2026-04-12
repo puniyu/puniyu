@@ -50,6 +50,23 @@ pub use types::*;
 
 use puniyu_context::MessageContext;
 
+/// 判断当前权限是否满足目标权限。
+#[macro_export]
+macro_rules! has_permission {
+	($current:expr, $required:expr $(,)?) => {{
+		matches!(
+			($current, $required),
+			(_, $crate::Permission::All)
+				| ($crate::Permission::Admin, $crate::Permission::Admin)
+				| ($crate::Permission::Owner, $crate::Permission::Admin)
+				| ($crate::Permission::Owner, $crate::Permission::Owner)
+				| ($crate::Permission::Master, $crate::Permission::Admin)
+				| ($crate::Permission::Master, $crate::Permission::Owner)
+				| ($crate::Permission::Master, $crate::Permission::Master)
+		)
+	}};
+}
+
 /// 命令行为接口。
 #[async_trait]
 pub trait Command: Send + Sync + 'static {

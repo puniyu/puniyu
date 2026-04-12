@@ -1,13 +1,13 @@
 //! # puniyu_sender
 //!
-//! 统一的消息发送者类型，覆盖好友和群聊场景。
+//! 统一的消息发送者类型，覆盖好友、群聊、群临时和频道场景。
 //!
 //! ## 特性
 //!
-//! - 提供 `FriendSender` 与 `GroupSender`
+//! - 提供 `FriendSender`、`GroupSender`、`GroupTempSender` 与 `GuildSender`
 //! - 提供统一接口 `Sender`
 //! - 提供统一枚举 `SenderType`
-//! - 提供构建宏 `sender!`、`sender_friend!` 和 `sender_group!`
+//! - 提供构建宏 `sender!`、`sender_friend!`、`sender_group!`、`sender_group_temp!` 和 `sender_guild!`
 //!
 //! ## 示例
 //!
@@ -16,11 +16,15 @@
 //!
 //! let friend = sender!(Friend, user_id: "123456", nick: "Alice");
 //! let group = sender!(Group, user_id: "789012", nick: "Bob");
+//! let group_temp = sender!(GroupTemp, user_id: "789012", nick: "Bob");
+//! let guild = sender!(Guild, user_id: "9527", nick: "Carol", card: "频道管理员");
 //!
 //! assert!(friend.is_friend());
 //! assert_eq!(friend.user_id(), "123456");
 //!
 //! assert!(group.is_group());
+//! assert!(group_temp.is_group_temp());
+//! assert!(guild.is_guild());
 //! ```
 
 mod friend;
@@ -29,6 +33,9 @@ pub use friend::*;
 mod group;
 #[doc(inline)]
 pub use group::*;
+mod guild;
+#[doc(inline)]
+pub use guild::*;
 mod types;
 #[doc(inline)]
 pub use types::*;
@@ -43,29 +50,37 @@ use strum::{Display, IntoStaticStr};
 /// # 示例
 ///
 /// ```rust
-/// use puniyu_sender::{FriendSender, GroupSender, Role, SenderType, Sex};
+/// use puniyu_sender::{FriendSender, GroupSender, GroupTempSender, Role, SenderType, Sex};
 ///
 /// // 创建好友发送者
-/// let friend = FriendSender {
-///     user_id: "123456".into(),
-///     nick: Some("Alice".into()),
-///     sex: Sex::Female,
-///     age: Some(25),
-/// };
+/// let friend = FriendSender::new("123456", Some("Alice"), Sex::Female, Some(25));
 /// let sender = SenderType::Friend(friend);
 ///
 /// // 创建群聊发送者
-/// let group = GroupSender {
-///     user_id: "789012".into(),
-///     nick: Some("Bob".into()),
-///     sex: Sex::Male,
-///     age: Some(30),
-///     role: Role::Admin,
-///     card: Some("管理员".into()),
-///     level: Some(10),
-///     title: Some("活跃成员".into()),
-/// };
+/// let group = GroupSender::new(
+///     "789012",
+///     Some("Bob"),
+///     Sex::Male,
+///     Some(30),
+///     Role::Admin,
+///     Some("管理员"),
+///     Some(10),
+///     Some("活跃成员"),
+/// );
 /// let sender = SenderType::Group(group);
+///
+/// // 创建群临时发送者
+/// let group_temp = GroupTempSender::new(
+///     "246810",
+///     Some("Carol"),
+///     Sex::Female,
+///     Some(22),
+///     Role::Member,
+///     Option::<&str>::None,
+///     None,
+///     Option::<&str>::None,
+/// );
+/// let sender = SenderType::GroupTemp(group_temp);
 /// ```
 #[derive(Debug, Clone, PartialEq, Display, IntoStaticStr, Deserialize, Serialize)]
 #[serde(rename_all = "lowercase", tag = "type", content = "field0", bound(deserialize = "'de: 's"))]
@@ -74,6 +89,10 @@ pub enum SenderType<'s> {
 	Friend(FriendSender<'s>),
 	/// 群聊发送者
 	Group(GroupSender<'s>),
+	/// 群临时发送者
+	GroupTemp(GroupTempSender<'s>),
+	/// 频道发送者
+	Guild(GuildSender<'s>),
 }
 
 impl SenderType<'_> {
@@ -121,6 +140,22 @@ impl SenderType<'_> {
 		}
 	}
 
+	/// 获取群临时发送者引用
+	pub fn as_group_temp(&self) -> Option<&GroupTempSender<'_>> {
+		match self {
+			SenderType::GroupTemp(sender) => Some(sender),
+			_ => None,
+		}
+	}
+
+	/// 获取频道发送者引用
+	pub fn as_guild(&self) -> Option<&GuildSender<'_>> {
+		match self {
+			SenderType::Guild(sender) => Some(sender),
+			_ => None,
+		}
+	}
+
 	/// 判断是否为好友发送者
 	///
 	/// # 示例
@@ -148,6 +183,16 @@ impl SenderType<'_> {
 	pub fn is_group(&self) -> bool {
 		matches!(self, SenderType::Group(_))
 	}
+
+	/// 判断是否为群临时发送者
+	pub fn is_group_temp(&self) -> bool {
+		matches!(self, SenderType::GroupTemp(_))
+	}
+
+	/// 判断是否为频道发送者
+	pub fn is_guild(&self) -> bool {
+		matches!(self, SenderType::Guild(_))
+	}
 }
 
 impl<'s> Sender for SenderType<'s> {
@@ -155,24 +200,32 @@ impl<'s> Sender for SenderType<'s> {
 		match self {
 			SenderType::Friend(sender) => sender.user_id(),
 			SenderType::Group(sender) => sender.user_id(),
+			SenderType::GroupTemp(sender) => sender.user_id(),
+			SenderType::Guild(sender) => sender.user_id(),
 		}
 	}
 	fn name(&self) -> Option<&str> {
 		match self {
 			SenderType::Friend(sender) => sender.name(),
 			SenderType::Group(sender) => sender.name(),
+			SenderType::GroupTemp(sender) => sender.name(),
+			SenderType::Guild(sender) => sender.name(),
 		}
 	}
 	fn sex(&self) -> &Sex {
 		match &self {
 			SenderType::Friend(sender) => sender.sex(),
 			SenderType::Group(sender) => sender.sex(),
+			SenderType::GroupTemp(sender) => sender.sex(),
+			SenderType::Guild(sender) => sender.sex(),
 		}
 	}
 	fn age(&self) -> Option<u32> {
 		match self {
 			SenderType::Friend(sender) => sender.age(),
 			SenderType::Group(sender) => sender.age(),
+			SenderType::GroupTemp(sender) => sender.age(),
+			SenderType::Guild(sender) => sender.age(),
 		}
 	}
 }
@@ -186,6 +239,18 @@ impl<'s> From<FriendSender<'s>> for SenderType<'s> {
 impl<'s> From<GroupSender<'s>> for SenderType<'s> {
 	fn from(sender: GroupSender<'s>) -> Self {
 		Self::Group(sender)
+	}
+}
+
+impl<'s> From<GroupTempSender<'s>> for SenderType<'s> {
+	fn from(sender: GroupTempSender<'s>) -> Self {
+		Self::GroupTemp(sender)
+	}
+}
+
+impl<'s> From<GuildSender<'s>> for SenderType<'s> {
+	fn from(sender: GuildSender<'s>) -> Self {
+		Self::Guild(sender)
 	}
 }
 
@@ -263,5 +328,13 @@ macro_rules! sender {
 
     (Group, $( $key:ident : $value:expr ),+ $(,)?) => {
         $crate::SenderType::Group($crate::sender_group!( $( $key : $value ),+ ))
+    };
+
+    (GroupTemp, $( $key:ident : $value:expr ),+ $(,)?) => {
+        $crate::SenderType::GroupTemp($crate::sender_group_temp!( $( $key : $value ),+ ))
+    };
+
+    (Guild, $( $key:ident : $value:expr ),+ $(,)?) => {
+        $crate::SenderType::Guild($crate::sender_guild!( $( $key : $value ),+ ))
     };
 }

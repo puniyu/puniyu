@@ -16,11 +16,11 @@ pub mod task;
 mod types;
 mod version;
 
+pub use puniyu_api::pkg_name;
 pub use puniyu_api::{app_name, app_version};
 pub use puniyu_error::Result;
 pub use types::*;
 pub use version::*;
-pub use puniyu_api::pkg_name;
 
 #[doc(hidden)]
 pub mod __private {

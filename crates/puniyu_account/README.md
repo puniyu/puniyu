@@ -1,38 +1,13 @@
 # puniyu_account
 
-统一的机器人账户信息类型，描述账号 UIN、昵称与头像数据。
+账户信息类型库，统一机器人账户相关的数据模型。
 
-## 特性
+## 特征
 
-- 🤖 **统一模型**: 提供 `AccountInfo`
-- ⚡ **便捷构建**: 提供 `account_info!` 宏
-- 📦 **序列化支持**: 内置 `serde` 序列化与反序列化
-- 🧱 **Builder 支持**: 提供 `AccountInfoBuilder`
+- 提供统一的账户信息模型
+- 适合作为机器人身份数据的基础类型层
+- 可与 bot、context 等模块配合使用
 
-## 示例
+## 快速开始
 
-```rust
-use bytes::Bytes;
-use puniyu_account::{account_info, AccountInfo};
-
-let manual = AccountInfo {
-    uin: "123456789".to_string(),
-    name: "Puniyu".to_string(),
-    avatar: Bytes::from_static(b"avatar"),
-};
-assert_eq!(manual.uin, "123456789");
-
-let named = account_info!(
-    uin: "123456789",
-    name: "Puniyu",
-    avatar: Bytes::from_static(b"avatar"),
-);
-assert_eq!(named.name, "Puniyu");
-
-let positional = account_info!("123456789", "Puniyu", Bytes::new());
-assert!(positional.avatar.is_empty());
-```
-
-## 许可证
-
-本项目采用 [LGPL-3.0](../../LICENSE) 许可证。
+从账户类型定义开始阅读源码，作为理解机器人身份模型的入口。
