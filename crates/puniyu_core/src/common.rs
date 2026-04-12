@@ -8,16 +8,16 @@ pub(crate) fn format_duration(duration: Duration) -> String {
 	let mut parts = Vec::new();
 
 	if minutes > 0 {
-		parts.push(format!("{}分", minutes));
+		parts.push(format!("{}m", minutes));
 	}
 
 	if seconds > 0 {
-		parts.push(format!("{}秒", seconds));
+		parts.push(format!("{}s", seconds));
 	}
 
 	if milliseconds > 0 {
-		parts.push(format!("{}毫秒", milliseconds));
+		parts.push(format!("{}ms", milliseconds));
 	}
 
-	if parts.is_empty() { "0秒".to_string() } else { parts.join("") }
+	if parts.is_empty() { "0s".to_string() } else { parts.join(" ") }
 }

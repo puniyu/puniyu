@@ -53,14 +53,10 @@ async fn main() -> puniyu_adapter::Result {
 	});
 
 	tokio::spawn(async move {
-		loop {
-			let message = tokio::select! {
-				_ = tokio::signal::ctrl_c() => break,
-				msg = rx.recv() => match msg {
-					Some(s) if !matches!(s.as_str(), "quit" | "exit" | "q") => s,
-					_ => break,
-				},
-			};
+		while let Some(message) = rx.recv().await {
+			if matches!(message.as_str(), "quit" | "exit" | "q") {
+				break;
+			}
 
 			let parsed = input::parse_console_input(&message);
 			common::dispatch_event(bot.as_ref(), &parsed, name).await;
