@@ -274,20 +274,26 @@ impl App {
 		let config = config.server();
 		let host = config.host();
 		let port = config.port();
-		let _ = puniyu_server::run_server_spawn(host, port).await?;
+		let server_handle = puniyu_server::run_server_spawn(host, port);
 
 		let duration_str = format_duration(start_time.elapsed());
 		info!(
-			"{} 初始化完成，耗时: {}",
+			"{} initialized in {}",
 			app_name.fg_rgb::<64, 224, 208>(),
 			duration_str.fg_rgb::<255, 127, 80>()
 		);
 
 		signal::ctrl_c().await?;
-		debug!("接收到中断信号，正在关闭...");
 		execute_hooks(StatusType::Stop).await;
+		puniyu_dispatch::EventEmitter::stop();
+		let server_result = server_handle
+			.await
+			.map_err(|e| io::Error::other(format!("Server task join error: {}", e)))?;
+		if let Err(e) = server_result {
+			error!("Server exited with error: {}", e);
+		}
 		info!(
-			"{} 本次运行时间: {}",
+			"{} uptime: {}",
 			app_name.to_case(Case::Lower).fg_rgb::<64, 224, 208>(),
 			format_duration(Duration::from_secs(uptime())).fg_rgb::<255, 127, 80>()
 		);
