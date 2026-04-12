@@ -2217,12 +2217,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "puniyu_ipc"
+version = "0.1.0"
+
+[[package]]
 name = "puniyu_loader"
 version = "0.8.0"
 dependencies = [
  "puniyu_error",
  "puniyu_plugin_core",
 ]
+
+[[package]]
+name = "puniyu_loader_ipc"
+version = "0.1.0"
 
 [[package]]
 name = "puniyu_logger"
