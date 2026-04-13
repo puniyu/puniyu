@@ -7,7 +7,7 @@ mod registry;
 pub use registry::ServerRegistry;
 mod server;
 #[doc(inline)]
-pub use server::{restart_server, run_server, run_server_spawn, stop_server};
+pub use server::{restart_server, run_server, start_server, stop_server};
 mod response;
 pub(crate) use response::Response;
 mod types;

@@ -2316,12 +2316,14 @@ dependencies = [
 name = "puniyu_runtime"
 version = "0.8.0"
 dependencies = [
+ "actix-web",
  "async-trait",
  "puniyu_account",
  "puniyu_adapter_types",
  "puniyu_contact",
  "puniyu_error",
  "puniyu_message",
+ "tokio",
 ]
 
 [[package]]
@@ -2357,6 +2359,7 @@ dependencies = [
  "puniyu_error",
  "puniyu_logger",
  "puniyu_path",
+ "puniyu_runtime",
  "puniyu_version",
  "serde",
  "serde_json",

@@ -3,6 +3,7 @@ use actix_web::dev::ServerHandle;
 use actix_web::middleware::{NormalizePath, TrailingSlash};
 use actix_web::{App, HttpServer, web};
 use puniyu_common::app::app_name;
+use puniyu_runtime::ServerRuntime;
 
 use crate::logger::info;
 use std::net::IpAddr;
@@ -11,7 +12,7 @@ use std::sync::{Arc, LazyLock, Mutex};
 static SERVER_HANDLE: LazyLock<Arc<Mutex<Option<ServerHandle>>>> =
 	LazyLock::new(|| Arc::new(Mutex::new(None)));
 
-pub async fn run_server(host: IpAddr, port: u16) -> std::io::Result<()> {
+pub fn start_server(host: IpAddr, port: u16) -> std::io::Result<ServerRuntime> {
 	info!("Server running on {}", format!("{}:{}", host, port));
 
 	let server = HttpServer::new(|| {
@@ -35,19 +36,19 @@ pub async fn run_server(host: IpAddr, port: u16) -> std::io::Result<()> {
 		app
 	})
 	.bind((host, port))?;
-
 	let running_server = server.run();
 	let handle = running_server.handle();
 
 	if let Ok(mut guard) = SERVER_HANDLE.lock() {
-		*guard = Some(handle);
+		*guard = Some(handle.clone());
 	}
 
-	running_server.await
+	let join_handle = tokio::spawn(running_server);
+	Ok(ServerRuntime::new(handle, join_handle))
 }
 
-pub fn run_server_spawn(host: IpAddr, port: u16) -> tokio::task::JoinHandle<std::io::Result<()>> {
-	tokio::spawn(run_server(host, port))
+pub async fn run_server(host: IpAddr, port: u16) -> std::io::Result<()> {
+	start_server(host, port)?.wait().await
 }
 
 pub async fn stop_server() -> std::io::Result<()> {
@@ -60,8 +61,7 @@ pub async fn stop_server() -> std::io::Result<()> {
 	Ok(())
 }
 
-pub async fn restart_server(host: IpAddr, port: u16) -> std::io::Result<()> {
+pub async fn restart_server(host: IpAddr, port: u16) -> std::io::Result<ServerRuntime> {
 	stop_server().await?;
-	run_server_spawn(host, port);
-	Ok(())
+	start_server(host, port)
 }

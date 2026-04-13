@@ -12,6 +12,8 @@ rust-version.workspace = true
 
 [dependencies]
 async-trait.workspace = true
+actix-web.workspace = true
+tokio = { workspace = true, features = ["rt"] }
 puniyu_error.workspace = true
 puniyu_account.workspace = true
 puniyu_adapter_types.workspace = true
