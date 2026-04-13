@@ -35,7 +35,10 @@ pub async fn init_adapter(adapter: Arc<dyn Adapter>) -> Result {
 async fn init_dir(path: std::path::PathBuf, adapter_name: &str, dir_kind: &str) -> Result {
 	if !path.exists() {
 		create_dir_all(&path).await.map_err(|e| {
-			IoError::other(format!("Failed to create {} dir for adapter {}: {}", dir_kind, adapter_name, e))
+			IoError::other(format!(
+				"Failed to create {} dir for adapter {}: {}",
+				dir_kind, adapter_name, e
+			))
 		})?;
 	}
 	Ok(())
@@ -53,7 +56,8 @@ async fn register_adapter_components(
 	}
 
 	if let Some(server) = server {
-		super::server::init_server(source, server)
-			.unwrap_or_else(|e| panic!("Failed to init server for adapter {}: {:?}", adapter_id, e));
+		super::server::init_server(source, server).unwrap_or_else(|e| {
+			panic!("Failed to init server for adapter {}: {:?}", adapter_id, e)
+		});
 	}
 }

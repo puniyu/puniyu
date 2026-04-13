@@ -274,7 +274,7 @@ impl App {
 		let config = config.server();
 		let host = config.host();
 		let port = config.port();
-		let server_handle = puniyu_server::run_server_spawn(host, port);
+		let server_runtime = puniyu_server::start_server(host, port)?;
 
 		let duration_str = format_duration(start_time.elapsed());
 		info!(
@@ -286,10 +286,8 @@ impl App {
 		signal::ctrl_c().await?;
 		execute_hooks(StatusType::Stop).await;
 		puniyu_dispatch::EventEmitter::stop();
-		let server_result = server_handle
-			.await
-			.map_err(|e| io::Error::other(format!("Server task join error: {}", e)))?;
-		if let Err(e) = server_result {
+		puniyu_server::stop_server().await?;
+		if let Err(e) = server_runtime.wait().await {
 			error!("Server exited with error: {}", e);
 		}
 		info!(
