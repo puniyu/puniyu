@@ -20,7 +20,7 @@ use std::sync::Arc;
 #[async_trait]
 pub trait Plugin: Send + Sync + 'static {
 	/// 插件名称
-	fn name(&self) -> &'static str;
+	fn name(&self) -> &str;
 	/// 插件版本
 	fn version(&self) -> Version;
 

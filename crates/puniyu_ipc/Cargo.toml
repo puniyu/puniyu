@@ -1,9 +1,10 @@
 [package]
 name = "puniyu_ipc"
-version = "0.1.0"
+version = "0.8.0"
+description = "puniyu 本地 IPC 库，提供基于 interprocess local socket 的 Tokio 连接与 Bytes 帧收发能力"
 authors.workspace = true
 license.workspace = true
-readme.workspace = true
+readme = "README.md"
 homepage.workspace = true
 repository.workspace = true
 edition.workspace = true
@@ -15,3 +16,5 @@ workspace = true
 [dependencies]
 puniyu_path.workspace = true
 interprocess = { version = "2.4.0", features = ["tokio"]}
+tokio = { workspace = true, features = ["io-util"] }
+bytes.workspace = true

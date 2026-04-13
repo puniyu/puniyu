@@ -63,7 +63,7 @@ pub fn plugin(item: zyn::syn::ItemFn, cfg: PluginArg) -> zyn::TokenStream {
 
 		#[::puniyu_plugin::__private::async_trait]
 		impl ::puniyu_plugin::__private::Plugin for Plugin {
-			fn name(&self) -> &'static str {
+			fn name(&self) -> &str {
 				#plugin_name
 			}
 

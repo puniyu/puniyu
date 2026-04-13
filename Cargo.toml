@@ -86,7 +86,8 @@ puniyu_loader = { version = "0.8.0", path = "./crates/puniyu_loader" }
 puniyu_core = { version = "0.8.0", path = "./crates/puniyu_core" }
 puniyu_api = { version = "0.8.0", path = "./crates/puniyu_api" }
 puniyu_macros = { version = "0.8.0", path = "./crates/puniyu_macros", default-features = true }
-
+puniyu_ipc = { version = "0.8.0", path = "./crates/puniyu_ipc" }
+puniyu_loader_ipc = { version = "0.8.0", path = "./crates/puniyu_loader_ipc" }
 puniyu_adapter_console = { version = "0.8.0", path = "./adapters/puniyu_adapter_console" }
 
 puniyu_plugin_basic = { version = "0.8.0", path = "./plugins/puniyu_plugin_basic" }
