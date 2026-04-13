@@ -279,6 +279,7 @@ impl App {
 		let duration_str = format_duration(start_time.elapsed());
 		info!(
 			"{} initialized in {}",
+			"{} initialized in {}",
 			app_name.fg_rgb::<64, 224, 208>(),
 			duration_str.fg_rgb::<255, 127, 80>()
 		);
