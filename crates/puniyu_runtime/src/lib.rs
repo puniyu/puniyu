@@ -15,44 +15,23 @@
 //! - [`BotRuntime`]：Bot 级运行时抽象
 //! - [`SendMessage`]：发送消息能力 trait
 //! - [`Runtime::downcast_ref`]：访问适配器私有运行时能力
-//! - [`ServerRuntime`]：HTTP 服务运行句柄，可用于等待后台服务任务结束
+//! - [`ServerRuntime`]：HTTP 服务运行句柄，封装服务停止与等待结束等生命周期能力
 //!
 //! ## 设计说明
 //!
 //! trait 抽象主要服务于上层业务与插件系统，便于以统一接口访问运行时能力；
 //! 具体句柄类型则用于承载框架内部异步任务的生命周期管理。
+mod server;
+#[doc(inline)]
+pub use server::ServerRuntime;
+use std::any::Any;
 
-use std::{any::Any, io};
-
-use actix_web::dev::ServerHandle;
 use async_trait::async_trait;
 use puniyu_account::AccountInfo;
 use puniyu_adapter_types::{AdapterInfo, SendMsgType};
 use puniyu_contact::ContactType;
 use puniyu_error::Result;
 use puniyu_message::Message;
-use tokio::task::JoinHandle;
-
-pub struct ServerRuntime {
-	handle: ServerHandle,
-	join_handle: JoinHandle<io::Result<()>>,
-}
-
-impl ServerRuntime {
-	pub fn new(handle: ServerHandle, join_handle: JoinHandle<io::Result<()>>) -> Self {
-		Self { handle, join_handle }
-	}
-
-	pub fn handle(&self) -> &ServerHandle {
-		&self.handle
-	}
-
-	pub async fn wait(self) -> io::Result<()> {
-		self.join_handle
-			.await
-			.map_err(|e| io::Error::other(format!("Server task join error: {}", e)))?
-	}
-}
 
 pub trait Runtime: Any + Send + Sync {}
 

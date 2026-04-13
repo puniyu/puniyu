@@ -286,8 +286,7 @@ impl App {
 		signal::ctrl_c().await?;
 		execute_hooks(StatusType::Stop).await;
 		puniyu_dispatch::EventEmitter::stop();
-		puniyu_server::stop_server().await?;
-		if let Err(e) = server_runtime.wait().await {
+		if let Err(e) = server_runtime.shutdown().await {
 			error!("Server exited with error: {}", e);
 		}
 		info!(
