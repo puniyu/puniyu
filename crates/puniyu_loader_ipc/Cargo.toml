@@ -13,3 +13,5 @@ rust-version.workspace = true
 workspace = true
 
 [dependencies]
+puniyu_loader.workspace = true
+puniyu_plugin_core.workspace = true

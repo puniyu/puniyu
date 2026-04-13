@@ -1,14 +1,15 @@
-pub fn add(left: u64, right: u64) -> u64 {
-	left + right
-}
+use std::sync::Arc;
 
-#[cfg(test)]
-mod tests {
-	use super::*;
+use puniyu_loader::Loader;
+use puniyu_plugin_core::Plugin;
 
-	#[test]
-	fn it_works() {
-		let result = add(2, 2);
-		assert_eq!(result, 4);
+pub struct IpcLoader;
+
+impl Loader for IpcLoader {
+	fn name(&self) -> &'static str {
+		env!("CARGO_PKG_NAME")
+	}
+	fn plugins(&self) -> Vec<Arc<dyn Plugin>> {
+		vec![]
 	}
 }

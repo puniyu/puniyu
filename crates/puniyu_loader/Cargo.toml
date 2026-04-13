@@ -18,6 +18,7 @@ puniyu_plugin_core.workspace = true
 
 puniyu_error = { workspace = true, features = ["registry"], optional = true }
 
+
 [features]
 default = []
 registry = ["dep:puniyu_error"]
