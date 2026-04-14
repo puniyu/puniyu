@@ -2546,18 +2546,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "puniyu_plugin_test"
-version = "0.8.0"
-dependencies = [
- "bytes",
- "prost",
- "puniyu_ipc",
- "serde",
- "serde_json",
- "tokio",
-]
-
-[[package]]
 name = "puniyu_runtime"
 version = "0.8.0"
 dependencies = [

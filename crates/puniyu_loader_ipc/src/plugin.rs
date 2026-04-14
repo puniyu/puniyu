@@ -1,4 +1,4 @@
-include!(concat!(env!("OUT_DIR"), "/puniyu.ipc.plugin.rs"));
+include!(concat!(env!("OUT_DIR"), "/puniyu.plugin.rs"));
 
 pub(crate) struct IpcPlugin {
 	name: String,
