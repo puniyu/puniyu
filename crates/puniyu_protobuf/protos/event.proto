@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package puniyu.event;
+import "event/message.proto";
+
+message Event {
+  oneof event {
+    puniyu.event.message.MessageEvent message_event = 1;
+  }
+}
+

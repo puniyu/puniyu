@@ -9,7 +9,7 @@ use strum::{Display, EnumString, IntoStaticStr};
 ///
 /// - `Friend` - 好友消息，来自私聊
 /// - `Group` - 群消息，来自群聊
-/// - `Guild` - 频道消息，来自频道（暂未实现）
+/// - `Guild` - 频道消息，来自频道
 ///
 /// # 示例
 ///

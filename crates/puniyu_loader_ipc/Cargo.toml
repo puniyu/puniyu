@@ -30,5 +30,5 @@ glob.workspace = true
 
 [build-dependencies]
 glob.workspace = true
-prost-build = "0.14.1"
-protoc-bin-vendored = "3.2.0"
+prost-build.workspace = true
+protoc-bin-vendored.workspace  = true

@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package puniyu.event.message.guild;
+import "element/receive.proto";
+import "element/send.proto";
+import "contact.proto";
+import "sender.proto";
+
+message GuildMessage {
+  string event_id = 1;
+  uint64 time = 2;
+  string self_id = 3;
+  string user_id = 4;
+  string message_id = 5;
+  repeated puniyu.element.receive.Elements elements = 6;
+  puniyu.contact.GuildContact contact = 7;
+  puniyu.sender.GuildSender sender = 8;
+}

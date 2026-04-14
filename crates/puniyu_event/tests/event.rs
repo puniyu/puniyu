@@ -11,7 +11,7 @@ use puniyu_contact::{Contact, ContactType, contact_friend};
 use puniyu_element::receive::Elements;
 use puniyu_event::{
 	Event, EventType, SubEventType,
-	extension::{ExtensionEvent, ExtensionSubEventType},
+	extension::{ExtensionEvent, NoticeSubEventType},
 	message::{FriendMessage, MessageEvent, MessageSubEventType},
 };
 use puniyu_message::Message;
@@ -119,7 +119,7 @@ impl puniyu_event::EventBase for TestExtensionEvent {
 		"ext-event-1"
 	}
 	fn sub_event(&self) -> puniyu_event::SubEventType {
-		puniyu_event::SubEventType::Extension(ExtensionSubEventType::new("test.extension"))
+		self.r#type()
 	}
 	fn bot(&self) -> &dyn Bot {
 		self.bot.as_ref()
@@ -138,7 +138,15 @@ impl puniyu_event::EventBase for TestExtensionEvent {
 	}
 }
 
-impl ExtensionEvent for TestExtensionEvent {}
+impl ExtensionEvent for TestExtensionEvent {
+	fn r#type(&self) -> SubEventType {
+		SubEventType::Notice(NoticeSubEventType::new("friend_poke"))
+	}
+
+	fn content(&self) -> &str {
+		"Alice poked the bot"
+	}
+}
 
 fn make_event_extension() -> Event<'static> {
 	Event::Extension(Box::new(TestExtensionEvent {
@@ -174,10 +182,9 @@ fn root_event_extension_helpers_work() {
 	assert!(event.as_message().is_none());
 	assert!(event.as_extension().is_some());
 	assert_eq!(event.event_type(), EventType::Extension);
-	assert_eq!(
-		event.sub_event(),
-		SubEventType::Extension(ExtensionSubEventType::new("test.extension"))
-	);
+	assert_eq!(event.sub_event(), SubEventType::Notice(NoticeSubEventType::new("friend_poke")));
+	assert_eq!(event.as_extension().unwrap().r#type(), SubEventType::Notice(NoticeSubEventType::new("friend_poke")));
+	assert_eq!(event.as_extension().unwrap().content(), "Alice poked the bot");
 	assert_eq!(
 		event_snapshot(&event),
 		(

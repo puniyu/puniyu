@@ -2363,6 +2363,7 @@ version = "0.8.0"
 dependencies = [
  "async-trait",
  "bytes",
+ "derive_more",
  "puniyu_account",
  "puniyu_adapter_types",
  "puniyu_bot",
@@ -2588,11 +2589,17 @@ version = "0.8.0"
 dependencies = [
  "bytes",
  "glob",
+ "jiff",
  "prost",
  "prost-build",
  "protoc-bin-vendored",
+ "puniyu_account",
+ "puniyu_adapter_types",
+ "puniyu_bot",
  "puniyu_contact",
+ "puniyu_element",
  "puniyu_sender",
+ "puniyu_version",
 ]
 
 [[package]]

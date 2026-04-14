@@ -15,7 +15,7 @@ mod event;
 #[doc(inline)]
 pub use event::MessageEvent;
 mod types;
-use super::{EventBase, SubEventType};
+use super::EventBase;
 use bytes::Bytes;
 use puniyu_element::receive::Elements;
 #[doc(inline)]
@@ -87,26 +87,6 @@ pub trait MessageBase: Send + Sync + EventBase {
 				_ => None,
 			})
 			.next()
-	}
-
-	/// 判断是否为好友消息。
-	fn is_friend(&self) -> bool {
-		matches!(self.sub_event(), SubEventType::Message(MessageSubEventType::Friend))
-	}
-
-	/// 判断是否为群消息。
-	fn is_group(&self) -> bool {
-		matches!(self.sub_event(), SubEventType::Message(MessageSubEventType::Group))
-	}
-
-	/// 判断是否为群临时消息。
-	fn is_group_temp(&self) -> bool {
-		matches!(self.sub_event(), SubEventType::Message(MessageSubEventType::GroupTemp))
-	}
-
-	/// 判断是否为频道消息。
-	fn is_guild(&self) -> bool {
-		matches!(self.sub_event(), SubEventType::Message(MessageSubEventType::Guild))
 	}
 }
 

@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package puniyu.event.message;
+import "event/message/friend.proto";
+import "event/message/group.proto";
+import "event/message/group/temp.proto";
+import "event/message/guild.proto";
+
+message MessageEvent {
+  oneof message_event {
+    puniyu.event.message.friend.FriendMessageReceive friend_message = 1;
+    puniyu.event.message.group.GroupMessageReceive group_message = 2;
+    puniyu.event.message.group.temp.GroupTempMessageReceive group_temp_message = 3;
+    puniyu.event.message.guild.GuildMessageReceive guild_message = 4;
+  }
+}

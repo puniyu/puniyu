@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package puniyu.element;
+
+enum ElementType {
+    /// 艾特元素
+    At = 0;
+    /// 回复元素
+    Reply = 1;
+    /// 文本元素
+    Text = 2;
+    /// 图片元素
+    Image = 3;
+    /// 文件元素
+    File = 4;
+    /// 语音元素
+    Record = 5;
+    /// 视频元素
+    Video = 6;
+    /// 表情元素
+    Face = 7;
+    /// json元素
+    Json = 8;
+    /// xml元素
+    Xml = 9;
+}

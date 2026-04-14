@@ -84,13 +84,6 @@ impl<'c> EventContext<'c> {
 		self.inner.as_extension()
 	}
 
-	/// 尝试将扩展事件转换为指定类型。
-	pub fn extension<T>(&self) -> Option<&T>
-	where
-		T: puniyu_event::ExtensionEvent + 'static,
-	{
-		self.inner.as_extension().and_then(|extension| extension.extension::<T>())
-	}
 }
 impl<'c> EventBase for EventContext<'c> {
 	fn time(&self) -> u64 {
