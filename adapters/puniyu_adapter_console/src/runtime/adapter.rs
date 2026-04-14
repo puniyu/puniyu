@@ -8,7 +8,7 @@ use puniyu_adapter::{
 	AdapterCommunication, AdapterInfo, AdapterPlatform, AdapterProtocol, AdapterStandard,
 	SendMsgType,
 };
-use puniyu_runtime::{AdapterProvider, SendMessage};
+use puniyu_adapter::runtime::{AdapterProvider, SendMessage};
 
 use crate::NAME;
 use crate::VERSION;

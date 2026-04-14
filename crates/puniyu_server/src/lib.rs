@@ -15,4 +15,4 @@ mod types;
 pub use types::*;
 mod logo;
 #[doc(inline)]
-pub use logo::set_logo;
+pub use logo::{set_logo, get_logo};

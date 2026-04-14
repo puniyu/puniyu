@@ -8,7 +8,7 @@ use log::info;
 use puniyu_adapter::app_name;
 use puniyu_adapter::bot::get_bot;
 use puniyu_adapter::macros::*;
-use puniyu_runtime::AdapterProvider;
+use puniyu_adapter::runtime::AdapterProvider;
 use std::sync::Arc;
 
 pub(crate) const VERSION: puniyu_adapter::Version = pkg_version!();
@@ -24,7 +24,7 @@ async fn main() -> puniyu_adapter::Result {
 		account_info!(
 			uin: bot_id,
 			name: format!("{}/{}", name, bot_id),
-			avatar: runtime::AVATAR.clone()
+			avatar: puniyu_server::get_logo(),
 		),
 	));
 	let bot: Arc<dyn puniyu_adapter::bot::Bot> = Arc::new(bot::ConsoleBot::new(bot_runtime));
