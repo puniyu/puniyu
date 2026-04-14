@@ -55,19 +55,13 @@ impl Segment {
 		Elements::Reply(elem)
 	}
 
-	/// 创建不带摘要的图片元素。
-	pub fn image_without_summary(image: impl Into<Bytes>, name: impl Into<String>) -> Elements {
-		let elem = ImageElement::new(image, name, None);
-		Elements::Image(elem)
-	}
-
 	/// 创建图片元素。
-	pub fn image<N, S>(image: impl Into<Bytes>, name: N, summary: S) -> Elements
+	pub fn image<N, S>(image: impl Into<Bytes>, name: N, summary: Option<S>) -> Elements
 	where
 		N: Into<String>,
 		S: Into<String>,
 	{
-		let elem = ImageElement::new(image, name, Some(summary.into()));
+		let elem = ImageElement::new(image, name, summary);
 		Elements::Image(elem)
 	}
 
