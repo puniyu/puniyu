@@ -281,6 +281,31 @@ dependencies = [
 ]
 
 [[package]]
+name = "bon"
+version = "3.9.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f47dbe92550676ee653353c310dfb9cf6ba17ee70396e1f7cf0a2020ad49b2fe"
+dependencies = [
+ "bon-macros",
+ "rustversion",
+]
+
+[[package]]
+name = "bon-macros"
+version = "3.9.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "519bd3116aeeb42d5372c29d982d16d0170d3d4a5ed85fc7dd91642ffff3c67c"
+dependencies = [
+ "darling",
+ "ident_case",
+ "prettyplease",
+ "proc-macro2",
+ "quote",
+ "rustversion",
+ "syn",
+]
+
+[[package]]
 name = "brotli"
 version = "8.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2047,8 +2072,8 @@ dependencies = [
 name = "puniyu_account"
 version = "0.8.0"
 dependencies = [
+ "bon",
  "bytes",
- "derive_builder",
  "serde",
  "serde_json",
 ]
@@ -2113,8 +2138,8 @@ dependencies = [
 name = "puniyu_adapter_types"
 version = "0.8.0"
 dependencies = [
+ "bon",
  "bytes",
- "derive_builder",
  "jiff",
  "puniyu_contact",
  "puniyu_element",
@@ -2236,7 +2261,7 @@ dependencies = [
 name = "puniyu_contact"
 version = "0.8.0"
 dependencies = [
- "derive_builder",
+ "bon",
  "serde",
  "serde_json",
  "strum 0.28.0",
@@ -2546,6 +2571,31 @@ dependencies = [
 ]
 
 [[package]]
+name = "puniyu_plugin_test"
+version = "0.8.0"
+dependencies = [
+ "bytes",
+ "prost",
+ "puniyu_ipc",
+ "serde",
+ "serde_json",
+ "tokio",
+]
+
+[[package]]
+name = "puniyu_protobuf"
+version = "0.8.0"
+dependencies = [
+ "bytes",
+ "glob",
+ "prost",
+ "prost-build",
+ "protoc-bin-vendored",
+ "puniyu_contact",
+ "puniyu_sender",
+]
+
+[[package]]
 name = "puniyu_runtime"
 version = "0.8.0"
 dependencies = [
@@ -2571,7 +2621,7 @@ dependencies = [
 name = "puniyu_sender"
 version = "0.8.0"
 dependencies = [
- "derive_builder",
+ "bon",
  "serde",
  "serde_json",
  "strum 0.28.0",

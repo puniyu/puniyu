@@ -3,11 +3,16 @@ use std::sync::Arc;
 use async_trait::async_trait;
 use bytes::Bytes;
 use puniyu_account::AccountInfo;
-use puniyu_adapter_types::{AdapterInfo, AdapterPlatform, AdapterProtocol, SendMsgType, adapter_info};
+use puniyu_adapter_types::{
+	AdapterInfo, AdapterPlatform, AdapterProtocol, SendMsgType, adapter_info,
+};
 use puniyu_bot::Bot;
 use puniyu_contact::{Contact, ContactType, contact_friend, contact_group_temp};
 use puniyu_element::receive::Elements;
-use puniyu_event::{EventBase, EventType, SubEventType, message::{FriendMessage, GroupTempMessage, MessageBase, MessageEvent, MessageSubEventType}};
+use puniyu_event::{
+	EventBase, EventType, SubEventType,
+	message::{FriendMessage, GroupTempMessage, MessageBase, MessageEvent, MessageSubEventType},
+};
 use puniyu_message::Message;
 use puniyu_runtime::{AccountProvider, AdapterProvider, SendMessage};
 use puniyu_sender::{Sender, SenderType, sender_friend, sender_group_temp};
@@ -19,16 +24,24 @@ struct TestRuntime {
 }
 
 impl AdapterProvider for TestRuntime {
-	fn adapter_info(&self) -> &AdapterInfo { &self.adapter }
+	fn adapter_info(&self) -> &AdapterInfo {
+		&self.adapter
+	}
 }
 
 impl AccountProvider for TestRuntime {
-	fn account_info(&self) -> &AccountInfo { &self.account }
+	fn account_info(&self) -> &AccountInfo {
+		&self.account
+	}
 }
 
 #[async_trait]
 impl SendMessage for TestRuntime {
-	async fn send_message(&self, _contact: &ContactType<'_>, _message: &Message) -> puniyu_error::Result<SendMsgType> {
+	async fn send_message(
+		&self,
+		_contact: &ContactType<'_>,
+		_message: &Message,
+	) -> puniyu_error::Result<SendMsgType> {
 		Ok(SendMsgType { message_id: "test-msg".to_string(), time: 0 })
 	}
 }
@@ -39,13 +52,18 @@ struct TestBot {
 }
 
 impl puniyu_bot::Bot for TestBot {
-	fn runtime(&self) -> &dyn puniyu_runtime::BotRuntime { self.runtime.as_ref() }
+	fn runtime(&self) -> &dyn puniyu_runtime::BotRuntime {
+		self.runtime.as_ref()
+	}
 }
 
 fn leak_bot() -> &'static Arc<dyn Bot> {
 	let adapter = adapter_info!("console", AdapterPlatform::QQ, AdapterProtocol::Console);
-	let account = AccountInfo { uin: "10000".to_string(), name: "Puniyu".to_string(), avatar: Bytes::new() };
-	Box::leak(Box::new(Arc::new(TestBot { runtime: Arc::new(TestRuntime { adapter, account }) }) as Arc<dyn Bot>))
+	let account =
+		AccountInfo { uin: "10000".to_string(), name: "Puniyu".to_string(), avatar: Bytes::new() };
+	Box::leak(Box::new(
+		Arc::new(TestBot { runtime: Arc::new(TestRuntime { adapter, account }) }) as Arc<dyn Bot>
+	))
 }
 
 fn leak_friend_contact() -> &'static puniyu_contact::FriendContact<'static> {

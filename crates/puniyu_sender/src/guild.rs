@@ -1,38 +1,37 @@
-use crate::{Role, Sender, Sex};
-use derive_builder::Builder;
+use bon::Builder;
 use serde::{Deserialize, Serialize};
 use std::borrow::Cow;
+
+use crate::{Role, Sender, Sex};
 
 /// 频道发送者信息。
 #[derive(Debug, Default, Clone, PartialEq, Deserialize, Serialize, Builder)]
 #[serde(bound(deserialize = "'de: 's"))]
-#[builder(setter(into), pattern = "owned")]
 pub struct GuildSender<'s> {
 	/// 发送者id
+	#[builder(into)]
 	#[serde(borrow)]
 	user_id: Cow<'s, str>,
 	/// 用户昵称
-	#[builder(default, setter(strip_option))]
+	#[builder(into)]
 	#[serde(borrow)]
 	nick: Option<Cow<'s, str>>,
 	/// 性别
 	#[builder(default)]
 	sex: Sex,
 	/// 年龄
-	#[builder(default)]
 	age: Option<u32>,
 	/// 角色
 	#[builder(default)]
 	role: Role,
 	/// 频道名片
-	#[builder(default, setter(strip_option))]
+	#[builder(into)]
 	#[serde(borrow)]
 	card: Option<Cow<'s, str>>,
 	/// 等级
-	#[builder(default)]
 	level: Option<u32>,
 	/// 专属头衔
-	#[builder(default, setter(strip_option))]
+	#[builder(into)]
 	#[serde(borrow)]
 	title: Option<Cow<'s, str>>,
 }
@@ -65,10 +64,6 @@ impl<'s> GuildSender<'s> {
 			level,
 			title: title.map(Into::into),
 		}
-	}
-
-	pub fn builder() -> GuildSenderBuilder<'s> {
-		GuildSenderBuilder::default()
 	}
 
 	/// 获取频道角色。
@@ -110,17 +105,13 @@ impl<'s> Sender for GuildSender<'s> {
 #[macro_export]
 macro_rules! sender_guild {
     ( $( $key:ident : $value:expr ),+ $(,)? ) => {{
-        $crate::GuildSenderBuilder::default()
+        $crate::GuildSender::builder()
         $(
             .$key($value)
         )*
         .build()
-		.expect("Failed to build GuildSender")
     }};
 	($user_id:expr) => {{
-		$crate::GuildSenderBuilder::default()
-			.user_id($user_id)
-			.build()
-			.expect("Failed to build GuildSender")
+		$crate::GuildSender::builder().user_id($user_id).build()
 	}};
 }

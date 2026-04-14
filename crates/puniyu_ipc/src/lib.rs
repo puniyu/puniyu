@@ -1,13 +1,9 @@
 use std::io;
 
 use bytes::Bytes;
-use interprocess::local_socket::{
-	GenericNamespaced, ListenerOptions,
-	tokio::prelude::*,
-};
 pub use interprocess::local_socket::tokio::{Listener, Stream};
+use interprocess::local_socket::{GenericNamespaced, ListenerOptions, tokio::prelude::*};
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
-
 
 const MAX_FRAME_SIZE: usize = 1024 * 1024 * 1024;
 
@@ -27,9 +23,7 @@ pub struct Server {
 impl Server {
 	/// 绑定到 puniyu IPC 本地 socket 并创建服务端。
 	pub async fn bind() -> io::Result<Self> {
-		let listener = ListenerOptions::new()
-			.name(socket_name()?)
-			.create_tokio()?;
+		let listener = ListenerOptions::new().name(socket_name()?).create_tokio()?;
 		Ok(Self { listener })
 	}
 

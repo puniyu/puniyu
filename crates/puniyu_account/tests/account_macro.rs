@@ -166,12 +166,3 @@ fn test_account_info_macro_named_fields_out_of_order() {
 	assert_eq!(account.name, "MyBot");
 	assert_eq!(account.avatar, Bytes::from_static(b"image data"));
 }
-
-#[test]
-#[should_panic(expected = "Failed to build AccountInfo")]
-fn test_account_info_macro_missing_required_field_panics() {
-	let _ = account_info!(
-		uin: "123456789",
-		name: "MyBot",
-	);
-}

@@ -1,4 +1,4 @@
-use derive_builder::Builder;
+use bon::Builder;
 use jiff::Timestamp;
 use puniyu_version::Version;
 use serde::{Deserialize, Serialize};
@@ -106,16 +106,15 @@ pub enum AdapterCommunication {
 
 /// 适配器元信息。
 #[derive(Debug, Clone, Builder, Deserialize, Serialize)]
-#[builder(setter(into))]
+#[builder(on(String, into))]
 pub struct AdapterInfo {
-	/// 适配器名称。
+	/// 适配器名称
 	#[builder(default)]
 	pub name: String,
-	/// 适配器作者。
-	#[builder(default)]
+	/// 适配器作者
 	pub author: Option<String>,
 	/// 适配器版本。
-	#[builder(default = "Self::default_version()")]
+	#[builder(default = AdapterInfo::default_version())]
 	pub version: Version,
 	/// 适配器平台。
 	#[builder(default)]
@@ -129,14 +128,12 @@ pub struct AdapterInfo {
 	/// 适配器通信方式。
 	#[builder(default)]
 	pub communication: AdapterCommunication,
-	/// 适配器通信地址。
-	#[builder(default)]
+	/// 适配器通信地址
 	pub address: Option<String>,
 	/// 连接时间。
-	#[builder(default = "Self::default_connect_time()")]
+	#[builder(default = AdapterInfo::default_connect_time())]
 	pub connect_time: Timestamp,
 	/// 鉴权密钥。
-	#[builder(default)]
 	pub secret: Option<String>,
 }
 
@@ -157,16 +154,11 @@ impl PartialEq for AdapterInfo {
 
 impl Eq for AdapterInfo {}
 
-impl Default for AdapterInfo {
-	fn default() -> Self {
-		AdapterInfoBuilder::default().build().expect("Failed to build AdapterInfo")
-	}
-}
-
-impl AdapterInfoBuilder {
+impl AdapterInfo {
 	const fn default_version() -> Version {
 		Version::new(0, 1, 0)
 	}
+
 	fn default_connect_time() -> Timestamp {
 		Timestamp::now()
 	}
@@ -176,11 +168,11 @@ impl AdapterInfoBuilder {
 #[macro_export]
 macro_rules! adapter_info {
     ( $( $key:ident : $value:expr ),+ $(,)? ) => {{
-        let  mut builder = $crate::AdapterInfoBuilder::default();
-		$(
-			builder.$key($value);
-		)*
-		builder.build().expect("Failed to build AdapterInfo")
+        $crate::AdapterInfo::builder()
+            $(
+                .$key($value)
+            )*
+            .build()
     }};
 	($name:expr, $platform:expr, $protocol:expr) => {{
 		adapter_info!(

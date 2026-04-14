@@ -3,7 +3,9 @@ use std::sync::Arc;
 use async_trait::async_trait;
 use bytes::Bytes;
 use puniyu_account::AccountInfo;
-use puniyu_adapter_types::{AdapterInfo, AdapterPlatform, AdapterProtocol, SendMsgType, adapter_info};
+use puniyu_adapter_types::{
+	AdapterInfo, AdapterPlatform, AdapterProtocol, SendMsgType, adapter_info,
+};
 use puniyu_bot::Bot;
 use puniyu_contact::ContactType;
 use puniyu_context::BotContext;
@@ -71,11 +73,8 @@ fn test_bot_context_creation() {
 
 #[test]
 fn test_bot_context_with_avatar() {
-	let bot = make_bot_with_account(
-		"bot123",
-		"TestBot",
-		Bytes::from("https://example.com/avatar.jpg"),
-	);
+	let bot =
+		make_bot_with_account("bot123", "TestBot", Bytes::from("https://example.com/avatar.jpg"));
 	let context = BotContext::new(bot.as_ref());
 
 	assert_eq!(context.account().avatar, "https://example.com/avatar.jpg");

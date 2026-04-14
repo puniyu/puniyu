@@ -4,7 +4,9 @@ use std::sync::Arc;
 use async_trait::async_trait;
 use bytes::Bytes;
 use puniyu_account::AccountInfo;
-use puniyu_adapter_types::{AdapterInfo, AdapterPlatform, AdapterProtocol, SendMsgType, adapter_info};
+use puniyu_adapter_types::{
+	AdapterInfo, AdapterPlatform, AdapterProtocol, SendMsgType, adapter_info,
+};
 use puniyu_bot::Bot;
 use puniyu_command_types::ArgValue;
 use puniyu_contact::{Contact, ContactType, contact_friend};
@@ -64,8 +66,11 @@ fn leak_bot() -> &'static Arc<dyn Bot> {
 		platform: AdapterPlatform::Other,
 		protocol: AdapterProtocol::Console,
 	);
-	let account = AccountInfo { uin: "10000".to_string(), name: "Puniyu".to_string(), avatar: Bytes::new() };
-	Box::leak(Box::new(Arc::new(TestBot { runtime: Arc::new(TestRuntime { adapter, account }) }) as Arc<dyn Bot>))
+	let account =
+		AccountInfo { uin: "10000".to_string(), name: "Puniyu".to_string(), avatar: Bytes::new() };
+	Box::leak(Box::new(
+		Arc::new(TestBot { runtime: Arc::new(TestRuntime { adapter, account }) }) as Arc<dyn Bot>
+	))
 }
 
 fn leak_friend_contact() -> &'static puniyu_contact::FriendContact<'static> {
@@ -81,16 +86,17 @@ fn leak_empty_elements() -> &'static Vec<Elements<'static>> {
 }
 
 fn make_event_context() -> EventContext<'static> {
-	let event = Box::leak(Box::new(Event::Message(Box::new(MessageEvent::Friend(FriendMessage::new(
-		leak_bot().as_ref(),
-		"msg-event-1",
-		"123456",
-		leak_friend_contact(),
-		leak_friend_sender(),
-		1,
-		"msg-1",
-		leak_empty_elements(),
-	))))));
+	let event =
+		Box::leak(Box::new(Event::Message(Box::new(MessageEvent::Friend(FriendMessage::new(
+			leak_bot().as_ref(),
+			"msg-event-1",
+			"123456",
+			leak_friend_contact(),
+			leak_friend_sender(),
+			1,
+			"msg-1",
+			leak_empty_elements(),
+		))))));
 	let _args = HashMap::<String, ArgValue>::new();
 	EventContext::new(event)
 }

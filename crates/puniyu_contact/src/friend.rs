@@ -2,10 +2,11 @@
 //!
 //! 提供好友联系人的类型定义和构建宏。
 
-use crate::{Contact, SceneType};
-use derive_builder::Builder;
+use bon::Builder;
 use serde::{Deserialize, Serialize};
 use std::borrow::Cow;
+
+use crate::{Contact, SceneType};
 
 /// 好友联系人
 ///
@@ -16,32 +17,29 @@ use std::borrow::Cow;
 /// ```rust
 /// use puniyu_contact::{Contact, FriendContact};
 ///
-/// let friend = FriendContact::new("123456", "Alice");
+/// let friend = FriendContact::new("123456", Some("Alice"));
 /// assert_eq!(friend.peer(), "123456");
 /// ```
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, Builder)]
 #[serde(bound(deserialize = "'de: 'c"))]
-#[builder(setter(into), pattern = "owned")]
 pub struct FriendContact<'c> {
 	/// 好友ID
+	#[builder(into)]
 	#[serde(borrow)]
 	peer: Cow<'c, str>,
 	/// 好友名称
-	#[builder(default, setter(strip_option))]
+	#[builder(into)]
 	#[serde(borrow)]
 	name: Option<Cow<'c, str>>,
 }
+
 impl<'c> FriendContact<'c> {
-	pub fn new<P, N>(peer: P, name: N) -> Self
+	pub fn new<P, N>(peer: P, name: Option<N>) -> Self
 	where
 		P: Into<Cow<'c, str>>,
 		N: Into<Cow<'c, str>>,
 	{
-		Self { peer: peer.into(), name: Some(name.into()) }
-	}
-
-	pub fn builder() -> FriendContactBuilder<'c> {
-		FriendContactBuilder::default()
+		Self { peer: peer.into(), name: name.map(Into::into) }
 	}
 }
 
@@ -94,26 +92,18 @@ impl<'c> Contact for FriendContact<'c> {
 #[macro_export]
 macro_rules! contact_friend {
     ( $( $key:ident : $value:expr ),+ $(,)? ) => {{
-        $crate::FriendContactBuilder::default()
+        $crate::FriendContact::builder()
             $(
                 .$key($value)
             )*
             .build()
-            .expect("Failed to build FriendContact")
     }};
 
     ($peer:expr, $name:expr) => {{
-        $crate::FriendContactBuilder::default()
-            .peer($peer)
-            .name($name)
-            .build()
-            .expect("Failed to build FriendContact")
+        $crate::FriendContact::builder().peer($peer).name($name).build()
     }};
 
     ($peer:expr) => {{
-        $crate::FriendContactBuilder::default()
-            .peer($peer)
-            .build()
-            .expect("Failed to build FriendContact")
+        $crate::FriendContact::builder().peer($peer).build()
     }};
 }

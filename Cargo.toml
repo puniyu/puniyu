@@ -36,11 +36,13 @@ reqwest = { version = "0.13.0", default-features = false, features = [
     "json",
     "rustls",
 ] }
-derive_builder = { version = "0.20.2" }
 derive_more = { version = "2.1.1" }
+bon = { version = "3.9.1" }
 const-str = { version = "1.1.0" }
 bytes = { version = "1.11.0", features = ["serde"] }
 prost = { version = "0.14.1" }
+prost-build = "0.14.1"
+protoc-bin-vendored = "3.2.0"
 
 puniyu_logger = { version = "0.7.2" }
 puniyu_system_info = { version = "1.5.5" }

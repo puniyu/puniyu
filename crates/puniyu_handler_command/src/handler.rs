@@ -103,10 +103,7 @@ impl CommandHandler {
 	}
 
 	/// 执行命令
-	async fn execute_command(
-		ctx: &MessageContext<'_>,
-		command_name: &str,
-	) {
+	async fn execute_command(ctx: &MessageContext<'_>, command_name: &str) {
 		let commands = CommandRegistry::all()
 			.into_iter()
 			.filter(|cmd| cmd.builder.name() == command_name)

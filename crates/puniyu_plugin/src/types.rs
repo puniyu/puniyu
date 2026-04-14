@@ -18,8 +18,8 @@ pub fn get_plugin<'p>(plugin: impl Into<PluginId<'p>>) -> Option<PluginInfo> {
 	};
 	plugin.map(|plugin| PluginInfo {
 		name: plugin.name().to_string(),
-		author: plugin.author().into_iter().map(|s|s.to_string()).collect(),
-		description: plugin.description().map(|s|s.to_string()),
+		author: plugin.author().into_iter().map(|s| s.to_string()).collect(),
+		description: plugin.description().map(|s| s.to_string()),
 		version: plugin.version(),
 	})
 }

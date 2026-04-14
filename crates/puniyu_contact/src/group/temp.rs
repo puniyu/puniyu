@@ -2,10 +2,11 @@
 //!
 //! 提供群临时联系人的类型定义和构建宏。
 
-use crate::{Contact, SceneType};
-use derive_builder::Builder;
+use bon::Builder;
 use serde::{Deserialize, Serialize};
 use std::borrow::Cow;
+
+use crate::{Contact, SceneType};
 
 /// 群临时联系人
 ///
@@ -16,33 +17,29 @@ use std::borrow::Cow;
 /// ```rust
 /// use puniyu_contact::{Contact, GroupTempContact};
 ///
-/// let group_temp = GroupTempContact::new("789012", "Temp Team");
+/// let group_temp = GroupTempContact::new("789012", Some("Temp Team"));
 /// assert_eq!(group_temp.peer(), "789012");
 /// ```
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, Builder)]
 #[serde(bound(deserialize = "'de: 'c"))]
-#[builder(setter(into), pattern = "owned")]
 pub struct GroupTempContact<'c> {
 	/// 群 ID
+	#[builder(into)]
 	#[serde(borrow)]
 	peer: Cow<'c, str>,
 	/// 群名称
-	#[builder(default, setter(strip_option))]
+	#[builder(into)]
 	#[serde(borrow)]
 	name: Option<Cow<'c, str>>,
 }
 
 impl<'c> GroupTempContact<'c> {
-	pub fn new<P, N>(peer: P, name: N) -> Self
+	pub fn new<P, N>(peer: P, name: Option<N>) -> Self
 	where
 		P: Into<Cow<'c, str>>,
 		N: Into<Cow<'c, str>>,
 	{
-		Self { peer: peer.into(), name: Some(name.into()) }
-	}
-
-	pub fn builder() -> GroupTempContactBuilder<'c> {
-		GroupTempContactBuilder::default()
+		Self { peer: peer.into(), name: name.map(|s|s.into()) }
 	}
 }
 
@@ -63,26 +60,18 @@ impl<'c> Contact for GroupTempContact<'c> {
 #[macro_export]
 macro_rules! contact_group_temp {
     ( $( $key:ident : $value:expr ),+ $(,)? ) => {{
-        $crate::GroupTempContactBuilder::default()
-			$(
-				.$key($value)
-			)*
-			.build()
-			.expect("Failed to build GroupTempContact")
+        $crate::GroupTempContact::builder()
+            $(
+                .$key($value)
+            )*
+            .build()
     }};
 
     ($peer:expr, $name:expr) => {{
-        $crate::GroupTempContactBuilder::default()
-            .peer($peer)
-            .name($name)
-            .build()
-            .expect("Failed to build GroupTempContact")
+        $crate::GroupTempContact::builder().peer($peer).name($name).build()
     }};
 
     ($peer:expr) => {{
-        $crate::GroupTempContactBuilder::default()
-            .peer($peer)
-            .build()
-            .expect("Failed to build GroupTempContact")
+        $crate::GroupTempContact::builder().peer($peer).build()
     }};
 }

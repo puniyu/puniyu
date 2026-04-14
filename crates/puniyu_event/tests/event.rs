@@ -3,7 +3,9 @@ use std::sync::Arc;
 use async_trait::async_trait;
 use bytes::Bytes;
 use puniyu_account::AccountInfo;
-use puniyu_adapter_types::{AdapterInfo, AdapterPlatform, AdapterProtocol, SendMsgType, adapter_info};
+use puniyu_adapter_types::{
+	AdapterInfo, AdapterPlatform, AdapterProtocol, SendMsgType, adapter_info,
+};
 use puniyu_bot::Bot;
 use puniyu_contact::{Contact, ContactType, contact_friend};
 use puniyu_element::receive::Elements;
@@ -23,16 +25,24 @@ struct TestRuntime {
 }
 
 impl AdapterProvider for TestRuntime {
-	fn adapter_info(&self) -> &AdapterInfo { &self.adapter }
+	fn adapter_info(&self) -> &AdapterInfo {
+		&self.adapter
+	}
 }
 
 impl AccountProvider for TestRuntime {
-	fn account_info(&self) -> &AccountInfo { &self.account }
+	fn account_info(&self) -> &AccountInfo {
+		&self.account
+	}
 }
 
 #[async_trait]
 impl SendMessage for TestRuntime {
-	async fn send_message(&self, _contact: &ContactType<'_>, _message: &Message) -> puniyu_error::Result<SendMsgType> {
+	async fn send_message(
+		&self,
+		_contact: &ContactType<'_>,
+		_message: &Message,
+	) -> puniyu_error::Result<SendMsgType> {
 		Ok(SendMsgType { message_id: "test-msg".to_string(), time: 0 })
 	}
 }
@@ -43,13 +53,18 @@ struct TestBot {
 }
 
 impl puniyu_bot::Bot for TestBot {
-	fn runtime(&self) -> &dyn puniyu_runtime::BotRuntime { self.runtime.as_ref() }
+	fn runtime(&self) -> &dyn puniyu_runtime::BotRuntime {
+		self.runtime.as_ref()
+	}
 }
 
 fn leak_bot() -> &'static Arc<dyn Bot> {
 	let adapter = adapter_info!("console", AdapterPlatform::QQ, AdapterProtocol::Console);
-	let account = AccountInfo { uin: "10000".to_string(), name: "Puniyu".to_string(), avatar: Bytes::new() };
-	Box::leak(Box::new(Arc::new(TestBot { runtime: Arc::new(TestRuntime { adapter, account }) }) as Arc<dyn Bot>))
+	let account =
+		AccountInfo { uin: "10000".to_string(), name: "Puniyu".to_string(), avatar: Bytes::new() };
+	Box::leak(Box::new(
+		Arc::new(TestBot { runtime: Arc::new(TestRuntime { adapter, account }) }) as Arc<dyn Bot>
+	))
 }
 
 fn leak_friend_contact() -> &'static puniyu_contact::FriendContact<'static> {
@@ -94,17 +109,33 @@ pub struct TestExtensionEvent {
 }
 
 impl puniyu_event::EventBase for TestExtensionEvent {
-	fn time(&self) -> u64 { 2 }
-	fn event_type(&self) -> puniyu_event::EventType { puniyu_event::EventType::Extension }
-	fn event_id(&self) -> &str { "ext-event-1" }
+	fn time(&self) -> u64 {
+		2
+	}
+	fn event_type(&self) -> puniyu_event::EventType {
+		puniyu_event::EventType::Extension
+	}
+	fn event_id(&self) -> &str {
+		"ext-event-1"
+	}
 	fn sub_event(&self) -> puniyu_event::SubEventType {
 		puniyu_event::SubEventType::Extension(ExtensionSubEventType::new("test.extension"))
 	}
-	fn bot(&self) -> &dyn Bot { self.bot.as_ref() }
-	fn self_id(&self) -> &str { self.bot.account().uin.as_str() }
-	fn user_id(&self) -> &str { "123456" }
-	fn contact(&self) -> puniyu_contact::ContactType<'_> { (*self.contact).clone().into() }
-	fn sender(&self) -> puniyu_sender::SenderType<'_> { (*self.sender).clone().into() }
+	fn bot(&self) -> &dyn Bot {
+		self.bot.as_ref()
+	}
+	fn self_id(&self) -> &str {
+		self.bot.account().uin.as_str()
+	}
+	fn user_id(&self) -> &str {
+		"123456"
+	}
+	fn contact(&self) -> puniyu_contact::ContactType<'_> {
+		(*self.contact).clone().into()
+	}
+	fn sender(&self) -> puniyu_sender::SenderType<'_> {
+		(*self.sender).clone().into()
+	}
 }
 
 impl ExtensionEvent for TestExtensionEvent {}

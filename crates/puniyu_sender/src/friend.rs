@@ -2,29 +2,28 @@
 //!
 //! 提供好友发送者的类型定义和构建宏。
 
-use crate::Sender;
-use crate::Sex;
-use derive_builder::Builder;
+use bon::Builder;
 use serde::{Deserialize, Serialize};
 use std::borrow::Cow;
+
+use crate::{Sender, Sex};
 
 /// 好友发送者信息。
 #[derive(Debug, Default, Clone, PartialEq, Deserialize, Serialize, Builder)]
 #[serde(bound(deserialize = "'de: 's"))]
-#[builder(setter(into), pattern = "owned")]
 pub struct FriendSender<'s> {
 	/// 发送者id
+	#[builder(into)]
 	#[serde(borrow)]
 	user_id: Cow<'s, str>,
 	/// 用户昵称
-	#[builder(default, setter(strip_option))]
+	#[builder(into)]
 	#[serde(borrow)]
 	nick: Option<Cow<'s, str>>,
 	/// 性别
 	#[builder(default)]
 	sex: Sex,
 	/// 年龄
-	#[builder(default)]
 	age: Option<u32>,
 }
 
@@ -35,10 +34,6 @@ impl<'s> FriendSender<'s> {
 		N: Into<Cow<'s, str>>,
 	{
 		Self { user_id: user_id.into(), nick: nick.map(Into::into), sex, age }
-	}
-
-	pub fn builder() -> FriendSenderBuilder<'s> {
-		FriendSenderBuilder::default()
 	}
 }
 
@@ -72,17 +67,13 @@ impl<'s> Sender for FriendSender<'s> {
 #[macro_export]
 macro_rules! sender_friend {
     ( $( $key:ident : $value:expr ),+ $(,)? ) => {{
-        $crate::FriendSenderBuilder::default()
+        $crate::FriendSender::builder()
             $(
                 .$key($value)
             )*
             .build()
-            .expect("Failed to build FriendSender")
     }};
 	($user_id:expr) => {{
-		$crate::FriendSenderBuilder::default()
-			.user_id($user_id)
-			.build()
-			.expect("Failed to build FriendSender")
+		$crate::FriendSender::builder().user_id($user_id).build()
 	}};
 }

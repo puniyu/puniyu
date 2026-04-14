@@ -1,8 +1,5 @@
 use bytes::Bytes;
-use jiff::Timestamp;
-use puniyu_adapter_types::{
-	AdapterInfo, AdapterPlatform, AdapterProtocol, Avatar, MessageType, adapter_info,
-};
+use puniyu_adapter_types::{AdapterPlatform, AdapterProtocol, Avatar, MessageType, adapter_info};
 use puniyu_version::Version;
 
 #[test]
@@ -18,10 +15,10 @@ fn adapter_info_short_macro_builds_basic_info() {
 fn adapter_info_named_macro_applies_custom_fields() {
 	let info = adapter_info!(
 		name: "napcat",
-		author: Some("Puniyu".to_string()),
+		author: "Puniyu",
 		version: Version::new(1, 2, 3),
-		address: Some("127.0.0.1:8080".to_string()),
-		secret: Some("token".to_string()),
+		address: "127.0.0.1:8080",
+		secret: "token",
 	);
 
 	assert_eq!(info.name, "napcat");
@@ -29,20 +26,6 @@ fn adapter_info_named_macro_applies_custom_fields() {
 	assert_eq!(info.version, Version::new(1, 2, 3));
 	assert_eq!(info.address.as_deref(), Some("127.0.0.1:8080"));
 	assert_eq!(info.secret.as_deref(), Some("token"));
-}
-
-#[test]
-fn adapter_info_default_uses_expected_defaults() {
-	let before = Timestamp::now();
-	let info = AdapterInfo::default();
-	let after = Timestamp::now();
-
-	assert_eq!(info.name, "");
-	assert_eq!(info.platform, AdapterPlatform::Other);
-	assert_eq!(info.protocol, AdapterProtocol::Other);
-	assert_eq!(info.version, Version::new(0, 1, 0));
-	assert!(info.connect_time >= before);
-	assert!(info.connect_time <= after);
 }
 
 #[test]
