@@ -24,10 +24,10 @@ macro_rules! segment {
         $crate::Segment::text($text)
     };
     (image, $file:expr, $file_name:expr) => {
-        $crate::Segment::image($file, $file_name, None::<String>)
+        $crate::Segment::image($file, $file_name, None)
     };
     (image, $file:expr, $file_name:expr, $summary:expr) => {
-        $crate::Segment::image($file, $file_name, Some($summary))
+        $crate::Segment::image($file, $file_name, Some(($summary).into()))
     };
     (reply, $message_id:expr) => {
         $crate::Segment::reply($message_id)
@@ -51,6 +51,6 @@ macro_rules! segment {
         $crate::Segment::xml($data)
     };
     ($($t:tt)*) => {
-        compile_error!(concat!("无效的 segment! 宏模式: ", stringify!($($t)*)));
+        compile_error!(concat!("Invalid segment! macro pattern: ", stringify!($($t)*)));
     };
 }
