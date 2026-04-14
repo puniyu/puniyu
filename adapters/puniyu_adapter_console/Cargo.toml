@@ -14,9 +14,8 @@ rust-version.workspace = true
 log.workspace = true
 async-trait.workspace = true
 bytes.workspace = true
-puniyu_account.workspace = true
-puniyu_runtime.workspace = true
 puniyu_adapter.workspace = true
+puniyu_server.workspace = true
 tokio = { version = "1", features = ["signal", "sync"] }
 rand = "0.10.0"
 

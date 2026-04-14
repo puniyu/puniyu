@@ -1,15 +1,16 @@
-use std::sync::{Arc, LazyLock, RwLock};
+use std::sync::{LazyLock, RwLock};
 
 use bytes::Bytes;
-use puniyu_path::resource_dir;
 
-pub(crate) static LOGO: LazyLock<Arc<RwLock<Option<Bytes>>>> = LazyLock::new(|| {
-	let data = std::fs::read(resource_dir().join("logo.png")).ok().map(Bytes::from);
-	Arc::new(RwLock::new(data))
-});
+pub(crate) static LOGO: LazyLock<RwLock<Bytes>> =
+	LazyLock::new(|| RwLock::new(Bytes::new()));
 
 pub fn set_logo(data: Bytes) {
 	if let Ok(mut logo) = LOGO.write() {
-		*logo = Some(data);
+		*logo = data;
 	}
+}
+
+pub fn get_logo() -> Bytes {
+	LOGO.read().map(|s| s.clone()).unwrap_or_default()
 }
