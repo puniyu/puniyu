@@ -45,7 +45,7 @@ fn test_segment_reply() {
 #[test]
 fn test_segment_image_without_summary() {
 	let image_data = Bytes::from("fake image data");
-	let element = Segment::image(image_data.clone(), "photo.jpg", None::<String>);
+	let element = Segment::image(image_data.clone(), "photo.jpg", None);
 	let image_elem = element.as_image().expect("Expected Image element");
 
 	assert_eq!(image_elem.file, image_data);
@@ -56,7 +56,7 @@ fn test_segment_image_without_summary() {
 #[test]
 fn test_segment_image_with_summary() {
 	let image_data = Bytes::from("fake image data");
-	let element = Segment::image(image_data.clone(), "photo.jpg", Some("Beautiful scenery"));
+	let element = Segment::image(image_data.clone(), "photo.jpg", Some("Beautiful scenery".into()));
 	let image_elem = element.as_image().expect("Expected Image element");
 
 	assert_eq!(image_elem.file, image_data);
@@ -119,7 +119,7 @@ fn test_segment_empty_text() {
 #[test]
 fn test_segment_empty_bytes() {
 	let empty_data = Bytes::new();
-	let element = Segment::image(empty_data, "empty.png", None::<String>);
+	let element = Segment::image(empty_data, "empty.png", None);
 	let image_elem = element.as_image().expect("Expected Image element");
 
 	assert_eq!(image_elem.file.len(), 0);

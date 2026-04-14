@@ -56,11 +56,11 @@ impl Segment {
 	}
 
 	/// 创建图片元素。
-	pub fn image<N, S>(image: impl Into<Bytes>, name: N, summary: Option<S>) -> Elements
-	where
-		N: Into<String>,
-		S: Into<String>,
-	{
+	pub fn image(
+		image: impl Into<Bytes>,
+		name: impl Into<String>,
+		summary: Option<String>,
+	) -> Elements {
 		let elem = ImageElement::new(image, name, summary);
 		Elements::Image(elem)
 	}
