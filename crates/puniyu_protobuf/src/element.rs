@@ -37,7 +37,7 @@ macro_rules! impl_element_from {
 		}
 	};
 
-	(map, $from:ty, $to:ty, $value:ident, { $($field:ident : $expr:expr),+ $(,)? }) => {
+	(map, $from:ty => $to:ty, $value:ident, { $($field:ident : $expr:expr),+ $(,)? }) => {
 		impl From<$from> for $to {
 			fn from($value: $from) -> Self {
 				Self {
@@ -47,9 +47,9 @@ macro_rules! impl_element_from {
 		}
 	};
 
-	(bmap, $from:ty, $to:ty, $value:ident, { $($field:ident : $expr:expr),+ $(,)? }) => {
-		impl<'a> From<&'a $from> for $to {
-			fn from($value: &'a $from) -> Self {
+	(map<$($generics:tt),+>, $from:ty => $to:ty, $value:ident, { $($field:ident : $expr:expr),+ $(,)? }) => {
+		impl<$($generics),+> From<$from> for $to {
+			fn from($value: $from) -> Self {
 				Self {
 					$($field: $expr),+
 				}
@@ -57,7 +57,7 @@ macro_rules! impl_element_from {
 		}
 	};
 
-	(enum, $from:ty, $to:ty, { $( $from_variant:path => $to_variant:path ),+ $(,)? }) => {
+	(enum, $from:ty => $to:ty, { $( $from_variant:path => $to_variant:path ),+ $(,)? }) => {
 		impl From<$from> for $to {
 			fn from(value: $from) -> Self {
 				match value {
@@ -67,7 +67,17 @@ macro_rules! impl_element_from {
 		}
 	};
 
-	(oneof, $from:ty, $to:ty, { $( $from_variant:path => $to_variant:path ),+ $(,)? }, none = $none_message:expr) => {
+	(enum<$($generics:tt),+>, $from:ty => $to:ty, { $( $from_variant:path => $to_variant:path ),+ $(,)? }) => {
+		impl<$($generics),+> From<$from> for $to {
+			fn from(value: $from) -> Self {
+				match value {
+					$( $from_variant(inner) => $to_variant(inner.into()), )+
+				}
+			}
+		}
+	};
+
+	(oneof, $from:ty => $to:ty, { $( $from_variant:path => $to_variant:path ),+ $(,)? }, none = $none_message:expr) => {
 		impl From<$from> for $to {
 			fn from(value: $from) -> Self {
 				match value.element {
@@ -78,9 +88,9 @@ macro_rules! impl_element_from {
 		}
 	};
 
-	(boneof, $from:ty, $to:ty, $value:ident, { $( $from_variant:path => $to_variant:path ),+ $(,)? }, none = $none_message:expr) => {
-		impl<'a> From<&'a $from> for $to {
-			fn from($value: &'a $from) -> Self {
+	(oneof<$($generics:tt),+>, $from:ty => $to:ty, $value:ident, { $( $from_variant:path => $to_variant:path ),+ $(,)? }, none = $none_message:expr) => {
+		impl<$($generics),+> From<$from> for $to {
+			fn from($value: $from) -> Self {
 				match $value.element.as_ref() {
 					$( Some($from_variant(inner)) => $to_variant(inner.into()), )+
 					None => panic!($none_message),
@@ -91,24 +101,24 @@ macro_rules! impl_element_from {
 }
 
 macro_rules! impl_vec_element_from {
-	(bi, $internal_type:ty, $proto_type:ty) => {
+	(bi, $internal_type:ty, $proto_type:ty, $proto_field:ident) => {
 		impl From<Vec<$internal_type>> for $proto_type {
 			fn from(elements: Vec<$internal_type>) -> Self {
-				Self { element: elements.into_iter().map(Into::into).collect() }
+				Self { $proto_field: elements.into_iter().map(Into::into).collect() }
 			}
 		}
 
 		impl From<$proto_type> for Vec<$internal_type> {
 			fn from(elements: $proto_type) -> Self {
-				elements.element.into_iter().map(Into::into).collect()
+				elements.$proto_field.into_iter().map(Into::into).collect()
 			}
 		}
 	};
 
-	(ref, $proto_type:ty, $internal_type:ty) => {
-		impl<'a> From<&'a $proto_type> for Vec<$internal_type> {
-			fn from(elements: &'a $proto_type) -> Self {
-				elements.element.iter().map(Into::into).collect()
+	(map<$($generics:tt),+>, $from:ty => Vec<$internal_type:ty>, $value:ident, $iter:expr) => {
+		impl<$($generics),+> From<$from> for Vec<$internal_type> {
+			fn from($value: $from) -> Self {
+				($iter).collect()
 			}
 		}
 	};

@@ -3,16 +3,16 @@ syntax = "proto3";
 package puniyu.sender;
 
 enum Sex {
-  Male = 0;
-  Female = 1;
-  SexUnknown = 2;
+  MALE = 0;
+  FEMALE = 1;
+  SEX_UNKNOWN = 2;
 }
 
 enum Role {
-    Owner = 0;
-    Admin = 1;
-    Member = 2;
-    RoleUnknown = 3;
+    OWNER = 0;
+    ADMIN = 1;
+    MEMBER = 2;
+    ROLE_UNKNOWN = 3;
 }
 message FriendSender {
   string user_id = 1;

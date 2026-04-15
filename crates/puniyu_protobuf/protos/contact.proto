@@ -3,10 +3,10 @@ syntax = "proto3";
 package puniyu.contact;
 
 enum SceneType {
-  Friend = 0;
-  Group = 1;
-  GroupTemp = 2;
-  Guild = 3;
+  FRIEND = 0;
+  GROUP = 1;
+  GROUP_TEMP = 2;
+  GUILD = 3;
 }
 
 message FriendContact {

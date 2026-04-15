@@ -15,7 +15,7 @@ impl_element_from!(bi, JsonElement, puniyu_element::JsonElement, { data });
 impl_element_from!(bi, XmlElement, puniyu_element::XmlElement, { data });
 
 impl_element_from!(
-	enum, puniyu_element::Elements, element::Element, {
+	enum, puniyu_element::Elements => element::Element, {
 		puniyu_element::Elements::Text => element::Element::TextElement,
 		puniyu_element::Elements::At => element::Element::AtElement,
 		puniyu_element::Elements::Reply => element::Element::ReplyElement,
@@ -30,7 +30,7 @@ impl_element_from!(
 );
 
 impl_element_from!(
-	oneof, Element, puniyu_element::Elements, {
+	oneof, Element => puniyu_element::Elements, {
 		element::Element::TextElement => puniyu_element::Elements::Text,
 		element::Element::AtElement => puniyu_element::Elements::At,
 		element::Element::ReplyElement => puniyu_element::Elements::Reply,
@@ -45,8 +45,8 @@ impl_element_from!(
 	none = "puniyu_protobuf::element::send::Element.element cannot be None"
 );
 
-impl_element_from!(map, puniyu_element::Elements, Element, value, {
+impl_element_from!(map, puniyu_element::Elements => Element, value, {
 	element: Some(value.into())
 });
 
-impl_vec_element_from!(bi, puniyu_element::Elements, Elements);
+impl_vec_element_from!(bi, puniyu_element::Elements, Elements, element);

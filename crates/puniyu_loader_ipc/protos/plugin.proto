@@ -1,7 +1,0 @@
-syntax = "proto3";
-
-package puniyu.plugin;
-
-message PluginMetadata {
-    string name = 1;
-}

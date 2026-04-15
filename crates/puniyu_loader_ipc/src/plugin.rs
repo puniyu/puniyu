@@ -1,6 +1,6 @@
 use puniyu_version::Version;
 
-include!(concat!(env!("OUT_DIR"), "/puniyu.plugin.rs"));
+
 
 pub(crate) struct IpcPlugin {
 	name: String,

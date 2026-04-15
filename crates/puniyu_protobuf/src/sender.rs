@@ -176,7 +176,7 @@ impl From<sender_type::SenderType> for puniyu_sender::SenderType<'_> {
 
 impl From<FriendSender> for sender_type::SenderType {
 	fn from(sender: FriendSender) -> Self {
-		Self::FriendSender(sender.into())
+		Self::FriendSender(sender)
 	}
 }
 

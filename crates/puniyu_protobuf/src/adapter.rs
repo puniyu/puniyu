@@ -4,7 +4,7 @@ include!(concat!(env!("OUT_DIR"), "/puniyu.adapter.rs"));
 
 impl_enum_from!(AdapterPlatform => puniyu_adapter::AdapterPlatform {
 	Qq => QQ,
-	WeChat => Wechat,
+	Wechat => Wechat,
 	Telegram => Telegram,
 	Discord => Discord,
 	Kook => Kook,
