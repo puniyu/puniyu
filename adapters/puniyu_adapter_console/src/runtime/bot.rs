@@ -1,9 +1,10 @@
 use std::sync::Arc;
 
 use super::ConsoleAdapterRuntime;
-use async_trait::async_trait;
-use puniyu_adapter::prelude::*;
-use puniyu_adapter::runtime::SendMessage;
+use puniyu_adapter::{
+	account::AccountInfo,
+	runtime::{AccountProvider, AdapterRuntime, BotRuntime},
+};
 
 #[derive(Debug)]
 pub(crate) struct ConsoleBotRuntime {
@@ -17,25 +18,14 @@ impl ConsoleBotRuntime {
 	}
 }
 
-impl AdapterProvider for ConsoleBotRuntime {
-	fn adapter_info(&self) -> &AdapterInfo {
-		self.adapter.adapter_info()
-	}
-}
-
 impl AccountProvider for ConsoleBotRuntime {
 	fn account_info(&self) -> &AccountInfo {
 		&self.account
 	}
 }
 
-#[async_trait]
-impl SendMessage for ConsoleBotRuntime {
-	async fn send_message(
-		&self,
-		contact: &ContactType<'_>,
-		message: &Message,
-	) -> puniyu_adapter::Result<SendMsgType> {
-		self.adapter.send_message(contact, message).await
+impl BotRuntime for ConsoleBotRuntime {
+	fn adapter(&self) -> &dyn AdapterRuntime {
+		self.adapter.as_ref()
 	}
 }

@@ -33,7 +33,7 @@ pub trait Bot: Debug + Send + Sync {
 impl dyn Bot + '_ {
 	/// 返回适配器信息。
 	pub fn adapter_info(&self) -> &AdapterInfo {
-		self.runtime().adapter_info()
+		self.runtime().adapter().adapter_info()
 	}
 
 	/// 返回账户信息。
@@ -54,7 +54,7 @@ impl dyn Bot + '_ {
 			ContactType::Guild(guild) => ("GuildMessage", &guild.peer()),
 		};
 		debug!("[{}:{}]\n{:#?}", format!("Send {}", msg_type).yellow(), user_id.green(), message);
-		self.runtime().send_message(contact, message).await
+		self.runtime().adapter().send_message(contact, message).await
 	}
 }
 

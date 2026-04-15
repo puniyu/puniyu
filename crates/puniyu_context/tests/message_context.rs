@@ -17,19 +17,35 @@ use puniyu_event::{
 	message::{FriendMessage, GroupTempMessage, MessageBase, MessageEvent, MessageSubEventType},
 };
 use puniyu_message::Message;
-use puniyu_runtime::{AccountProvider, AdapterProvider, SendMessage};
+use puniyu_runtime::{AccountProvider, AdapterProvider, AdapterRuntime, BotRuntime, SendMessage};
 use puniyu_sender::{Sender, SenderType, sender_friend, sender_group_temp};
 
 #[derive(Debug)]
-struct TestRuntime {
+struct TestAdapterRuntime {
 	adapter: AdapterInfo,
-	account: AccountInfo,
 }
 
-impl AdapterProvider for TestRuntime {
+impl AdapterProvider for TestAdapterRuntime {
 	fn adapter_info(&self) -> &AdapterInfo {
 		&self.adapter
 	}
+}
+
+#[async_trait]
+impl SendMessage for TestAdapterRuntime {
+	async fn send_message(
+		&self,
+		_contact: &ContactType<'_>,
+		_message: &Message,
+	) -> puniyu_error::Result<SendMsgType> {
+		Ok(SendMsgType { message_id: "test-msg".to_string(), time: 0 })
+	}
+}
+
+#[derive(Debug)]
+struct TestRuntime {
+	adapter: Arc<TestAdapterRuntime>,
+	account: AccountInfo,
 }
 
 impl AccountProvider for TestRuntime {
@@ -38,14 +54,9 @@ impl AccountProvider for TestRuntime {
 	}
 }
 
-#[async_trait]
-impl SendMessage for TestRuntime {
-	async fn send_message(
-		&self,
-		_contact: &ContactType<'_>,
-		_message: &Message,
-	) -> puniyu_error::Result<SendMsgType> {
-		Ok(SendMsgType { message_id: "test-msg".to_string(), time: 0 })
+impl BotRuntime for TestRuntime {
+	fn adapter(&self) -> &dyn AdapterRuntime {
+		self.adapter.as_ref()
 	}
 }
 
@@ -69,7 +80,12 @@ fn leak_bot() -> &'static Arc<dyn Bot> {
 	let account =
 		AccountInfo { uin: "10000".to_string(), name: "Puniyu".to_string(), avatar: Bytes::new() };
 	Box::leak(Box::new(
-		Arc::new(TestBot { runtime: Arc::new(TestRuntime { adapter, account }) }) as Arc<dyn Bot>
+		Arc::new(TestBot {
+			runtime: Arc::new(TestRuntime {
+				adapter: Arc::new(TestAdapterRuntime { adapter }),
+				account,
+			}),
+		}) as Arc<dyn Bot>
 	))
 }
 

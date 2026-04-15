@@ -14,6 +14,7 @@
 //! - [`AccountProvider`]：访问 Bot 账号信息
 //! - [`BotRuntime`]：Bot 级运行时抽象
 //! - [`SendMessage`]：发送消息能力 trait
+//! - [`BotRuntime::adapter`]：访问 Bot 绑定的适配器运行时
 //! - [`Runtime::downcast_ref`]：访问适配器私有运行时能力
 //! - [`ServerRuntime`]：HTTP 服务运行句柄，封装服务停止与等待结束等生命周期能力
 //!
@@ -68,6 +69,6 @@ pub trait SendMessage: Send + Sync {
 	) -> Result<SendMsgType>;
 }
 
-pub trait BotRuntime: AdapterRuntime + AccountProvider {}
-
-impl<T> BotRuntime for T where T: AdapterRuntime + AccountProvider {}
+pub trait BotRuntime: Runtime + AccountProvider {
+	fn adapter(&self) -> &dyn AdapterRuntime;
+}
