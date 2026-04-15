@@ -99,7 +99,7 @@ impl<'c> EventBase for EventContext<'c> {
 	}
 
 	fn sub_event(&self) -> SubEventType {
-		self._sub_event
+		self._sub_event.clone()
 	}
 
 	fn bot(&self) -> &dyn Bot {

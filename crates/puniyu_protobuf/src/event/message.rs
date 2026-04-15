@@ -4,14 +4,14 @@ pub use event::MessageEvent;
 
 pub mod friend;
 #[doc(inline)]
-pub use friend::{FriendMessageReceive, FriendMessageSend};
+pub use friend::FriendMessage;
 
 pub mod group;
 #[doc(inline)]
-pub use group::{GroupMessageReceive, GroupMessageSend};
+pub use group::GroupMessage;
 #[doc(inline)]
-pub use group::temp::{GroupTempMessageReceive, GroupTempMessageSend};
+pub use group::temp::GroupTempMessage;
 
 pub mod guild;
 #[doc(inline)]
-pub use guild::{GuildMessageReceive, GuildMessageSend};
+pub use guild::GuildMessage;

@@ -129,7 +129,7 @@ impl<'e> std::fmt::Debug for Event<'e> {
 ///     }
 /// }
 /// ```
-#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum SubEventType {
 	Message(MessageSubEventType),
 	Notice(NoticeSubEventType),
@@ -154,7 +154,7 @@ impl From<NoticeSubEventType> for SubEventType {
 }
 impl From<&NoticeSubEventType> for SubEventType {
 	fn from(sub_event: &NoticeSubEventType) -> Self {
-		Self::Notice(*sub_event)
+		Self::Notice(sub_event.clone())
 	}
 }
 
@@ -165,7 +165,7 @@ impl From<RequestSubEventType> for SubEventType {
 }
 impl From<&RequestSubEventType> for SubEventType {
 	fn from(sub_event: &RequestSubEventType) -> Self {
-		Self::Request(*sub_event)
+		Self::Request(sub_event.clone())
 	}
 }
 
