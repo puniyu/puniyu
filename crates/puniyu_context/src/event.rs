@@ -38,10 +38,6 @@ use std::collections::HashMap;
 #[derive(Clone)]
 pub struct EventContext<'c> {
 	inner: &'c Event<'c>,
-	_bot: BotContext<'c>,
-	_sub_event: SubEventType,
-	_contact: ContactType<'c>,
-	_sender: SenderType<'c>,
 }
 
 impl<'c> EventContext<'c> {
@@ -58,18 +54,12 @@ impl<'c> EventContext<'c> {
 	/// let event_context = EventContext::new(&event, args);
 	/// ```
 	pub fn new(event: &'c Event) -> Self {
-		Self {
-			inner: event,
-			_bot: BotContext::new(event.bot()),
-			_sub_event: event.sub_event(),
-			_contact: event.contact(),
-			_sender: event.sender(),
-		}
+		Self { inner: event }
 	}
 
 	/// 获取当前事件关联的机器人上下文。
-	pub fn as_bot(&self) -> &BotContext<'_> {
-		&self._bot
+	pub fn as_bot(&self) -> BotContext<'_> {
+		BotContext::new(self.inner.bot())
 	}
 
 	/// 尝试将当前事件上下文转换为消息上下文。
@@ -83,7 +73,6 @@ impl<'c> EventContext<'c> {
 	pub fn as_extension(&self) -> Option<&dyn puniyu_event::ExtensionEvent> {
 		self.inner.as_extension()
 	}
-
 }
 impl<'c> EventBase for EventContext<'c> {
 	fn time(&self) -> u64 {
@@ -99,7 +88,7 @@ impl<'c> EventBase for EventContext<'c> {
 	}
 
 	fn sub_event(&self) -> SubEventType {
-		self._sub_event.clone()
+		self.inner.sub_event()
 	}
 
 	fn bot(&self) -> &dyn Bot {
@@ -115,11 +104,11 @@ impl<'c> EventBase for EventContext<'c> {
 	}
 
 	fn contact(&self) -> ContactType<'_> {
-		self._contact.clone()
+		self.inner.contact()
 	}
 
 	fn sender(&self) -> SenderType<'_> {
-		self._sender.clone()
+		self.inner.sender()
 	}
 }
 
