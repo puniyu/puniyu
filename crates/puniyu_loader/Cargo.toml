@@ -14,6 +14,7 @@ rust-version.workspace = true
 workspace = true
 
 [dependencies]
+async-trait.workspace = true
 puniyu_plugin_core.workspace = true
 
 puniyu_error = { workspace = true, features = ["registry"], optional = true }
@@ -24,4 +25,5 @@ default = []
 registry = ["dep:puniyu_error"]
 
 [dev-dependencies]
+tokio = { workspace = true, features = ["macros", "rt"] }
 puniyu_plugin_core.workspace = true

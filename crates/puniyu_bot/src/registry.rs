@@ -38,7 +38,7 @@ impl BotRegistry {
 			let raw = STORE.raw();
 			let map = raw.read().expect("Failed to acquire lock");
 			map.iter()
-				.filter_map(|(k, v)| if v.account().uin == bot_id { Some(*k) } else { None })
+				.filter_map(|(k, v)| if v.account_info().uin == bot_id { Some(*k) } else { None })
 				.collect::<Vec<u64>>()
 		};
 		if indices.is_empty() {
@@ -69,7 +69,7 @@ impl BotRegistry {
 	pub fn get_with_bot_id(self_id: &str) -> Option<Arc<dyn Bot>> {
 		let raw = STORE.raw();
 		let map = raw.read().expect("Failed to acquire lock");
-		map.values().find(|bot| bot.account().uin == self_id).cloned()
+		map.values().find(|bot| bot.account_info().uin == self_id).cloned()
 	}
 
 	/// 返回所有已注册的机器人副本。

@@ -59,6 +59,7 @@ mod registry;
 
 #[cfg(feature = "registry")]
 pub use registry::LoaderRegistry;
+use async_trait::async_trait;
 use std::sync::Arc;
 mod types;
 #[doc(inline)]
@@ -93,6 +94,7 @@ use puniyu_plugin_core::Plugin;
 ///     }
 /// }
 /// ```
+#[async_trait]
 pub trait Loader: Send + Sync + 'static {
 	/// 获取加载器名称
 	///
@@ -102,11 +104,11 @@ pub trait Loader: Send + Sync + 'static {
 	/// 获取加载器管理的插件列表
 	///
 	/// 返回此加载器加载的所有插件。
-	fn plugins(&self) -> Vec<Arc<dyn Plugin>>;
+	async fn plugins(&self) -> Vec<Arc<dyn Plugin>>;
 }
 
 impl PartialEq for dyn Loader {
 	fn eq(&self, other: &Self) -> bool {
-		self.name() == other.name() && self.plugins() == other.plugins()
+		self.name() == other.name()
 	}
 }

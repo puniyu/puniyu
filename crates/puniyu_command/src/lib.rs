@@ -71,10 +71,10 @@ macro_rules! has_permission {
 #[async_trait]
 pub trait Command: Send + Sync + 'static {
 	/// 返回命令名称。
-	fn name(&self) -> &'static str;
+	fn name(&self) -> &str;
 
 	/// 返回命令描述。
-	fn description(&self) -> Option<&'static str> {
+	fn description(&self) -> Option<&str> {
 		None
 	}
 
@@ -89,7 +89,7 @@ pub trait Command: Send + Sync + 'static {
 	}
 
 	/// 返回命令别名列表。
-	fn alias(&self) -> Vec<&'static str> {
+	fn alias(&self) -> Vec<&str> {
 		Vec::new()
 	}
 

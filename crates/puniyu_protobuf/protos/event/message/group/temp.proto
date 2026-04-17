@@ -4,6 +4,7 @@ package puniyu.event.message.group.temp;
 import "element/receive.proto";
 import "contact.proto";
 import "sender.proto";
+import "bot.proto";
 
 message GroupTempMessage {
   string event_id = 1;
@@ -11,7 +12,8 @@ message GroupTempMessage {
   string self_id = 3;
   string user_id = 4;
   string message_id = 5;
-  repeated puniyu.element.receive.Elements elements = 6;
-  puniyu.contact.GroupTempContact contact = 7;
-  puniyu.sender.GroupTempSender sender = 8;
+  puniyu.bot.BotInfo bot = 6;
+  repeated puniyu.element.receive.Elements elements = 7;
+  puniyu.contact.GroupTempContact contact = 8;
+  puniyu.sender.GroupTempSender sender = 9;
 }

@@ -5,6 +5,7 @@ import "element/receive.proto";
 import "element/send.proto";
 import "contact.proto";
 import "sender.proto";
+import "bot.proto";
 
 message GuildMessage {
   string event_id = 1;
@@ -12,7 +13,8 @@ message GuildMessage {
   string self_id = 3;
   string user_id = 4;
   string message_id = 5;
-  repeated puniyu.element.receive.Elements elements = 6;
-  puniyu.contact.GuildContact contact = 7;
-  puniyu.sender.GuildSender sender = 8;
+  puniyu.bot.BotInfo bot = 6;
+  repeated puniyu.element.receive.Elements elements = 7;
+  puniyu.contact.GuildContact contact = 8;
+  puniyu.sender.GuildSender sender = 9;
 }

@@ -141,7 +141,7 @@ impl puniyu_event::EventBase for TestExtensionEvent {
 		self.bot.as_ref()
 	}
 	fn self_id(&self) -> &str {
-		self.bot.account().uin.as_str()
+		self.bot.account_info().uin.as_str()
 	}
 	fn user_id(&self) -> &str {
 		"123456"

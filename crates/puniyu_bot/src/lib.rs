@@ -37,7 +37,7 @@ impl dyn Bot + '_ {
 	}
 
 	/// 返回账户信息。
-	pub fn account(&self) -> &puniyu_account::AccountInfo {
+	pub fn account_info(&self) -> &puniyu_account::AccountInfo {
 		self.runtime().account_info()
 	}
 
@@ -60,6 +60,6 @@ impl dyn Bot + '_ {
 
 impl PartialEq for dyn Bot {
 	fn eq(&self, other: &Self) -> bool {
-		self.adapter_info() == other.adapter_info() && self.account() == other.account()
+		self.adapter_info() == other.adapter_info() && self.account_info() == other.account_info()
 	}
 }

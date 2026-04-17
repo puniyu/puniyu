@@ -6,7 +6,7 @@ impl From<&dyn puniyu_bot::Bot> for BotInfo {
 	fn from(bot: &dyn puniyu_bot::Bot) -> Self {
 		Self {
 			adapter: Some(bot.adapter_info().clone().into()),
-			account: Some(bot.account().clone().into()),
+			account: Some(bot.account_info().clone().into()),
 		}
 	}
 }

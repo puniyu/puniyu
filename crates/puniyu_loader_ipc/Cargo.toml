@@ -19,16 +19,19 @@ puniyu_path.workspace = true
 puniyu_ipc.workspace = true
 puniyu_version.workspace = true
 puniyu_error.workspace = true
-bytes.workspace = true
-prost.workspace = true
 serde.workspace = true
-serde_json.workspace = true
-tokio = { workspace = true, features = ["rt", "sync", "macros", "process"] }
+tokio = { workspace = true, features = ["rt", "sync", "macros", "process", "time"] }
 async-trait.workspace = true
+futures.workspace = true
 log.workspace = true
-glob.workspace = true
+uuid = { version = "1.18.1", features = ["v4"] }
+walkdir = "2.5.0"
 
 [build-dependencies]
 glob.workspace = true
 prost-build.workspace = true
 protoc-bin-vendored.workspace  = true
+
+[dev-dependencies]
+puniyu_common.workspace = true
+puniyu_path.workspace = true

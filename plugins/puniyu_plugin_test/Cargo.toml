@@ -1,0 +1,16 @@
+[package]
+name = "puniyu_plugin_test"
+version = "0.8.0"
+description = "puniyu IPC test client"
+authors.workspace = true
+license.workspace = true
+readme.workspace = true
+homepage.workspace = true
+repository.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+puniyu_ipc.workspace = true
+serde.workspace = true
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }

@@ -5,7 +5,7 @@ use strum::{Display, EnumString, IntoStaticStr};
 
 /// 命令权限级别。
 #[derive(
-	Debug, Default, Clone, PartialEq, EnumString, Display, IntoStaticStr, Deserialize, Serialize,
+	Debug, Default, Copy, Clone, PartialEq, EnumString, Display, IntoStaticStr, Deserialize, Serialize,
 )]
 #[serde(rename_all = "lowercase")]
 #[strum(serialize_all = "lowercase")]

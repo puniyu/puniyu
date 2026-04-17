@@ -2447,9 +2447,13 @@ dependencies = [
 name = "puniyu_ipc"
 version = "0.8.0"
 dependencies = [
- "bytes",
  "interprocess",
  "puniyu_path",
+ "rmp-serde",
+ "rmpv",
+ "serde",
+ "serde_repr",
+ "thiserror 2.0.18",
  "tokio",
 ]
 
@@ -2457,8 +2461,10 @@ dependencies = [
 name = "puniyu_loader"
 version = "0.8.0"
 dependencies = [
+ "async-trait",
  "puniyu_error",
  "puniyu_plugin_core",
+ "tokio",
 ]
 
 [[package]]
@@ -2466,12 +2472,12 @@ name = "puniyu_loader_ipc"
 version = "0.8.0"
 dependencies = [
  "async-trait",
- "bytes",
+ "futures",
  "glob",
  "log",
- "prost",
  "prost-build",
  "protoc-bin-vendored",
+ "puniyu_common",
  "puniyu_error",
  "puniyu_ipc",
  "puniyu_loader",
@@ -2479,8 +2485,9 @@ dependencies = [
  "puniyu_plugin_core",
  "puniyu_version",
  "serde",
- "serde_json",
  "tokio",
+ "uuid",
+ "walkdir",
 ]
 
 [[package]]
@@ -2575,11 +2582,8 @@ dependencies = [
 name = "puniyu_plugin_test"
 version = "0.8.0"
 dependencies = [
- "bytes",
- "prost",
  "puniyu_ipc",
  "serde",
- "serde_json",
  "tokio",
 ]
 
@@ -2812,6 +2816,36 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7a2d987857b319362043e95f5353c0535c1f58eec5336fdfcf626430af7def58"
 
 [[package]]
+name = "rmp"
+version = "0.8.15"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4ba8be72d372b2c9b35542551678538b562e7cf86c3315773cae48dfbfe7790c"
+dependencies = [
+ "num-traits",
+]
+
+[[package]]
+name = "rmp-serde"
+version = "1.3.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "72f81bee8c8ef9b577d1681a70ebbc962c232461e397b22c208c43c04b67a155"
+dependencies = [
+ "rmp",
+ "serde",
+]
+
+[[package]]
+name = "rmpv"
+version = "1.3.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7a4e1d4b9b938a26d2996af33229f0ca0956c652c1375067f0b45291c1df8417"
+dependencies = [
+ "rmp",
+ "serde",
+ "serde_bytes",
+]
+
+[[package]]
 name = "rustc_version"
 version = "0.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2886,6 +2920,16 @@ version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fc948de1bbead18a61be0b33182636603ea0239ca2577b9704fc39eba900e4e5"
 dependencies = [
+ "serde_core",
+]
+
+[[package]]
+name = "serde_bytes"
+version = "0.11.19"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a5d440709e79d88e51ac01c4b72fc6cb7314017bb7da9eeff678aa94c10e3ea8"
+dependencies = [
+ "serde",
  "serde_core",
 ]
 

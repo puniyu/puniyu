@@ -101,11 +101,11 @@ pub fn command(item: zyn::syn::ItemFn, cfg: CommandArgs) -> zyn::TokenStream {
 
 		#[::puniyu_plugin::__private::async_trait]
 		impl ::puniyu_plugin::__private::Command for {{ struct_name }} {
-			fn name(&self) -> &'static str {
+			fn name(&self) -> &str {
 				#command_name
 			}
 
-			fn description(&self) -> Option<&'static str> {
+			fn description(&self) -> Option<&str> {
 				#command_desc
 			}
 
@@ -117,7 +117,7 @@ pub fn command(item: zyn::syn::ItemFn, cfg: CommandArgs) -> zyn::TokenStream {
 				::std::vec![{{ args_tokens }}]
 			}
 
-			fn alias(&self) -> ::std::vec::Vec<&'static str> {
+			fn alias(&self) -> ::std::vec::Vec<&str> {
 				#command_alias
 			}
 

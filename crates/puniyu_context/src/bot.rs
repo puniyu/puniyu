@@ -37,6 +37,6 @@ impl<'c> BotContext<'c> {
 	}
 
 	pub fn account(&self) -> &AccountInfo {
-		self.inner.account()
+		self.inner.account_info()
 	}
 }

@@ -1,3 +1,4 @@
+use async_trait::async_trait;
 use std::sync::Arc;
 
 use puniyu_loader::Loader;
@@ -7,12 +8,13 @@ struct TestLoader {
 	name: &'static str,
 }
 
+#[async_trait]
 impl Loader for TestLoader {
 	fn name(&self) -> &'static str {
 		self.name
 	}
 
-	fn plugins(&self) -> Vec<Arc<dyn Plugin>> {
+	async fn plugins(&self) -> Vec<Arc<dyn Plugin>> {
 		vec![]
 	}
 }
@@ -29,10 +31,10 @@ fn test_loader_name() {
 	assert_eq!(loader.name(), "my_loader");
 }
 
-#[test]
-fn test_loader_plugins_empty() {
+#[tokio::test]
+async fn test_loader_plugins_empty() {
 	let loader = TestLoader { name: "test_loader" };
-	let plugins = loader.plugins();
+	let plugins = loader.plugins().await;
 	assert_eq!(plugins.len(), 0);
 }
 
