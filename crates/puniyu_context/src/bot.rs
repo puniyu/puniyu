@@ -3,16 +3,16 @@ use puniyu_adapter_types::{AdapterInfo, SendMsgType};
 use puniyu_bot::Bot;
 use puniyu_contact::ContactType;
 use puniyu_message::Message;
-use puniyu_runtime::BotRuntime;
+use puniyu_runtime::AdapterRuntime;
 
 /// 机器人上下文
 #[derive(Clone, Copy)]
 pub struct BotContext<'c> {
-	inner: &'c dyn Bot,
+	inner: &'c Bot,
 }
 
 impl<'c> BotContext<'c> {
-	pub fn new(bot: &'c dyn Bot) -> Self {
+	pub fn new(bot: &'c Bot) -> Self {
 		Self { inner: bot }
 	}
 
@@ -20,7 +20,7 @@ impl<'c> BotContext<'c> {
 		self.inner.adapter_info()
 	}
 
-	pub fn runtime(&self) -> &dyn BotRuntime {
+	pub fn runtime(&self) -> &dyn AdapterRuntime {
 		self.inner.runtime()
 	}
 

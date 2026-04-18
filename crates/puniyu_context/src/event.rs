@@ -91,7 +91,7 @@ impl<'c> EventBase for EventContext<'c> {
 		self.inner.sub_event()
 	}
 
-	fn bot(&self) -> &dyn Bot {
+	fn bot(&self) -> &Bot {
 		self.inner.bot()
 	}
 

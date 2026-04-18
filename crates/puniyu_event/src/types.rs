@@ -212,7 +212,7 @@ pub trait EventBase: Send + Sync {
 	fn sub_event(&self) -> SubEventType;
 
 	/// 获取机器人实例。
-	fn bot(&self) -> &dyn Bot;
+	fn bot(&self) -> &Bot;
 
 	/// 获取机器人 ID。
 	fn self_id(&self) -> &str;

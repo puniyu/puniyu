@@ -17,7 +17,7 @@ const DEFAULT_GUILD_ID: &str = "test_guild";
 const DEFAULT_GUILD_NAME: &str = "test_guild";
 const DEFAULT_GUILD_SUB_NAME: &str = "test_channel";
 
-pub async fn dispatch_event(bot: &dyn Bot, input: &ParsedConsoleInput, default_name: &str) {
+pub async fn dispatch_event(bot: &Bot, input: &ParsedConsoleInput, default_name: &str) {
 	let elements = build_elements(&input.payload);
 	let timestamp = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs();
 	let message_id = make_random_id();
@@ -75,7 +75,7 @@ fn build_elements(payload: &ConsolePayload) -> Vec<Elements<'_>> {
 }
 
 async fn create_friend_event<'a>(
-	bot: &'a dyn Bot,
+	bot: &'a Bot,
 	default_name: &'a str,
 	event_id: &'a str,
 	timestamp: u64,
@@ -104,7 +104,7 @@ async fn create_friend_event<'a>(
 }
 
 async fn create_group_event<'a>(
-	bot: &'a dyn Bot,
+	bot: &'a Bot,
 	default_name: &'a str,
 	event_id: &'a str,
 	timestamp: u64,
@@ -133,7 +133,7 @@ async fn create_group_event<'a>(
 }
 
 async fn create_group_temp_event<'a>(
-	bot: &'a dyn Bot,
+	bot: &'a Bot,
 	default_name: &'a str,
 	event_id: &'a str,
 	timestamp: u64,
@@ -162,7 +162,7 @@ async fn create_group_temp_event<'a>(
 }
 
 async fn create_guild_event<'a>(
-	bot: &'a dyn Bot,
+	bot: &'a Bot,
 	default_name: &'a str,
 	event_id: &'a str,
 	timestamp: u64,

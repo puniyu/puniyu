@@ -12,7 +12,7 @@ pub struct BotRegistry;
 
 impl BotRegistry {
 	/// 将机器人注册到全局注册表，返回分配的索引。
-	pub fn register(bot: Arc<dyn Bot>) -> Result<u64, Error> {
+	pub fn register(bot: Arc<Bot>) -> Result<u64, Error> {
 		STORE.insert(bot)
 	}
 
@@ -51,7 +51,7 @@ impl BotRegistry {
 	}
 
 	/// 按索引或 UIN 查询机器人。
-	pub fn get<'b>(bot_id: impl Into<BotId<'b>>) -> Option<Arc<dyn Bot>> {
+	pub fn get<'b>(bot_id: impl Into<BotId<'b>>) -> Option<Arc<Bot>> {
 		match bot_id.into() {
 			BotId::Index(index) => Self::get_with_index(index),
 			BotId::SelfId(self_id) => Self::get_with_bot_id(self_id.as_ref()),
@@ -59,21 +59,21 @@ impl BotRegistry {
 	}
 
 	/// 按注册表索引查询机器人。
-	pub fn get_with_index(index: u64) -> Option<Arc<dyn Bot>> {
+	pub fn get_with_index(index: u64) -> Option<Arc<Bot>> {
 		let raw = STORE.raw();
 		let map = raw.read().expect("Failed to acquire lock");
 		map.get(&index).cloned()
 	}
 
 	/// 按机器人 UIN 查询第一个匹配的机器人。
-	pub fn get_with_bot_id(self_id: &str) -> Option<Arc<dyn Bot>> {
+	pub fn get_with_bot_id(self_id: &str) -> Option<Arc<Bot>> {
 		let raw = STORE.raw();
 		let map = raw.read().expect("Failed to acquire lock");
 		map.values().find(|bot| bot.account_info().uin == self_id).cloned()
 	}
 
 	/// 返回所有已注册的机器人副本。
-	pub fn all() -> Vec<Arc<dyn Bot>> {
+	pub fn all() -> Vec<Arc<Bot>> {
 		STORE.all()
 	}
 }

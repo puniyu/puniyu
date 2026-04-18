@@ -271,7 +271,7 @@ impl Event<'_> {
 	/// let bot = event.bot();
 	/// println!("机器人账号: {}", bot.account().uin);
 	/// ```
-	pub fn bot(&self) -> &dyn Bot {
+	pub fn bot(&self) -> &Bot {
 		match self {
 			Self::Message(event) => event.bot(),
 			Self::Extension(event) => event.bot(),

@@ -14,7 +14,7 @@ use puniyu_event::{
 	message::{FriendMessage, GroupTempMessage, MessageBase, MessageEvent, MessageSubEventType},
 };
 use puniyu_message::Message;
-use puniyu_runtime::{AccountProvider, AdapterProvider, AdapterRuntime, BotRuntime, SendMessage};
+use puniyu_runtime::{AdapterProvider, SendMessage};
 use puniyu_sender::{Sender, SenderType, sender_friend, sender_group_temp};
 
 #[derive(Debug)]
@@ -39,93 +39,58 @@ impl SendMessage for TestAdapterRuntime {
 	}
 }
 
-#[derive(Debug)]
-struct TestRuntime {
-	adapter: Arc<TestAdapterRuntime>,
-	account: AccountInfo,
+struct TestData {
+	bot: Arc<Bot>,
+	friend_contact: puniyu_contact::FriendContact<'static>,
+	friend_sender: puniyu_sender::FriendSender<'static>,
+	group_temp_contact: puniyu_contact::GroupTempContact<'static>,
+	group_temp_sender: puniyu_sender::GroupTempSender<'static>,
+	elements: Vec<Elements<'static>>,
 }
 
-impl AccountProvider for TestRuntime {
-	fn account_info(&self) -> &AccountInfo {
-		&self.account
+impl TestData {
+	fn new() -> Self {
+		let adapter = adapter_info!("console", AdapterPlatform::QQ, AdapterProtocol::Console);
+		let account = AccountInfo {
+			uin: "10000".to_string(),
+			name: "Puniyu".to_string(),
+			avatar: Bytes::new(),
+		};
+		Self {
+			bot: Arc::new(Bot::new(Arc::new(TestAdapterRuntime { adapter }), account)),
+			friend_contact: contact_friend!(peer: "123456", name: "Alice"),
+			friend_sender: sender_friend!(user_id: "123456", nick: "Alice"),
+			group_temp_contact: contact_group_temp!(peer: "654321", name: "Temp Group"),
+			group_temp_sender: sender_group_temp!(user_id: "123456"),
+			elements: Vec::new(),
+		}
 	}
-}
 
-impl BotRuntime for TestRuntime {
-	fn adapter(&self) -> &dyn AdapterRuntime {
-		self.adapter.as_ref()
+	fn friend_event(&self) -> MessageEvent<'_> {
+		MessageEvent::Friend(FriendMessage::new(
+			self.bot.as_ref(),
+			"msg-event-1",
+			"123456",
+			&self.friend_contact,
+			&self.friend_sender,
+			1,
+			"msg-1",
+			&self.elements,
+		))
 	}
-}
 
-#[derive(Debug)]
-struct TestBot {
-	runtime: Arc<TestRuntime>,
-}
-
-impl puniyu_bot::Bot for TestBot {
-	fn runtime(&self) -> &dyn puniyu_runtime::BotRuntime {
-		self.runtime.as_ref()
+	fn group_temp_event(&self) -> MessageEvent<'_> {
+		MessageEvent::GroupTemp(GroupTempMessage::new(
+			self.bot.as_ref(),
+			"msg-event-temp-1",
+			"123456",
+			&self.group_temp_contact,
+			&self.group_temp_sender,
+			2,
+			"msg-temp-1",
+			&self.elements,
+		))
 	}
-}
-
-fn leak_bot() -> &'static Arc<dyn Bot> {
-	let adapter = adapter_info!("console", AdapterPlatform::QQ, AdapterProtocol::Console);
-	let account =
-		AccountInfo { uin: "10000".to_string(), name: "Puniyu".to_string(), avatar: Bytes::new() };
-	Box::leak(Box::new(
-		Arc::new(TestBot {
-			runtime: Arc::new(TestRuntime {
-				adapter: Arc::new(TestAdapterRuntime { adapter }),
-				account,
-			}),
-		}) as Arc<dyn Bot>
-	))
-}
-
-fn leak_friend_contact() -> &'static puniyu_contact::FriendContact<'static> {
-	Box::leak(Box::new(contact_friend!(peer: "123456", name: "Alice")))
-}
-
-fn leak_friend_sender() -> &'static puniyu_sender::FriendSender<'static> {
-	Box::leak(Box::new(sender_friend!(user_id: "123456", nick: "Alice")))
-}
-
-fn leak_group_temp_contact() -> &'static puniyu_contact::GroupTempContact<'static> {
-	Box::leak(Box::new(contact_group_temp!(peer: "654321", name: "Temp Group")))
-}
-
-fn leak_group_temp_sender() -> &'static puniyu_sender::GroupTempSender<'static> {
-	Box::leak(Box::new(sender_group_temp!(user_id: "123456")))
-}
-
-fn leak_empty_elements() -> &'static Vec<Elements<'static>> {
-	Box::leak(Box::new(Vec::new()))
-}
-
-fn make_message_event() -> MessageEvent<'static> {
-	MessageEvent::Friend(FriendMessage::new(
-		leak_bot().as_ref(),
-		"msg-event-1",
-		"123456",
-		leak_friend_contact(),
-		leak_friend_sender(),
-		1,
-		"msg-1",
-		leak_empty_elements(),
-	))
-}
-
-fn make_group_temp_message_event() -> MessageEvent<'static> {
-	MessageEvent::GroupTemp(GroupTempMessage::new(
-		leak_bot().as_ref(),
-		"msg-event-temp-1",
-		"123456",
-		leak_group_temp_contact(),
-		leak_group_temp_sender(),
-		2,
-		"msg-temp-1",
-		leak_empty_elements(),
-	))
 }
 
 fn base_snapshot<E>(event: &E) -> (u64, String, String, String, String)
@@ -150,7 +115,8 @@ where
 
 #[test]
 fn message_event_implements_event_and_message_traits() {
-	let event = make_message_event();
+	let data = TestData::new();
+	let event = data.friend_event();
 
 	assert_eq!(event.event_type(), EventType::Message);
 	assert_eq!(event.sub_event(), SubEventType::Message(MessageSubEventType::Friend));
@@ -169,7 +135,8 @@ fn message_event_implements_event_and_message_traits() {
 
 #[test]
 fn group_temp_message_event_implements_event_and_message_traits() {
-	let event = make_group_temp_message_event();
+	let data = TestData::new();
+	let event = data.group_temp_event();
 
 	assert_eq!(event.event_type(), EventType::Message);
 	assert_eq!(event.sub_event(), SubEventType::Message(MessageSubEventType::GroupTemp));

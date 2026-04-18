@@ -15,7 +15,7 @@ use puniyu_event::{
 	message::{FriendMessage, MessageEvent, MessageSubEventType},
 };
 use puniyu_message::Message;
-use puniyu_runtime::{AccountProvider, AdapterProvider, AdapterRuntime, BotRuntime, SendMessage};
+use puniyu_runtime::{AdapterProvider, SendMessage};
 use puniyu_sender::{Sender, sender_friend};
 
 #[derive(Debug)]
@@ -40,72 +40,49 @@ impl SendMessage for TestAdapterRuntime {
 	}
 }
 
-#[derive(Debug)]
-struct TestRuntime {
-	adapter: Arc<TestAdapterRuntime>,
-	account: AccountInfo,
+struct TestData {
+	bot: Arc<Bot>,
+	friend_contact: puniyu_contact::FriendContact<'static>,
+	friend_sender: puniyu_sender::FriendSender<'static>,
+	elements: Vec<Elements<'static>>,
 }
 
-impl AccountProvider for TestRuntime {
-	fn account_info(&self) -> &AccountInfo {
-		&self.account
+impl TestData {
+	fn new() -> Self {
+		let adapter = adapter_info!("console", AdapterPlatform::QQ, AdapterProtocol::Console);
+		let account = AccountInfo {
+			uin: "10000".to_string(),
+			name: "Puniyu".to_string(),
+			avatar: Bytes::new(),
+		};
+		Self {
+			bot: Arc::new(Bot::new(Arc::new(TestAdapterRuntime { adapter }), account)),
+			friend_contact: contact_friend!(peer: "123456", name: "Alice"),
+			friend_sender: sender_friend!(user_id: "123456", nick: "Alice"),
+			elements: Vec::new(),
+		}
 	}
-}
 
-impl BotRuntime for TestRuntime {
-	fn adapter(&self) -> &dyn AdapterRuntime {
-		self.adapter.as_ref()
+	fn message_event(&self) -> Event<'_> {
+		Event::Message(Box::new(MessageEvent::Friend(FriendMessage::new(
+			self.bot.as_ref(),
+			"msg-event-1",
+			"123456",
+			&self.friend_contact,
+			&self.friend_sender,
+			1,
+			"msg-1",
+			&self.elements,
+		))))
 	}
-}
 
-#[derive(Debug)]
-struct TestBot {
-	runtime: Arc<TestRuntime>,
-}
-
-impl puniyu_bot::Bot for TestBot {
-	fn runtime(&self) -> &dyn puniyu_runtime::BotRuntime {
-		self.runtime.as_ref()
+	fn extension_event(&self) -> Event<'_> {
+		Event::Extension(Box::new(TestExtensionEvent {
+			bot: Arc::clone(&self.bot),
+			contact: self.friend_contact.clone(),
+			sender: self.friend_sender.clone(),
+		}))
 	}
-}
-
-fn leak_bot() -> &'static Arc<dyn Bot> {
-	let adapter = adapter_info!("console", AdapterPlatform::QQ, AdapterProtocol::Console);
-	let account =
-		AccountInfo { uin: "10000".to_string(), name: "Puniyu".to_string(), avatar: Bytes::new() };
-	Box::leak(Box::new(
-		Arc::new(TestBot {
-			runtime: Arc::new(TestRuntime {
-				adapter: Arc::new(TestAdapterRuntime { adapter }),
-				account,
-			}),
-		}) as Arc<dyn Bot>
-	))
-}
-
-fn leak_friend_contact() -> &'static puniyu_contact::FriendContact<'static> {
-	Box::leak(Box::new(contact_friend!(peer: "123456", name: "Alice")))
-}
-
-fn leak_friend_sender() -> &'static puniyu_sender::FriendSender<'static> {
-	Box::leak(Box::new(sender_friend!(user_id: "123456", nick: "Alice")))
-}
-
-fn leak_empty_elements() -> &'static Vec<Elements<'static>> {
-	Box::leak(Box::new(Vec::new()))
-}
-
-fn make_event_message() -> Event<'static> {
-	Event::Message(Box::new(MessageEvent::Friend(FriendMessage::new(
-		leak_bot().as_ref(),
-		"msg-event-1",
-		"123456",
-		leak_friend_contact(),
-		leak_friend_sender(),
-		1,
-		"msg-1",
-		leak_empty_elements(),
-	))))
 }
 
 fn event_snapshot(event: &Event<'_>) -> (u64, String, String, String, String) {
@@ -119,9 +96,9 @@ fn event_snapshot(event: &Event<'_>) -> (u64, String, String, String, String) {
 }
 
 pub struct TestExtensionEvent {
-	bot: &'static Arc<dyn Bot>,
-	contact: &'static puniyu_contact::FriendContact<'static>,
-	sender: &'static puniyu_sender::FriendSender<'static>,
+	bot: Arc<Bot>,
+	contact: puniyu_contact::FriendContact<'static>,
+	sender: puniyu_sender::FriendSender<'static>,
 }
 
 impl puniyu_event::EventBase for TestExtensionEvent {
@@ -137,7 +114,7 @@ impl puniyu_event::EventBase for TestExtensionEvent {
 	fn sub_event(&self) -> puniyu_event::SubEventType {
 		self.r#type()
 	}
-	fn bot(&self) -> &dyn Bot {
+	fn bot(&self) -> &Bot {
 		self.bot.as_ref()
 	}
 	fn self_id(&self) -> &str {
@@ -147,10 +124,10 @@ impl puniyu_event::EventBase for TestExtensionEvent {
 		"123456"
 	}
 	fn contact(&self) -> puniyu_contact::ContactType<'_> {
-		(*self.contact).clone().into()
+		self.contact.clone().into()
 	}
 	fn sender(&self) -> puniyu_sender::SenderType<'_> {
-		(*self.sender).clone().into()
+		self.sender.clone().into()
 	}
 }
 
@@ -164,17 +141,10 @@ impl ExtensionEvent for TestExtensionEvent {
 	}
 }
 
-fn make_event_extension() -> Event<'static> {
-	Event::Extension(Box::new(TestExtensionEvent {
-		bot: leak_bot(),
-		contact: leak_friend_contact(),
-		sender: leak_friend_sender(),
-	}))
-}
-
 #[test]
 fn root_event_message_helpers_work() {
-	let event = make_event_message();
+	let data = TestData::new();
+	let event = data.message_event();
 
 	assert!(event.as_message().is_some());
 	assert_eq!(event.event_type(), EventType::Message);
@@ -193,13 +163,17 @@ fn root_event_message_helpers_work() {
 
 #[test]
 fn root_event_extension_helpers_work() {
-	let event = make_event_extension();
+	let data = TestData::new();
+	let event = data.extension_event();
 
 	assert!(event.as_message().is_none());
 	assert!(event.as_extension().is_some());
 	assert_eq!(event.event_type(), EventType::Extension);
 	assert_eq!(event.sub_event(), SubEventType::Notice(NoticeSubEventType::new("friend_poke")));
-	assert_eq!(event.as_extension().unwrap().r#type(), SubEventType::Notice(NoticeSubEventType::new("friend_poke")));
+	assert_eq!(
+		event.as_extension().unwrap().r#type(),
+		SubEventType::Notice(NoticeSubEventType::new("friend_poke"))
+	);
 	assert_eq!(event.as_extension().unwrap().content(), "Alice poked the bot");
 	assert_eq!(
 		event_snapshot(&event),

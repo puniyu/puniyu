@@ -1,5 +1,3 @@
-mod bot;
-pub(crate) use bot::ConsoleBotRuntime;
 mod adapter;
 pub use adapter::ConsoleAdapterRuntime;
 

@@ -10,7 +10,7 @@ use puniyu_bot::Bot;
 use puniyu_contact::ContactType;
 use puniyu_context::BotContext;
 use puniyu_message::Message;
-use puniyu_runtime::{AccountProvider, AdapterProvider, AdapterRuntime, BotRuntime, SendMessage};
+use puniyu_runtime::{AdapterProvider, SendMessage};
 
 #[derive(Debug)]
 struct TestAdapterRuntime {
@@ -34,48 +34,15 @@ impl SendMessage for TestAdapterRuntime {
 	}
 }
 
-#[derive(Debug)]
-struct TestRuntime {
-	adapter: Arc<TestAdapterRuntime>,
-	account: AccountInfo,
-}
 
-impl AccountProvider for TestRuntime {
-	fn account_info(&self) -> &AccountInfo {
-		&self.account
-	}
-}
-
-impl BotRuntime for TestRuntime {
-	fn adapter(&self) -> &dyn AdapterRuntime {
-		self.adapter.as_ref()
-	}
-}
-
-#[derive(Debug)]
-struct TestBot {
-	runtime: Arc<TestRuntime>,
-}
-
-impl puniyu_bot::Bot for TestBot {
-	fn runtime(&self) -> &dyn puniyu_runtime::BotRuntime {
-		self.runtime.as_ref()
-	}
-}
-
-fn make_bot_with_account(uin: &str, name: &str, avatar: Bytes) -> Arc<dyn Bot> {
+fn make_bot_with_account(uin: &str, name: &str, avatar: Bytes) -> Arc<Bot> {
 	let adapter = adapter_info!(
 		name: "test-adapter",
 		platform: AdapterPlatform::Other,
 		protocol: AdapterProtocol::Console,
 	);
 	let account = AccountInfo { uin: uin.to_string(), name: name.to_string(), avatar };
-	Arc::new(TestBot {
-		runtime: Arc::new(TestRuntime {
-			adapter: Arc::new(TestAdapterRuntime { adapter }),
-			account,
-		}),
-	})
+	Arc::new(Bot::new(Arc::new(TestAdapterRuntime { adapter }), account))
 }
 
 #[test]

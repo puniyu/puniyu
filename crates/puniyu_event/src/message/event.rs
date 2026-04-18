@@ -63,7 +63,7 @@ impl<'m> EventBase for MessageEvent<'m> {
 		)
 	}
 
-	fn bot(&self) -> &dyn Bot {
+	fn bot(&self) -> &Bot {
 		codegen_delegate_to_variants!(self, bot, Friend, Group, GroupTemp, Guild)
 	}
 

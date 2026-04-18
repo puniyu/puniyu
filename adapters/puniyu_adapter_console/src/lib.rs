@@ -1,4 +1,3 @@
-mod bot;
 mod common;
 mod input;
 mod runtime;
@@ -8,7 +7,6 @@ use log::info;
 use puniyu_adapter::app_name;
 use puniyu_adapter::bot::get_bot;
 use puniyu_adapter::macros::*;
-use puniyu_adapter::runtime::AdapterProvider;
 use std::sync::Arc;
 
 pub(crate) const VERSION: puniyu_adapter::Version = pkg_version!();
@@ -18,8 +16,9 @@ pub(crate) const NAME: &str = pkg_name!();
 async fn main() -> puniyu_adapter::Result {
 	let bot_id = "console";
 	let name = app_name();
-	let adapter_runtime = Arc::new(runtime::ConsoleAdapterRuntime::new());
-	let bot_runtime = Arc::new(runtime::ConsoleBotRuntime::new(
+	let adapter_runtime: Arc<dyn puniyu_adapter::runtime::AdapterRuntime> =
+		Arc::new(runtime::ConsoleAdapterRuntime::new());
+	let bot = Arc::new(puniyu_adapter::bot::Bot::new(
 		Arc::clone(&adapter_runtime),
 		account_info!(
 			uin: bot_id,
@@ -27,7 +26,6 @@ async fn main() -> puniyu_adapter::Result {
 			avatar: puniyu_server::get_logo(),
 		),
 	));
-	let bot: Arc<dyn puniyu_adapter::bot::Bot> = Arc::new(bot::ConsoleBot::new(bot_runtime));
 	let bot_index = register_bot!(bot: bot)?;
 
 	info!(
