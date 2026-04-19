@@ -2226,6 +2226,7 @@ version = "0.8.0"
 dependencies = [
  "puniyu_error",
  "serde",
+ "serde_repr",
  "strum 0.28.0",
 ]
 
@@ -2477,7 +2478,9 @@ dependencies = [
  "log",
  "prost-build",
  "protoc-bin-vendored",
+ "puniyu_command",
  "puniyu_common",
+ "puniyu_context",
  "puniyu_error",
  "puniyu_ipc",
  "puniyu_loader",
@@ -2576,6 +2579,14 @@ dependencies = [
  "puniyu_server",
  "puniyu_task",
  "puniyu_version",
+]
+
+[[package]]
+name = "puniyu_plugin_ipc"
+version = "0.8.0"
+dependencies = [
+ "puniyu_ipc",
+ "tokio",
 ]
 
 [[package]]

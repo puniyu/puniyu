@@ -32,7 +32,7 @@ impl Handler for HookHandler {
 		});
 		hooks.sort_unstable_by_key(|a| a.builder.priority());
 		for hook in hooks {
-			if let Err(e) = hook.builder.run(Some(&context)).await {
+			if let Err(e) = hook.builder.execute(Some(&context)).await {
 				error!("Hook处理器执行失败: {}", e);
 			}
 		}

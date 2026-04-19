@@ -6,24 +6,23 @@ use puniyu_error::registry::Error;
 
 use crate::types::IpcProcess;
 
-static IPC_PLUGIN_ID: AtomicU64 = AtomicU64::new(0);
+static IPC_ID: AtomicU64 = AtomicU64::new(0);
 
 #[derive(Clone, Default)]
-pub(crate) struct IpcPluginStore(Arc<RwLock<HashMap<u64, Arc<IpcProcess>>>>);
+pub(crate) struct IpcStore(Arc<RwLock<HashMap<u64, Arc<IpcProcess>>>>);
 
-impl IpcPluginStore {
+impl IpcStore {
 	pub fn new() -> Self {
 		Self::default()
 	}
 
-	pub fn insert(&self, mut process: IpcProcess) -> Result<u64, Error> {
+	pub fn insert(&self, process: IpcProcess) -> Result<u64, Error> {
 		let mut map = self.0.write().expect("Failed to acquire lock");
 		if map.values().any(|item| item.name() == process.name()) {
 			return Err(Error::Exists("IpcPluginProcess".to_string()));
 		}
 
-		let id = IPC_PLUGIN_ID.fetch_add(1, Ordering::SeqCst);
-		process.set_id(id);
+		let id = IPC_ID.fetch_add(1, Ordering::SeqCst);
 		map.insert(id, Arc::new(process));
 		Ok(id)
 	}

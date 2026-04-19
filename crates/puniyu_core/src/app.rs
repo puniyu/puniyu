@@ -391,7 +391,7 @@ async fn execute_hooks(status_type: StatusType) {
 	hooks.sort_unstable_by_key(|a| a.builder.priority());
 
 	for hook in hooks {
-		if let Err(e) = hook.builder.run(None).await {
+		if let Err(e) = hook.builder.execute(None).await {
 			match status_type {
 				StatusType::Start => error!("Failed to execute start hook: {}", e),
 				StatusType::Stop => error!("Failed to execute stop hook: {}", e),

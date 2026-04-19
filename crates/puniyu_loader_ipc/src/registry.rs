@@ -3,15 +3,15 @@ mod store;
 use std::sync::{Arc, LazyLock};
 
 use puniyu_error::registry::Error;
-use store::IpcPluginStore;
+use store::IpcStore;
 
 use crate::types::{IpcPluginId, IpcProcess, ProcessState};
 
-static STORE: LazyLock<IpcPluginStore> = LazyLock::new(IpcPluginStore::new);
+static STORE: LazyLock<IpcStore> = LazyLock::new(IpcStore::new);
 
-pub struct IpcPluginRegistry;
+pub struct IpcRegistry;
 
-impl<'p> IpcPluginRegistry {
+impl<'p> IpcRegistry {
 	pub fn register(process: IpcProcess) -> Result<u64, Error> {
 		STORE.insert(process)
 	}

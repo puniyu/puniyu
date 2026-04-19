@@ -126,7 +126,7 @@ impl CommandHandler {
 			let start_time = std::time::Instant::now();
 			info!("[{}] 开始执行", format!("command:{}", command_name).yellow());
 
-			let result = command.builder.run(ctx).await;
+			let result = command.builder.execute(ctx).await;
 
 			info!(
 				"[{}] 执行完毕, 耗时{}ms",

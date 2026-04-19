@@ -26,7 +26,7 @@ impl Task for TestTask {
 		"0 * * * * *"
 	}
 
-	async fn run(&self) -> Result {
+	async fn execute(&self) -> Result {
 		Ok(())
 	}
 }

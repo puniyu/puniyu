@@ -17,7 +17,7 @@ impl Task for DummyTask {
 		"0 * * * * *"
 	}
 
-	async fn run(&self) -> Result {
+	async fn execute(&self) -> Result {
 		Ok(())
 	}
 }

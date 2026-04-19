@@ -113,7 +113,7 @@ pub fn command(item: zyn::syn::ItemFn, cfg: CommandArgs) -> zyn::TokenStream {
 				#command_priority
 			}
 
-			fn args(&self) -> ::std::vec::Vec<::puniyu_plugin::command::Arg<'static>> {
+			fn args(&self) -> ::std::vec::Vec<::puniyu_plugin::command::Arg> {
 				::std::vec![{{ args_tokens }}]
 			}
 
@@ -126,7 +126,7 @@ pub fn command(item: zyn::syn::ItemFn, cfg: CommandArgs) -> zyn::TokenStream {
 			}
 
 			#[inline]
-			async fn run(
+			async fn execute(
 				&self,
 				ctx: &::puniyu_plugin::context::MessageContext,
 			) -> ::puniyu_plugin::Result<::puniyu_plugin::command::CommandAction> {

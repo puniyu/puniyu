@@ -13,11 +13,11 @@ impl Command for TestCommand {
 		"hello"
 	}
 
-	fn args(&self) -> Vec<Arg<'static>> {
+	fn args(&self) -> Vec<Arg> {
 		vec![Arg::string("name").named().required()]
 	}
 
-	async fn run(
+	async fn execute(
 		&self,
 		_ctx: &puniyu_context::MessageContext,
 	) -> puniyu_error::Result<CommandAction> {

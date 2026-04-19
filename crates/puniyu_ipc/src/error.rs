@@ -24,4 +24,4 @@ pub enum Error {
 	Value(#[from] rmpv::ext::Error),
 }
 
-pub type Result<T, E = Error> = std::result::Result<T, E>;
+pub type Result<T> = std::result::Result<T, Error>;

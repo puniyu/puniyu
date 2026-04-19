@@ -46,7 +46,7 @@ impl From<&TaskInfo> for tokio_cron_scheduler::Job {
 						info!("{} 开始执行", tag);
 
 						let start_time = Instant::now();
-						let result = builder.run().await;
+						let result = builder.execute().await;
 						let duration = start_time.elapsed().as_millis();
 
 						match result {

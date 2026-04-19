@@ -27,7 +27,7 @@
 //!         "0 0 3 * * *"
 //!     }
 //!
-//!     async fn run(&self) -> Result {
+//!     async fn execute(&self) -> Result {
 //!         Ok(())
 //!     }
 //! }
@@ -77,7 +77,7 @@ use puniyu_error::Result;
 ///
 ///     fn cron(&self) -> &'static str { "0 * * * * *" }
 ///
-///     async fn run(&self) -> Result {
+///     async fn execute(&self) -> Result {
 ///         Ok(())
 ///     }
 /// }
@@ -95,7 +95,7 @@ pub trait Task: Send + Sync + 'static {
 	fn cron(&self) -> &'static str;
 
 	/// 执行任务
-	async fn run(&self) -> Result;
+	async fn execute(&self) -> Result;
 }
 
 impl PartialEq for dyn Task {

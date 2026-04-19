@@ -22,7 +22,7 @@ impl Task for TestTask {
 		self.cron_expr
 	}
 
-	async fn run(&self) -> Result {
+	async fn execute(&self) -> Result {
 		if self.should_fail { Err(io::Error::other("task failed").into()) } else { Ok(()) }
 	}
 }
@@ -49,7 +49,7 @@ fn test_task_cron_expression() {
 async fn test_task_execution() {
 	let task = TestTask { name: "exec_task", cron_expr: "0 * * * * *", should_fail: false };
 
-	let result = task.run().await;
+	let result = task.execute().await;
 	assert!(result.is_ok());
 }
 
@@ -57,7 +57,7 @@ async fn test_task_execution() {
 async fn test_task_execution_error() {
 	let task = TestTask { name: "failed_task", cron_expr: "0 * * * * *", should_fail: true };
 
-	let result = task.run().await;
+	let result = task.execute().await;
 	assert!(result.is_err());
 	if let Err(err) = result {
 		assert_eq!(err.to_string(), "task failed");

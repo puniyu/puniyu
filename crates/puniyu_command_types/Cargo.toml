@@ -15,5 +15,6 @@ workspace = true
 
 [dependencies]
 serde.workspace = true
+serde_repr.workspace = true
 strum.workspace = true
 puniyu_error.workspace = true

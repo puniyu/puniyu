@@ -24,7 +24,7 @@
 //!         "hello"
 //!     }
 //!
-//!     fn args(&self) -> Vec<Arg<'static>> {
+//!     fn args(&self) -> Vec<Arg> {
 //!         vec![Arg::string("name").required()]
 //!     }
 //!
@@ -32,7 +32,7 @@
 //!         Permission::All
 //!     }
 //!
-//!     async fn run(&self, _ctx: &MessageContext) -> puniyu_error::Result<CommandAction> {
+//!     async fn execute(&self, _ctx: &MessageContext) -> puniyu_error::Result<CommandAction> {
 //!         CommandAction::done()
 //!     }
 //! }
@@ -53,19 +53,11 @@ use puniyu_context::MessageContext;
 /// 判断当前权限是否满足目标权限。
 #[macro_export]
 macro_rules! has_permission {
-	($current:expr, $required:expr $(,)?) => {{
-		matches!(
-			($current, $required),
-			(_, $crate::Permission::All)
-				| ($crate::Permission::Admin, $crate::Permission::Admin)
-				| ($crate::Permission::Owner, $crate::Permission::Admin)
-				| ($crate::Permission::Owner, $crate::Permission::Owner)
-				| ($crate::Permission::Master, $crate::Permission::Admin)
-				| ($crate::Permission::Master, $crate::Permission::Owner)
-				| ($crate::Permission::Master, $crate::Permission::Master)
-		)
-	}};
+	($perm:expr, $required:expr $(,)?) => {
+		$perm.satisfies($required)
+	};
 }
+
 
 /// 命令行为接口。
 #[async_trait]
@@ -79,7 +71,7 @@ pub trait Command: Send + Sync + 'static {
 	}
 
 	/// 返回命令参数列表。
-	fn args(&'_ self) -> Vec<Arg<'static>> {
+	fn args(&self) -> Vec<Arg> {
 		Vec::new()
 	}
 
@@ -99,7 +91,7 @@ pub trait Command: Send + Sync + 'static {
 	}
 
 	/// 执行命令。
-	async fn run(&self, ctx: &MessageContext) -> puniyu_error::Result<CommandAction>;
+	async fn execute(&self, ctx: &MessageContext) -> puniyu_error::Result<CommandAction>;
 }
 
 impl PartialEq for dyn Command {

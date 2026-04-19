@@ -226,11 +226,11 @@ impl CommandParser {
 	fn extract_value(matches: &clap::ArgMatches, arg: &Arg) -> Option<ArgValue> {
 		match arg.arg_type {
 			ArgType::String => {
-				matches.get_one::<String>(arg.name).map(|s| ArgValue::String(s.to_string()))
+				matches.get_one::<String>(&arg.name).map(|s| ArgValue::String(s.to_string()))
 			}
-			ArgType::Int => matches.get_one::<i64>(arg.name).copied().map(ArgValue::Int),
-			ArgType::Float => matches.get_one::<f64>(arg.name).copied().map(ArgValue::Float),
-			ArgType::Bool => matches.get_one::<bool>(arg.name).copied().map(ArgValue::Bool),
+			ArgType::Int => matches.get_one::<i64>(&arg.name).copied().map(ArgValue::Int),
+			ArgType::Float => matches.get_one::<f64>(&arg.name).copied().map(ArgValue::Float),
+			ArgType::Bool => matches.get_one::<bool>(&arg.name).copied().map(ArgValue::Bool),
 		}
 	}
 

@@ -11,15 +11,15 @@ struct HelloCommand;
 
 #[async_trait]
 impl Command for HelloCommand {
-	fn name(&self) -> &'static str {
+	fn name(&self) -> &str {
 		"hello"
 	}
 
-	fn alias(&self) -> Vec<&'static str> {
+	fn alias(&self) -> Vec<&str> {
 		vec!["hi"]
 	}
 
-	async fn run(&self, _ctx: &MessageContext) -> puniyu_error::Result<CommandAction> {
+	async fn execute(&self, _ctx: &MessageContext) -> puniyu_error::Result<CommandAction> {
 		CommandAction::done()
 	}
 }

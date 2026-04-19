@@ -3,7 +3,7 @@ use puniyu_command_types::*;
 #[test]
 fn test_arg_string() {
 	let arg = Arg::string("name");
-	assert_eq!(arg.name, "name");
+	assert_eq!(arg.name.as_ref(), "name");
 	assert_eq!(arg.arg_type, ArgType::String);
 }
 
@@ -40,7 +40,7 @@ fn test_arg_optional() {
 #[test]
 fn test_arg_description() {
 	let arg = Arg::string("name").description("用户名");
-	assert_eq!(arg.description, Some("用户名"));
+	assert_eq!(arg.description.as_deref(), Some("用户名"));
 }
 
 #[test]
