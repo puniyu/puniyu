@@ -15,7 +15,7 @@ impl puniyu_command::Command for IpcCommand {
     fn description(&self) -> Option<&str> {
         self.meta.description.as_deref()
     }
-    fn args(&self) -> Vec<puniyu_command::Arg> {
+    fn args(&self) -> Vec<puniyu_command::Arg<'_>> {
         Vec::new()
     }
     fn alias(&self) -> Vec<&str> {

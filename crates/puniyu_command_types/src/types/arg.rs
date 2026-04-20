@@ -47,9 +47,9 @@ pub enum ArgMode {
 
 /// 命令参数定义。
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
-pub struct Arg {
+pub struct Arg<'a> {
 	/// 参数名。
-	pub name: Cow<'static, str>,
+	pub name: Cow<'a, str>,
 	/// 参数类型。
 	pub arg_type: ArgType,
 	/// 参数模式。
@@ -57,10 +57,10 @@ pub struct Arg {
 	/// 是否必需。
 	pub required: bool,
 	/// 参数描述。
-	pub description: Option<Cow<'static, str>>,
+	pub description: Option<Cow<'a, str>>,
 }
 
-impl Default for Arg {
+impl<'a> Default for Arg<'a> {
 	fn default() -> Self {
 		Self {
 			name: Cow::Borrowed(""),
@@ -72,29 +72,29 @@ impl Default for Arg {
 	}
 }
 
-impl Arg {
+impl<'a> Arg<'a> {
 	/// 创建参数定义。
-	pub fn new(name: impl Into<Cow<'static, str>>) -> Self {
+	pub fn new(name: impl Into<Cow<'a, str>>) -> Self {
 		Self { name: name.into(), ..Default::default() }
 	}
 
 	/// 创建字符串参数。
-	pub fn string(name: impl Into<Cow<'static, str>>) -> Self {
+	pub fn string(name: impl Into<Cow<'a, str>>) -> Self {
 		Self::new(name).with_type(ArgType::String)
 	}
 
 	/// 创建整数参数。
-	pub fn int(name: impl Into<Cow<'static, str>>) -> Self {
+	pub fn int(name: impl Into<Cow<'a, str>>) -> Self {
 		Self::new(name).with_type(ArgType::Int)
 	}
 
 	/// 创建浮点数参数。
-	pub fn float(name: impl Into<Cow<'static, str>>) -> Self {
+	pub fn float(name: impl Into<Cow<'a, str>>) -> Self {
 		Self::new(name).with_type(ArgType::Float)
 	}
 
 	/// 创建布尔参数。
-	pub fn bool(name: impl Into<Cow<'static, str>>) -> Self {
+	pub fn bool(name: impl Into<Cow<'a, str>>) -> Self {
 		Self::new(name).with_type(ArgType::Bool)
 	}
 
@@ -117,7 +117,7 @@ impl Arg {
 	}
 
 	/// 设置参数描述。
-	pub fn description(mut self, desc: impl Into<Cow<'static, str>>) -> Self {
+	pub fn description(mut self, desc: impl Into<Cow<'a, str>>) -> Self {
 		self.description = Some(desc.into());
 		self
 	}

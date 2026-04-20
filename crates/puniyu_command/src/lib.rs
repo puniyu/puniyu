@@ -71,7 +71,7 @@ pub trait Command: Send + Sync + 'static {
 	}
 
 	/// 返回命令参数列表。
-	fn args(&self) -> Vec<Arg> {
+	fn args(&self) -> Vec<Arg<'_>> {
 		Vec::new()
 	}
 

@@ -113,7 +113,7 @@ pub fn command(item: zyn::syn::ItemFn, cfg: CommandArgs) -> zyn::TokenStream {
 				#command_priority
 			}
 
-			fn args(&self) -> ::std::vec::Vec<::puniyu_plugin::command::Arg> {
+			fn args(&self) -> ::std::vec::Vec<::puniyu_plugin::command::Arg<'_>> {
 				::std::vec![{{ args_tokens }}]
 			}
 
