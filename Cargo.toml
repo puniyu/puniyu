@@ -30,17 +30,20 @@ async-trait = { version = "0.1.89" }
 thiserror = { version = "2.0.17" }
 strum = { version = "0.28.0", features = ["derive"] }
 convert_case = { version = "0.11.0" }
+croner = { version = "3.0.1" }
 clap = { version = "4.5", default-features = false, features = ["std"] }
 actix-web = { version = "4.11.0" }
 reqwest = { version = "0.13.0", default-features = false, features = [
     "json",
     "rustls",
 ] }
-derive_builder = { version = "0.20.2" }
 derive_more = { version = "2.1.1" }
+bon = { version = "3.9.1" }
 const-str = { version = "1.1.0" }
 bytes = { version = "1.11.0", features = ["serde"] }
-prost = { version = "0.14.1" }
+prost = { version = "0.14.3" }
+prost-build = "0.14.1"
+protoc-bin-vendored = "3.2.0"
 
 puniyu_logger = { version = "0.7.2" }
 puniyu_system_info = { version = "1.5.5" }
@@ -86,7 +89,6 @@ puniyu_loader = { version = "0.8.0", path = "./crates/puniyu_loader" }
 puniyu_core = { version = "0.8.0", path = "./crates/puniyu_core" }
 puniyu_api = { version = "0.8.0", path = "./crates/puniyu_api" }
 puniyu_macros = { version = "0.8.0", path = "./crates/puniyu_macros", default-features = true }
-
 puniyu_adapter_console = { version = "0.8.0", path = "./adapters/puniyu_adapter_console" }
 
 puniyu_plugin_basic = { version = "0.8.0", path = "./plugins/puniyu_plugin_basic" }

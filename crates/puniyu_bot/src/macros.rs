@@ -3,8 +3,18 @@
 #[macro_export]
 macro_rules! register_bot {
 	(bot: $bot:expr $(,)?) => {{
-		let bot: ::std::sync::Arc<dyn $crate::Bot> = $bot;
+		let bot: ::std::sync::Arc<$crate::Bot> = $bot;
 		$crate::BotRegistry::register(bot)
+	}};
+	(adapter: $adapter:expr, account: $account:expr $(,)?) => {{
+		let adapter: ::std::sync::Arc<dyn $crate::AdapterRuntime> = $adapter;
+		let account = $account;
+		$crate::BotRegistry::register(::std::sync::Arc::new($crate::Bot::new(adapter, account)))
+	}};
+	(runtime: $runtime:expr, account: $account:expr $(,)?) => {{
+		let adapter: ::std::sync::Arc<dyn $crate::AdapterRuntime> = $runtime;
+		let account = $account;
+		$crate::BotRegistry::register(::std::sync::Arc::new($crate::Bot::new(adapter, account)))
 	}};
 }
 

@@ -136,6 +136,6 @@ fn test_friend_contact_roundtrip_through_public_api_layers() {
 	assert_eq!(borrowed_view.peer(), "friend-001");
 	assert_eq!(borrowed_view.name(), Some("Alice"));
 
-	let expected = FriendContact::new("friend-001", "Alice");
+	let expected = FriendContact::new("friend-001", Some("Alice"));
 	assert_eq!(contact, ContactType::Friend(expected));
 }

@@ -11,8 +11,6 @@
 //! - [`Runtime`]：运行时基础 trait，提供只读运行时访问视图
 //! - [`AdapterProvider`]：访问适配器信息
 //! - [`AdapterRuntime`]：适配器级运行时抽象
-//! - [`AccountProvider`]：访问 Bot 账号信息
-//! - [`BotRuntime`]：Bot 级运行时抽象
 //! - [`SendMessage`]：发送消息能力 trait
 //! - [`Runtime::downcast_ref`]：访问适配器私有运行时能力
 //! - [`ServerRuntime`]：HTTP 服务运行句柄，封装服务停止与等待结束等生命周期能力
@@ -27,7 +25,6 @@ pub use server::ServerRuntime;
 use std::any::Any;
 
 use async_trait::async_trait;
-use puniyu_account::AccountInfo;
 use puniyu_adapter_types::{AdapterInfo, SendMsgType};
 use puniyu_contact::ContactType;
 use puniyu_error::Result;
@@ -55,10 +52,6 @@ pub trait AdapterRuntime: Runtime + AdapterProvider + SendMessage {}
 
 impl<T> AdapterRuntime for T where T: Runtime + AdapterProvider + SendMessage {}
 
-pub trait AccountProvider: Send + Sync {
-	fn account_info(&self) -> &AccountInfo;
-}
-
 #[async_trait]
 pub trait SendMessage: Send + Sync {
 	async fn send_message(
@@ -68,6 +61,3 @@ pub trait SendMessage: Send + Sync {
 	) -> Result<SendMsgType>;
 }
 
-pub trait BotRuntime: AdapterRuntime + AccountProvider {}
-
-impl<T> BotRuntime for T where T: AdapterRuntime + AccountProvider {}

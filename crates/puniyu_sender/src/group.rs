@@ -5,41 +5,40 @@ mod temp;
 #[doc(inline)]
 pub use temp::*;
 
-use crate::{Role, Sender, Sex};
-use derive_builder::Builder;
+use bon::Builder;
 use serde::{Deserialize, Serialize};
 use std::borrow::Cow;
+
+use crate::{Role, Sender, Sex};
 
 /// 群聊发送者信息。
 #[derive(Debug, Default, Clone, PartialEq, Deserialize, Serialize, Builder)]
 #[serde(bound(deserialize = "'de: 's"))]
-#[builder(setter(into), pattern = "owned")]
 pub struct GroupSender<'s> {
 	/// 发送者id
+	#[builder(into)]
 	#[serde(borrow)]
 	user_id: Cow<'s, str>,
 	/// 用户昵称
-	#[builder(default, setter(strip_option))]
+	#[builder(into)]
 	#[serde(borrow)]
 	nick: Option<Cow<'s, str>>,
 	/// 性别
 	#[builder(default)]
 	sex: Sex,
 	/// 年龄
-	#[builder(default)]
 	age: Option<u32>,
 	/// 角色
 	#[builder(default)]
 	role: Role,
 	/// 群名片
-	#[builder(default, setter(strip_option))]
+	#[builder(into)]
 	#[serde(borrow)]
 	card: Option<Cow<'s, str>>,
 	/// 等级
-	#[builder(default)]
 	level: Option<u32>,
 	/// 专属头衔
-	#[builder(default, setter(strip_option))]
+	#[builder(into)]
 	#[serde(borrow)]
 	title: Option<Cow<'s, str>>,
 }
@@ -72,10 +71,6 @@ impl<'s> GroupSender<'s> {
 			level,
 			title: title.map(Into::into),
 		}
-	}
-
-	pub fn builder() -> GroupSenderBuilder<'s> {
-		GroupSenderBuilder::default()
 	}
 
 	/// 获取群角色。
@@ -131,17 +126,13 @@ impl<'s> Sender for GroupSender<'s> {
 #[macro_export]
 macro_rules! sender_group {
     ( $( $key:ident : $value:expr ),+ $(,)? ) => {{
-        $crate::GroupSenderBuilder::default()
+        $crate::GroupSender::builder()
         $(
             .$key($value)
         )*
         .build()
-		.expect("Failed to build GroupSender")
     }};
 	($user_id:expr) => {{
-		$crate::GroupSenderBuilder::default()
-			.user_id($user_id)
-			.build()
-			.expect("Failed to build GroupSender")
+		$crate::GroupSender::builder().user_id($user_id).build()
 	}};
 }

@@ -22,7 +22,7 @@ use std::fmt::{self, Debug, Formatter};
 /// ```rust
 /// use puniyu_contact::{Contact, FriendContact};
 ///
-/// let friend = FriendContact::new("123456", "Alice");
+/// let friend = FriendContact::new("123456", Some("Alice"));
 ///
 /// // 使用 Contact trait 方法
 /// assert_eq!(friend.peer(), "123456");
@@ -46,10 +46,10 @@ use std::fmt::{self, Debug, Formatter};
 ///     println!("Is friend: {}", contact.is_friend());
 /// }
 ///
-/// let friend = FriendContact::new("123456", "Alice");
+/// let friend = FriendContact::new("123456", Some("Alice"));
 /// print_contact_info(&friend);
 ///
-/// let group = GroupContact::new("789012", "Dev Team");
+/// let group = GroupContact::new("789012", Some("Dev Team"));
 /// print_contact_info(&group);
 /// ```
 pub trait Contact: Send + Sync {

@@ -101,11 +101,11 @@ pub fn command(item: zyn::syn::ItemFn, cfg: CommandArgs) -> zyn::TokenStream {
 
 		#[::puniyu_plugin::__private::async_trait]
 		impl ::puniyu_plugin::__private::Command for {{ struct_name }} {
-			fn name(&self) -> &'static str {
+			fn name(&self) -> &str {
 				#command_name
 			}
 
-			fn description(&self) -> Option<&'static str> {
+			fn description(&self) -> Option<&str> {
 				#command_desc
 			}
 
@@ -113,11 +113,11 @@ pub fn command(item: zyn::syn::ItemFn, cfg: CommandArgs) -> zyn::TokenStream {
 				#command_priority
 			}
 
-			fn args(&self) -> ::std::vec::Vec<::puniyu_plugin::command::Arg<'static>> {
+			fn args(&self) -> ::std::vec::Vec<::puniyu_plugin::command::Arg<'_>> {
 				::std::vec![{{ args_tokens }}]
 			}
 
-			fn alias(&self) -> ::std::vec::Vec<&'static str> {
+			fn alias(&self) -> ::std::vec::Vec<&str> {
 				#command_alias
 			}
 
@@ -126,7 +126,7 @@ pub fn command(item: zyn::syn::ItemFn, cfg: CommandArgs) -> zyn::TokenStream {
 			}
 
 			#[inline]
-			async fn run(
+			async fn execute(
 				&self,
 				ctx: &::puniyu_plugin::context::MessageContext,
 			) -> ::puniyu_plugin::Result<::puniyu_plugin::command::CommandAction> {

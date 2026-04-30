@@ -1,12 +1,12 @@
 # puniyu_runtime
 
-运行时抽象库，定义适配器运行时、Bot 运行时和消息发送等核心能力。
+运行时抽象库，定义适配器运行时与消息发送等核心能力。
 
 ## 特征
 
-- 提供 `Runtime`、`AdapterRuntime`、`BotRuntime` 等核心 trait
-- 提供账号访问和消息发送相关能力抽象
-- 适合作为适配器与 Bot 协作的运行时边界层
+- 提供 `Runtime`、`AdapterRuntime` 等核心 trait
+- 提供消息发送相关能力抽象
+- 适合作为适配器能力与动态扩展的运行时边界层
 
 ## 快速开始
 

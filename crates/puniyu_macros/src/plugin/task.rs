@@ -47,7 +47,7 @@ pub fn task(item: zyn::syn::ItemFn, cfg: TaskArgs) -> zyn::TokenStream {
 				}
 
 				#[inline]
-				async fn run(&self) -> ::puniyu_plugin::Result {
+				async fn execute(&self) -> ::puniyu_plugin::Result {
 					{{ fn_name}}().await
 				}
 			}

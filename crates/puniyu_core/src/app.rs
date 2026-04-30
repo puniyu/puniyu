@@ -340,13 +340,6 @@ async fn init_app(
 		}
 	}
 	debug!("adapter loaded!");
-	debug!("plugin loading...");
-	for plugin in plugins {
-		if let Err(e) = plugin::init_plugin(plugin).await {
-			error!("Failed to init plugin: {}", e);
-		}
-	}
-	debug!("plugin loaded!");
 	debug!("loader loading...");
 	for loader in loaders {
 		if let Err(e) = loader::init_loader(loader).await {
@@ -354,8 +347,17 @@ async fn init_app(
 		}
 	}
 	debug!("loader loaded!");
+	debug!("plugin loading...");
+	for plugin in plugins {
+		if let Err(e) = plugin::init_plugin(plugin).await {
+			error!("Failed to init plugin: {}", e);
+		}
+	}
+	debug!("plugin loaded!");
+	info!("loaders: {}", puniyu_loader::LoaderRegistry::all().len());
 	info!("adapters: {}", puniyu_adapter_core::AdapterRegistry::all().len());
 	info!("plugins: {}", puniyu_plugin_core::PluginRegistry::all().len());
+	info!("commands: {}", puniyu_command::CommandRegistry::all().len());
 	info!("handlers: {}", puniyu_handler::HandlerRegistry::all().len());
 	info!("hooks: {}", puniyu_hook::HookRegistry::all().len());
 	Ok(())
@@ -389,10 +391,10 @@ async fn execute_hooks(status_type: StatusType) {
 	hooks.sort_unstable_by_key(|a| a.builder.priority());
 
 	for hook in hooks {
-		if let Err(e) = hook.builder.run(None).await {
+		if let Err(e) = hook.builder.execute(None).await {
 			match status_type {
-				StatusType::Start => error!("启动hook钩子执行失败: {}", e),
-				StatusType::Stop => error!("关闭hook钩子执行失败: {}", e),
+				StatusType::Start => error!("Failed to execute start hook: {}", e),
+				StatusType::Stop => error!("Failed to execute stop hook: {}", e),
 			}
 		}
 		if let Err(e) = HookRegistry::unregister(hook.source) {

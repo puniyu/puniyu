@@ -1,6 +1,5 @@
 {
   "recommendations": [
-    "kevinkassimo.cargo-toml-snippets",
     "vadimcn.vscode-lldb",
     "tamasfe.even-better-toml",
     "polymeilex.rust-targets",

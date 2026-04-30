@@ -14,8 +14,7 @@ struct ServerControl {
 	handle: ServerHandle,
 }
 
-static SERVER_CONTROL: LazyLock<Mutex<Option<ServerControl>>> =
-	LazyLock::new(|| Mutex::new(None));
+static SERVER_CONTROL: LazyLock<Mutex<Option<ServerControl>>> = LazyLock::new(|| Mutex::new(None));
 pub fn start_server(host: IpAddr, port: u16) -> io::Result<ServerRuntime> {
 	{
 		let guard = SERVER_CONTROL.lock().map_err(|e| io::Error::other(e.to_string()))?;
@@ -49,14 +48,9 @@ pub fn start_server(host: IpAddr, port: u16) -> io::Result<ServerRuntime> {
 	.bind((host, port))?;
 	let running_server = server.run();
 	let handle = running_server.handle();
-	let control = ServerControl {
-		handle: handle.clone(),
-	};
+	let control = ServerControl { handle: handle.clone() };
 
-	SERVER_CONTROL
-		.lock()
-		.map_err(|e| io::Error::other(e.to_string()))?
-		.replace(control);
+	SERVER_CONTROL.lock().map_err(|e| io::Error::other(e.to_string()))?.replace(control);
 
 	let join_handle = tokio::spawn(running_server);
 	Ok(ServerRuntime::new(handle, join_handle))

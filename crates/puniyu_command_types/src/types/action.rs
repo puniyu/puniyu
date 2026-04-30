@@ -1,9 +1,10 @@
 //! 命令执行动作。
 
 use puniyu_error::Result;
+use serde::{Deserialize, Serialize};
 
 /// 命令执行动作。
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize, Serialize)]
 pub enum CommandAction {
 	/// 处理完成，停止传播。
 	Done,
@@ -26,5 +27,14 @@ impl CommandAction {
 impl From<()> for CommandAction {
 	fn from(_: ()) -> Self {
 		CommandAction::Done
+	}
+}
+
+impl From<bool> for CommandAction {
+	fn from(value: bool) -> Self {
+		match value {
+			true => CommandAction::Done,
+			_ => CommandAction::Continue,
+		}
 	}
 }

@@ -131,7 +131,7 @@ pub fn hook(item: zyn::syn::ItemFn, cfg: HookArgs) -> zyn::TokenStream {
 			}
 
 			#[inline]
-			async fn run(
+			async fn execute(
 				&self,
 				event: Option<&Event>,
 			) -> ::puniyu_plugin::Result {

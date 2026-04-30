@@ -10,16 +10,17 @@ repository.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 
+[lints]
+workspace = true
+
 [dependencies]
 serde.workspace = true
 bytes.workspace = true
 strum.workspace = true
 jiff.workspace = true
-derive_builder.workspace = true
+bon.workspace = true
 puniyu_sender.workspace = true
 puniyu_contact.workspace = true
 puniyu_version.workspace = true
 puniyu_element.workspace = true
 
-[lints]
-workspace = true

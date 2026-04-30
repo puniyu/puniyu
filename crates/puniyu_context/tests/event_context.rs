@@ -4,7 +4,9 @@ use std::sync::Arc;
 use async_trait::async_trait;
 use bytes::Bytes;
 use puniyu_account::AccountInfo;
-use puniyu_adapter_types::{AdapterInfo, AdapterPlatform, AdapterProtocol, SendMsgType, adapter_info};
+use puniyu_adapter_types::{
+	AdapterInfo, AdapterPlatform, AdapterProtocol, SendMsgType, adapter_info,
+};
 use puniyu_bot::Bot;
 use puniyu_command_types::ArgValue;
 use puniyu_contact::{Contact, ContactType, contact_friend};
@@ -15,29 +17,22 @@ use puniyu_event::{
 	message::{FriendMessage, MessageEvent, MessageSubEventType},
 };
 use puniyu_message::Message;
-use puniyu_runtime::{AccountProvider, AdapterProvider, SendMessage};
+use puniyu_runtime::{AdapterProvider, SendMessage};
 use puniyu_sender::{Sender, sender_friend};
 
 #[derive(Debug)]
-struct TestRuntime {
+struct TestAdapterRuntime {
 	adapter: AdapterInfo,
-	account: AccountInfo,
 }
 
-impl AdapterProvider for TestRuntime {
+impl AdapterProvider for TestAdapterRuntime {
 	fn adapter_info(&self) -> &AdapterInfo {
 		&self.adapter
 	}
 }
 
-impl AccountProvider for TestRuntime {
-	fn account_info(&self) -> &AccountInfo {
-		&self.account
-	}
-}
-
 #[async_trait]
-impl SendMessage for TestRuntime {
+impl SendMessage for TestAdapterRuntime {
 	async fn send_message(
 		&self,
 		_contact: &ContactType<'_>,
@@ -47,52 +42,45 @@ impl SendMessage for TestRuntime {
 	}
 }
 
-#[derive(Debug)]
-struct TestBot {
-	runtime: Arc<TestRuntime>,
+struct TestData {
+	bot: Arc<Bot>,
+	friend_contact: puniyu_contact::FriendContact<'static>,
+	friend_sender: puniyu_sender::FriendSender<'static>,
+	elements: Vec<Elements<'static>>,
 }
 
-impl puniyu_bot::Bot for TestBot {
-	fn runtime(&self) -> &dyn puniyu_runtime::BotRuntime {
-		self.runtime.as_ref()
+impl TestData {
+	fn new() -> Self {
+		let adapter = adapter_info!(
+			name: "test-adapter",
+			platform: AdapterPlatform::Other,
+			protocol: AdapterProtocol::Console,
+		);
+		let account = AccountInfo {
+			uin: "10000".to_string(),
+			name: "Puniyu".to_string(),
+			avatar: Bytes::new(),
+		};
+		Self {
+			bot: Arc::new(Bot::new(Arc::new(TestAdapterRuntime { adapter }), account)),
+			friend_contact: contact_friend!(peer: "123456", name: "Alice"),
+			friend_sender: sender_friend!(user_id: "123456", nick: "Alice"),
+			elements: Vec::new(),
+		}
 	}
-}
 
-fn leak_bot() -> &'static Arc<dyn Bot> {
-	let adapter = adapter_info!(
-		name: "test-adapter",
-		platform: AdapterPlatform::Other,
-		protocol: AdapterProtocol::Console,
-	);
-	let account = AccountInfo { uin: "10000".to_string(), name: "Puniyu".to_string(), avatar: Bytes::new() };
-	Box::leak(Box::new(Arc::new(TestBot { runtime: Arc::new(TestRuntime { adapter, account }) }) as Arc<dyn Bot>))
-}
-
-fn leak_friend_contact() -> &'static puniyu_contact::FriendContact<'static> {
-	Box::leak(Box::new(contact_friend!(peer: "123456", name: "Alice")))
-}
-
-fn leak_friend_sender() -> &'static puniyu_sender::FriendSender<'static> {
-	Box::leak(Box::new(sender_friend!(user_id: "123456", nick: "Alice")))
-}
-
-fn leak_empty_elements() -> &'static Vec<Elements<'static>> {
-	Box::leak(Box::new(Vec::new()))
-}
-
-fn make_event_context() -> EventContext<'static> {
-	let event = Box::leak(Box::new(Event::Message(Box::new(MessageEvent::Friend(FriendMessage::new(
-		leak_bot().as_ref(),
-		"msg-event-1",
-		"123456",
-		leak_friend_contact(),
-		leak_friend_sender(),
-		1,
-		"msg-1",
-		leak_empty_elements(),
-	))))));
-	let _args = HashMap::<String, ArgValue>::new();
-	EventContext::new(event)
+	fn event(&self) -> Event<'_> {
+		Event::Message(Box::new(MessageEvent::Friend(FriendMessage::new(
+			self.bot.as_ref(),
+			"msg-event-1",
+			"123456",
+			&self.friend_contact,
+			&self.friend_sender,
+			1,
+			"msg-1",
+			&self.elements,
+		))))
+	}
 }
 
 fn base_snapshot<E>(event: &E) -> (u64, String, String, String, String)
@@ -110,7 +98,10 @@ where
 
 #[test]
 fn event_context_implements_event_base() {
-	let ctx: EventContext<'static> = make_event_context();
+	let data = TestData::new();
+	let event = data.event();
+	let _args = HashMap::<String, ArgValue>::new();
+	let ctx: EventContext<'_> = EventContext::new(&event);
 
 	assert_eq!(ctx.event_type(), EventType::Message);
 	assert_eq!(ctx.sub_event(), SubEventType::Message(MessageSubEventType::Friend));

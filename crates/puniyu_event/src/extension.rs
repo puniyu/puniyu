@@ -1,39 +1,39 @@
-use crate::EventBase;
-use std::any::Any;
+use crate::{EventBase, SubEventType};
+use derive_more::{Debug, Display, From};
+use std::borrow::Cow;
 
-#[derive(Debug, Copy, Clone, PartialEq, Eq)]
-pub struct ExtensionSubEventType(&'static str);
+#[derive(Clone, PartialEq, Eq, From, Display, Debug)]
+#[display("{}", _0)]
+#[debug("{}", _0)]
+pub struct NoticeSubEventType(Cow<'static, str>);
 
-impl ExtensionSubEventType {
-	pub const fn new(kind: &'static str) -> Self {
-		Self(kind)
+impl NoticeSubEventType {
+	pub fn new(kind: impl Into<Cow<'static, str>>) -> Self {
+		Self(kind.into())
 	}
 
-	pub const fn kind(&self) -> &'static str {
-		self.0
-	}
-}
-
-impl From<&'static str> for ExtensionSubEventType {
-	fn from(value: &'static str) -> Self {
-		Self::new(value)
+	pub fn kind(&self) -> &str {
+		self.0.as_ref()
 	}
 }
 
-impl std::fmt::Display for ExtensionSubEventType {
-	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-		f.write_str(self.0)
+#[derive(Clone, PartialEq, Eq, From, Display, Debug)]
+#[display("{}", _0)]
+#[debug("{}", _0)]
+pub struct RequestSubEventType(Cow<'static, str>);
+
+impl RequestSubEventType {
+	pub fn new(kind: impl Into<Cow<'static, str>>) -> Self {
+		Self(kind.into())
+	}
+
+	pub fn kind(&self) -> &str {
+		self.0.as_ref()
 	}
 }
 
-pub trait ExtensionEvent: EventBase + Any + Send + Sync + 'static {}
+pub trait ExtensionEvent: EventBase + Send + Sync + 'static {
+	fn r#type(&self) -> SubEventType;
 
-impl dyn ExtensionEvent {
-	/// 尝试将扩展事件转换为指定类型。
-	pub fn extension<T>(&self) -> Option<&T>
-	where
-		T: ExtensionEvent + 'static,
-	{
-		(self as &dyn Any).downcast_ref::<T>()
-	}
+	fn content(&self) -> &str;
 }

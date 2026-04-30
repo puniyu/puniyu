@@ -1,6 +1,7 @@
 //! 命令参数类型。
 
 use serde::{Deserialize, Serialize};
+use std::borrow::Cow;
 use std::fmt;
 use strum::{Display, EnumString, IntoStaticStr};
 
@@ -45,10 +46,10 @@ pub enum ArgMode {
 }
 
 /// 命令参数定义。
-#[derive(Debug, Copy, Clone, PartialEq, Deserialize, Serialize)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
 pub struct Arg<'a> {
 	/// 参数名。
-	pub name: &'a str,
+	pub name: Cow<'a, str>,
 	/// 参数类型。
 	pub arg_type: ArgType,
 	/// 参数模式。
@@ -56,13 +57,13 @@ pub struct Arg<'a> {
 	/// 是否必需。
 	pub required: bool,
 	/// 参数描述。
-	pub description: Option<&'a str>,
+	pub description: Option<Cow<'a, str>>,
 }
 
 impl<'a> Default for Arg<'a> {
 	fn default() -> Self {
 		Self {
-			name: "",
+			name: Cow::Borrowed(""),
 			arg_type: ArgType::String,
 			mode: ArgMode::Positional,
 			required: false,
@@ -73,27 +74,27 @@ impl<'a> Default for Arg<'a> {
 
 impl<'a> Arg<'a> {
 	/// 创建参数定义。
-	pub fn new(name: &'a str) -> Self {
-		Self { name, ..Default::default() }
+	pub fn new(name: impl Into<Cow<'a, str>>) -> Self {
+		Self { name: name.into(), ..Default::default() }
 	}
 
 	/// 创建字符串参数。
-	pub fn string(name: &'a str) -> Self {
+	pub fn string(name: impl Into<Cow<'a, str>>) -> Self {
 		Self::new(name).with_type(ArgType::String)
 	}
 
 	/// 创建整数参数。
-	pub fn int(name: &'a str) -> Self {
+	pub fn int(name: impl Into<Cow<'a, str>>) -> Self {
 		Self::new(name).with_type(ArgType::Int)
 	}
 
 	/// 创建浮点数参数。
-	pub fn float(name: &'a str) -> Self {
+	pub fn float(name: impl Into<Cow<'a, str>>) -> Self {
 		Self::new(name).with_type(ArgType::Float)
 	}
 
 	/// 创建布尔参数。
-	pub fn bool(name: &'a str) -> Self {
+	pub fn bool(name: impl Into<Cow<'a, str>>) -> Self {
 		Self::new(name).with_type(ArgType::Bool)
 	}
 
@@ -116,8 +117,8 @@ impl<'a> Arg<'a> {
 	}
 
 	/// 设置参数描述。
-	pub fn description(mut self, desc: &'a str) -> Self {
-		self.description = Some(desc);
+	pub fn description(mut self, desc: impl Into<Cow<'a, str>>) -> Self {
+		self.description = Some(desc.into());
 		self
 	}
 

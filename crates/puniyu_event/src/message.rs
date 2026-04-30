@@ -15,7 +15,7 @@ mod event;
 #[doc(inline)]
 pub use event::MessageEvent;
 mod types;
-use super::{EventBase, SubEventType};
+use super::EventBase;
 use bytes::Bytes;
 use puniyu_element::receive::Elements;
 #[doc(inline)]
@@ -87,26 +87,6 @@ pub trait MessageBase: Send + Sync + EventBase {
 				_ => None,
 			})
 			.next()
-	}
-
-	/// 判断是否为好友消息。
-	fn is_friend(&self) -> bool {
-		matches!(self.sub_event(), SubEventType::Message(MessageSubEventType::Friend))
-	}
-
-	/// 判断是否为群消息。
-	fn is_group(&self) -> bool {
-		matches!(self.sub_event(), SubEventType::Message(MessageSubEventType::Group))
-	}
-
-	/// 判断是否为群临时消息。
-	fn is_group_temp(&self) -> bool {
-		matches!(self.sub_event(), SubEventType::Message(MessageSubEventType::GroupTemp))
-	}
-
-	/// 判断是否为频道消息。
-	fn is_guild(&self) -> bool {
-		matches!(self.sub_event(), SubEventType::Message(MessageSubEventType::Guild))
 	}
 }
 
@@ -240,7 +220,7 @@ macro_rules! codegen_message {
 		$(#[$meta])*
 		#[derive(Debug, Clone)]
 		pub struct $name<'m> {
-			bot: &'m dyn puniyu_bot::Bot,
+			bot: &'m puniyu_bot::Bot,
 			event_id: &'m str,
 			time: u64,
 			user_id: &'m str,
@@ -254,7 +234,7 @@ macro_rules! codegen_message {
 			#[doc = concat!("使用完整参数构建 [`", stringify!($name), "`]。")]
 			#[allow(clippy::too_many_arguments)]
 			pub fn new(
-				bot: &'m dyn puniyu_bot::Bot,
+				bot: &'m puniyu_bot::Bot,
 				event_id: &'m str,
 				user_id: &'m str,
 				contact: &'m $contact<'m>,
@@ -281,8 +261,8 @@ macro_rules! codegen_message {
 			fn event_type(&self) -> $crate::EventType { $crate::EventType::Message }
 			fn event_id(&self) -> &str { self.event_id }
 			fn sub_event(&self) -> $crate::SubEventType { $crate::SubEventType::Message($sub_event) }
-			fn bot(&self) -> &dyn puniyu_bot::Bot { self.bot }
-			fn self_id(&self) -> &str { self.bot.account().uin.as_str() }
+			fn bot(&self) -> &puniyu_bot::Bot { self.bot }
+			fn self_id(&self) -> &str { self.bot.account_info().uin.as_str() }
 			fn user_id(&self) -> &str { self.user_id }
 			fn contact(&self) -> puniyu_contact::ContactType<'_> { self.contact.clone().into() }
 			fn sender(&self) -> puniyu_sender::SenderType<'_> { self.sender.clone().into() }

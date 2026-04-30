@@ -63,7 +63,7 @@ pub fn plugin(item: zyn::syn::ItemFn, cfg: PluginArg) -> zyn::TokenStream {
 
 		#[::puniyu_plugin::__private::async_trait]
 		impl ::puniyu_plugin::__private::Plugin for Plugin {
-			fn name(&self) -> &'static str {
+			fn name(&self) -> &str {
 				#plugin_name
 			}
 
@@ -75,15 +75,15 @@ pub fn plugin(item: zyn::syn::ItemFn, cfg: PluginArg) -> zyn::TokenStream {
 				}
 			}
 
-			fn author(&self) -> Vec<&'static str> {
+			fn author(&self) -> Vec<&str> {
 				#plugin_author
 			}
 
-			fn description(&self) -> Option<&'static str> {
+			fn description(&self) -> Option<&str> {
 				#plugin_desc
 			}
 
-			fn prefix(&self) -> Option<&'static str> {
+			fn prefix(&self) -> Option<&str> {
 				#plugin_prefix
 			}
 

@@ -27,7 +27,7 @@ impl Hook for TestHook {
 		self.priority
 	}
 
-	async fn run(&self, _ctx: Option<&EventContext>) -> puniyu_error::Result {
+	async fn execute(&self, _ctx: Option<&EventContext>) -> puniyu_error::Result {
 		self.executed.store(true, Ordering::SeqCst);
 		Ok(())
 	}
@@ -84,7 +84,7 @@ async fn test_hook_run() {
 
 	assert!(!executed.load(Ordering::SeqCst));
 
-	let result = hook.run(None).await;
+	let result = hook.execute(None).await;
 	assert!(result.is_ok());
 	assert!(executed.load(Ordering::SeqCst));
 }
@@ -111,7 +111,7 @@ async fn test_hook_multiple_runs() {
 			100
 		}
 
-		async fn run(&self, _ctx: Option<&EventContext>) -> puniyu_error::Result {
+		async fn execute(&self, _ctx: Option<&EventContext>) -> puniyu_error::Result {
 			self.counter.fetch_add(1, Ordering::SeqCst);
 			Ok(())
 		}
@@ -121,13 +121,13 @@ async fn test_hook_multiple_runs() {
 
 	assert_eq!(counter.load(Ordering::SeqCst), 0);
 
-	hook.run(None).await.unwrap();
+	hook.execute(None).await.unwrap();
 	assert_eq!(counter.load(Ordering::SeqCst), 1);
 
-	hook.run(None).await.unwrap();
+	hook.execute(None).await.unwrap();
 	assert_eq!(counter.load(Ordering::SeqCst), 2);
 
-	hook.run(None).await.unwrap();
+	hook.execute(None).await.unwrap();
 	assert_eq!(counter.load(Ordering::SeqCst), 3);
 }
 
@@ -149,13 +149,13 @@ async fn test_hook_error_handling() {
 			100
 		}
 
-		async fn run(&self, _ctx: Option<&EventContext>) -> puniyu_error::Result {
+		async fn execute(&self, _ctx: Option<&EventContext>) -> puniyu_error::Result {
 			Err("Test error".into())
 		}
 	}
 
 	let hook = ErrorHook;
-	let result = hook.run(None).await;
+	let result = hook.execute(None).await;
 
 	assert!(result.is_err());
 }
@@ -224,7 +224,7 @@ async fn test_hook_with_state() {
 			100
 		}
 
-		async fn run(&self, _ctx: Option<&EventContext>) -> puniyu_error::Result {
+		async fn execute(&self, _ctx: Option<&EventContext>) -> puniyu_error::Result {
 			let mut state = self.state.lock().unwrap();
 			state.push("executed".to_string());
 			Ok(())
@@ -236,10 +236,10 @@ async fn test_hook_with_state() {
 
 	assert_eq!(state.lock().unwrap().len(), 0);
 
-	hook.run(None).await.unwrap();
+	hook.execute(None).await.unwrap();
 	assert_eq!(state.lock().unwrap().len(), 1);
 
-	hook.run(None).await.unwrap();
+	hook.execute(None).await.unwrap();
 	assert_eq!(state.lock().unwrap().len(), 2);
 }
 
@@ -265,7 +265,7 @@ async fn test_hook_async_operation() {
 			100
 		}
 
-		async fn run(&self, _ctx: Option<&EventContext>) -> puniyu_error::Result {
+		async fn execute(&self, _ctx: Option<&EventContext>) -> puniyu_error::Result {
 			sleep(Duration::from_millis(10)).await;
 			self.completed.store(true, Ordering::SeqCst);
 			Ok(())
@@ -277,7 +277,7 @@ async fn test_hook_async_operation() {
 
 	assert!(!completed.load(Ordering::SeqCst));
 
-	hook.run(None).await.unwrap();
+	hook.execute(None).await.unwrap();
 
 	assert!(completed.load(Ordering::SeqCst));
 }

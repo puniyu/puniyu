@@ -1,3 +1,5 @@
+#![allow(clippy::duplicated_attributes)]
+
 //! # puniyu_account
 //!
 //! 统一的机器人账户信息类型，描述账号 UIN、昵称与头像数据。
@@ -35,8 +37,8 @@
 //! assert_eq!(account.name, "Puniyu");
 //! ```
 
+use bon::Builder;
 use bytes::Bytes;
-use derive_builder::Builder;
 use serde::{Deserialize, Serialize};
 
 /// 机器人账户信息。
@@ -59,7 +61,7 @@ use serde::{Deserialize, Serialize};
 /// assert_eq!(account.name, "Puniyu");
 /// ```
 #[derive(Debug, Default, Clone, PartialEq, Eq, Serialize, Deserialize, Builder)]
-#[builder(setter(into))]
+#[builder(on(String, into), on(Bytes, into))]
 pub struct AccountInfo {
 	/// 机器人账号的唯一标识 UIN。
 	pub uin: String,
@@ -94,11 +96,11 @@ pub struct AccountInfo {
 #[macro_export]
 macro_rules! account_info {
     ( $( $key:ident : $value:expr ),+ $(,)? ) => {{
-        let mut builder = $crate::AccountInfoBuilder::default();
-		$(
-			builder.$key($value);
-		)*
-		builder.build().expect("Failed to build AccountInfo")
+        $crate::AccountInfo::builder()
+            $(
+                .$key($value)
+            )*
+            .build()
     }};
 	($uin:expr, $name:expr, $avatar:expr) => {{
 		$crate::account_info!(

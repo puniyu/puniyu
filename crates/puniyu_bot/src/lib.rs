@@ -18,27 +18,38 @@ mod types;
 #[doc(inline)]
 pub use types::*;
 
+use puniyu_account::AccountInfo;
 use puniyu_adapter_types::AdapterInfo;
 use puniyu_contact::{Contact, ContactType};
 use puniyu_logger::owo_colors::OwoColorize;
 use puniyu_message::Message;
-use puniyu_runtime::BotRuntime;
-use std::fmt::Debug;
+pub use puniyu_runtime::AdapterRuntime;
+use std::sync::Arc;
 
-pub trait Bot: Debug + Send + Sync {
-	/// 获取Bot Runtime
-	fn runtime(&self) -> &dyn BotRuntime;
+#[derive(Clone)]
+pub struct Bot {
+	adapter: Arc<dyn AdapterRuntime>,
+	account: AccountInfo,
 }
 
-impl dyn Bot + '_ {
+impl Bot {
+	pub fn new(adapter: Arc<dyn AdapterRuntime>, account: AccountInfo) -> Self {
+		Self { adapter, account }
+	}
+
+	/// 获取适配器 Runtime
+	pub fn runtime(&self) -> &dyn AdapterRuntime {
+		self.adapter.as_ref()
+	}
+
 	/// 返回适配器信息。
 	pub fn adapter_info(&self) -> &AdapterInfo {
 		self.runtime().adapter_info()
 	}
 
 	/// 返回账户信息。
-	pub fn account(&self) -> &puniyu_account::AccountInfo {
-		self.runtime().account_info()
+	pub fn account_info(&self) -> &AccountInfo {
+		&self.account
 	}
 
 	/// 发送消息。
@@ -58,8 +69,17 @@ impl dyn Bot + '_ {
 	}
 }
 
-impl PartialEq for dyn Bot {
+impl std::fmt::Debug for Bot {
+	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+		f.debug_struct("Bot")
+			.field("adapter_info", &self.adapter_info())
+			.field("account_info", &self.account_info())
+			.finish()
+	}
+}
+
+impl PartialEq for Bot {
 	fn eq(&self, other: &Self) -> bool {
-		self.adapter_info() == other.adapter_info() && self.account() == other.account()
+		self.adapter_info() == other.adapter_info() && self.account_info() == other.account_info()
 	}
 }

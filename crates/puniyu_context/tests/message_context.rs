@@ -4,7 +4,9 @@ use std::sync::Arc;
 use async_trait::async_trait;
 use bytes::Bytes;
 use puniyu_account::AccountInfo;
-use puniyu_adapter_types::{AdapterInfo, AdapterPlatform, AdapterProtocol, SendMsgType, adapter_info};
+use puniyu_adapter_types::{
+	AdapterInfo, AdapterPlatform, AdapterProtocol, SendMsgType, adapter_info,
+};
 use puniyu_bot::Bot;
 use puniyu_command_types::ArgValue;
 use puniyu_contact::{Contact, ContactType, contact_friend, contact_group_temp};
@@ -15,29 +17,22 @@ use puniyu_event::{
 	message::{FriendMessage, GroupTempMessage, MessageBase, MessageEvent, MessageSubEventType},
 };
 use puniyu_message::Message;
-use puniyu_runtime::{AccountProvider, AdapterProvider, SendMessage};
+use puniyu_runtime::{AdapterProvider, SendMessage};
 use puniyu_sender::{Sender, SenderType, sender_friend, sender_group_temp};
 
 #[derive(Debug)]
-struct TestRuntime {
+struct TestAdapterRuntime {
 	adapter: AdapterInfo,
-	account: AccountInfo,
 }
 
-impl AdapterProvider for TestRuntime {
+impl AdapterProvider for TestAdapterRuntime {
 	fn adapter_info(&self) -> &AdapterInfo {
 		&self.adapter
 	}
 }
 
-impl AccountProvider for TestRuntime {
-	fn account_info(&self) -> &AccountInfo {
-		&self.account
-	}
-}
-
 #[async_trait]
-impl SendMessage for TestRuntime {
+impl SendMessage for TestAdapterRuntime {
 	async fn send_message(
 		&self,
 		_contact: &ContactType<'_>,
@@ -47,77 +42,66 @@ impl SendMessage for TestRuntime {
 	}
 }
 
-#[derive(Debug)]
-struct TestBot {
-	runtime: Arc<TestRuntime>,
+struct TestData {
+	bot: Arc<Bot>,
+	friend_contact: puniyu_contact::FriendContact<'static>,
+	friend_sender: puniyu_sender::FriendSender<'static>,
+	group_temp_contact: puniyu_contact::GroupTempContact<'static>,
+	group_temp_sender: puniyu_sender::GroupTempSender<'static>,
+	elements: Vec<Elements<'static>>,
 }
 
-impl puniyu_bot::Bot for TestBot {
-	fn runtime(&self) -> &dyn puniyu_runtime::BotRuntime {
-		self.runtime.as_ref()
+impl TestData {
+	fn new() -> Self {
+		let adapter = adapter_info!(
+			name: "test-adapter",
+			platform: AdapterPlatform::Other,
+			protocol: AdapterProtocol::Console,
+		);
+		let account = AccountInfo {
+			uin: "10000".to_string(),
+			name: "Puniyu".to_string(),
+			avatar: Bytes::new(),
+		};
+		Self {
+			bot: Arc::new(Bot::new(Arc::new(TestAdapterRuntime { adapter }), account)),
+			friend_contact: contact_friend!(peer: "123456", name: "Alice"),
+			friend_sender: sender_friend!(user_id: "123456", nick: "Alice"),
+			group_temp_contact: contact_group_temp!(peer: "654321", name: "Temp Group"),
+			group_temp_sender: sender_group_temp!(user_id: "123456"),
+			elements: vec![
+				Elements::Text(TextElement::from("hello")),
+				Elements::At(AtElement::from("10000")),
+				Elements::Reply(ReplyElement::from("reply-1")),
+			],
+		}
 	}
-}
 
-fn leak_bot() -> &'static Arc<dyn Bot> {
-	let adapter = adapter_info!(
-		name: "test-adapter",
-		platform: AdapterPlatform::Other,
-		protocol: AdapterProtocol::Console,
-	);
-	let account = AccountInfo { uin: "10000".to_string(), name: "Puniyu".to_string(), avatar: Bytes::new() };
-	Box::leak(Box::new(Arc::new(TestBot { runtime: Arc::new(TestRuntime { adapter, account }) }) as Arc<dyn Bot>))
-}
+	fn friend_event(&self) -> MessageEvent<'_> {
+		MessageEvent::Friend(FriendMessage::new(
+			self.bot.as_ref(),
+			"msg-event-1",
+			"123456",
+			&self.friend_contact,
+			&self.friend_sender,
+			1,
+			"msg-1",
+			&self.elements,
+		))
+	}
 
-fn leak_friend_contact() -> &'static puniyu_contact::FriendContact<'static> {
-	Box::leak(Box::new(contact_friend!(peer: "123456", name: "Alice")))
-}
-
-fn leak_friend_sender() -> &'static puniyu_sender::FriendSender<'static> {
-	Box::leak(Box::new(sender_friend!(user_id: "123456", nick: "Alice")))
-}
-
-fn leak_group_temp_contact() -> &'static puniyu_contact::GroupTempContact<'static> {
-	Box::leak(Box::new(contact_group_temp!(peer: "654321", name: "Temp Group")))
-}
-
-fn leak_group_temp_sender() -> &'static puniyu_sender::GroupTempSender<'static> {
-	Box::leak(Box::new(sender_group_temp!(user_id: "123456")))
-}
-
-fn leak_message_elements() -> &'static Vec<Elements<'static>> {
-	Box::leak(Box::new(vec![
-		Elements::Text(TextElement::from("hello")),
-		Elements::At(AtElement::from("10000")),
-		Elements::Reply(ReplyElement::from("reply-1")),
-	]))
-}
-
-fn make_message_context() -> MessageContext<'static> {
-	let event = Box::leak(Box::new(MessageEvent::Friend(FriendMessage::new(
-		leak_bot().as_ref(),
-		"msg-event-1",
-		"123456",
-		leak_friend_contact(),
-		leak_friend_sender(),
-		1,
-		"msg-1",
-		leak_message_elements(),
-	))));
-	MessageContext::new(event, HashMap::<String, ArgValue>::new())
-}
-
-fn make_group_temp_message_context() -> MessageContext<'static> {
-	let event = Box::leak(Box::new(MessageEvent::GroupTemp(GroupTempMessage::new(
-		leak_bot().as_ref(),
-		"msg-event-temp-1",
-		"123456",
-		leak_group_temp_contact(),
-		leak_group_temp_sender(),
-		2,
-		"msg-temp-1",
-		leak_message_elements(),
-	))));
-	MessageContext::new(event, HashMap::<String, ArgValue>::new())
+	fn group_temp_event(&self) -> MessageEvent<'_> {
+		MessageEvent::GroupTemp(GroupTempMessage::new(
+			self.bot.as_ref(),
+			"msg-event-temp-1",
+			"123456",
+			&self.group_temp_contact,
+			&self.group_temp_sender,
+			2,
+			"msg-temp-1",
+			&self.elements,
+		))
+	}
 }
 
 fn base_snapshot<E>(event: &E) -> (u64, String, String, String, String)
@@ -142,7 +126,9 @@ where
 
 #[test]
 fn message_context_implements_event_and_message_traits() {
-	let ctx: MessageContext<'static> = make_message_context();
+	let data = TestData::new();
+	let event = data.friend_event();
+	let ctx = MessageContext::new(&event, HashMap::<String, ArgValue>::new());
 
 	assert_eq!(ctx.event_type(), EventType::Message);
 	assert_eq!(ctx.sub_event(), SubEventType::Message(MessageSubEventType::Friend));
@@ -161,7 +147,9 @@ fn message_context_implements_event_and_message_traits() {
 
 #[test]
 fn message_context_inherent_helpers_still_work() {
-	let ctx = make_message_context();
+	let data = TestData::new();
+	let event = data.friend_event();
+	let ctx = MessageContext::new(&event, HashMap::<String, ArgValue>::new());
 
 	assert!(ctx.is_friend());
 	assert!(!ctx.is_group());
@@ -175,7 +163,9 @@ fn message_context_inherent_helpers_still_work() {
 
 #[test]
 fn group_temp_message_context_helpers_work() {
-	let ctx = make_group_temp_message_context();
+	let data = TestData::new();
+	let event = data.group_temp_event();
+	let ctx = MessageContext::new(&event, HashMap::<String, ArgValue>::new());
 
 	assert!(!ctx.is_friend());
 	assert!(!ctx.is_group());

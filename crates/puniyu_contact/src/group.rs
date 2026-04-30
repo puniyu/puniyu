@@ -5,10 +5,11 @@
 mod temp;
 pub use temp::*;
 
-use crate::{Contact, SceneType};
-use derive_builder::Builder;
+use bon::Builder;
 use serde::{Deserialize, Serialize};
 use std::borrow::Cow;
+
+use crate::{Contact, SceneType};
 
 /// 群聊联系人
 ///
@@ -19,33 +20,29 @@ use std::borrow::Cow;
 /// ```rust
 /// use puniyu_contact::{Contact, GroupContact};
 ///
-/// let group = GroupContact::new("789012", "Dev Team");
+/// let group = GroupContact::new("789012", Some("Dev Team"));
 /// assert_eq!(group.peer(), "789012");
 /// ```
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, Builder)]
 #[serde(bound(deserialize = "'de: 'c"))]
-#[builder(setter(into), pattern = "owned")]
 pub struct GroupContact<'c> {
 	/// 群聊id
+	#[builder(into)]
 	#[serde(borrow)]
 	peer: Cow<'c, str>,
 	/// 群名称
-	#[builder(default, setter(strip_option))]
+	#[builder(into)]
 	#[serde(borrow)]
 	name: Option<Cow<'c, str>>,
 }
 
 impl<'c> GroupContact<'c> {
-	pub fn new<P, N>(peer: P, name: N) -> Self
+	pub fn new<P, N>(peer: P, name: Option<N>) -> Self
 	where
 		P: Into<Cow<'c, str>>,
 		N: Into<Cow<'c, str>>,
 	{
-		Self { peer: peer.into(), name: Some(name.into()) }
-	}
-
-	pub fn builder() -> GroupContactBuilder<'c> {
-		GroupContactBuilder::default()
+		Self { peer: peer.into(), name: name.map(Into::into) }
 	}
 }
 
@@ -98,26 +95,18 @@ impl<'c> Contact for GroupContact<'c> {
 #[macro_export]
 macro_rules! contact_group {
     ( $( $key:ident : $value:expr ),+ $(,)? ) => {{
-        $crate::GroupContactBuilder::default()
-		$(
-			.$key($value)
-		)*
-		.build()
-		.expect("Failed to build GroupContact")
+        $crate::GroupContact::builder()
+            $(
+                .$key($value)
+            )*
+            .build()
     }};
 
     ($peer:expr, $name:expr) => {{
-        $crate::GroupContactBuilder::default()
-            .peer($peer)
-            .name($name)
-            .build()
-            .expect("Failed to build GroupContact")
+        $crate::GroupContact::builder().peer($peer).name($name).build()
     }};
 
     ($peer:expr) => {{
-        $crate::GroupContactBuilder::default()
-            .peer($peer)
-            .build()
-            .expect("Failed to build GroupContact")
+        $crate::GroupContact::builder().peer($peer).build()
     }};
 }

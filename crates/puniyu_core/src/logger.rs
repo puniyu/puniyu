@@ -1,3 +1,4 @@
+use puniyu_common::app::app_name;
 use puniyu_config::app_config;
 use puniyu_logger::{LogLevel, LoggerOptions};
 use std::{env, str::FromStr};
@@ -12,6 +13,7 @@ pub fn log_init() {
 	let log_retention_days = logger.retention_days();
 	let is_file_logging = logger.enable_file();
 	let options = LoggerOptions::default()
+		.with_prefix(app_name())
 		.with_level(LogLevel::from_str(log_level.as_str()).unwrap_or(LogLevel::Info))
 		.with_file_logging(is_file_logging)
 		.with_log_directory(log_path)

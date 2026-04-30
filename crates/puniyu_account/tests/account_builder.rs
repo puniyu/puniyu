@@ -1,17 +1,13 @@
 use bytes::Bytes;
-use puniyu_account::{AccountInfo, AccountInfoBuilder};
+use puniyu_account::AccountInfo;
 
 #[test]
 fn test_account_info_builder_full() {
-	let account = match AccountInfoBuilder::default()
+	let account = AccountInfo::builder()
 		.uin("123456789")
 		.name("MyBot")
 		.avatar(Bytes::from_static(b"image data"))
-		.build()
-	{
-		Ok(account) => account,
-		Err(err) => panic!("builder should create AccountInfo: {err}"),
-	};
+		.build();
 
 	assert_eq!(
 		account,
@@ -25,29 +21,13 @@ fn test_account_info_builder_full() {
 
 #[test]
 fn test_account_info_builder_setter_into() {
-	let account = match AccountInfoBuilder::default()
+	let account = AccountInfo::builder()
 		.uin(String::from("123456789"))
 		.name(String::from("MyBot"))
 		.avatar(Vec::from(&b"avatar"[..]))
-		.build()
-	{
-		Ok(account) => account,
-		Err(err) => panic!("builder should accept Into setters: {err}"),
-	};
+		.build();
 
 	assert_eq!(account.uin, "123456789");
 	assert_eq!(account.name, "MyBot");
 	assert_eq!(account.avatar, Bytes::from_static(b"avatar"));
-}
-
-#[test]
-fn test_account_info_builder_missing_required_field() {
-	let result = AccountInfoBuilder::default().uin("123456789").avatar(Bytes::new()).build();
-
-	let err = match result {
-		Ok(account) => panic!("builder should reject missing name: {account:?}"),
-		Err(err) => err,
-	};
-
-	assert!(err.to_string().contains("name"));
 }

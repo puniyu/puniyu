@@ -4,11 +4,11 @@ use async_trait::async_trait;
 use puniyu_adapter::adapter_info;
 use puniyu_adapter::contact::ContactType;
 use puniyu_adapter::message::Message;
+use puniyu_adapter::runtime::{AdapterProvider, SendMessage};
 use puniyu_adapter::{
 	AdapterCommunication, AdapterInfo, AdapterPlatform, AdapterProtocol, AdapterStandard,
 	SendMsgType,
 };
-use puniyu_adapter::runtime::{AdapterProvider, SendMessage};
 
 use crate::NAME;
 use crate::VERSION;

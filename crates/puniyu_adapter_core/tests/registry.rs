@@ -3,7 +3,9 @@
 use std::sync::{Arc, Mutex, MutexGuard};
 
 use puniyu_adapter_core::{Adapter, AdapterRegistry};
-use puniyu_adapter_types::{AdapterInfo, AdapterPlatform, AdapterProtocol, SendMsgType, adapter_info};
+use puniyu_adapter_types::{
+	AdapterInfo, AdapterPlatform, AdapterProtocol, SendMsgType, adapter_info,
+};
 use puniyu_contact::ContactType;
 use puniyu_message::Message;
 use puniyu_runtime::{AdapterProvider, AdapterRuntime, SendMessage};

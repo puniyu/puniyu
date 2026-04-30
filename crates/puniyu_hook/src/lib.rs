@@ -34,7 +34,7 @@ pub trait Hook: Send + Sync + 'static {
 	fn priority(&self) -> u32;
 
 	/// 执行钩子逻辑。
-	async fn run(&self, ctx: Option<&EventContext>) -> puniyu_error::Result;
+	async fn execute(&self, ctx: Option<&EventContext>) -> puniyu_error::Result;
 }
 
 impl PartialEq for dyn Hook {

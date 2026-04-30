@@ -1,8 +1,9 @@
 use crate::Event;
-use crate::extension::ExtensionSubEventType;
+use crate::extension::{NoticeSubEventType, RequestSubEventType};
 use crate::message::MessageSubEventType;
 use crate::{ContactType, SenderType};
 use puniyu_bot::Bot;
+use puniyu_contact::{Contact, SceneType};
 use serde::{Deserialize, Serialize};
 use strum::{Display, EnumString, IntoStaticStr};
 
@@ -102,28 +103,37 @@ impl<'e> std::fmt::Debug for Event<'e> {
 
 /// 子事件类型枚举
 ///
-/// 统一的子事件类型枚举，当前仅包含消息事件的子类型。
+/// 统一的子事件类型枚举，包含消息、通知和请求子类型。
 ///
 /// # 变体
 ///
 /// - `Message(MessageSubEventType)` - 消息子类型（好友消息、群消息等）
+/// - `Notice(NoticeSubEventType)` - 通知子类型
+/// - `Request(RequestSubEventType)` - 请求子类型
 ///
 /// # 示例
 ///
 /// ```rust,ignore
-/// use puniyu_event::{SubEventType, message::MessageSubEventType};
+/// use puniyu_event::{SubEventType, extension::NoticeSubEventType, message::MessageSubEventType};
 ///
 /// let sub_event = SubEventType::Message(MessageSubEventType::Friend);
 /// match sub_event {
 ///     SubEventType::Message(msg_type) => {
 ///         println!("消息类型: {:?}", msg_type);
 ///     }
+///     SubEventType::Notice(notice_type) => {
+///         println!("通知类型: {}", notice_type);
+///     }
+///     SubEventType::Request(request_type) => {
+///         println!("请求类型: {}", request_type);
+///     }
 /// }
 /// ```
-#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum SubEventType {
 	Message(MessageSubEventType),
-	Extension(ExtensionSubEventType),
+	Notice(NoticeSubEventType),
+	Request(RequestSubEventType),
 }
 
 impl From<MessageSubEventType> for SubEventType {
@@ -134,6 +144,28 @@ impl From<MessageSubEventType> for SubEventType {
 impl From<&MessageSubEventType> for SubEventType {
 	fn from(sub_event: &MessageSubEventType) -> Self {
 		Self::Message(*sub_event)
+	}
+}
+
+impl From<NoticeSubEventType> for SubEventType {
+	fn from(sub_event: NoticeSubEventType) -> Self {
+		Self::Notice(sub_event)
+	}
+}
+impl From<&NoticeSubEventType> for SubEventType {
+	fn from(sub_event: &NoticeSubEventType) -> Self {
+		Self::Notice(sub_event.clone())
+	}
+}
+
+impl From<RequestSubEventType> for SubEventType {
+	fn from(sub_event: RequestSubEventType) -> Self {
+		Self::Request(sub_event)
+	}
+}
+impl From<&RequestSubEventType> for SubEventType {
+	fn from(sub_event: &RequestSubEventType) -> Self {
+		Self::Request(sub_event.clone())
 	}
 }
 
@@ -180,7 +212,7 @@ pub trait EventBase: Send + Sync {
 	fn sub_event(&self) -> SubEventType;
 
 	/// 获取机器人实例。
-	fn bot(&self) -> &dyn Bot;
+	fn bot(&self) -> &Bot;
 
 	/// 获取机器人 ID。
 	fn self_id(&self) -> &str;
@@ -193,6 +225,26 @@ pub trait EventBase: Send + Sync {
 
 	/// 获取发送者信息。
 	fn sender(&self) -> SenderType<'_>;
+
+		/// 判断是否为好友消息。
+	fn is_friend(&self) -> bool {
+		matches!(self.contact().scene(), SceneType::Friend)
+	}
+
+	/// 判断是否为群消息。
+	fn is_group(&self) -> bool {
+		matches!(self.contact().scene(), SceneType::Group)
+	}
+
+	/// 判断是否为群临时消息。
+	fn is_group_temp(&self) -> bool {
+		matches!(self.contact().scene(), SceneType::GroupTemp)
+	}
+
+	/// 判断是否为频道消息。
+	fn is_guild(&self) -> bool {
+		matches!(self.contact().scene(), SceneType::Guild)
+	}
 }
 
 /// 为事件枚举生成方法委托和类型转换方法
