@@ -1,7 +1,7 @@
 mod common;
 mod input;
 mod runtime;
-pub use runtime::ConsoleAdapterRuntime as Runtime;
+pub use runtime::Runtime;
 
 use log::info;
 use puniyu_adapter::app_name;
@@ -17,7 +17,7 @@ async fn main() -> puniyu_adapter::Result {
 	let bot_id = "console";
 	let name = app_name();
 	let adapter_runtime: Arc<dyn puniyu_adapter::runtime::AdapterRuntime> =
-		Arc::new(runtime::ConsoleAdapterRuntime::new());
+		Arc::new(runtime::Runtime::new());
 	let bot = Arc::new(puniyu_adapter::bot::Bot::new(
 		Arc::clone(&adapter_runtime),
 		account_info!(

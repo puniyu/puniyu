@@ -300,14 +300,8 @@ async fn init_app(
 	loaders: Vec<Arc<dyn Loader>>,
 ) -> io::Result<()> {
 	use puniyu_path::{adapter_dir, app_dir, config_dir, data_dir, plugin_dir, resource_dir};
-	use std::path::Path;
-	async fn check_dir(path: &Path) -> io::Result<()> {
-		if !path.exists() {
-			fs::create_dir_all(path.to_path_buf()).await?;
-		}
-		Ok(())
-	}
-	let dirs = [
+
+	let dirs = vec![
 		app_dir(),
 		adapter_dir(),
 		data_dir(),
@@ -323,8 +317,8 @@ async fn init_app(
 		puniyu_path::adapter::resource_dir(),
 		puniyu_path::adapter::temp_dir(),
 	];
-	for dir in &dirs {
-		check_dir(dir).await?;
+	for dir in dirs {
+		fs::create_dir_all(&dir).await?;
 	}
 
 	puniyu_task::init().await;

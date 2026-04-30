@@ -27,24 +27,24 @@ pub(crate) fn adapter_info() -> AdapterInfo {
 }
 
 #[derive(Debug)]
-pub struct ConsoleAdapterRuntime {
+pub struct Runtime {
 	adapter: AdapterInfo,
 }
 
-impl ConsoleAdapterRuntime {
+impl Runtime {
 	pub(crate) fn new() -> Self {
 		Self { adapter: adapter_info() }
 	}
 }
 
-impl AdapterProvider for ConsoleAdapterRuntime {
+impl AdapterProvider for Runtime {
 	fn adapter_info(&self) -> &AdapterInfo {
 		&self.adapter
 	}
 }
 
 #[async_trait]
-impl SendMessage for ConsoleAdapterRuntime {
+impl SendMessage for Runtime {
 	async fn send_message(
 		&self,
 		_contact: &ContactType<'_>,
