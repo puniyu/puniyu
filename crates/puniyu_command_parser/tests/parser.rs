@@ -13,7 +13,7 @@ impl Command for TestCommand {
 		"hello"
 	}
 
-	fn args(&self) -> Vec<Arg> {
+	fn args(&self) -> Vec<Arg<'_>> {
 		vec![Arg::string("name").named().required()]
 	}
 

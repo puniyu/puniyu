@@ -227,7 +227,6 @@ impl App {
 		use crate::common::format_duration;
 		use puniyu_common::app::{AppInfo, app_name, set_app_info};
 		use puniyu_loader::LoaderRegistry;
-		use puniyu_path::resource_dir;
 		use std::time::Duration;
 
 		let start_time = Instant::now();
@@ -264,10 +263,7 @@ impl App {
 		}
 
 		if let Some(logo) = self.logo {
-			let logo_path = resource_dir().join("logo.png");
-			if !logo_path.exists() {
-				fs::write(&logo_path, &logo).await.expect("Failed to write");
-			}
+			puniyu_server::set_logo(logo);
 		}
 
 		let config = puniyu_config::app_config();
