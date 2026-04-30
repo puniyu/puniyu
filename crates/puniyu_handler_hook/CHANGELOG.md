@@ -1,4 +1,16 @@
 # 变更日志
+
+## [0.8.0]
+
+### 🚜 重构
+
+
+- *(command)* 重构命令系统API并优化参数处理 - ([014c60c](https://github.com/puniyu/puniyu/commit/014c60c1658ac6a3624cf7e44d05fe31329981eb))
+- *(core)* 重构整个框架的核心实现 ([#165](https://github.com/puniyu/puniyu/pull/165)) - ([9482b34](https://github.com/puniyu/puniyu/commit/9482b34a76fecf05b3475aecf01df93d9e8994ff))
+- *(puniyu_logger)* 更新日志记录, 多个包模块更新 - ([b551405](https://github.com/puniyu/puniyu/commit/b55140558783461e03da9a27aae099f97d46a4a6))
+- 重构事件模块 ([#180](https://github.com/puniyu/puniyu/pull/180)) - ([bfbb9a7](https://github.com/puniyu/puniyu/commit/bfbb9a73d6c5cdeaa2a139cdb353988e28d16fac))
+- 重构事件/适配器api/上下文 ([#178](https://github.com/puniyu/puniyu/pull/178)) - ([fe74041](https://github.com/puniyu/puniyu/commit/fe74041525fac5102ed96ed2a7389ecd1a27f7ed))
+
 ## [0.1.2](https://github.com/puniyu/puniyu/compare/puniyu_hook-v0.1.1...puniyu_hook-v0.1.2) - 2026-01-12
 
 
