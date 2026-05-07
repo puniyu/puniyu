@@ -1,0 +1,92 @@
+[workspace]
+members = ["crates/*"]
+resolver = "2"
+
+[workspace.lints.clippy]
+unwrap_used = "deny"
+
+[workspace.package]
+authors = ["wuliya <3369906077@qq.com>"]
+license = "LGPL-3.0-only"
+readme = "README.md"
+homepage = "https://github.com/puniyu/puniyu"
+repository = "https://github.com/puniyu/puniyu"
+edition = "2024"
+rust-version = "1.88.0"
+
+[workspace.dependencies]
+log = { version = "0.4.28" }
+serde = { version = "1.0.228", features = ["derive"] }
+strum = { version = "0.28.0", features = ["derive"] }
+bytes = { version = "1.11.1" }
+toml = { version = "1.1.2" }
+jiff = { version = "0.2.23", features = ["serde"] }
+tokio = { version = "1.47.1" }
+actix-web = { version = "4.13.0" }
+async-trait = { version = "0.1.89" }
+prost = { version = "0.14.3" }
+prost-build = { version = "0.14.1" }
+protoc-bin-vendored = { version = "3.2.0" }
+
+puniyu_error = { version = "0.8.1", default-features = false }
+puniyu_logger = { version = "0.7.5" }
+puniyu_version = { version = "0.8.1" }
+puniyu_bot = { version = "0.8.2" }
+puniyu_sender = { version = "0.8.1" }
+puniyu_contact = { version = "0.8.1" }
+puniyu_segment = { version = "0.8.1" }
+puniyu_message = { version = "0.8.1" }
+puniyu_account = { version = "0.8.1" }
+puniyu_event = { version = "0.8.2" }
+puniyu_dispatch = { version = "0.8.2" }
+puniyu_config = { version = "0.8.1" }
+puniyu_element = { version = "0.8.1" }
+puniyu_api = { version = "0.8.1" }
+puniyu_runtime = { version = "0.8.2" }
+puniyu_command = { version = "0.8.2" }
+puniyu_command_types = { version = "0.8.1" }
+puniyu_hook = { version = "0.8.2" }
+puniyu_task = { version = "0.8.1" }
+puniyu_server = { version = "0.8.2" }
+puniyu_context = { version = "0.8.2" }
+puniyu_handler = { version = "0.8.2" }
+
+puniyu_adapter_core = { version = "0.8.3" }
+puniyu_adapter_types = { version = "0.8.3" }
+
+puniyu_plugin_core = { version = "0.8.2" }
+puniyu_macros = { version = "0.8.2", path = "./crates/puniyu_macros" }
+
+[package]
+name = "puniyu"
+version = "0.8.4"
+publish = false
+authors.workspace = true
+license.workspace = true
+readme.workspace = true
+homepage.workspace = true
+repository.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+bytes.workspace = true
+puniyu_core = { version = "0.8.3" }
+puniyu_adapter_console = { version = "0.8.0" }
+puniyu_handler_command = { version = "0.8.0", path = "./crates/puniyu_handler_command" }
+puniyu_plugin_basic = { version = "0.8.0" }
+tokio = { workspace = true, features = ["macros"] }
+
+[[bin]]
+name = "puniyu"
+path = "src/main.rs"
+
+[profile.release]
+lto = "fat"
+opt-level = "z"
+incremental = false
+
+[profile.dev]
+lto = false
+opt-level = 1
+incremental = true

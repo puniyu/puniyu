@@ -1,0 +1,8 @@
+max_width = 100
+tab_spaces = 4
+edition = "2024"
+use_small_heuristics = "Max"
+newline_style = "Auto"
+hard_tabs = true
+reorder_imports = true
+reorder_modules = true

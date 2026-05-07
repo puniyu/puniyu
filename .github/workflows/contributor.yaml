@@ -1,0 +1,51 @@
+name: contributor
+on:
+  pull_request:
+    types:
+      - opened
+      - closed
+
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  contributor_message:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 获取token
+        uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3 # v3.1.1
+        id: app-token
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - name: 贡献消息
+        uses: plbstl/first-contribution@7c31f41b0e7a70adfcae06cf964679f61af6780b # v4.3.0
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          issue-opened-msg: 👋 你好, @{fc-author}！感谢你提交了第一个问题！🔍 你的细心帮助我们发现了新的改进机会，我们会尽快处理。🚀 如果你有更多的想法或疑问，请继续分享，我们非常乐意听取你的声音！🌟 感谢你的支持！
+          pr-opened-msg: 🙌 你好，@{fc-author}！感谢你提交的第一个拉取请求！🛠️ 你正在帮助我们打造更好的项目，我们会认真审查并与你一起优化它。💡 如果你有任何问题或需要帮助，随时联系！✨ 很高兴与你合作，欢迎成为我们社区的一员！
+          issue-reactions: eyes, heart
+          pr-reactions: +1, rocket, heart
+          skip-internal-contributors: false
+
+  add-contributor:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: 获取token
+        uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3 # v3.1.1
+        id: app-token
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - name: 添加贡献者
+        uses: plbstl/first-contribution@7c31f41b0e7a70adfcae06cf964679f61af6780b # v4.3.0
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          pr-merged-msg: >
+            @all-contributors please add @{fc-author} for code
+          skip-internal-contributors: false

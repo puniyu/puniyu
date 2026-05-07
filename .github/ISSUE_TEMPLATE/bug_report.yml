@@ -1,0 +1,49 @@
+name: 错误报告
+description: 在使用 puniyu 的过程中遇到了错误
+title: 'bug: '
+labels: [ "bug" ]
+
+body:
+  - type: markdown
+    attributes:
+      value: 感谢您花时间填写此错误报告，请**务必确认您的issue不是重复的**，否则我们可能会直接关闭它。请按照下面的模板填写您的信息。
+
+  - type: checkboxes
+    attributes:
+      label: 请确保以下事项
+      description: 您必须勾选以下所有内容, 否则您的issue可能会被直接关闭。
+      options:
+        - label: 我确定没有重复的issue或讨论。
+        - label: 我确定这个问题在最新版本中没有被修复。
+
+  - type: input
+    id: version
+    attributes:
+      label: 版本
+      description: 您使用的是哪个版本/commit id的源码, 请不要使用`latest`或`main`作为答案。
+      placeholder: v0.xx.xx 或者 commit id
+    validations:
+      required: true
+  - type: dropdown
+    id: channel
+    attributes:
+      label: 渠道
+      description: 您使用的版本渠道是什么？
+      options:
+        - 稳定版(Stable)
+        - 预览版(Preview)
+    validations:
+      required: true
+  - type: textarea
+    id: bug-description
+    attributes:
+      label: 问题描述
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: 日志
+      description: 请复制粘贴错误日志，或者截图。务必完整
+    validations:
+      required: true
