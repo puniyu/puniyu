@@ -55,7 +55,7 @@ puniyu_adapter_core = { version = "0.8.3" }
 puniyu_adapter_types = { version = "0.8.3" }
 
 puniyu_plugin_core = { version = "0.8.2" }
-puniyu_macros = { version = "0.8.2", path = "./crates/puniyu_macros" }
+puniyu_macros = { version = "0.8.3", path = "./crates/puniyu_macros" }
 
 [package]
 name = "puniyu"
@@ -73,7 +73,7 @@ rust-version.workspace = true
 bytes.workspace = true
 puniyu_core = { version = "0.8.3" }
 puniyu_adapter_console = { version = "0.8.0" }
-puniyu_handler_command = { version = "0.8.0", path = "./crates/puniyu_handler_command" }
+puniyu_handler_command = { version = "0.8.1", path = "./crates/puniyu_handler_command" }
 puniyu_plugin_basic = { version = "0.8.0" }
 tokio = { workspace = true, features = ["macros"] }
 

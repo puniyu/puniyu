@@ -1,5 +1,15 @@
 # 变更日志
 
+## [0.8.3](https://github.com/puniyu/puniyu/compare/puniyu_macros-v0.8.2...puniyu_macros-v0.8.3)
+
+### ⛰️ 新功能
+
+
+- 添加项目配置文件和CI/CD工作流 - ([cc4d6df](https://github.com/puniyu/puniyu/commit/cc4d6dffd8801c861a8681b352cb7589a4c3d6d0))
+
+
+
+
 ## [0.8.2](https://github.com/puniyu/core/compare/puniyu_macros-v0.8.1...puniyu_macros-v0.8.2)
 
 ### 🚜 重构
