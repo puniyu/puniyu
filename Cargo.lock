@@ -1992,11 +1992,16 @@ name = "puniyu"
 version = "0.8.5"
 dependencies = [
  "bytes",
+ "const-str",
+ "convert_case 0.11.0",
+ "figlet-rs",
  "puniyu_adapter_console",
  "puniyu_core",
  "puniyu_handler_command",
  "puniyu_plugin_basic",
+ "puniyu_version",
  "tokio",
+ "vergen-git2",
 ]
 
 [[package]]
@@ -2083,9 +2088,9 @@ dependencies = [
 
 [[package]]
 name = "puniyu_adapter_core"
-version = "0.8.3"
+version = "0.8.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "eb5b9219eb3a7c6fdaaa52e97862a82cb1c36303a79268b14b9ba222f8f7f0e4"
+checksum = "c545930f447ea329392e65b1376caa4cf49e39299749e3e549e4de486af51d31"
 dependencies = [
  "async-trait",
  "log",
@@ -2099,9 +2104,9 @@ dependencies = [
 
 [[package]]
 name = "puniyu_adapter_types"
-version = "0.8.3"
+version = "0.8.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e71ebc14cf240e3a92a514241081c517fa17a4d43cd0961e081b2f6ec9b5e932"
+checksum = "437a94fd6a5393ad6f40a71d122a386766f360b2494fcae9ad7933607a779e3e"
 dependencies = [
  "bon",
  "bytes",
@@ -2116,9 +2121,9 @@ dependencies = [
 
 [[package]]
 name = "puniyu_api"
-version = "0.8.3"
+version = "0.8.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c6a1134245b34eb18227cdada57bd259715dff4fa3e803d5184f87ad8418b7f3"
+checksum = "4df1a9e974e52c40fd3fcb832ac35dfabe712a65b64bf9fda362d26122384079"
 dependencies = [
  "inventory",
  "puniyu_account",
@@ -2142,9 +2147,9 @@ dependencies = [
 
 [[package]]
 name = "puniyu_bot"
-version = "0.8.2"
+version = "0.8.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7026a4b2f539acb4475c5770255fd81a1c65606e5b99426d04dad908eadd59a3"
+checksum = "641b8767d94775bd11904b4195c0c7e51d3eac714d2ff6602535397a523c78f3"
 dependencies = [
  "log",
  "puniyu_account",
@@ -2158,9 +2163,9 @@ dependencies = [
 
 [[package]]
 name = "puniyu_command"
-version = "0.8.2"
+version = "0.8.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c082fe2928f527846dcb1cac9f6ac12f52033d7f5ecd8b006eb9da675ee66dbf"
+checksum = "ff097ff93a0ba914d6a5bb2b14900f96f5d0008850d57a52d4cb07d102142eef"
 dependencies = [
  "async-trait",
  "clap",
@@ -2239,9 +2244,9 @@ dependencies = [
 
 [[package]]
 name = "puniyu_context"
-version = "0.8.2"
+version = "0.8.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0376f602e2484e30b2a698ead310cd30406c10236d29bb976ce6c95b2fc325cf"
+checksum = "8c25d62ea9174b046b64c811f4a68a9e08ada4f81a20ced32929d3a26543913a"
 dependencies = [
  "bytes",
  "puniyu_account",
@@ -2271,14 +2276,13 @@ dependencies = [
 
 [[package]]
 name = "puniyu_core"
-version = "0.8.3"
+version = "0.8.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ead68b149975a8edc31b3e8b187589c2a4ebc0304e2ecd7e5dfec94163d39da5"
+checksum = "12a238ceca66ca0297ee501f693da6e96cbf2239d6ed85bc4dbf1c5715f649e8"
 dependencies = [
  "bytes",
  "const-str",
  "convert_case 0.11.0",
- "figlet-rs",
  "log",
  "puniyu_adapter_core",
  "puniyu_api",
@@ -2298,14 +2302,13 @@ dependencies = [
  "puniyu_version",
  "tokio",
  "toml",
- "vergen-git2",
 ]
 
 [[package]]
 name = "puniyu_dispatch"
-version = "0.8.2"
+version = "0.8.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c974602010ad3e8118dad7dd7a04aed7cc663fe461cc13fff5d580bf78b0f276"
+checksum = "a19848b1107aaa0379746f41eb26ab37ebc67e3ca0f16357cafe636728115f89"
 dependencies = [
  "log",
  "puniyu_event",
@@ -2337,9 +2340,9 @@ dependencies = [
 
 [[package]]
 name = "puniyu_event"
-version = "0.8.2"
+version = "0.8.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "33230c6bd483e363ea172d6e7f704fb39ebabd17a3d4dca6fc02885e94a4b29e"
+checksum = "b22c8c021cc98c1e9631ab9b4c1ba18ee302a75b00067e074b6e4f8b4e373a6d"
 dependencies = [
  "bytes",
  "derive_more",
@@ -2353,9 +2356,9 @@ dependencies = [
 
 [[package]]
 name = "puniyu_handler"
-version = "0.8.2"
+version = "0.8.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2520135dfe5a809cf6c5e72d01d6c70da8c7d2ec1ae38e13b8504731139c0cf5"
+checksum = "c5e36a29393b822333de0f267f00aca3c6e514c15a29e21972a380b6615c25c0"
 dependencies = [
  "async-trait",
  "puniyu_error",
@@ -2406,9 +2409,9 @@ dependencies = [
 
 [[package]]
 name = "puniyu_hook"
-version = "0.8.2"
+version = "0.8.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b60b7813d2a6070b0fe169d28b639725b19b7b639ecbc3ef4b3bb711b7d047c9"
+checksum = "5d05f02ba53dfaedac4d072e5e079f1316d28566f35f48851cdce717ff66a2e4"
 dependencies = [
  "async-trait",
  "puniyu_common",
@@ -2421,9 +2424,9 @@ dependencies = [
 
 [[package]]
 name = "puniyu_loader"
-version = "0.8.3"
+version = "0.8.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "34d8bffceb850a8bfc6f9480a9d26bce18b0892bd7934b714738be3d25ae4fae"
+checksum = "09f9e791ce00ce4f0479745cde15a2db202c2c181460c73ea281d8862c197844"
 dependencies = [
  "async-trait",
  "puniyu_error",
@@ -2464,13 +2467,8 @@ dependencies = [
  "convert_case 0.11.0",
  "croner",
  "proc-macro2",
- "puniyu_adapter 0.8.4",
- "puniyu_context",
- "puniyu_plugin 0.8.4",
  "quote",
- "serde",
  "syn",
- "trybuild",
 ]
 
 [[package]]
@@ -2556,9 +2554,9 @@ dependencies = [
 
 [[package]]
 name = "puniyu_plugin_core"
-version = "0.8.3"
+version = "0.8.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f745583fa3078569e36e5b2a04abe3a82f900ba2a07564adb2c89f7b002d739d"
+checksum = "dcee71743d6ffc96d5f63b1f6c80e3f164bc1c6b939e555cc95d966831f7949c"
 dependencies = [
  "async-trait",
  "log",
@@ -2593,9 +2591,9 @@ dependencies = [
 
 [[package]]
 name = "puniyu_runtime"
-version = "0.8.2"
+version = "0.8.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ccda76cb45a889b3bf1953230d764a77ad6d2b06c960d5c368ad2a6daa45fcf8"
+checksum = "dd667ede04c1ed708398b6011a6b72f9a4b6fa86a62696065a49167980296631"
 dependencies = [
  "actix-web",
  "async-trait",
@@ -2630,9 +2628,9 @@ dependencies = [
 
 [[package]]
 name = "puniyu_server"
-version = "0.8.2"
+version = "0.8.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "866fa7d5954afd4ea7d667c2636fab0b3f7427d228e4f37648684f7289ecf659"
+checksum = "775c91b2eff9614c36475d3635ca8fdd0c02deb0eb481548104c2a7e71d8b544"
 dependencies = [
  "actix-web",
  "bytes",
@@ -3225,12 +3223,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "target-triple"
-version = "1.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "591ef38edfb78ca4771ee32cf494cb8771944bee237a9b91fc9c1424ac4b777b"
-
-[[package]]
 name = "tempfile"
 version = "3.27.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3241,15 +3233,6 @@ dependencies = [
  "once_cell",
  "rustix",
  "windows-sys 0.61.2",
-]
-
-[[package]]
-name = "termcolor"
-version = "1.4.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "06794f8f6c5c898b3275aebefa6b8a1cb24cd2c6c79397ab15774837a0bc5755"
-dependencies = [
- "winapi-util",
 ]
 
 [[package]]
@@ -3461,21 +3444,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b9d12581f227e93f094d3af2ae690a574abb8a2b9b7a96e7cfe9647b2b617678"
 dependencies = [
  "once_cell",
-]
-
-[[package]]
-name = "trybuild"
-version = "1.0.116"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "47c635f0191bd3a2941013e5062667100969f8c4e9cd787c14f977265d73616e"
-dependencies = [
- "glob",
- "serde",
- "serde_derive",
- "serde_json",
- "target-triple",
- "termcolor",
- "toml",
 ]
 
 [[package]]

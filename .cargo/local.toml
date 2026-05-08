@@ -1,0 +1,22 @@
+[patch.crates-io]
+puniyu_core = { path = "../core/crates/puniyu_core" }
+puniyu_version = { path = "../core/crates/puniyu_version" }
+puniyu_handler = { path = "../core/crates/puniyu_handler" }
+puniyu_adapter_core = { path = "../core/crates/puniyu_adapter_core" }
+puniyu_plugin_core = { path = "../core/crates/puniyu_plugin_core" }
+puniyu_dispatch = { path = "../core/crates/puniyu_dispatch" }
+puniyu_event = { path = "../core/crates/puniyu_event" }
+puniyu_sender = { path = "../core/crates/puniyu_sender" }
+puniyu_contact = { path = "../core/crates/puniyu_contact" }
+puniyu_account = { path = "../core/crates/puniyu_account" }
+puniyu_bot = { path = "../core/crates/puniyu_bot" }
+puniyu_context = { path = "../core/crates/puniyu_context" }
+puniyu_runtime = { path = "../core/crates/puniyu_runtime" }
+puniyu_element = { path = "../core/crates/puniyu_element" }
+puniyu_message = { path = "../core/crates/puniyu_message" }
+puniyu_command = { path = "../core/crates/puniyu_command" }
+puniyu_command_types = { path = "../core/crates/puniyu_command_types" }
+puniyu_adapter_types = { path = "../core/crates/puniyu_adapter_types" }
+puniyu_hook = { path = "../core/crates/puniyu_hook" }
+puniyu_task = { path = "../core/crates/puniyu_task" }
+puniyu_config = { path = "../core/crates/puniyu_config" }
