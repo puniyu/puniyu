@@ -1,0 +1,140 @@
+name: Build
+
+on:
+  workflow_call:
+
+env:
+  APP_NAME: puniyu
+
+jobs:
+  build_windows:
+    runs-on: ${{ matrix.platform.runner }}
+    strategy:
+      matrix:
+        platform:
+          - runner: windows-latest
+            target: x86_64-pc-windows-msvc
+            label: windows-x86_64
+
+    steps:
+      - name: 检出仓库
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: 设置 rust
+        uses: puniyu/setup-rust@dfbcb929630e5b211eb9d0b3e77f963a09ee2b02 # main
+        with:
+          target: ${{ matrix.platform.target }}
+          cache: true
+          prefix-key: ${{ env.APP_NAME }}
+
+      - name: 构建
+        run: |
+          cargo build --release --bin ${{ env.APP_NAME }} --target ${{ matrix.platform.target }}
+          
+
+      - name: 创建存档文件
+        uses: somaz94/compress-decompress@v1
+        id: compress
+        with:
+          command: compress
+          source: ./target/${{ matrix.platform.target }}/release/${{ env.APP_NAME }}.exe
+          format: tar
+          destfilename: ${{ env.APP_NAME }}-${{ matrix.platform.target }}
+
+      - name: 上传构建产物
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: "${{ env.APP_NAME }}-${{ matrix.platform.target }}"
+          path: |
+            ${{ steps.compress.outputs.file_path }}
+
+  build_macos:
+    runs-on: ${{ matrix.platform.runner }}
+    strategy:
+      matrix:
+        platform:
+          - runner: macos-latest
+            target: x86_64-apple-darwin
+            label: macos-x86_64
+          - runner: macos-latest
+            target: aarch64-apple-darwin
+            label: macos-aarch64
+
+    steps:
+      - name: 检出仓库
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: 设置 rust
+        uses: puniyu/setup-rust@dfbcb929630e5b211eb9d0b3e77f963a09ee2b02 # main
+        with:
+          target: ${{ matrix.platform.target }}
+          cache: true
+          prefix-key: ${{ env.APP_NAME }}
+
+      - name: 构建
+        run: |
+          cargo build --release --bin ${{ env.APP_NAME }} --target ${{ matrix.platform.target }}
+          
+
+      - name: 创建存档文件
+        uses: somaz94/compress-decompress@v1
+        id: compress
+        with:
+          command: compress
+          source: ./target/${{ matrix.platform.target }}/release/${{ env.APP_NAME }}
+          format: tar
+          destfilename: ${{ env.APP_NAME }}-${{ matrix.platform.target }}
+
+      - name: 上传构建产物
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: "${{ env.APP_NAME }}-${{ matrix.platform.target }}"
+          path: |
+            ${{ steps.compress.outputs.file_path }}
+
+  build_linux:
+    runs-on: ${{ matrix.platform.runner }}
+    container: ${{ matrix.platform.container }}
+    strategy:
+      matrix:
+        platform:
+          - runner: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            label: linux-x86_64
+            container: ghcr.io/puniyu/debian:latest
+          - runner: ubuntu-24.04-arm
+            target: aarch64-unknown-linux-gnu
+            label: linux-aarch64
+            container: ghcr.io/puniyu/debian:arm64
+
+    steps:
+      - name: 检出仓库
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: 设置 rust
+        uses: puniyu/setup-rust@dfbcb929630e5b211eb9d0b3e77f963a09ee2b02 # main
+        with:
+          target: ${{ matrix.platform.target }}
+          cache: true
+          prefix-key: ${{ env.APP_NAME }}
+
+      - name: 构建
+        run: |
+          cargo build --release --bin ${{ env.APP_NAME }} --target ${{ matrix.platform.target }}
+
+
+      - name: 创建存档文件
+        uses: somaz94/compress-decompress@v1
+        id: compress
+        with:
+          command: compress
+          source: ./target/${{ matrix.platform.target }}/release/${{ env.APP_NAME }}
+          format: tar
+          destfilename: ${{ env.APP_NAME }}-${{ matrix.platform.target }}
+
+      - name: 上传构建产物
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: "${{ env.APP_NAME }}-${{ matrix.platform.target }}"
+          path: |
+            ${{ steps.compress.outputs.file_path }}
