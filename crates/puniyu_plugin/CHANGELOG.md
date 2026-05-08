@@ -1,5 +1,13 @@
 # 变更日志
 
+## [0.8.5](https://github.com/puniyu/puniyu/compare/v0.8.4...v0.8.5) (2026-05-08)
+
+
+### 🔧 其他更新
+
+* release ([ed50d44](https://github.com/puniyu/puniyu/commit/ed50d4420212283928e8e51c8a3146ff15cf9ec5))
+* 添加项目配置文件和CI/CD工作流 ([dbb750b](https://github.com/puniyu/puniyu/commit/dbb750b70ea988997b9822b719714a13a03d5759))
+
 ## [0.8.4](https://github.com/puniyu/puniyu/compare/puniyu_plugin-v0.8.3...puniyu_plugin-v0.8.4)
 
 ### ⛰️ 新功能
@@ -161,4 +169,3 @@
 
 - 使用 bon 替换 derive_builder 并更新依赖 - ([aa29264](https://github.com/puniyu/core/commit/aa29264500d5c3917d7396eef3acaec4df6ad722))
 - 初始化仓库 - ([51af186](https://github.com/puniyu/core/commit/51af186b465079c274bb094dc3dc8b38ba959f15))
-
