@@ -1,10 +1,10 @@
 {
-    ".": "0.8.6",
-    "crates/puniyu_adapter": "0.8.5",
-    "crates/puniyu_plugin": "0.8.5",
-    "crates/puniyu_macros": "0.8.4",
-    "crates/puniyu_handler_command": "0.8.2",
-    "crates/puniyu_handler_hook": "0.8.1",
-    "crates/puniyu_cooldown": "0.8.2",
-    "crates/puniyu_protobuf": "0.8.4"
+    ".": "0.8.7",
+    "crates/puniyu_adapter": "0.8.6",
+    "crates/puniyu_plugin": "0.8.6",
+    "crates/puniyu_macros": "0.8.5",
+    "crates/puniyu_handler_command": "0.8.3",
+    "crates/puniyu_handler_hook": "0.8.2",
+    "crates/puniyu_cooldown": "0.8.3",
+    "crates/puniyu_protobuf": "0.8.5"
 }

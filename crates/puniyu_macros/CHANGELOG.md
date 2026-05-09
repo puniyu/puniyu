@@ -1,5 +1,15 @@
 # 变更日志
 
+## [0.8.5](https://github.com/puniyu/puniyu/compare/v0.8.4...v0.8.5) (2026-05-09)
+
+
+### 🔧 其他更新
+
+* **main:** 添加应用启动日志和版本信息显示 ([9eefb56](https://github.com/puniyu/puniyu/commit/9eefb56a2382ad1972cec462ff9b98626664b74b))
+* release ([ed50d44](https://github.com/puniyu/puniyu/commit/ed50d4420212283928e8e51c8a3146ff15cf9ec5))
+* release main ([98b3be2](https://github.com/puniyu/puniyu/commit/98b3be2460877e48a3c0c245208b80c58e8a9e53))
+* 添加项目配置文件和CI/CD工作流 ([dbb750b](https://github.com/puniyu/puniyu/commit/dbb750b70ea988997b9822b719714a13a03d5759))
+
 ## [0.8.4](https://github.com/puniyu/puniyu/compare/v0.8.3...v0.8.4) (2026-05-09)
 
 
