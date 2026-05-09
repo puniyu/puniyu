@@ -19,6 +19,8 @@ jobs:
     steps:
       - name: 检出仓库
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
 
       - name: 设置 rust
         uses: puniyu/setup-rust@dfbcb929630e5b211eb9d0b3e77f963a09ee2b02 # main
@@ -61,6 +63,8 @@ jobs:
     steps:
       - name: 检出仓库
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
 
       - name: 设置 rust
         uses: puniyu/setup-rust@dfbcb929630e5b211eb9d0b3e77f963a09ee2b02 # main
@@ -106,7 +110,9 @@ jobs:
     steps:
       - name: 检出仓库
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-
+        with:
+          fetch-depth: 0
+          
       - name: 设置 rust
         uses: puniyu/setup-rust@dfbcb929630e5b211eb9d0b3e77f963a09ee2b02 # main
         with:
