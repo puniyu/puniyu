@@ -1,5 +1,15 @@
 # 变更日志
 
+## [0.8.9](https://github.com/puniyu/puniyu/compare/v0.8.8...v0.8.9)
+
+### 🐛 Bug 修复
+
+
+- Download artifacts - ([9fc7e97](https://github.com/puniyu/puniyu/commit/9fc7e977ec0deed396fb5a134f3cadcc8cfd5232))
+
+
+
+
 ## [0.8.8](https://github.com/puniyu/puniyu/compare/v0.8.7...v0.8.8) (2026-05-09)
 
 
