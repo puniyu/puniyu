@@ -1,5 +1,13 @@
 # 变更日志
 
+## [0.8.2](https://github.com/puniyu/puniyu/compare/v0.8.1...v0.8.2) (2026-05-09)
+
+
+### 🔧 其他更新
+
+* release ([ed50d44](https://github.com/puniyu/puniyu/commit/ed50d4420212283928e8e51c8a3146ff15cf9ec5))
+* 添加项目配置文件和CI/CD工作流 ([dbb750b](https://github.com/puniyu/puniyu/commit/dbb750b70ea988997b9822b719714a13a03d5759))
+
 ## [0.8.1](https://github.com/puniyu/puniyu/compare/puniyu_cooldown-v0.8.0...puniyu_cooldown-v0.8.1)
 
 ### ⛰️ 新功能
@@ -24,4 +32,3 @@
 - *(core)* 重构整个框架的核心实现 ([#165](https://github.com/puniyu/puniyu/pull/165)) - ([9482b34](https://github.com/puniyu/puniyu/commit/9482b34a76fecf05b3475aecf01df93d9e8994ff))
 - 重构事件模块 ([#180](https://github.com/puniyu/puniyu/pull/180)) - ([bfbb9a7](https://github.com/puniyu/puniyu/commit/bfbb9a73d6c5cdeaa2a139cdb353988e28d16fac))
 - 使用jiff替换chrono库并优化时间处理 ([#179](https://github.com/puniyu/puniyu/pull/179)) - ([8d0257a](https://github.com/puniyu/puniyu/commit/8d0257a9663c43dceafa6e35f7e6f382425df727))
-
