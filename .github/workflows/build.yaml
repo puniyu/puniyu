@@ -31,22 +31,20 @@ jobs:
         run: |
           cargo build --release --bin ${{ env.APP_NAME }} --target ${{ matrix.platform.target }}
           
-
       - name: 创建存档文件
-        uses: somaz94/compress-decompress@v1
-        id: compress
+        uses: a7ul/tar-action@v1.1.0
         with:
-          command: compress
-          source: ./target/${{ matrix.platform.target }}/release/${{ env.APP_NAME }}.exe
-          format: tar
-          destfilename: ${{ env.APP_NAME }}-${{ matrix.platform.target }}
+          command: c
+          files: |
+            ./target/${{ matrix.platform.target }}/release/${{ env.APP_NAME }}.exe
+          outPath: ${{ env.APP_NAME }}-${{ matrix.platform.target }}.tar.gz
 
       - name: 上传构建产物
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: "${{ env.APP_NAME }}-${{ matrix.platform.target }}"
           path: |
-            ${{ steps.compress.outputs.file_path }}
+            ${{ env.APP_NAME }}-${{ matrix.platform.target }}.tar.gz
 
   build_macos:
     runs-on: ${{ matrix.platform.runner }}
@@ -75,22 +73,20 @@ jobs:
         run: |
           cargo build --release --bin ${{ env.APP_NAME }} --target ${{ matrix.platform.target }}
           
-
       - name: 创建存档文件
-        uses: somaz94/compress-decompress@v1
-        id: compress
+        uses: a7ul/tar-action@v1.1.0
         with:
-          command: compress
-          source: ./target/${{ matrix.platform.target }}/release/${{ env.APP_NAME }}
-          format: tar
-          destfilename: ${{ env.APP_NAME }}-${{ matrix.platform.target }}
+          command: c
+          files: |
+            ./target/${{ matrix.platform.target }}/release/${{ env.APP_NAME }}
+          outPath: ${{ env.APP_NAME }}-${{ matrix.platform.target }}.tar.gz
 
       - name: 上传构建产物
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: "${{ env.APP_NAME }}-${{ matrix.platform.target }}"
           path: |
-            ${{ steps.compress.outputs.file_path }}
+            ${{ env.APP_NAME }}-${{ matrix.platform.target }}.tar.gz
 
   build_linux:
     runs-on: ${{ matrix.platform.runner }}
@@ -124,17 +120,16 @@ jobs:
 
 
       - name: 创建存档文件
-        uses: somaz94/compress-decompress@v1
-        id: compress
+        uses: a7ul/tar-action@v1.1.0
         with:
-          command: compress
-          source: ./target/${{ matrix.platform.target }}/release/${{ env.APP_NAME }}
-          format: tar
-          destfilename: ${{ env.APP_NAME }}-${{ matrix.platform.target }}
+          command: c
+          files: |
+            ./target/${{ matrix.platform.target }}/release/${{ env.APP_NAME }}
+          outPath: ${{ env.APP_NAME }}-${{ matrix.platform.target }}.tar.gz
 
       - name: 上传构建产物
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: "${{ env.APP_NAME }}-${{ matrix.platform.target }}"
           path: |
-            ${{ steps.compress.outputs.file_path }}
+            ${{ env.APP_NAME }}-${{ matrix.platform.target }}.tar.gz
