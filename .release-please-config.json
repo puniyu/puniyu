@@ -7,7 +7,7 @@
       "updatePeerDependencies": true
     }
   ],
-  "include-component-in-tag": false,
+  "include-component-in-tag": true,
   "changelog-sections": [
     {
       "type": "feat",
@@ -70,36 +70,37 @@
     }
   ],
   "packages": {
-    "." : {
-      "release-type": "rust"
+    "puniyu" : {
+      "release-type": "rust",
+      "component": "puniyu"
     },
     "crates/puniyu_adapter": {
       "release-type": "rust",
-      "skip-github-release": true
+      "component": "puniyu-adapter"
     },
     "crates/puniyu_plugin": {
       "release-type": "rust",
-      "skip-github-release": true
+      "component": "puniyu-plugin"
     },
     "crates/puniyu_macros": {
       "release-type": "rust",
-      "skip-github-release": true
+      "component": "puniyu-macros"
     },
     "crates/puniyu_handler_command": {
       "release-type": "rust",
-      "skip-github-release": true
+      "component": "puniyu-handler-command"
     },
     "crates/puniyu_handler_hook": {
       "release-type": "rust",
-      "skip-github-release": true
+      "component": "puniyu-handler-hook"
     },
     "crates/puniyu_cooldown": {
       "release-type": "rust",
-      "skip-github-release": true
+      "component": "puniyu-cooldown"
     },
     "crates/puniyu_protobuf": {
       "release-type": "rust",
-      "skip-github-release": true
+      "component": "puniyu-protobuf"
     }
     
   },
