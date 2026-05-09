@@ -1,5 +1,19 @@
 # 变更日志
 
+## [0.8.8](https://github.com/puniyu/puniyu/compare/v0.8.7...v0.8.8) (2026-05-09)
+
+
+### 🐛 错误修复
+
+* download artifacts ([1396435](https://github.com/puniyu/puniyu/commit/1396435166668c0997570e305ca9ea41046b2ec8))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puniyu_handler_command bumped from 0.8.3 to 0.8.4
+
 ## [0.8.7](https://github.com/puniyu/puniyu/compare/v0.8.6...v0.8.7) (2026-05-09)
 
 
