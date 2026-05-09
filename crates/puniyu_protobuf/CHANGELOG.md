@@ -1,5 +1,13 @@
 # 变更日志
 
+## [0.8.4](https://github.com/puniyu/puniyu/compare/v0.8.3...v0.8.4) (2026-05-09)
+
+
+### 🔧 其他更新
+
+* release ([ed50d44](https://github.com/puniyu/puniyu/commit/ed50d4420212283928e8e51c8a3146ff15cf9ec5))
+* 添加项目配置文件和CI/CD工作流 ([dbb750b](https://github.com/puniyu/puniyu/commit/dbb750b70ea988997b9822b719714a13a03d5759))
+
 ## [0.8.3](https://github.com/puniyu/puniyu/compare/puniyu_protobuf-v0.8.2...puniyu_protobuf-v0.8.3)
 
 ### ⛰️ 新功能
