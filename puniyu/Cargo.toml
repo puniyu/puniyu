@@ -1,6 +1,6 @@
 [package]
 name = "puniyu"
-version = "0.8.7"
+version = "0.8.8"
 description = "puniyu"
 publish = false
 authors.workspace = true
@@ -25,7 +25,7 @@ const-str = { version = "1.1.0" }
 puniyu_core = { version = "0.8.4" }
 puniyu_version = { version = "0.8.1" }
 puniyu_adapter_console = { version = "0.8.0" }
-puniyu_handler_command = { version = "0.8.4", path = "../crates/puniyu_handler_command" }
+puniyu_handler_command = { version = "0.8.5", path = "../crates/puniyu_handler_command" }
 puniyu_plugin_basic = { version = "0.8.0" }
 tokio = { workspace = true, features = ["macros"] }
 

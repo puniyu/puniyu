@@ -2041,7 +2041,7 @@ checksum = "95067976aca6421a523e491fce939a3e65249bac4b977adee0ee9771568e8aa3"
 
 [[package]]
 name = "puniyu"
-version = "0.8.7"
+version = "0.8.8"
 dependencies = [
  "bytes",
  "cargo_metadata",
@@ -2070,7 +2070,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_adapter"
-version = "0.8.4"
+version = "0.8.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "18f019e5d8399184db2b6a6e33a82f2c4c5066526eb5640c445ef10618306faa"
 dependencies = [
@@ -2099,7 +2099,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_adapter"
-version = "0.8.7"
+version = "0.8.8"
 dependencies = [
  "actix-web",
  "async-trait",
@@ -2318,7 +2318,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_cooldown"
-version = "0.8.4"
+version = "0.8.5"
 dependencies = [
  "jiff",
  "puniyu_error",
@@ -2420,7 +2420,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_handler_command"
-version = "0.8.4"
+version = "0.8.5"
 dependencies = [
  "async-trait",
  "bytes",
@@ -2449,7 +2449,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_handler_hook"
-version = "0.8.3"
+version = "0.8.4"
 dependencies = [
  "async-trait",
  "log",
@@ -2502,7 +2502,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_macros"
-version = "0.8.3"
+version = "0.8.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "614ba6477c1ca78011f447c3aff7139aaf906a78bde6f0272b5a641285a9a3ce"
 dependencies = [
@@ -2515,7 +2515,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_macros"
-version = "0.8.6"
+version = "0.8.7"
 dependencies = [
  "convert_case 0.11.0",
  "croner",
@@ -2545,7 +2545,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_plugin"
-version = "0.8.4"
+version = "0.8.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "592c4ee32532802742f296503d9222170ca55f36b6817ff88d72cef1a5374c04"
 dependencies = [
@@ -2572,7 +2572,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_plugin"
-version = "0.8.7"
+version = "0.8.8"
 dependencies = [
  "actix-web",
  "async-trait",
@@ -2625,7 +2625,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_protobuf"
-version = "0.8.6"
+version = "0.8.7"
 dependencies = [
  "bytes",
  "glob",
