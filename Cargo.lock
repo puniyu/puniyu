@@ -2050,36 +2050,7 @@ dependencies = [
  "puniyu_error",
  "puniyu_event",
  "puniyu_hook",
- "puniyu_macros 0.8.3",
- "puniyu_message",
- "puniyu_runtime",
- "puniyu_segment",
- "puniyu_sender",
- "puniyu_server",
- "puniyu_version",
- "toml",
-]
-
-[[package]]
-name = "puniyu_adapter"
-version = "0.8.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "18f019e5d8399184db2b6a6e33a82f2c4c5066526eb5640c445ef10618306faa"
-dependencies = [
- "actix-web",
- "async-trait",
- "puniyu_account",
- "puniyu_adapter_core",
- "puniyu_adapter_types",
- "puniyu_api",
- "puniyu_bot",
- "puniyu_config",
- "puniyu_contact",
- "puniyu_dispatch",
- "puniyu_error",
- "puniyu_event",
- "puniyu_hook",
- "puniyu_macros 0.8.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "puniyu_macros",
  "puniyu_message",
  "puniyu_runtime",
  "puniyu_segment",
@@ -2098,7 +2069,7 @@ dependencies = [
  "async-trait",
  "bytes",
  "log",
- "puniyu_adapter 0.8.4 (registry+https://github.com/rust-lang/crates.io-index)",
+ "puniyu_adapter",
  "puniyu_server",
  "rand",
  "tokio",
@@ -2477,19 +2448,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "puniyu_macros"
-version = "0.8.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "614ba6477c1ca78011f447c3aff7139aaf906a78bde6f0272b5a641285a9a3ce"
-dependencies = [
- "convert_case 0.11.0",
- "croner",
- "proc-macro2",
- "quote",
- "syn",
-]
-
-[[package]]
 name = "puniyu_message"
 version = "0.8.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2522,34 +2480,7 @@ dependencies = [
  "puniyu_contact",
  "puniyu_error",
  "puniyu_hook",
- "puniyu_macros 0.8.3",
- "puniyu_message",
- "puniyu_plugin_core",
- "puniyu_segment",
- "puniyu_sender",
- "puniyu_server",
- "puniyu_task",
- "puniyu_version",
- "toml",
-]
-
-[[package]]
-name = "puniyu_plugin"
-version = "0.8.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "592c4ee32532802742f296503d9222170ca55f36b6817ff88d72cef1a5374c04"
-dependencies = [
- "actix-web",
- "async-trait",
- "puniyu_account",
- "puniyu_api",
- "puniyu_command",
- "puniyu_command_types",
- "puniyu_config",
- "puniyu_contact",
- "puniyu_error",
- "puniyu_hook",
- "puniyu_macros 0.8.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "puniyu_macros",
  "puniyu_message",
  "puniyu_plugin_core",
  "puniyu_segment",
@@ -2566,7 +2497,7 @@ version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "510e07741c8ebcdef73e70e8d3af12c866d35fb110db219ddba5fcaa102bb273"
 dependencies = [
- "puniyu_plugin 0.8.4 (registry+https://github.com/rust-lang/crates.io-index)",
+ "puniyu_plugin",
  "puniyu_system_info",
 ]
 
