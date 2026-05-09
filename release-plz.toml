@@ -153,5 +153,8 @@ name = "puniyu_protobuf"
 
 [[package]]
 name = "puniyu"
-release = false
+git_only = true
+git_release_enable = true
+git_release_latest = true
+git_tag_enable = true
 publish = false
