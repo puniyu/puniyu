@@ -3,6 +3,7 @@ allow_dirty = true
 changelog_update = true
 dependencies_update = false
 release = true
+git_only = true
 git_release_enable = false
 git_release_body = """
 {{ changelog }}
@@ -54,7 +55,7 @@ pr_body = """
 {% endif %}
 ---
 """
-publish = true
+publish = false
 max_analyze_commits = 100
 
 
@@ -129,29 +130,44 @@ link_parsers = [
 
 [[package]]
 name = "puniyu_adapter"
-
+git_only = false
+publish = true
 
 [[package]]
 name = "puniyu_cooldown"
+git_only = false
+publish = true
 
 [[package]]
 name = "puniyu_handler_command"
-
-
+git_only = false
+publish = true
 [[package]]
 name = "puniyu_handler_hook"
+git_only = false
+publish = true
 
 [[package]]
 name = "puniyu_macros"
+git_only = false
+publish = true
 
 [[package]]
 name = "puniyu_plugin"
+git_only = false
+publish = true
 changelog_include = ["puniyu_macros"]
 
 [[package]]
 name = "puniyu_protobuf"
+git_only = false
+publish = true
 
 [[package]]
 name = "puniyu"
-release = false
+git_release_enable = true
+git_release_name = "v{{ version }}"
+git_release_latest = true
+git_tag_enable = true
+git_tag_name = "v{{ version }}"
 publish = false
