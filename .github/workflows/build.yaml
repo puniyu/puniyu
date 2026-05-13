@@ -23,7 +23,7 @@ jobs:
           fetch-depth: 0 
 
       - name: 设置 rust
-        uses: puniyu/setup-rust@dfbcb929630e5b211eb9d0b3e77f963a09ee2b02 # main
+        uses: puniyu/setup-rust@193e89f6f2587e5ded12957d6b786ddffe3ccce1 # main
         with:
           target: ${{ matrix.platform.target }}
           cache: true
@@ -34,7 +34,7 @@ jobs:
           cargo build --release --bin ${{ env.APP_NAME }} --target ${{ matrix.platform.target }}
           
       - name: 创建存档文件
-        uses: a7ul/tar-action@v1.1.0
+        uses: a7ul/tar-action@ed9cbd44fc9276db29ea2fb1f8adf3d7e0691589 # v1.2.0
         with:
           command: c
           files: |
@@ -67,7 +67,7 @@ jobs:
           fetch-depth: 0 
 
       - name: 设置 rust
-        uses: puniyu/setup-rust@dfbcb929630e5b211eb9d0b3e77f963a09ee2b02 # main
+        uses: puniyu/setup-rust@193e89f6f2587e5ded12957d6b786ddffe3ccce1 # main
         with:
           target: ${{ matrix.platform.target }}
           cache: true
@@ -78,7 +78,7 @@ jobs:
           cargo build --release --bin ${{ env.APP_NAME }} --target ${{ matrix.platform.target }}
           
       - name: 创建存档文件
-        uses: a7ul/tar-action@v1.1.0
+        uses: a7ul/tar-action@ed9cbd44fc9276db29ea2fb1f8adf3d7e0691589 # v1.2.0
         with:
           command: c
           files: |
@@ -114,7 +114,7 @@ jobs:
           fetch-depth: 0 
 
       - name: 设置 rust
-        uses: puniyu/setup-rust@dfbcb929630e5b211eb9d0b3e77f963a09ee2b02 # main
+        uses: puniyu/setup-rust@193e89f6f2587e5ded12957d6b786ddffe3ccce1 # main
         with:
           target: ${{ matrix.platform.target }}
           cache: true
@@ -126,7 +126,7 @@ jobs:
 
 
       - name: 创建存档文件
-        uses: a7ul/tar-action@v1.1.0
+        uses: a7ul/tar-action@ed9cbd44fc9276db29ea2fb1f8adf3d7e0691589 # v1.2.0
         with:
           command: c
           files: |
