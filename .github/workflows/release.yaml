@@ -96,6 +96,7 @@ jobs:
 
   publish-to-release:
     needs: [release, build]
+    if: ${{ needs.release.outputs.puniyu == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - name: 获取token
