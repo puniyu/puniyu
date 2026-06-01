@@ -1,0 +1,159 @@
+[workspace]
+allow_dirty = true
+changelog_update = true
+dependencies_update = false
+release = true
+git_release_enable = false
+git_release_body = """
+{{ changelog }}
+{% if remote.contributors %}
+### 贡献者
+{% for contributor in remote.contributors %}
+* @{{ contributor.username }}
+{% endfor %}
+{% endif %}
+"""
+git_tag_enable = false
+pr_branch_prefix = "release-"
+pr_labels = ["release"]
+publish_allow_dirty = false
+semver_check = false
+publish_timeout = "10m"
+pr_body = """
+{% macro get_changes(releases, type="text") %}
+{%- for release in releases %}
+{%- if release.title and release.changelog %}{% if releases | length > 1 %}
+## `{{ release.package }}`
+{% endif %}
+<blockquote>
+
+## {{ release.title }}
+
+{{ release.changelog }}
+</blockquote>{% endif %}
+{% endfor %}
+{% endmacro -%}
+
+{% set changes = self::get_changes(releases=releases) %}
+
+## 🤖 新版本发布
+{% for release in releases %}
+* `{{ release.package }}`: {% if release.previous_version and release.previous_version != release.next_version %}{{ release.previous_version }} -> {% endif %}{{ release.next_version }}{% if release.semver_check == "incompatible" %} (⚠ API 破坏性变更){% elif release.semver_check == "compatible" %} (✓ API 兼容性变更){% endif %}
+{%- endfor %}
+{%- for release in releases %}{% if release.breaking_changes %}
+
+### ⚠ `{{ release.package }}` 破坏性变更
+
+```text
+{{ release.breaking_changes }}
+```{% endif %}{% endfor %}
+{% if changes %}
+<details><summary><i><b>变更日志</b></i></summary><p>
+{{ changes }}
+</p></details>
+{% endif %}
+---
+"""
+publish = true
+max_analyze_commits = 100
+
+
+[changelog]
+header = """# 变更日志
+"""
+
+body = """
+
+{% macro print_commit(commit) -%}
+    - {% if commit.scope %}*({{ commit.scope }})* {% endif %}\
+      {% if commit.breaking %}[**breaking**] {% endif %}\
+      {{ commit.message | upper_first }}\
+      {% if commit.id != "0000000" %} - \
+      ([{{ commit.id | truncate(length=7, end="") }}]({{ remote.link }}/commit/{{ commit.id }}))
+      {% endif %}
+{% endmacro -%}
+
+{% if version %}\
+    {% if previous.version %}\
+        ## [{{ version }}]({{ release_link }})
+    {% else %}\
+        ## [{{ version }}]
+    {% endif %}\
+{% endif %}\
+
+{% for group, commits in commits
+| filter(attribute="merge_commit", value=false)
+| unique(attribute="message")
+| group_by(attribute="group") %}
+    ### {{ group | striptags | trim | upper_first }}
+
+    {% for commit in commits
+    | filter(attribute="scope")
+    | sort(attribute="scope") %}
+        {{ self::print_commit(commit=commit) }}
+    {%- endfor -%}
+    {% raw %}\n{% endraw %}\
+    {%- for commit in commits %}
+        {%- if not commit.scope -%}
+            {{ self::print_commit(commit=commit) }}
+        {% endif -%}
+    {% endfor -%}
+{% endfor %}\n
+"""
+
+commit_parsers = [
+    { message = "^feat", group = "<!-- 0 -->⛰️ 新功能" },
+    { message = "^fix", group = "<!-- 1 -->🐛 Bug 修复" },
+    { message = "^doc", group = "<!-- 3 -->📚 文档" },
+    { message = "^perf", group = "<!-- 4 -->⚡ 性能优化" },
+    { message = "^refactor\\(clippy\\)", skip = true },
+    { message = "^refactor", group = "<!-- 2 -->🚜 重构" },
+    { message = "^style", group = "<!-- 5 -->🎨 样式" },
+    { message = "^test", group = "<!-- 6 -->🧪 测试" },
+    { message = "^chore\\(release\\):", skip = true },
+    { message = "^chore: release", skip = true },
+    { message = "^chore\\(deps.*\\)", skip = true },
+    { message = "^chore\\(pr\\)", skip = true },
+    { message = "^chore\\(pull\\)", skip = true },
+    { message = "^chore\\(npm\\).*yarn\\.lock", skip = true },
+    { message = "^chore|^ci", group = "<!-- 7 -->⚙️ 杂项" },
+    { body = ".*security", group = "<!-- 8 -->🛡️ 安全" },
+    { message = "^revert", group = "<!-- 9 -->◀️ 回退" },
+]
+
+link_parsers = [
+    { pattern = "#(\\d+)", href = "{{ remote.link }}/issues/$1" },
+    { pattern = "RFC(\\d+)", text = "ietf-rfc$1", href = "https://datatracker.ietf.org/doc/html/rfc$1" },
+]
+
+[[package]]
+name = "puniyu_cooldown"
+
+[[package]]
+name = "puniyu_handler_command"
+changelog_include = ["puniyu_handler_command"]
+
+[[package]]
+name = "puniyu_adapter"
+
+[[package]]
+name = "puniyu_plugin"
+
+[[package]]
+name = "puniyu_macros"
+
+[[package]]
+name = "puniyu"
+git_only = true
+publish = false
+git_tag_enable = true
+git_tag_name = "v{{ version }}"
+git_release_enable = true
+git_release_name = "v{{ version }}"
+git_release_latest = true
+changelog_include = [
+    "puniyu_handler_command",
+    "puniyu_adapter",
+    "puniyu_plugin",
+    "puniyu_macros",
+]

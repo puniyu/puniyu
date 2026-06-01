@@ -22,7 +22,7 @@ async fn main() -> std::io::Result<()> {
 	App::builder()
 		.with_app_name(app_name())
 		.with_app_logo(Bytes::from_static(include_bytes!(concat!(
-			env!("WORKSPACE_DIR"),
+			env!("CARGO_MANIFEST_DIR"),
 			"/assets/logo.png"
 		))))
 		.with_handler(puniyu_handler_command::Handler)
