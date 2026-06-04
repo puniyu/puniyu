@@ -6,20 +6,20 @@ use serde::{Deserialize, Serialize};
 use smol_str::SmolStr;
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq)]
-pub struct AdapterInfo {
+pub struct AdapterMeta {
 	pub name: SmolStr,
 	pub author: Vec<SmolStr>,
 	pub description: Option<SmolStr>,
 	pub version: Version,
 }
 
-pub fn get_adapter<'a>(adapter: impl Into<AdapterId<'a>>) -> Option<AdapterInfo> {
+pub fn get_adapter<'a>(adapter: impl Into<AdapterId<'a>>) -> Option<AdapterMeta> {
 	let adapter_id = adapter.into();
 	let adapter = match adapter_id {
 		AdapterId::Index(index) => AdapterRegistry::get_with_index(index),
 		AdapterId::Name(name) => AdapterRegistry::get_with_adapter_name(name.as_ref()),
 	};
-	adapter.map(|adapter| AdapterInfo {
+	adapter.map(|adapter| AdapterMeta {
 		name: adapter.adapter_info().name,
 		author: adapter.adapter_info().author,
 		description: adapter.adapter_info().description,

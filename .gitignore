@@ -1,4 +1,5 @@
 .idea/
+.cargo/
 target/
 @puniyu/
 adapters/

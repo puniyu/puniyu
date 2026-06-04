@@ -1874,15 +1874,6 @@ dependencies = [
 [[package]]
 name = "puniyu_account"
 version = "0.8.8"
-dependencies = [
- "bon",
- "bytes",
- "serde",
-]
-
-[[package]]
-name = "puniyu_account"
-version = "0.8.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c1418af459d46f61c48d5b998fbd9fe9e634001c1320685cd091b3f6b591ee17"
 dependencies = [
@@ -1893,9 +1884,10 @@ dependencies = [
 
 [[package]]
 name = "puniyu_adapter"
-version = "0.8.8"
+version = "0.8.9"
 dependencies = [
  "puniyu_core",
+ "puniyu_dispatch",
  "puniyu_macros",
  "serde",
  "smol_str",
@@ -1903,79 +1895,52 @@ dependencies = [
 
 [[package]]
 name = "puniyu_adapter_api"
-version = "0.8.16"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3f7b2b9a07ed26d019b3488fca08b204733ed335544e63f421f073b22c80a141"
-dependencies = [
- "anyhow",
- "async-trait",
- "puniyu_account 0.8.8 (registry+https://github.com/rust-lang/crates.io-index)",
- "puniyu_adapter_types 0.8.16",
- "puniyu_contact 0.8.8 (registry+https://github.com/rust-lang/crates.io-index)",
- "puniyu_error 0.8.8 (registry+https://github.com/rust-lang/crates.io-index)",
- "puniyu_message 0.8.8 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
-name = "puniyu_adapter_api"
 version = "0.8.17"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "39c7fa483118b52282bca239cb0fc6c0c6ae5689d60b1e4d24fb7413a55970a5"
 dependencies = [
  "anyhow",
  "async-trait",
- "puniyu_account 0.8.8",
- "puniyu_adapter_types 0.8.17",
- "puniyu_contact 0.8.8",
- "puniyu_error 0.8.8",
- "puniyu_message 0.8.8",
+ "puniyu_account",
+ "puniyu_adapter_types",
+ "puniyu_contact",
+ "puniyu_error",
+ "puniyu_message",
 ]
 
 [[package]]
 name = "puniyu_adapter_core"
 version = "0.8.17"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fe94798619bb98127d3d7efcde5888bb8f2033dc66feb4f63535ab6a3a2077e6"
 dependencies = [
  "async-trait",
  "const-str",
  "log",
- "puniyu_account 0.8.8",
- "puniyu_adapter_api 0.8.17",
- "puniyu_adapter_types 0.8.17",
- "puniyu_config 0.8.10",
- "puniyu_error 0.8.8",
- "puniyu_message 0.8.8",
- "puniyu_semver 0.8.9",
+ "puniyu_account",
+ "puniyu_adapter_api",
+ "puniyu_adapter_types",
+ "puniyu_config",
+ "puniyu_error",
+ "puniyu_message",
+ "puniyu_semver",
  "puniyu_server",
  "puniyu_version",
 ]
 
 [[package]]
 name = "puniyu_adapter_types"
-version = "0.8.16"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c84a669f9cb8150184c06b97be6dbfcd3a06c1c2c45ec3bd9cdf41e5b7973c8a"
-dependencies = [
- "bon",
- "bytes",
- "jiff",
- "puniyu_contact 0.8.8 (registry+https://github.com/rust-lang/crates.io-index)",
- "puniyu_element 0.8.8 (registry+https://github.com/rust-lang/crates.io-index)",
- "puniyu_semver 0.8.9 (registry+https://github.com/rust-lang/crates.io-index)",
- "puniyu_sender 0.8.8 (registry+https://github.com/rust-lang/crates.io-index)",
- "serde",
- "smol_str",
- "strum 0.28.0",
-]
-
-[[package]]
-name = "puniyu_adapter_types"
 version = "0.8.17"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3d39b311106a77c5a76bb3fe63f3f453a0664f2aaac7330883015e40b717eb4e"
 dependencies = [
  "bon",
  "bytes",
  "jiff",
- "puniyu_contact 0.8.8",
- "puniyu_element 0.8.8",
- "puniyu_semver 0.8.9",
- "puniyu_sender 0.8.8",
+ "puniyu_contact",
+ "puniyu_element",
+ "puniyu_semver",
+ "puniyu_sender",
  "serde",
  "smol_str",
  "strum 0.28.0",
@@ -1984,30 +1949,32 @@ dependencies = [
 [[package]]
 name = "puniyu_api"
 version = "0.8.17"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a51e1b169a826096a3b10aab43b2f21758c28de420fe45291125bc83641d8389"
 dependencies = [
  "async-trait",
  "inventory",
- "puniyu_account 0.8.8",
- "puniyu_adapter_api 0.8.17",
+ "puniyu_account",
+ "puniyu_adapter_api",
  "puniyu_adapter_core",
- "puniyu_adapter_types 0.8.17",
- "puniyu_bot 0.8.16",
- "puniyu_command 0.8.16",
- "puniyu_common 0.8.9",
- "puniyu_config 0.8.10",
- "puniyu_contact 0.8.8",
- "puniyu_context 0.8.16",
- "puniyu_element 0.8.8",
- "puniyu_error 0.8.8",
- "puniyu_event 0.8.16",
+ "puniyu_adapter_types",
+ "puniyu_bot",
+ "puniyu_command",
+ "puniyu_common",
+ "puniyu_config",
+ "puniyu_contact",
+ "puniyu_context",
+ "puniyu_element",
+ "puniyu_error",
+ "puniyu_event",
  "puniyu_handler",
- "puniyu_message 0.8.8",
- "puniyu_path 0.8.9",
+ "puniyu_message",
+ "puniyu_path",
  "puniyu_plugin_core",
- "puniyu_runtime 0.8.16",
+ "puniyu_runtime",
  "puniyu_segment",
- "puniyu_semver 0.8.9",
- "puniyu_sender 0.8.8",
+ "puniyu_semver",
+ "puniyu_sender",
  "puniyu_server",
  "puniyu_task",
  "tokio",
@@ -2016,58 +1983,32 @@ dependencies = [
 
 [[package]]
 name = "puniyu_bot"
-version = "0.8.15"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "436dc779dc2e1789f622d148b59bef01e4390581bf59632856c0ba98d91c32c3"
-dependencies = [
- "log",
- "puniyu_account 0.8.8 (registry+https://github.com/rust-lang/crates.io-index)",
- "puniyu_adapter_api 0.8.16",
- "puniyu_adapter_types 0.8.16",
- "puniyu_contact 0.8.8 (registry+https://github.com/rust-lang/crates.io-index)",
- "puniyu_error 0.8.8 (registry+https://github.com/rust-lang/crates.io-index)",
- "puniyu_logger",
- "puniyu_message 0.8.8 (registry+https://github.com/rust-lang/crates.io-index)",
- "puniyu_runtime 0.8.15",
-]
-
-[[package]]
-name = "puniyu_bot"
 version = "0.8.16"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a1d6414adcbd78fa4a96c83c340c0e1938c8b41c0d95ec4595f603971d3a4753"
 dependencies = [
  "log",
- "puniyu_account 0.8.8",
- "puniyu_adapter_api 0.8.17",
- "puniyu_adapter_types 0.8.17",
- "puniyu_contact 0.8.8",
- "puniyu_error 0.8.8",
+ "puniyu_account",
+ "puniyu_adapter_api",
+ "puniyu_adapter_types",
+ "puniyu_contact",
+ "puniyu_error",
  "puniyu_logger",
- "puniyu_message 0.8.8",
- "puniyu_runtime 0.8.16",
-]
-
-[[package]]
-name = "puniyu_command"
-version = "0.8.15"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d84cbef6cba889f7e13c7bdd471d175fd709a2626d2dbb0800597586f19a5d56"
-dependencies = [
- "async-trait",
- "clap",
- "puniyu_command_types 0.8.8 (registry+https://github.com/rust-lang/crates.io-index)",
- "puniyu_context 0.8.15",
- "puniyu_error 0.8.8 (registry+https://github.com/rust-lang/crates.io-index)",
+ "puniyu_message",
+ "puniyu_runtime",
 ]
 
 [[package]]
 name = "puniyu_command"
 version = "0.8.16"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f76a3b6159d356dca7e1e052b4c16726b0ac8b2941535471c7ac635d440c4b5c"
 dependencies = [
  "async-trait",
  "clap",
- "puniyu_command_types 0.8.8",
- "puniyu_context 0.8.16",
- "puniyu_error 0.8.8",
+ "puniyu_command_types",
+ "puniyu_context",
+ "puniyu_error",
 ]
 
 [[package]]
@@ -2077,19 +2018,9 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ff08b7ab023e97e5fa51d74d260f53f746c204918ae5b776e779cfc927ab8978"
 dependencies = [
  "clap",
- "puniyu_command 0.8.15",
+ "puniyu_command",
  "shlex 2.0.1",
  "thiserror 2.0.18",
-]
-
-[[package]]
-name = "puniyu_command_types"
-version = "0.8.8"
-dependencies = [
- "puniyu_error 0.8.8",
- "serde",
- "serde_repr",
- "strum 0.28.0",
 ]
 
 [[package]]
@@ -2098,21 +2029,10 @@ version = "0.8.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "968ed8fe0033295430d9780a5d3a5249f8329cdb17c0f791464f0a48a4e23791"
 dependencies = [
- "puniyu_error 0.8.8 (registry+https://github.com/rust-lang/crates.io-index)",
+ "puniyu_error",
  "serde",
  "serde_repr",
  "strum 0.28.0",
-]
-
-[[package]]
-name = "puniyu_common"
-version = "0.8.9"
-dependencies = [
- "puniyu_error 0.8.8",
- "puniyu_semver 0.8.9",
- "puniyu_system_info",
- "serde",
- "toml",
 ]
 
 [[package]]
@@ -2121,8 +2041,8 @@ version = "0.8.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "33c4ffe510f350ed02fe3ef1dbadd66145ff701f79417c8b7e39c7a6434afda3"
 dependencies = [
- "puniyu_error 0.8.8 (registry+https://github.com/rust-lang/crates.io-index)",
- "puniyu_semver 0.8.9 (registry+https://github.com/rust-lang/crates.io-index)",
+ "puniyu_error",
+ "puniyu_semver",
  "puniyu_system_info",
  "serde",
  "toml",
@@ -2130,47 +2050,21 @@ dependencies = [
 
 [[package]]
 name = "puniyu_config"
-version = "0.8.9"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e0d259d21ae78870e7a43a45de668cf97bf2f9fd6d51bdaf783c68ac23a534c6"
-dependencies = [
- "log",
- "notify-debouncer-full",
- "puniyu_common 0.8.9 (registry+https://github.com/rust-lang/crates.io-index)",
- "puniyu_error 0.8.8 (registry+https://github.com/rust-lang/crates.io-index)",
- "puniyu_logger",
- "puniyu_path 0.8.9 (registry+https://github.com/rust-lang/crates.io-index)",
- "serde",
- "serde_repr",
- "smol_str",
- "sugar_path",
- "toml",
-]
-
-[[package]]
-name = "puniyu_config"
 version = "0.8.10"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "64a31dce0dc9305812d88d9294f8467a1c2df10bb0a0fbdd56fe5e1a9eb39fa4"
 dependencies = [
  "log",
  "notify-debouncer-full",
- "puniyu_common 0.8.9",
- "puniyu_error 0.8.8",
+ "puniyu_common",
+ "puniyu_error",
  "puniyu_logger",
- "puniyu_path 0.8.9",
+ "puniyu_path",
  "serde",
  "serde_repr",
  "smol_str",
  "sugar_path",
  "toml",
-]
-
-[[package]]
-name = "puniyu_contact"
-version = "0.8.8"
-dependencies = [
- "bon",
- "serde",
- "strum 0.28.0",
 ]
 
 [[package]]
@@ -2186,52 +2080,32 @@ dependencies = [
 
 [[package]]
 name = "puniyu_context"
-version = "0.8.15"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c879bf917af337a82384fc62b7de71564887b543cf771ea08a71980035d35a20"
-dependencies = [
- "bytes",
- "puniyu_account 0.8.8 (registry+https://github.com/rust-lang/crates.io-index)",
- "puniyu_adapter_api 0.8.16",
- "puniyu_adapter_types 0.8.16",
- "puniyu_bot 0.8.15",
- "puniyu_command_types 0.8.8 (registry+https://github.com/rust-lang/crates.io-index)",
- "puniyu_config 0.8.9",
- "puniyu_contact 0.8.8 (registry+https://github.com/rust-lang/crates.io-index)",
- "puniyu_element 0.8.8 (registry+https://github.com/rust-lang/crates.io-index)",
- "puniyu_error 0.8.8 (registry+https://github.com/rust-lang/crates.io-index)",
- "puniyu_event 0.8.15",
- "puniyu_message 0.8.8 (registry+https://github.com/rust-lang/crates.io-index)",
- "puniyu_runtime 0.8.15",
- "puniyu_sender 0.8.8 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
-name = "puniyu_context"
 version = "0.8.16"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4431b4bf37d3981c915b4b3feecaf0552f7396de54fc6881e80cbcff8f96740a"
 dependencies = [
  "bytes",
- "puniyu_account 0.8.8",
- "puniyu_adapter_api 0.8.17",
- "puniyu_adapter_types 0.8.17",
- "puniyu_bot 0.8.16",
- "puniyu_command_types 0.8.8",
- "puniyu_config 0.8.10",
- "puniyu_contact 0.8.8",
- "puniyu_element 0.8.8",
- "puniyu_error 0.8.8",
- "puniyu_event 0.8.16",
- "puniyu_message 0.8.8",
- "puniyu_runtime 0.8.16",
- "puniyu_sender 0.8.8",
+ "puniyu_account",
+ "puniyu_adapter_api",
+ "puniyu_adapter_types",
+ "puniyu_bot",
+ "puniyu_command_types",
+ "puniyu_config",
+ "puniyu_contact",
+ "puniyu_element",
+ "puniyu_error",
+ "puniyu_event",
+ "puniyu_message",
+ "puniyu_runtime",
+ "puniyu_sender",
 ]
 
 [[package]]
 name = "puniyu_cooldown"
-version = "0.8.5"
+version = "0.8.9"
 dependencies = [
  "jiff",
- "puniyu_error 0.8.8 (registry+https://github.com/rust-lang/crates.io-index)",
+ "puniyu_error",
  "serde",
  "serde_json",
  "strum 0.28.0",
@@ -2240,34 +2114,36 @@ dependencies = [
 [[package]]
 name = "puniyu_core"
 version = "0.8.17"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5e90467104259c6c7a8758cde672d4e6d64166c292eae96896293ab1b64092e3"
 dependencies = [
  "bytes",
  "const-str",
  "convert_case 0.11.0",
  "log",
- "puniyu_account 0.8.8",
+ "puniyu_account",
  "puniyu_adapter_core",
- "puniyu_adapter_types 0.8.17",
+ "puniyu_adapter_types",
  "puniyu_api",
- "puniyu_bot 0.8.16",
- "puniyu_command 0.8.16",
- "puniyu_common 0.8.9",
- "puniyu_config 0.8.10",
- "puniyu_contact 0.8.8",
+ "puniyu_bot",
+ "puniyu_command",
+ "puniyu_common",
+ "puniyu_config",
+ "puniyu_contact",
  "puniyu_dispatch",
- "puniyu_error 0.8.8",
- "puniyu_event 0.8.16",
+ "puniyu_error",
+ "puniyu_event",
  "puniyu_handler",
  "puniyu_loader",
  "puniyu_loader_builtin",
  "puniyu_logger",
- "puniyu_message 0.8.8",
- "puniyu_path 0.8.9",
+ "puniyu_message",
+ "puniyu_path",
  "puniyu_plugin_core",
- "puniyu_runtime 0.8.16",
+ "puniyu_runtime",
  "puniyu_segment",
- "puniyu_semver 0.8.9",
- "puniyu_sender 0.8.8",
+ "puniyu_semver",
+ "puniyu_sender",
  "puniyu_server",
  "puniyu_task",
  "puniyu_version",
@@ -2278,21 +2154,14 @@ dependencies = [
 [[package]]
 name = "puniyu_dispatch"
 version = "0.8.16"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0050b64398b61fce8e03431f657c7dc4d0fa40c67e829cef4c358a998e063e70"
 dependencies = [
  "log",
- "puniyu_event 0.8.16",
+ "puniyu_event",
  "puniyu_handler",
  "thiserror 2.0.18",
  "tokio",
-]
-
-[[package]]
-name = "puniyu_element"
-version = "0.8.8"
-dependencies = [
- "bytes",
- "serde",
- "strum 0.28.0",
 ]
 
 [[package]]
@@ -2309,14 +2178,6 @@ dependencies = [
 [[package]]
 name = "puniyu_error"
 version = "0.8.8"
-dependencies = [
- "thiserror 2.0.18",
- "toml",
-]
-
-[[package]]
-name = "puniyu_error"
-version = "0.8.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fa6d558b7141f258f2450b06a36420971df294082a016ff49e6297f828a106c6"
 dependencies = [
@@ -2326,32 +2187,17 @@ dependencies = [
 
 [[package]]
 name = "puniyu_event"
-version = "0.8.15"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "abbb8e20e116392e8626a19b859c942caeb11b624c89495bd7ed9d3a0cf7077d"
-dependencies = [
- "bytes",
- "derive_more",
- "puniyu_adapter_api 0.8.16",
- "puniyu_bot 0.8.15",
- "puniyu_contact 0.8.8 (registry+https://github.com/rust-lang/crates.io-index)",
- "puniyu_element 0.8.8 (registry+https://github.com/rust-lang/crates.io-index)",
- "puniyu_sender 0.8.8 (registry+https://github.com/rust-lang/crates.io-index)",
- "serde",
- "strum 0.28.0",
-]
-
-[[package]]
-name = "puniyu_event"
 version = "0.8.16"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6f138fbd32937118a789fc21ce303f3d54bfe057fb9f8b8ddd63201fa4c4f35f"
 dependencies = [
  "bytes",
  "derive_more",
- "puniyu_adapter_api 0.8.17",
- "puniyu_bot 0.8.16",
- "puniyu_contact 0.8.8",
- "puniyu_element 0.8.8",
- "puniyu_sender 0.8.8",
+ "puniyu_adapter_api",
+ "puniyu_bot",
+ "puniyu_contact",
+ "puniyu_element",
+ "puniyu_sender",
  "serde",
  "strum 0.28.0",
 ]
@@ -2359,41 +2205,47 @@ dependencies = [
 [[package]]
 name = "puniyu_handler"
 version = "0.8.16"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c2f952c5aa5906f3d78420954ed76c687bdcdf8c344fe549b1b0045f91a88350"
 dependencies = [
  "async-trait",
- "puniyu_error 0.8.8",
- "puniyu_event 0.8.16",
+ "puniyu_error",
+ "puniyu_event",
 ]
 
 [[package]]
 name = "puniyu_handler_command"
-version = "0.8.5"
+version = "0.8.9"
 dependencies = [
  "itertools",
  "log",
  "puniyu_command_parser",
  "puniyu_cooldown",
  "puniyu_core",
- "puniyu_error 0.8.8 (registry+https://github.com/rust-lang/crates.io-index)",
+ "puniyu_error",
 ]
 
 [[package]]
 name = "puniyu_loader"
 version = "0.8.17"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6ea9ade145ca06b36e7b71c7b29a4ee881c902a90b921f2a8e186d31ac37040a"
 dependencies = [
  "async-trait",
  "puniyu_adapter_core",
- "puniyu_error 0.8.8",
+ "puniyu_error",
  "puniyu_plugin_core",
 ]
 
 [[package]]
 name = "puniyu_loader_builtin"
 version = "0.8.17"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cdb40beb5526c4b25729d872a42a58a2270902b7d832dfe66ef13a6fda50815d"
 dependencies = [
  "async-trait",
  "puniyu_adapter_core",
- "puniyu_error 0.8.8",
+ "puniyu_error",
  "puniyu_loader",
  "puniyu_plugin_core",
 ]
@@ -2414,7 +2266,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_macros"
-version = "0.8.7"
+version = "0.8.9"
 dependencies = [
  "convert_case 0.11.0",
  "croner",
@@ -2426,26 +2278,11 @@ dependencies = [
 [[package]]
 name = "puniyu_message"
 version = "0.8.8"
-dependencies = [
- "puniyu_element 0.8.8",
- "serde",
-]
-
-[[package]]
-name = "puniyu_message"
-version = "0.8.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "aedc5e3706950458e2987d2bfa9fe6eb78ae795d44ae624f250890dd83e67897"
 dependencies = [
- "puniyu_element 0.8.8 (registry+https://github.com/rust-lang/crates.io-index)",
+ "puniyu_element",
  "serde",
-]
-
-[[package]]
-name = "puniyu_path"
-version = "0.8.9"
-dependencies = [
- "puniyu_common 0.8.9",
 ]
 
 [[package]]
@@ -2454,12 +2291,12 @@ version = "0.8.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4b7e1d258a8c9194fba2629b48ca84ec032b34d4b59e559ce1a131f357579a84"
 dependencies = [
- "puniyu_common 0.8.9 (registry+https://github.com/rust-lang/crates.io-index)",
+ "puniyu_common",
 ]
 
 [[package]]
 name = "puniyu_plugin"
-version = "0.8.8"
+version = "0.8.9"
 dependencies = [
  "puniyu_core",
  "puniyu_macros",
@@ -2470,15 +2307,17 @@ dependencies = [
 [[package]]
 name = "puniyu_plugin_core"
 version = "0.8.17"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "404455e4c6732d8f3830410dc26f73f625ea6b086a016a7f31f227401e5d063c"
 dependencies = [
  "async-trait",
  "const-str",
  "log",
- "puniyu_command 0.8.16",
- "puniyu_common 0.8.9",
- "puniyu_config 0.8.10",
- "puniyu_error 0.8.8",
- "puniyu_semver 0.8.9",
+ "puniyu_command",
+ "puniyu_common",
+ "puniyu_config",
+ "puniyu_error",
+ "puniyu_semver",
  "puniyu_server",
  "puniyu_task",
  "puniyu_version",
@@ -2486,49 +2325,28 @@ dependencies = [
 
 [[package]]
 name = "puniyu_runtime"
-version = "0.8.15"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "51dd45365c59644398387691fbac2ab33a649c45917171dab1c059278238b26d"
-dependencies = [
- "actix-web",
- "puniyu_account 0.8.8 (registry+https://github.com/rust-lang/crates.io-index)",
- "puniyu_adapter_api 0.8.16",
- "puniyu_adapter_types 0.8.16",
- "puniyu_contact 0.8.8 (registry+https://github.com/rust-lang/crates.io-index)",
- "puniyu_error 0.8.8 (registry+https://github.com/rust-lang/crates.io-index)",
- "puniyu_message 0.8.8 (registry+https://github.com/rust-lang/crates.io-index)",
- "tokio",
-]
-
-[[package]]
-name = "puniyu_runtime"
 version = "0.8.16"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3881c7bfcccc64c33a2804df36a7b25827fbde5c7cecbdaec0b77d62b00b9053"
 dependencies = [
  "actix-web",
- "puniyu_account 0.8.8",
- "puniyu_adapter_api 0.8.17",
- "puniyu_adapter_types 0.8.17",
- "puniyu_contact 0.8.8",
- "puniyu_error 0.8.8",
- "puniyu_message 0.8.8",
+ "puniyu_account",
+ "puniyu_adapter_api",
+ "puniyu_adapter_types",
+ "puniyu_contact",
+ "puniyu_error",
+ "puniyu_message",
  "tokio",
 ]
 
 [[package]]
 name = "puniyu_segment"
 version = "0.8.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "66e0d1e9c696077c8268557d115a23c53ba40821a59cc1eb5529acc454ae3133"
 dependencies = [
  "bytes",
- "puniyu_element 0.8.8",
-]
-
-[[package]]
-name = "puniyu_semver"
-version = "0.8.9"
-dependencies = [
- "derive_more",
- "semver",
- "serde",
+ "puniyu_element",
 ]
 
 [[package]]
@@ -2545,15 +2363,6 @@ dependencies = [
 [[package]]
 name = "puniyu_sender"
 version = "0.8.8"
-dependencies = [
- "bon",
- "serde",
- "strum 0.28.0",
-]
-
-[[package]]
-name = "puniyu_sender"
-version = "0.8.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a5bff1fd1d0835d4c8a055373a1bb5788c556d8dacfcc8bb51135873aa0adacf"
 dependencies = [
@@ -2565,6 +2374,8 @@ dependencies = [
 [[package]]
 name = "puniyu_server"
 version = "0.8.16"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "421a4e074012e0fd4aa0a5134b60d9a6c46f6955927a4c3c7d12783727d45985"
 dependencies = [
  "actix-web",
  "bytes",
@@ -2572,12 +2383,12 @@ dependencies = [
  "infer",
  "log",
  "mime",
- "puniyu_common 0.8.9",
- "puniyu_error 0.8.8",
+ "puniyu_common",
+ "puniyu_error",
  "puniyu_logger",
- "puniyu_path 0.8.9",
- "puniyu_runtime 0.8.16",
- "puniyu_semver 0.8.9",
+ "puniyu_path",
+ "puniyu_runtime",
+ "puniyu_semver",
  "serde",
  "serde_json",
  "tokio",
@@ -2605,11 +2416,13 @@ dependencies = [
 [[package]]
 name = "puniyu_task"
 version = "0.8.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bd55ca1b322041bf98f68c9849ed9375e030325729c3ebfaedddc5e21ac22e73"
 dependencies = [
  "async-trait",
  "chrono",
  "log",
- "puniyu_error 0.8.8",
+ "puniyu_error",
  "puniyu_logger",
  "tokio",
  "tokio-cron-scheduler",
@@ -2619,9 +2432,11 @@ dependencies = [
 [[package]]
 name = "puniyu_version"
 version = "0.8.17"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b280600abc4ad59a492522764cabf0bd34424cbdca0e8c2f534b8536879ea851"
 dependencies = [
  "const-str",
- "puniyu_semver 0.8.9",
+ "puniyu_semver",
 ]
 
 [[package]]
