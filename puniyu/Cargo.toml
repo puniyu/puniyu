@@ -18,16 +18,19 @@ path = "src/main.rs"
 [dependencies]
 bytes.workspace = true
 
-
 puniyu_core.workspace = true
-# puniyu_adapter_console = { version = "0.8.0" }
-# puniyu_handler_command = { version = "0.8.5", path = "../crates/puniyu_handler_command" }
-# puniyu_plugin_basic = { version = "0.8.0" }
+
+puniyu_adapter_console = { version = "0.8.2" }
+puniyu_handler_command = { version = "0.8.9", path = "../crates/puniyu_handler_command" }
+puniyu_plugin_basic = { version = "0.8.1" }
+
 tokio = { workspace = true, features = ["macros"] }
 
 figlet-rs = { version = "1.0.0" }
 convert_case = { version = "0.11.0" }
 const-str = { version = "1.1.0" }
+puniyu_loader_builtin = { version = "0.8.18" }
+puniyu_plugin_echo = { version = "0.1.1" }
 
 [build-dependencies]
 vergen-git2 = { version = "9.1.0", features = ["build"] }

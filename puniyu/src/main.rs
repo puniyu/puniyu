@@ -25,6 +25,13 @@ async fn main() -> std::io::Result<()> {
 			env!("CARGO_MANIFEST_DIR"),
 			"/assets/logo.png"
 		))))
+		.with_handler(puniyu_handler_command::Handler)
+		.with_loader(
+			puniyu_loader_builtin::BuiltinLoader::new()
+				.with_adapter(puniyu_adapter_console::Adapter::default())
+				.with_plugin(puniyu_plugin_basic::Plugin)
+				.with_plugin(puniyu_plugin_echo::Plugin),
+		)
 		.build()
 		.run()
 		.await

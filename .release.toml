@@ -131,7 +131,7 @@ name = "puniyu_cooldown"
 
 [[package]]
 name = "puniyu_handler_command"
-changelog_include = ["puniyu_handler_command"]
+changelog_include = ["puniyu_cooldown"]
 
 [[package]]
 name = "puniyu_adapter"
