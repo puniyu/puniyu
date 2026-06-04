@@ -1860,7 +1860,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu"
-version = "0.8.8"
+version = "0.8.9"
 dependencies = [
  "bytes",
  "const-str",
@@ -1978,9 +1978,9 @@ dependencies = [
 
 [[package]]
 name = "puniyu_api"
-version = "0.8.17"
+version = "0.8.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a51e1b169a826096a3b10aab43b2f21758c28de420fe45291125bc83641d8389"
+checksum = "e08b3a4fdee69488a7ca2fa2a6fa81eddcdbfeb6735b569c37159572a733c5b3"
 dependencies = [
  "async-trait",
  "inventory",
@@ -2143,9 +2143,9 @@ dependencies = [
 
 [[package]]
 name = "puniyu_core"
-version = "0.8.17"
+version = "0.8.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5e90467104259c6c7a8758cde672d4e6d64166c292eae96896293ab1b64092e3"
+checksum = "99b72cac73928faa74a8f977a06d7e891dde13e586fb33d2a083c65d5ccd49e8"
 dependencies = [
  "bytes",
  "const-str",
@@ -2183,9 +2183,9 @@ dependencies = [
 
 [[package]]
 name = "puniyu_dispatch"
-version = "0.8.16"
+version = "0.8.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0050b64398b61fce8e03431f657c7dc4d0fa40c67e829cef4c358a998e063e70"
+checksum = "b4bd78b2786cf3133faed19934250304588944df00dca31872dfdd9044923bf5"
 dependencies = [
  "log",
  "puniyu_event",
@@ -2234,9 +2234,9 @@ dependencies = [
 
 [[package]]
 name = "puniyu_handler"
-version = "0.8.16"
+version = "0.8.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c2f952c5aa5906f3d78420954ed76c687bdcdf8c344fe549b1b0045f91a88350"
+checksum = "99420714b2dcbb091035d321953ec6440ce340e6da98a6c02088b94aeee02ef4"
 dependencies = [
  "async-trait",
  "puniyu_error",
