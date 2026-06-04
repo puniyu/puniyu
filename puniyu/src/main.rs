@@ -2,7 +2,7 @@ use bytes::Bytes;
 use convert_case::{Case, Casing};
 use figlet_rs::FIGlet;
 use puniyu_core::App;
-use puniyu_version::Version;
+use puniyu_core::Version;
 
 const fn app_name() -> &'static str {
 	env!("CARGO_PKG_NAME")
@@ -25,9 +25,6 @@ async fn main() -> std::io::Result<()> {
 			env!("CARGO_MANIFEST_DIR"),
 			"/assets/logo.png"
 		))))
-		.with_handler(puniyu_handler_command::Handler)
-		.with_adapter(puniyu_adapter_console::Adapter)
-		.with_plugin(puniyu_plugin_basic::Plugin)
 		.build()
 		.run()
 		.await

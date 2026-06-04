@@ -1,2 +1,5 @@
+[patch.crates-io]
+# puniyu_core = { path = "../core/crates/puniyu_core" }
+
 [env]
 LOGGER_LEVEL = "debug"

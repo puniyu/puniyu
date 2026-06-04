@@ -15,51 +15,23 @@ edition = "2024"
 rust-version = "1.88.0"
 
 [workspace.dependencies]
-log = { version = "0.4.28" }
+log = { version = "0.4.30" }
+clap = { version = "4.5", default-features = false, features = ["std"] }
+thiserror = { version = "2.0.18" }
 serde = { version = "1.0.228", features = ["derive"] }
 strum = { version = "0.28.0", features = ["derive"] }
 bytes = { version = "1.11.1" }
 toml = { version = "1.1.2" }
-jiff = { version = "0.2.23", features = ["serde"] }
+jiff = { version = "0.2.28", features = ["serde"] }
 tokio = { version = "1.47.1" }
 actix-web = { version = "4.13.0" }
-async-trait = { version = "0.1.89" }
-prost = { version = "0.14.3" }
-prost-build = { version = "0.14.1" }
-protoc-bin-vendored = { version = "3.2.0" }
+smol_str = { version = "0.3.6", features = ["serde"] }
 
-puniyu_error = { version = "0.8.1", default-features = false }
-puniyu_logger = { version = "0.7.5" }
-puniyu_version = { version = "0.8.1" }
-puniyu_bot = { version = "0.8.2" }
-puniyu_sender = { version = "0.8.1" }
-puniyu_contact = { version = "0.8.1" }
-puniyu_segment = { version = "0.8.1" }
-puniyu_message = { version = "0.8.1" }
-puniyu_account = { version = "0.8.1" }
-puniyu_event = { version = "0.8.2" }
-puniyu_dispatch = { version = "0.8.2" }
-puniyu_config = { version = "0.8.1" }
-puniyu_element = { version = "0.8.1" }
-puniyu_api = { version = "0.8.1" }
-puniyu_runtime = { version = "0.8.2" }
-puniyu_command = { version = "0.8.2" }
-puniyu_command_types = { version = "0.8.1" }
-puniyu_hook = { version = "0.8.2" }
-puniyu_task = { version = "0.8.1" }
-puniyu_server = { version = "0.8.2" }
-puniyu_context = { version = "0.8.2" }
-puniyu_handler = { version = "0.8.2" }
+puniyu_core = { version = "0.8.16" }
 
-puniyu_adapter_core = { version = "0.8.3" }
-puniyu_adapter_types = { version = "0.8.3" }
+puniyu_cooldown = { version = "0.8.5", path = "./crates/puniyu_cooldown" }
+puniyu_macros = { version = "0.8.5", path = "./crates/puniyu_macros" }
 
-puniyu_plugin_core = { version = "0.8.2" }
-puniyu_macros = { version = "0.8.3", path = "./crates/puniyu_macros" }
-
-[patch.crates-io]
-puniyu_plugin = { path = "./crates/puniyu_plugin" }
-puniyu_adapter = { path = "./crates/puniyu_adapter" }
 
 [profile.release]
 lto = "fat"

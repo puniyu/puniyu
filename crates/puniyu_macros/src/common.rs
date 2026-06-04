@@ -1,37 +1,64 @@
 use convert_case::{Case, Casing};
-use proc_macro2::TokenStream;
-use quote::{ToTokens, quote};
-use syn::{FnArg, Ident, Path, Result, Signature, Type, spanned::Spanned};
+use quote::ToTokens;
+use syn::{FnArg, Ident, ImplItemFn, ItemImpl, ItemStruct, Result, Signature, Type, spanned::Spanned};
 
-pub(crate) fn validate_async(fn_sig: &Signature) -> Result<()> {
+
+/// 函数必须是 async。
+pub(crate) fn ensure_async(fn_sig: &Signature) -> Result<()> {
 	if fn_sig.asyncness.is_none() {
 		return Err(syn::Error::new(fn_sig.span(), "function must be async"));
 	}
 	Ok(())
 }
 
-pub(crate) fn validate_hook_args(fn_sig: &Signature) -> Result<()> {
-	let arg_type = validate_single_ref_arg(fn_sig, "hook function parameter must not be `self`")?;
-	if !path_matches(arg_type, &["HookType"])
-		&& !path_matches(arg_type, &["puniyu_plugin", "hook", "HookType"])
-		&& !path_matches(arg_type, &["puniyu_adapter", "hook", "HookType"])
-	{
-		return Err(syn::Error::new(
-			arg_type.span(),
-			"hook function parameter type must be `puniyu_plugin::hook::HookType` or `puniyu_adapter::hook::HookType`",
-		));
-	}
-	Ok(())
-}
-
-pub(crate) fn validate_zero_args(fn_sig: &Signature) -> Result<()> {
+/// 函数必须无参数。
+pub(crate) fn ensure_no_params(fn_sig: &Signature) -> Result<()> {
 	if !fn_sig.inputs.is_empty() {
 		return Err(syn::Error::new(fn_sig.span(), "function must not have parameters"));
 	}
 	Ok(())
 }
 
-pub(crate) fn validate_single_ref_arg<'a>(
+/// 函数返回类型必须是 `expected`。
+pub(crate) fn ensure_return_type(fn_sig: &Signature, expected: &str) -> Result<()> {
+	let expected = expected.replace(' ', "");
+	let err = |span| Err(syn::Error::new(span, format!("function must return `{expected}`")));
+
+	let syn::ReturnType::Type(_, ty) = &fn_sig.output else {
+		return err(fn_sig.span());
+	};
+	let Type::Path(type_path) = ty.as_ref() else {
+		return err(ty.span());
+	};
+	let actual = type_path.path.to_token_stream().to_string().replace(' ', "");
+	if actual == expected || actual == format!("::{expected}") {
+		Ok(())
+	} else {
+		err(ty.span())
+	}
+}
+
+pub(crate) fn ensure_lifecycle(fn_item: &ImplItemFn, expected: &str) -> Result<()> {
+	ensure_async(&fn_item.sig)?;
+	ensure_no_params(&fn_item.sig)?;
+	ensure_return_type(&fn_item.sig, expected)
+}
+
+
+pub(crate) fn ensure_valid_host(item: &ItemStruct, reserved: &str) -> Result<()> {
+	if item.ident == reserved {
+		return Err(syn::Error::new(
+			item.ident.span(),
+			format!(
+				"struct name `{reserved}` is reserved for the generated wrapper; rename your struct"
+			),
+		));
+	}
+	Ok(())
+}
+
+
+pub(crate) fn ensure_single_ref_param<'a>(
 	fn_sig: &'a Signature,
 	receiver_err: &str,
 ) -> Result<&'a Type> {
@@ -60,100 +87,44 @@ pub(crate) fn validate_single_ref_arg<'a>(
 	}
 }
 
-pub(crate) fn validate_return_type(fn_sig: &Signature, expected: &str) -> Result<()> {
-	let expected = expected.replace(' ', "");
-	let err = |span| Err(syn::Error::new(span, format!("function must return `{expected}`")));
 
-	let syn::ReturnType::Type(_, ty) = &fn_sig.output else {
-		return err(fn_sig.span());
-	};
-	let Type::Path(type_path) = ty.as_ref() else {
-		return err(ty.span());
-	};
-	let actual = normalize_path_string(&type_path.path);
-	if actual == expected || actual == format!("::{expected}") { Ok(()) } else { err(ty.span()) }
+pub(crate) fn build_wrapper_name(fn_name: &Ident, suffix: &str) -> Ident {
+	Ident::new(
+		&format!("{}{}", fn_name.to_string().to_case(Case::Pascal), suffix),
+		fn_name.span(),
+	)
 }
 
-pub(crate) fn function_struct_ident(fn_name: &Ident, suffix: &str) -> Ident {
-	Ident::new(&format!("{}{}", fn_name.to_string().to_case(Case::Pascal), suffix), fn_name.span())
-}
 
-pub(crate) fn default_name_from_ident(ident: &Ident) -> String {
+pub(crate) fn to_snake_case(ident: &Ident) -> String {
 	ident.to_string().to_case(Case::Snake)
 }
 
-pub(crate) fn config_name(explicit_name: Option<&str>, ident: &Ident) -> String {
-	explicit_name
-		.map(|name| name.to_case(Case::Snake))
-		.unwrap_or_else(|| default_name_from_ident(ident))
+
+
+pub(crate) fn extract_type_from_impl(item: &ItemImpl) -> Result<Ident> {
+	let Type::Path(type_path) = item.self_ty.as_ref() else {
+		return Err(syn::Error::new(item.self_ty.span(), "impl target must be a named type"));
+	};
+	let Some(segment) = type_path.path.segments.last() else {
+		return Err(syn::Error::new(type_path.path.span(), "impl target must not be empty"));
+	};
+	Ok(segment.ident.clone())
 }
 
-pub(crate) fn hook_type_tokens(
-	root: &str,
-	hook_type: Option<&str>,
-	span: proc_macro2::Span,
-) -> Result<TokenStream> {
-	let root = match root {
-		"plugin" => quote!(::puniyu_plugin::hook),
-		"adapter" => quote!(::puniyu_adapter::hook),
-		_ => return Err(syn::Error::new(span, "invalid hook root")),
-	};
-
-	let Some(hook_type) = hook_type else {
-		return Ok(quote!(#root::HookType::default()));
-	};
-
-	let parts: Vec<&str> = hook_type.split('.').collect();
-	match parts.as_slice() {
-		["event"] => Ok(quote!(#root::HookType::Event(#root::HookEventType::default()))),
-		["event", "message"] => Ok(quote!(#root::HookType::Event(#root::HookEventType::Message))),
-		["event", "extension"] => {
-			Ok(quote!(#root::HookType::Event(#root::HookEventType::Extension)))
-		}
-		["event", "all"] => Ok(quote!(#root::HookType::Event(#root::HookEventType::All))),
-		["status"] => Ok(quote!(#root::HookType::Status(#root::StatusType::default()))),
-		["status", "start"] => Ok(quote!(#root::HookType::Status(#root::StatusType::Start))),
-		["status", "stop"] => Ok(quote!(#root::HookType::Status(#root::StatusType::Stop))),
-		["event", subtype] => Err(syn::Error::new(
-			span,
-			format!(
-				"Invalid event subtype '{subtype}'. Valid event subtypes are: 'message', 'extension', 'all'. Examples: 'event.message', 'event.all'"
-			),
-		)),
-		["status", subtype] => Err(syn::Error::new(
-			span,
-			format!(
-				"Invalid status subtype '{subtype}'. Valid status subtypes are: 'start', 'stop'. Examples: 'status.start', 'status.stop'"
-			),
-		)),
-		[category, _] => Err(syn::Error::new(
-			span,
-			format!(
-				"Invalid hook category '{category}'. Valid categories are: 'event', 'status'. Examples: 'event.message', 'status.start'"
-			),
-		)),
-		[category] => Err(syn::Error::new(
-			span,
-			format!(
-				"Invalid hook category '{category}'. Valid categories are: 'event', 'status'. Examples: 'event', 'event.message', 'status.start'"
-			),
-		)),
-		_ => Err(syn::Error::new(
-			span,
-			format!(
-				"Invalid hook type format '{hook_type}'. Expected format: 'category' or 'category.subtype'. Examples: 'event', 'event.message', 'status.start'"
-			),
-		)),
-	}
-}
-
-pub(crate) fn path_matches(ty: &Type, expected_segments: &[&str]) -> bool {
+/// 类型路径末尾段是否与 `expected_segments` 末尾一致。
+/// 用于判断 `puniyu_plugin::result::Result` 和 `::puniyu_plugin::result::Result` 是否匹配。
+pub(crate) fn type_ends_with(ty: &Type, expected_segments: &[&str]) -> bool {
 	let Type::Path(type_path) = ty else {
 		return false;
 	};
-	let actual: Vec<String> =
-		type_path.path.segments.iter().map(|segment| segment.ident.to_string()).collect();
-	if actual == expected_segments.iter().map(|segment| segment.to_string()).collect::<Vec<_>>() {
+	let actual: Vec<String> = type_path
+		.path
+		.segments
+		.iter()
+		.map(|segment| segment.ident.to_string())
+		.collect();
+	if actual == expected_segments.iter().map(|s| (*s).to_string()).collect::<Vec<_>>() {
 		return true;
 	}
 	if actual
@@ -166,6 +137,4 @@ pub(crate) fn path_matches(ty: &Type, expected_segments: &[&str]) -> bool {
 	false
 }
 
-pub(crate) fn normalize_path_string(path: &Path) -> String {
-	path.to_token_stream().to_string().replace(' ', "")
-}
+

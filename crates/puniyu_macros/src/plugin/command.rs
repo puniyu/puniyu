@@ -1,13 +1,12 @@
 use crate::{
-	ArgType, CommandArgs,
-	common::{default_name_from_ident, function_struct_ident, path_matches, validate_async},
+	common::{build_wrapper_name, ensure_async, to_snake_case, type_ends_with}, ArgType, CommandArgs,
 };
 use quote::{ToTokens, quote};
 use syn::{Attribute, ItemFn, Signature, Type, spanned::Spanned};
 
 pub fn command(mut item: ItemFn, cfg: CommandArgs) -> proc_macro2::TokenStream {
 	let fn_sig = item.sig.clone();
-	if let Err(err) = validate_async(&fn_sig) {
+	if let Err(err) = ensure_async(&fn_sig) {
 		return err.to_compile_error();
 	}
 	if let Err(err) = validate_command_args(&fn_sig) {
@@ -23,8 +22,8 @@ pub fn command(mut item: ItemFn, cfg: CommandArgs) -> proc_macro2::TokenStream {
 	};
 
 	let fn_name = &item.sig.ident;
-	let struct_name = function_struct_ident(fn_name, "Command");
-	let command_name = cfg.name.unwrap_or_else(|| default_name_from_ident(fn_name));
+	let struct_name = build_wrapper_name(fn_name, "Command");
+	let command_name = cfg.name.unwrap_or_else(|| to_snake_case(fn_name));
 	let command_priority = cfg.priority.unwrap_or(500u32);
 	let command_desc = match cfg.desc {
 		Some(desc) => quote!(Some(#desc)),
@@ -58,8 +57,8 @@ pub fn command(mut item: ItemFn, cfg: CommandArgs) -> proc_macro2::TokenStream {
 
 		struct #struct_name;
 
-		#[::puniyu_plugin::__private::async_trait]
-		impl ::puniyu_plugin::__private::Command for #struct_name {
+		#[::puniyu_plugin::async_trait]
+		impl ::puniyu_plugin::command::Command for #struct_name {
 			fn name(&self) -> &str {
 				#command_name
 			}
@@ -88,15 +87,15 @@ pub fn command(mut item: ItemFn, cfg: CommandArgs) -> proc_macro2::TokenStream {
 			async fn execute(
 				&self,
 				ctx: &::puniyu_plugin::context::MessageContext,
-			) -> ::puniyu_plugin::Result<::puniyu_plugin::command::CommandAction> {
+			) -> ::puniyu_plugin::result::Result<::puniyu_plugin::command::CommandAction> {
 				#fn_name(ctx).await
 			}
 		}
 
-		::puniyu_plugin::__private::inventory::submit! {
+		::puniyu_plugin::inventory::submit! {
 			crate::CommandRegistry {
 				plugin_name: env!("CARGO_PKG_NAME"),
-				builder: || -> ::std::sync::Arc<dyn ::puniyu_plugin::__private::Command> {
+				builder: || -> ::std::sync::Arc<dyn ::puniyu_plugin::command::Command> {
 					::std::sync::Arc::new(#struct_name {})
 				}
 			}
@@ -167,13 +166,13 @@ fn build_arg_tokens(args: &[ArgType]) -> syn::Result<Vec<proc_macro2::TokenStrea
 }
 
 fn validate_command_args(fn_sig: &Signature) -> syn::Result<()> {
-	let arg_type = crate::common::validate_single_ref_arg(
+	let arg_type = crate::common::ensure_single_ref_param(
 		fn_sig,
 		"command function parameter must not be `self`",
 	)?;
-	if !path_matches(arg_type, &["MessageContext"])
-		&& !path_matches(arg_type, &["puniyu_context", "MessageContext"])
-		&& !path_matches(arg_type, &["puniyu_plugin", "context", "MessageContext"])
+	if !type_ends_with(arg_type, &["MessageContext"])
+		&& !type_ends_with(arg_type, &["puniyu_context", "MessageContext"])
+		&& !type_ends_with(arg_type, &["puniyu_plugin", "context", "MessageContext"])
 	{
 		return Err(syn::Error::new(
 			arg_type.span(),
@@ -187,7 +186,7 @@ fn validate_command_return_type(fn_sig: &Signature) -> syn::Result<()> {
 	let err = |span| {
 		Err(syn::Error::new(
 			span,
-			"command function must return `puniyu_plugin::Result<CommandAction>` or `puniyu_plugin::Result<puniyu_plugin::command::CommandAction>`",
+			"command function must return `puniyu_plugin::result::Result<CommandAction>` or `puniyu_plugin::result::Result<puniyu_plugin::command::CommandAction>`",
 		))
 	};
 	let syn::ReturnType::Type(_, ty) = &fn_sig.output else {
@@ -199,12 +198,12 @@ fn validate_command_return_type(fn_sig: &Signature) -> syn::Result<()> {
 	let actual = tp.path.to_token_stream().to_string().replace(' ', "");
 	if matches!(
 		actual.as_str(),
-		"puniyu_plugin::Result<CommandAction>"
-			| "::puniyu_plugin::Result<CommandAction>"
-			| "puniyu_plugin::Result<puniyu_plugin::command::CommandAction>"
-			| "::puniyu_plugin::Result<puniyu_plugin::command::CommandAction>"
-			| "puniyu_plugin::Result<::puniyu_plugin::command::CommandAction>"
-			| "::puniyu_plugin::Result<::puniyu_plugin::command::CommandAction>"
+		"puniyu_plugin::result::Result<CommandAction>"
+			| "::puniyu_plugin::result::Result<CommandAction>"
+			| "puniyu_plugin::result::Result<puniyu_plugin::command::CommandAction>"
+			| "::puniyu_plugin::result::Result<puniyu_plugin::command::CommandAction>"
+			| "puniyu_plugin::result::Result<::puniyu_plugin::command::CommandAction>"
+			| "::puniyu_plugin::result::Result<::puniyu_plugin::command::CommandAction>"
 	) {
 		Ok(())
 	} else {

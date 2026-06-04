@@ -3,61 +3,189 @@ pub use command::command;
 mod task;
 pub use task::task;
 mod config;
-pub use config::config;
-mod hook;
+pub use config::derive_plugin_config;
+
 use crate::{
 	PluginArg,
-	common::{validate_async, validate_return_type},
+	common::{ensure_lifecycle, extract_type_from_impl},
 };
-pub use hook::hook;
 use quote::quote;
-use syn::ItemFn;
+use syn::{Ident, ImplItem, ItemImpl, ItemStruct};
 
-pub fn plugin(item: ItemFn, cfg: PluginArg) -> proc_macro2::TokenStream {
-	if let Err(err) = validate_async(&item.sig) {
-		return err.to_compile_error();
-	}
-	if !item.block.stmts.is_empty()
-		&& let Err(err) = validate_return_type(&item.sig, "puniyu_plugin::Result")
-	{
-		return err.to_compile_error();
-	}
+pub fn plugin_struct(item: ItemStruct, cfg: PluginArg) -> proc_macro2::TokenStream {
+	let user_struct_name = &item.ident;
 
 	let plugin_desc = match cfg.desc {
 		Some(desc) => quote!(Some(#desc)),
 		None => quote!(None),
 	};
+
 	let plugin_prefix = match cfg.prefix {
 		Some(prefix) => quote!(Some(#prefix)),
 		None => quote!(None),
 	};
-	let fn_name = &item.sig.ident;
-	let server_impl = match cfg.server {
-		Some(server) => quote! {
-			fn server(&self) -> Option<::puniyu_plugin::__private::ServerFunction> {
-				Some(::puniyu_plugin::__private::ServerFunction::new(#server))
-			}
-		},
-		None => quote! {},
-	};
-	let init_call = if item.block.stmts.is_empty() {
-		quote! {}
-	} else {
+
+	let config_body = cfg.config.map(|config_ty| {
 		quote! {
-			#[inline]
-			async fn init(&self) -> ::puniyu_plugin::Result {
-				#fn_name().await
+			fn __puniyu_configs() -> ::std::vec::Vec<::std::sync::Arc<dyn ::puniyu_plugin::config::Config>> {
+				#config_ty::configs()
 			}
 		}
+	});
+
+	quote! {
+		#item
+
+		impl #user_struct_name {
+			fn __puniyu_description() -> Option<&'static str> {
+				#plugin_desc
+			}
+
+			fn __puniyu_prefix() -> Option<&'static str> {
+				#plugin_prefix
+			}
+
+			#config_body
+		}
+
+		pub(crate) struct TaskRegistry {
+			plugin_name: &'static str,
+			builder: fn() -> ::std::sync::Arc<dyn ::puniyu_plugin::task::Task>,
+		}
+		::puniyu_plugin::inventory::collect!(crate::TaskRegistry);
+
+		pub(crate) struct CommandRegistry {
+			plugin_name: &'static str,
+			builder: fn() -> ::std::sync::Arc<dyn ::puniyu_plugin::command::Command>,
+		}
+		::puniyu_plugin::inventory::collect!(crate::CommandRegistry);
+
+		pub(crate) struct ConfigRegistry {
+			plugin_name: &'static str,
+			builder: fn() -> ::std::sync::Arc<dyn ::puniyu_plugin::config::Config>,
+		}
+		::puniyu_plugin::inventory::collect!(crate::ConfigRegistry);
+	}
+}
+
+pub fn plugin_impl(mut item: ItemImpl, cfg: PluginArg) -> proc_macro2::TokenStream {
+	let host_name = match extract_type_from_impl(&item) {
+		Ok(name) => name,
+		Err(err) => return err.to_compile_error(),
 	};
+
+	if cfg.desc.is_some() || cfg.prefix.is_some() || cfg.config.is_some() {
+		return syn::Error::new(
+			host_name.span(),
+			"desc, prefix and config must be declared on #[plugin] struct",
+		)
+		.to_compile_error();
+	}
+
+	let mut load_fn_name: Option<Ident> = None;
+	let mut unload_fn_name: Option<Ident> = None;
+	let mut server_fn_name: Option<Ident> = None;
+	let mut config_fn_name: Option<Ident> = None;
+
+	for impl_item in &mut item.items {
+		let ImplItem::Fn(method) = impl_item else {
+			continue;
+		};
+		let mut retained = Vec::new();
+		let mut is_on_load = false;
+		let mut is_on_unload = false;
+		let mut is_server = false;
+		let mut is_config = false;
+		for attr in method.attrs.drain(..) {
+			if attr.path().is_ident("on_load") {
+				is_on_load = true;
+			} else if attr.path().is_ident("on_unload") {
+				is_on_unload = true;
+			} else if attr.path().is_ident("server") {
+				is_server = true;
+			} else if attr.path().is_ident("config") {
+				is_config = true;
+			} else {
+				retained.push(attr);
+			}
+		}
+		method.attrs = retained;
+
+		if is_on_load {
+			if let Err(err) = ensure_lifecycle(method, "puniyu_plugin::result::Result") {
+				return err.to_compile_error();
+			}
+			if load_fn_name.is_some() {
+				return syn::Error::new(method.sig.ident.span(), "duplicate #[on_load] function")
+					.to_compile_error();
+			}
+			load_fn_name = Some(method.sig.ident.clone());
+		}
+
+		if is_on_unload {
+			if let Err(err) = ensure_lifecycle(method, "puniyu_plugin::result::Result") {
+				return err.to_compile_error();
+			}
+			if unload_fn_name.is_some() {
+				return syn::Error::new(method.sig.ident.span(), "duplicate #[on_unload] function")
+					.to_compile_error();
+			}
+			unload_fn_name = Some(method.sig.ident.clone());
+		}
+
+		if is_server {
+			if server_fn_name.is_some() {
+				return syn::Error::new(method.sig.ident.span(), "duplicate #[server] function")
+					.to_compile_error();
+			}
+			server_fn_name = Some(method.sig.ident.clone());
+		}
+
+		if is_config {
+			if config_fn_name.is_some() {
+				return syn::Error::new(method.sig.ident.span(), "duplicate #[config] function")
+					.to_compile_error();
+			}
+			config_fn_name = Some(method.sig.ident.clone());
+		}
+	}
+
+	let load_override = load_fn_name.map(|name| {
+		quote! {
+			async fn on_load(&self) -> ::puniyu_plugin::result::Result {
+				#host_name::#name().await
+			}
+		}
+	});
+	let unload_override = unload_fn_name.map(|name| {
+		quote! {
+			async fn on_unload(&self) -> ::puniyu_plugin::result::Result {
+				#host_name::#name().await
+			}
+		}
+	});
+	let server_override = server_fn_name.map(|name| {
+		quote! {
+			fn server(&self) -> Option<::puniyu_plugin::server::ServerFunction> {
+				#host_name::#name()
+			}
+		}
+	});
+	let config_override = config_fn_name.map(|name| {
+		quote! {
+			fn config(&self) -> ::std::vec::Vec<::std::sync::Arc<dyn ::puniyu_plugin::config::Config>> {
+				#host_name::#name()
+			}
+		}
+	});
 
 	quote! {
 		#item
 
 		pub struct Plugin;
 
-		#[::puniyu_plugin::__private::async_trait]
-		impl ::puniyu_plugin::__private::Plugin for Plugin {
+		#[::puniyu_plugin::async_trait]
+		impl ::puniyu_plugin::Plugin for Plugin {
 			fn name(&self) -> &str {
 				env!("CARGO_PKG_NAME")
 			}
@@ -70,82 +198,32 @@ pub fn plugin(item: ItemFn, cfg: PluginArg) -> proc_macro2::TokenStream {
 				}
 			}
 
-			fn author(&self) -> ::std::vec::Vec<&str> {
-				let authors = env!("CARGO_PKG_AUTHORS");
-				if authors.is_empty() {
-					::std::vec![]
-				} else {
-					authors.split(':').map(|author| author.trim()).collect::<::std::vec::Vec<&'static str>>()
-				}
-			}
-
 			fn description(&self) -> Option<&str> {
-				#plugin_desc
+				#host_name::__puniyu_description()
 			}
 
 			fn prefix(&self) -> Option<&str> {
-				#plugin_prefix
+				#host_name::__puniyu_prefix()
 			}
 
-			fn tasks(&self) -> ::std::vec::Vec<::std::sync::Arc<dyn ::puniyu_plugin::__private::Task>> {
-				::puniyu_plugin::__private::inventory::iter::<TaskRegistry>
-					.into_iter()
+			fn tasks(&self) -> ::std::vec::Vec<::std::sync::Arc<dyn ::puniyu_plugin::task::Task>> {
+				::puniyu_plugin::inventory::iter::<crate::TaskRegistry>()
 					.filter(|task| task.plugin_name == env!("CARGO_PKG_NAME"))
 					.map(|task| (task.builder)())
 					.collect()
 			}
 
-			fn commands(&self) -> ::std::vec::Vec<::std::sync::Arc<dyn ::puniyu_plugin::__private::Command>> {
-				::puniyu_plugin::__private::inventory::iter::<CommandRegistry>
-					.into_iter()
+			fn commands(&self) -> ::std::vec::Vec<::std::sync::Arc<dyn ::puniyu_plugin::command::Command>> {
+				::puniyu_plugin::inventory::iter::<crate::CommandRegistry>()
 					.filter(|command| command.plugin_name == env!("CARGO_PKG_NAME"))
 					.map(|command| (command.builder)())
 					.collect()
 			}
 
-			fn hooks(&self) -> ::std::vec::Vec<::std::sync::Arc<dyn ::puniyu_plugin::__private::Hook>> {
-				::puniyu_plugin::__private::inventory::iter::<HookRegistry>
-					.into_iter()
-					.filter(|hook| hook.plugin_name == env!("CARGO_PKG_NAME"))
-					.map(|hook| (hook.builder)())
-					.collect()
-			}
-
-			fn config(&self) -> ::std::vec::Vec<::std::sync::Arc<dyn ::puniyu_plugin::__private::Config>> {
-				::puniyu_plugin::__private::inventory::iter::<ConfigRegistry>
-					.into_iter()
-					.filter(|config| config.plugin_name == env!("CARGO_PKG_NAME"))
-					.map(|config| (config.builder)())
-					.collect()
-			}
-
-			#server_impl
-
-			#init_call
+			#config_override
+			#server_override
+			#load_override
+			#unload_override
 		}
-
-		pub(crate) struct TaskRegistry {
-			plugin_name: &'static str,
-			builder: fn() -> ::std::sync::Arc<dyn ::puniyu_plugin::__private::Task>,
-		}
-		::puniyu_plugin::__private::inventory::collect!(crate::TaskRegistry);
-
-		pub(crate) struct CommandRegistry {
-			plugin_name: &'static str,
-			builder: fn() -> ::std::sync::Arc<dyn ::puniyu_plugin::__private::Command>,
-		}
-		::puniyu_plugin::__private::inventory::collect!(crate::CommandRegistry);
-
-		pub(crate) struct ConfigRegistry {
-			plugin_name: &'static str,
-			builder: fn() -> ::std::sync::Arc<dyn ::puniyu_plugin::__private::Config>,
-		}
-		::puniyu_plugin::__private::inventory::collect!(crate::ConfigRegistry);
-
-		pub(crate) struct HookRegistry {
-			plugin_name: &'static str,
-			builder: fn() -> ::std::sync::Arc<dyn ::puniyu_plugin::__private::Hook>,
-		}
-		::puniyu_plugin::__private::inventory::collect!(crate::HookRegistry);
 	}
 }

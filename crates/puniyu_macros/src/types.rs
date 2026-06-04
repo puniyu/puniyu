@@ -1,27 +1,16 @@
 use syn::{
-	Expr, LitBool, LitInt, LitStr, Result, Token, bracketed,
+	LitBool, LitInt, LitStr, Result, Token, Type, bracketed,
 	parse::{Parse, ParseStream},
 };
 
-pub(crate) struct ConfigArgs {
-	pub name: Option<String>,
-}
-
 pub(crate) struct AdapterArgs {
-	pub runtime: Expr,
-	pub server: Option<Expr>,
-}
-
-pub(crate) struct HookArgs {
-	pub name: Option<String>,
-	pub hook_type: Option<LitStr>,
-	pub priority: Option<u32>,
+	pub config: Option<Type>,
 }
 
 pub(crate) struct PluginArg {
 	pub desc: Option<String>,
 	pub prefix: Option<String>,
-	pub server: Option<Expr>,
+	pub config: Option<Type>,
 }
 
 pub(crate) struct TaskArgs {
@@ -45,19 +34,7 @@ pub(crate) struct CommandArgs {
 	pub permission: Option<LitStr>,
 }
 
-impl ConfigArgs {
-	pub fn parse_tokens(input: proc_macro2::TokenStream) -> Result<Self> {
-		syn::parse2(input)
-	}
-}
-
 impl AdapterArgs {
-	pub fn parse_tokens(input: proc_macro2::TokenStream) -> Result<Self> {
-		syn::parse2(input)
-	}
-}
-
-impl HookArgs {
 	pub fn parse_tokens(input: proc_macro2::TokenStream) -> Result<Self> {
 		syn::parse2(input)
 	}
@@ -87,59 +64,19 @@ impl CommandArgs {
 	}
 }
 
-impl Parse for ConfigArgs {
-	fn parse(input: ParseStream) -> Result<Self> {
-		let mut parser = KeyValueParser::new(input);
-		let mut name = None;
-
-		while let Some(key) = parser.next_key()? {
-			match key.as_str() {
-				"name" => assign_option(&mut name, key, parser.parse_string()?)?,
-				_ => return Err(parser.unknown_key(&key)),
-			}
-		}
-
-		Ok(Self { name })
-	}
-}
-
 impl Parse for AdapterArgs {
 	fn parse(input: ParseStream) -> Result<Self> {
 		let mut parser = KeyValueParser::new(input);
-		let mut runtime = None;
-		let mut server = None;
+		let mut config = None;
 
 		while let Some(key) = parser.next_key()? {
 			match key.as_str() {
-				"runtime" => assign_option(&mut runtime, key, parser.parse_expr()?)?,
-				"server" => assign_option(&mut server, key, parser.parse_expr()?)?,
+				"config" => assign_option(&mut config, key, parser.parse_type()?)?,
 				_ => return Err(parser.unknown_key(&key)),
 			}
 		}
 
-		Ok(Self { runtime: require_field(runtime, "runtime")?, server })
-	}
-}
-
-impl Parse for HookArgs {
-	fn parse(input: ParseStream) -> Result<Self> {
-		let mut parser = KeyValueParser::new(input);
-		let mut name = None;
-		let mut hook_type = None;
-		let mut priority = None;
-
-		while let Some(key) = parser.next_key()? {
-			match key.as_str() {
-				"name" => assign_option(&mut name, key, parser.parse_string()?)?,
-				"hook_type" | "type" | "r#type" => {
-					assign_option(&mut hook_type, key, parser.parse_lit_str()?)?
-				}
-				"priority" => assign_option(&mut priority, key, parser.parse_u32()?)?,
-				_ => return Err(parser.unknown_key(&key)),
-			}
-		}
-
-		Ok(Self { name, hook_type, priority })
+		Ok(Self { config })
 	}
 }
 
@@ -148,18 +85,18 @@ impl Parse for PluginArg {
 		let mut parser = KeyValueParser::new(input);
 		let mut desc = None;
 		let mut prefix = None;
-		let mut server = None;
+		let mut config = None;
 
 		while let Some(key) = parser.next_key()? {
 			match key.as_str() {
 				"desc" => assign_option(&mut desc, key, parser.parse_string()?)?,
 				"prefix" => assign_option(&mut prefix, key, parser.parse_string()?)?,
-				"server" => assign_option(&mut server, key, parser.parse_expr()?)?,
+				"config" => assign_option(&mut config, key, parser.parse_type()?)?,
 				_ => return Err(parser.unknown_key(&key)),
 			}
 		}
 
-		Ok(Self { desc, prefix, server })
+		Ok(Self { desc, prefix, config })
 	}
 }
 
@@ -280,7 +217,7 @@ impl<'a> KeyValueParser<'a> {
 		self.input.parse::<LitInt>()?.base10_parse()
 	}
 
-	fn parse_expr(&mut self) -> Result<Expr> {
+	fn parse_type(&mut self) -> Result<Type> {
 		self.input.parse()
 	}
 

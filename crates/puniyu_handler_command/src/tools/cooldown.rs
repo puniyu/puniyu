@@ -2,10 +2,10 @@ mod bot;
 mod friend;
 mod group;
 
-use puniyu_context::MessageContext;
+use puniyu_core::context::MessageContext;
 use puniyu_cooldown::{CooldownRegistry, CooldownScope};
 use puniyu_error::registry::Error;
-use puniyu_event::EventBase;
+use puniyu_core::event::EventBase;
 
 /// 检查消息是否处于冷却期
 pub fn is_cooling_down(event: &MessageContext) -> bool {

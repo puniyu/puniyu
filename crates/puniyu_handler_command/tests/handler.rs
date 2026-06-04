@@ -1,4 +1,4 @@
-use puniyu_handler::Handler;
+use puniyu_core::handler::Handler;
 use puniyu_handler_command::Handler as CommandHandler;
 
 #[test]

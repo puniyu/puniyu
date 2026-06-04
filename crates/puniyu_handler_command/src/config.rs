@@ -1,15 +1,9 @@
-use puniyu_config::ReactiveMode;
-use puniyu_config::bot_config;
+use puniyu_core::config::{ReactiveMode, bot_config};
 
 pub fn get_bot_alias(bot_id: &str) -> Vec<String> {
-	let bot_config = bot_config();
-	let bot_option = bot_config.bot(bot_id);
-	let aliases = bot_option.alias();
-	if aliases.is_empty() { bot_config.global().alias() } else { aliases }
+	bot_config().bot(bot_id).alias().into_iter().map(str::to_string).collect()
 }
 
 pub fn get_bot_reactive_mode(bot_id: &str) -> ReactiveMode {
-	let bot_config = bot_config();
-	let bot_option = bot_config.bot(bot_id);
-	bot_option.mode()
+	bot_config().bot(bot_id).mode()
 }

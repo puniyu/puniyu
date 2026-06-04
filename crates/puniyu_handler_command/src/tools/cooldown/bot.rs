@@ -1,4 +1,4 @@
-use puniyu_config::bot_config;
+use puniyu_core::config::bot_config;
 use puniyu_cooldown::{CooldownRegistry, CooldownScope};
 use puniyu_error::registry::Error;
 use std::time::Duration;

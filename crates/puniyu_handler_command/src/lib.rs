@@ -19,7 +19,6 @@
 //! assert_eq!(handler.name(), "command");
 //! ```
 
-mod config;
 mod handler;
 mod message;
 mod tools;

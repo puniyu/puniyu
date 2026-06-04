@@ -12,30 +12,12 @@ rust-version.workspace = true
 
 [dependencies]
 log.workspace = true
-async-trait.workspace = true
-puniyu_logger.workspace = true
-puniyu_config.workspace = true
-puniyu_event.workspace = true
-puniyu_message.workspace = true
-puniyu_element.workspace = true
-puniyu_context.workspace = true
-puniyu_handler.workspace = true
+puniyu_core.workspace = true
 
 itertools = { version = "0.14.0" }
 
-puniyu_cooldown = { version = "0.8.5", path = "../puniyu_cooldown" }
-puniyu_error = { workspace = true, features = ["registry"] }
-puniyu_plugin_core = { workspace = true, features = ["registry"] }
-puniyu_command = { version = "0.8.2", features = ["registry"] }
-puniyu_command_parser = { version = "0.8.2" }
-
+puniyu_cooldown.workspace = true
+puniyu_command_parser = { version = "0.8.15" }
+puniyu_error = { version = "0.8.8", features = ["registry"] }
 [dev-dependencies]
-async-trait.workspace = true
-bytes.workspace = true
-tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
-puniyu_account.workspace = true
-puniyu_runtime.workspace = true
-puniyu_adapter_types.workspace = true
-puniyu_bot.workspace = true
-puniyu_contact.workspace = true
-puniyu_sender.workspace = true
+puniyu_core.workspace = true

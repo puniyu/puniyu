@@ -1,17 +1,19 @@
 use crate::tools::{cooldown, get_permission};
-use crate::{config, message, tools};
-use async_trait::async_trait;
+use crate::{message, tools};
+use puniyu_core::async_trait::async_trait;
 use itertools::Itertools as _;
 use log::info;
-use puniyu_command::{CommandAction, CommandRegistry, Permission, has_permission};
+use puniyu_core::command::{CommandAction, CommandRegistry, Permission};
+use crate::tools::has_permission;
 use puniyu_command_parser::CommandParser;
-use puniyu_config::app_config;
-use puniyu_context::MessageContext;
-use puniyu_event::{Event, EventBase, message::MessageBase};
-use puniyu_handler::Handler;
-use puniyu_logger::owo_colors::OwoColorize;
-use puniyu_plugin_core::PluginRegistry;
+use puniyu_core::config::{app_config, bot_config};
+use puniyu_core::context::MessageContext;
+use puniyu_core::event::{Event, EventBase, message::MessageBase};
+use puniyu_core::handler::Handler;
+use puniyu_core::logger::owo_colors::OwoColorize;
+use puniyu_core::plugin::PluginRegistry;
 use std::collections::HashMap;
+use puniyu_core::message::Message;
 
 /// 命令处理器。
 #[derive(Default)]
@@ -25,11 +27,12 @@ impl CommandHandler {
 
 	/// 构建前缀列表
 	fn build_prefix() -> Vec<String> {
-		let global = app_config().prefix();
-		let mut prefixes: Vec<String> = global.iter().cloned().collect();
+		let config = app_config();
+		let global = config.prefix();
+		let mut prefixes: Vec<String> = global.iter().map(|s| s.to_string()).collect();
 
-		prefixes.extend(PluginRegistry::all().iter().filter_map(|p| p.prefix()).flat_map(|pp| {
-			global.as_ref().map(|g| format!("{}{}", g, pp)).or(Some(pp.to_string()))
+		prefixes.extend(PluginRegistry::all().iter().filter_map(|p| p.prefix()).map(|pp| {
+			global.map(|g| format!("{}{}", g, pp)).unwrap_or_else(|| pp.to_string())
 		}));
 
 		prefixes
@@ -52,8 +55,8 @@ impl CommandHandler {
 		}
 
 		let bot_id = event.self_id();
-		let aliases = config::get_bot_alias(bot_id);
-		let mode = config::get_bot_reactive_mode(bot_id);
+		let aliases = bot_config().bot(bot_id).alias().into_iter().map(str::to_string).collect::<Vec<String>>();
+		let mode = bot_config().bot(bot_id).mode();
 
 		let has_alias =
 			aliases.iter().any(|alias| !alias.is_empty() && original_text.starts_with(alias));
@@ -79,7 +82,7 @@ impl CommandHandler {
 	async fn handle_command(&self, event: &MessageContext<'_>) {
 		let original_text = Self::get_text(event);
 		let bot_id = event.self_id();
-		let aliases = config::get_bot_alias(bot_id);
+		let aliases = 	bot_config().bot(bot_id).alias().into_iter().map(str::to_string).collect::<Vec<String>>();
 
 		let parser = match CommandParser::builder()
 			.aliases(aliases)
@@ -89,7 +92,7 @@ impl CommandHandler {
 			Ok(p) => p,
 			Err(e) => {
 				let error_msg = e.to_string();
-				let msg = puniyu_message::Message::from(error_msg.as_str());
+				let msg = Message::from(error_msg.as_str());
 				let _ = event.reply(msg).await;
 				return;
 			}
@@ -119,7 +122,7 @@ impl CommandHandler {
 					Permission::Admin => "暂无权限, 只有管理员才能操作!",
 					Permission::All => unreachable!(),
 				};
-				let _ = ctx.reply(puniyu_message::Message::from(msg)).await;
+				let _ = ctx.reply(Message::from(msg)).await;
 				continue;
 			}
 
@@ -149,7 +152,7 @@ impl Handler for CommandHandler {
 	}
 
 	#[inline]
-	async fn handle(&self, event: &Event) -> puniyu_error::Result {
+	async fn handle(&self, event: &Event) -> puniyu_core::result::Result {
 		let Some(message_event) = event.as_message() else {
 			return Ok(());
 		};
