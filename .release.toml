@@ -2,6 +2,7 @@
 allow_dirty = true
 changelog_update = true
 dependencies_update = false
+publish_no_verify = false
 release = true
 git_release_enable = false
 git_release_body = """

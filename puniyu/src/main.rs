@@ -31,12 +31,12 @@ async fn main() -> std::io::Result<()> {
 		.with_config(config::LoggerConfig::default())
 		.with_handler(puniyu_handler_command::Handler)
 		.with_on_start(logger::log_init)
-		// .with_loader(
-		// 	puniyu_loader_builtin::BuiltinLoader::new()
-		// 		.with_adapter(puniyu_adapter_console::Adapter::default())
-		// 		.with_plugin(puniyu_plugin_basic::Plugin)
-		// 		.with_plugin(puniyu_plugin_echo::Plugin),
-		// )
+		.with_loader(
+			puniyu_loader_builtin::BuiltinLoader::new()
+				.with_adapter(puniyu_adapter_console::Adapter)
+				.with_plugin(puniyu_plugin_basic::Plugin)
+				.with_plugin(puniyu_plugin_echo::Plugin),
+		)
 		.build()
 		.run()
 		.await
