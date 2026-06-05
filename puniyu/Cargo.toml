@@ -1,6 +1,6 @@
 [package]
 name = "puniyu"
-version = "0.8.9"
+version = "0.9.0"
 description = "puniyu"
 publish = false
 authors.workspace = true
