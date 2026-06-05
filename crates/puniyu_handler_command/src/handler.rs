@@ -3,9 +3,8 @@ use crate::{message, tools};
 use puniyu_core::async_trait::async_trait;
 use itertools::Itertools as _;
 use log::info;
-use puniyu_core::command::{CommandAction, CommandRegistry, Permission};
+use puniyu_core::command::{CommandAction, CommandRegistry, Permission, parser::CommandParser};
 use crate::tools::has_permission;
-use puniyu_command_parser::CommandParser;
 use puniyu_core::config::{app_config, bot_config};
 use puniyu_core::context::MessageContext;
 use puniyu_core::event::{Event, EventBase, message::MessageBase};
@@ -149,6 +148,10 @@ impl CommandHandler {
 impl Handler for CommandHandler {
 	fn name(&self) -> &'static str {
 		"command"
+	}
+
+	fn priority(&self) -> u32 {
+		2
 	}
 
 	#[inline]

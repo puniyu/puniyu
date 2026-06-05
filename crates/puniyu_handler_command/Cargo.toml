@@ -13,11 +13,10 @@ rust-version.workspace = true
 [dependencies]
 log.workspace = true
 puniyu_core.workspace = true
+puniyu_cooldown.workspace = true
 
 itertools = { version = "0.14.0" }
-
-puniyu_cooldown.workspace = true
-puniyu_command_parser = { version = "0.8.15" }
 puniyu_error = { version = "0.8.8", features = ["registry"] }
+
 [dev-dependencies]
 puniyu_core.workspace = true

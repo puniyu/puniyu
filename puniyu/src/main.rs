@@ -4,6 +4,9 @@ use figlet_rs::FIGlet;
 use puniyu_core::App;
 use puniyu_core::Version;
 
+mod logger;
+mod config;
+
 const fn app_name() -> &'static str {
 	env!("CARGO_PKG_NAME")
 }
@@ -25,13 +28,15 @@ async fn main() -> std::io::Result<()> {
 			env!("CARGO_MANIFEST_DIR"),
 			"/assets/logo.png"
 		))))
+		.with_config(config::LoggerConfig::default())
 		.with_handler(puniyu_handler_command::Handler)
-		.with_loader(
-			puniyu_loader_builtin::BuiltinLoader::new()
-				.with_adapter(puniyu_adapter_console::Adapter::default())
-				.with_plugin(puniyu_plugin_basic::Plugin)
-				.with_plugin(puniyu_plugin_echo::Plugin),
-		)
+		.with_on_start(logger::log_init)
+		// .with_loader(
+		// 	puniyu_loader_builtin::BuiltinLoader::new()
+		// 		.with_adapter(puniyu_adapter_console::Adapter::default())
+		// 		.with_plugin(puniyu_plugin_basic::Plugin)
+		// 		.with_plugin(puniyu_plugin_echo::Plugin),
+		// )
 		.build()
 		.run()
 		.await

@@ -18,4 +18,3 @@ serde.workspace = true
 smol_str.workspace = true
 puniyu_core.workspace = true
 puniyu_macros.workspace = true
-puniyu_dispatch = "0.8.16"

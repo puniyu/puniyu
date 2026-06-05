@@ -151,32 +151,7 @@ pub fn adapter_impl(mut item: ItemImpl, cfg: AdapterArgs) -> proc_macro2::TokenS
 	quote! {
 		#item
 
-		pub struct Adapter(#host_name);
-
-		impl Adapter {
-			pub fn new(inner: #host_name) -> Self {
-				Self(inner)
-			}
-		}
-
-		#[::puniyu_adapter::async_trait::async_trait]
-		impl ::puniyu_adapter::AdapterApi for Adapter {
-			async fn send_message(
-				&self,
-				contact: &::puniyu_adapter::contact::ContactType<'_>,
-				message: &::puniyu_adapter::message::Message,
-			) -> ::puniyu_adapter::result::Result<::puniyu_adapter::SendMsgType> {
-				self.0.send_message(contact, message).await
-			}
-
-			fn adapter_info(&self) -> ::puniyu_adapter::AdapterInfo {
-				self.0.adapter_info()
-			}
-
-			fn account_info(&self) -> ::puniyu_adapter::account::AccountInfo {
-				self.0.account_info()
-			}
-		}
+		pub struct Adapter;
 
 		#[::puniyu_adapter::async_trait::async_trait]
 		impl ::puniyu_adapter::Adapter for Adapter {

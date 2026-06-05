@@ -9,7 +9,7 @@ pub use puniyu_core::element::send::*;
 pub mod event {
 	pub use puniyu_core::event::*;
 	pub async fn send_event(event: Event<'_>) {
-		let _ = puniyu_dispatch::EventEmitter::emit(event).await;
+		let _ = puniyu_core::dispatch::EventEmitter::emit(event).await;
 	}
 }
 pub use puniyu_core::message;
@@ -33,6 +33,7 @@ pub use puniyu_macros::{on_load, on_unload};
 pub use puniyu_core::async_trait;
 pub use puniyu_core::inventory;
 pub use puniyu_core::toml;
+pub use puniyu_core::actix_web;
 
 mod types;
 pub use types::*;

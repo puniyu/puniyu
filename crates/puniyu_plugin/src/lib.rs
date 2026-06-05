@@ -28,6 +28,7 @@ pub use puniyu_macros::{on_load, on_unload};
 pub use puniyu_core::async_trait::async_trait;
 pub use puniyu_core::inventory;
 pub use puniyu_core::toml;
+pub use puniyu_core::actix_web;
 
 mod types;
 pub use types::*;
