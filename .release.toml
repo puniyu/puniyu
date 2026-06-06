@@ -145,16 +145,5 @@ name = "puniyu_macros"
 
 [[package]]
 name = "puniyu"
-git_only = true
 publish = false
-git_tag_enable = true
-git_tag_name = "v{{ version }}"
-git_release_enable = true
-git_release_name = "v{{ version }}"
-git_release_latest = true
-changelog_include = [
-    "puniyu_handler_command",
-    "puniyu_adapter",
-    "puniyu_plugin",
-    "puniyu_macros",
-]
+release = false
