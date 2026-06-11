@@ -1,0 +1,20 @@
+package puniyu:log;
+
+interface logging {
+    enum log-level {
+        trace,
+        debug,
+        info,
+        warn,
+        error,
+    }
+
+    log: func(
+        level: log-level,
+        message: string,
+    );
+}
+
+world log {
+    import logging;
+}
