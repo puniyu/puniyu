@@ -2425,6 +2425,7 @@ dependencies = [
  "puniyu_logger",
  "puniyu_macros 0.9.0",
  "serde",
+ "serde_json",
  "smol_str",
 ]
 
