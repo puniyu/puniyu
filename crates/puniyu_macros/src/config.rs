@@ -1,4 +1,4 @@
-use convert_case::{Case, Casing};
+use convert_case::Casing;
 use quote::quote;
 use syn::DeriveInput;
 
@@ -7,53 +7,102 @@ pub enum ConfigContext {
 	Adapter,
 }
 
-pub fn derive_config_impl(input: DeriveInput, context: ConfigContext) -> proc_macro2::TokenStream {
-	let struct_name = &input.ident;
-	let mut container_name_override: Option<String> = None;
-	for attr in &input.attrs {
-		if attr.path().is_ident("config")
-			&& let Ok(syn::Meta::NameValue(nv)) = attr.parse_args::<syn::Meta>()
-			&& nv.path.is_ident("name")
-			&& let syn::Expr::Lit(lit) = &nv.value
-			&& let syn::Lit::Str(s) = &lit.lit
-		{
-			container_name_override = Some(s.value());
-		}
-	}
+pub fn config_impl(
+	args: proc_macro::TokenStream,
+	item: proc_macro::TokenStream,
+	context: ConfigContext,
+) -> proc_macro::TokenStream {
+	let input = match syn::parse::<DeriveInput>(item) {
+		Ok(input) => input,
+		Err(err) => return err.to_compile_error().into(),
+	};
 
-	let config_name = container_name_override
-		.map(|name| name.to_case(Case::Snake))
-		.unwrap_or_else(|| struct_name.to_string().to_case(Case::Snake));
+	let name_override = if args.is_empty() {
+		None
+	} else if let Ok(lit) = syn::parse::<syn::LitStr>(args.clone()) {
+		Some(lit.value())
+	} else if let Ok(nv) = syn::parse::<syn::MetaNameValue>(args) {
+		if nv.path.is_ident("name") {
+			if let syn::Expr::Lit(lit) = &nv.value {
+				if let syn::Lit::Str(s) = &lit.lit {
+					Some(s.value())
+				} else {
+					return syn::Error::new_spanned(&nv.value, "expected string literal")
+						.to_compile_error()
+						.into();
+				}
+			} else {
+				return syn::Error::new_spanned(&nv.value, "expected string literal")
+					.to_compile_error()
+					.into();
+			}
+		} else {
+			return syn::Error::new_spanned(&nv.path, "expected `name`").to_compile_error().into();
+		}
+	} else {
+		return syn::Error::new(
+			proc_macro2::Span::call_site(),
+			"expected #[config], #[config(\"name\")] or #[config(name = \"name\")]",
+		)
+		.to_compile_error()
+		.into();
+	};
+
+	let name =
+		name_override.unwrap_or_else(|| input.ident.to_string().to_case(convert_case::Case::Snake));
+	config_struct(input, context, name).into()
+}
+
+fn config_struct(
+	input: DeriveInput,
+	context: ConfigContext,
+	name: String,
+) -> proc_macro2::TokenStream {
+	let struct_name = &input.ident;
+	let config_name = name;
 	let config_file_name = format!("{config_name}.toml");
 	let serialize_error = format!("Failed to serialize {config_name} to TOML string");
 
-	let (path_mod, toml_mod) = match context {
-		ConfigContext::Plugin => {
-			(quote!(::puniyu_plugin::path::plugin), quote!(::puniyu_plugin::toml))
-		}
-		ConfigContext::Adapter => {
-			(quote!(::puniyu_adapter::path::adapter), quote!(::puniyu_adapter::toml))
-		}
+	let (crate_path, path_sub) = match context {
+		ConfigContext::Plugin => (quote!(::puniyu_plugin), quote!(plugin)),
+		ConfigContext::Adapter => (quote!(::puniyu_adapter), quote!(adapter)),
 	};
 
 	quote! {
-		impl ::puniyu_core::config::Config for #struct_name {
+		#input
+
+		impl #crate_path::config::Config for #struct_name {
 			fn name(&self) -> &str {
 				#config_name
 			}
 
 			fn path(&self) -> ::std::path::PathBuf {
-				#path_mod::config_dir()
-					.join(env!("CARGO_PKG_NAME"))
+				#crate_path::path::#path_sub::config_dir()
+					.join(env!("CARGO_PKG_NAME").replace('-', "_").to_lowercase())
 					.join(#config_file_name)
 			}
 
-			fn to_value(&self) -> #toml_mod::Value {
-				#toml_mod::from_str(
-					&#toml_mod::to_string(self).expect(#serialize_error),
+			fn to_value(&self) -> #crate_path::toml::Value {
+				#crate_path::toml::from_str(
+					&#crate_path::toml::to_string(self).expect(#serialize_error),
 				)
 				.expect("Failed to parse TOML string to Value")
 			}
 		}
+
+		impl #struct_name {
+			pub fn get() -> Self {
+				let path = #crate_path::path::#path_sub::config_dir()
+					.join(env!("CARGO_PKG_NAME").replace('-', "_").to_lowercase())
+					.join(#config_file_name);
+				#crate_path::config::ConfigRegistry::get_with_path(&path)
+					.and_then(|v| v.try_into().ok())
+					.unwrap_or_default()
+			}
+		}
+
+		crate::__puniyu_submit!(config, || -> ::std::vec::Vec<::std::sync::Arc<dyn #crate_path::config::Config>> {
+			::std::vec![::std::sync::Arc::new(#struct_name::default())]
+		});
 	}
 }

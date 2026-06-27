@@ -10,7 +10,7 @@ pub use crate::path::*;
 pub use crate::sender::*;
 pub use crate::server::*;
 
-pub use puniyu_macros::PluginConfig as Config;
+pub use puniyu_macros::plugin_config as config;
 pub use puniyu_macros::plugin;
 pub use puniyu_macros::task;
 pub use puniyu_macros::server;

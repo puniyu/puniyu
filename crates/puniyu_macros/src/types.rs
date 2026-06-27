@@ -1,16 +1,12 @@
 use syn::{
-	LitBool, LitInt, LitStr, Result, Token, Type, bracketed,
+	LitBool, LitInt, LitStr, Result, Token, bracketed,
 	parse::{Parse, ParseStream},
 };
 
-pub(crate) struct AdapterArgs {
-	pub config: Option<Type>,
-}
+pub(crate) struct AdapterArgs {}
 
 pub(crate) struct PluginArg {
 	pub desc: Option<String>,
-	pub prefix: Option<String>,
-	pub config: Option<Type>,
 }
 
 pub(crate) struct TaskArgs {
@@ -31,6 +27,7 @@ pub(crate) struct CommandArgs {
 	pub priority: Option<u32>,
 	pub desc: Option<String>,
 	pub alias: Option<Vec<String>>,
+	pub prefix: Option<syn::Expr>,
 	pub permission: Option<LitStr>,
 }
 
@@ -66,17 +63,10 @@ impl CommandArgs {
 
 impl Parse for AdapterArgs {
 	fn parse(input: ParseStream) -> Result<Self> {
-		let mut parser = KeyValueParser::new(input);
-		let mut config = None;
-
-		while let Some(key) = parser.next_key()? {
-			match key.as_str() {
-				"config" => assign_option(&mut config, key, parser.parse_type()?)?,
-				_ => return Err(parser.unknown_key(&key)),
-			}
+		if !input.is_empty() {
+			return Err(syn::Error::new(input.span(), "#[adapter] does not accept arguments"));
 		}
-
-		Ok(Self { config })
+		Ok(Self {})
 	}
 }
 
@@ -84,19 +74,15 @@ impl Parse for PluginArg {
 	fn parse(input: ParseStream) -> Result<Self> {
 		let mut parser = KeyValueParser::new(input);
 		let mut desc = None;
-		let mut prefix = None;
-		let mut config = None;
 
 		while let Some(key) = parser.next_key()? {
 			match key.as_str() {
 				"desc" => assign_option(&mut desc, key, parser.parse_string()?)?,
-				"prefix" => assign_option(&mut prefix, key, parser.parse_string()?)?,
-				"config" => assign_option(&mut config, key, parser.parse_type()?)?,
 				_ => return Err(parser.unknown_key(&key)),
 			}
 		}
 
-		Ok(Self { desc, prefix, config })
+		Ok(Self { desc })
 	}
 }
 
@@ -151,6 +137,7 @@ impl Parse for CommandArgs {
 		let mut priority = None;
 		let mut desc = None;
 		let mut alias = None;
+		let mut prefix = None;
 		let mut permission = None;
 
 		while let Some(key) = parser.next_key()? {
@@ -159,12 +146,13 @@ impl Parse for CommandArgs {
 				"priority" => assign_option(&mut priority, key, parser.parse_u32()?)?,
 				"desc" => assign_option(&mut desc, key, parser.parse_string()?)?,
 				"alias" => assign_option(&mut alias, key, parser.parse_string_array()?)?,
+				"prefix" => assign_option(&mut prefix, key, parser.input.parse::<syn::Expr>()?)?,
 				"permission" => assign_option(&mut permission, key, parser.parse_lit_str()?)?,
 				_ => return Err(parser.unknown_key(&key)),
 			}
 		}
 
-		Ok(Self { name, priority, desc, alias, permission })
+		Ok(Self { name, priority, desc, alias, prefix, permission })
 	}
 }
 
@@ -215,10 +203,6 @@ impl<'a> KeyValueParser<'a> {
 
 	fn parse_u32(&mut self) -> Result<u32> {
 		self.input.parse::<LitInt>()?.base10_parse()
-	}
-
-	fn parse_type(&mut self) -> Result<Type> {
-		self.input.parse()
 	}
 
 	fn parse_string_array(&mut self) -> Result<Vec<String>> {

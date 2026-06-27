@@ -14,7 +14,10 @@ rust-version.workspace = true
 workspace = true
 
 [dependencies]
+log.workspace = true
 serde.workspace = true
+serde_json.workspace = true
 smol_str.workspace = true
 puniyu_core.workspace = true
+puniyu_logger.workspace = true
 puniyu_macros.workspace = true

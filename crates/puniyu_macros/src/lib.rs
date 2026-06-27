@@ -4,17 +4,24 @@
 //!
 //! ## 插件侧宏
 //!
-//! - [`plugin`]：声明 `Plugin` 结构体或 `impl Plugin` 实现块
+//! - [`plugin`]：声明 `Plugin` 结构体
 //! - [`command`]：声明命令处理函数
 //! - [`arg`]：为命令补充参数描述
 //! - [`task`]：声明定时任务函数
-//! - [`server`]：为 `impl Plugin` 中的服务函数打标
+//! - [`on_load`]：声明插件加载生命周期钩子
+//! - [`on_unload`]：声明插件卸载生命周期钩子
+//! - [`server`]：声明服务函数
+//! - [`config`]：声明配置函数
 //! - `#[derive(PluginConfig)]`：为插件配置结构体派生 `puniyu_config::Config`
 //!
 //! ## 适配器侧宏
 //!
-//! - [`adapter`]：声明 `Adapter` 结构体或 `impl Adapter` 实现块
-//! - [`server`]：为 `impl Adapter` 中的服务函数打标
+//! - [`adapter`]：声明 `Adapter` 结构体
+//! - [`api`]：声明适配器 API 实例
+//! - [`on_load`]：声明适配器加载生命周期钩子
+//! - [`on_unload`]：声明适配器卸载生命周期钩子
+//! - [`server`]：声明服务函数
+//! - [`config`]：声明配置函数
 //! - `#[derive(AdapterConfig)]`：为适配器配置结构体派生 `puniyu_config::Config`
 //!
 //! ## 编译期校验
@@ -54,13 +61,10 @@ pub fn adapter(
 		Err(err) => return err.to_compile_error().into(),
 	};
 	let item_ts: proc_macro2::TokenStream = item.clone().into();
-	if let Ok(item) = syn::parse2::<syn::ItemStruct>(item_ts.clone()) {
+	if let Ok(item) = syn::parse2::<syn::ItemStruct>(item_ts) {
 		return adapter::adapter_struct(item, cfg).into();
 	}
-	if let Ok(item) = syn::parse2::<syn::ItemImpl>(item_ts) {
-		return adapter::adapter_impl(item, cfg).into();
-	}
-	syn::Error::new(proc_macro2::Span::call_site(), "#[adapter] must be used on a struct or impl")
+	syn::Error::new(proc_macro2::Span::call_site(), "#[adapter] must be used on a struct")
 		.to_compile_error()
 		.into()
 }
@@ -75,33 +79,12 @@ pub fn plugin(
 		Err(err) => return err.to_compile_error().into(),
 	};
 	let item_ts: proc_macro2::TokenStream = item.clone().into();
-	if let Ok(item) = syn::parse2::<syn::ItemStruct>(item_ts.clone()) {
+	if let Ok(item) = syn::parse2::<syn::ItemStruct>(item_ts) {
 		return plugin::plugin_struct(item, cfg).into();
 	}
-	if let Ok(item) = syn::parse2::<syn::ItemImpl>(item_ts) {
-		return plugin::plugin_impl(item, cfg).into();
-	}
-	syn::Error::new(proc_macro2::Span::call_site(), "#[plugin] must be used on a struct or impl")
+	syn::Error::new(proc_macro2::Span::call_site(), "#[plugin] must be used on a struct")
 		.to_compile_error()
 		.into()
-}
-
-#[proc_macro_derive(PluginConfig)]
-pub fn derive_plugin_config(item: proc_macro::TokenStream) -> proc_macro::TokenStream {
-	let input = match syn::parse::<syn::DeriveInput>(item) {
-		Ok(input) => input,
-		Err(err) => return err.to_compile_error().into(),
-	};
-	plugin::derive_plugin_config(input).into()
-}
-
-#[proc_macro_derive(AdapterConfig)]
-pub fn derive_adapter_config(item: proc_macro::TokenStream) -> proc_macro::TokenStream {
-	let input = match syn::parse::<syn::DeriveInput>(item) {
-		Ok(input) => input,
-		Err(err) => return err.to_compile_error().into(),
-	};
-	adapter::derive_adapter_config(input).into()
 }
 
 #[proc_macro_attribute]
@@ -154,7 +137,20 @@ pub fn on_load(
 	_args: proc_macro::TokenStream,
 	item: proc_macro::TokenStream,
 ) -> proc_macro::TokenStream {
-	item
+	let item = match parse_attr::<syn::ItemFn>(item) {
+		Ok(item) => item,
+		Err(err) => return err,
+	};
+	if let Err(err) = common::ensure_lifecycle_fn(&item, "result::Result") {
+		return err.to_compile_error().into();
+	}
+	let fn_name = &item.sig.ident;
+	quote::quote! {
+		#item
+
+		crate::__puniyu_submit!(on_load, #fn_name);
+	}
+	.into()
 }
 
 #[proc_macro_attribute]
@@ -162,7 +158,20 @@ pub fn on_unload(
 	_args: proc_macro::TokenStream,
 	item: proc_macro::TokenStream,
 ) -> proc_macro::TokenStream {
-	item
+	let item = match parse_attr::<syn::ItemFn>(item) {
+		Ok(item) => item,
+		Err(err) => return err,
+	};
+	if let Err(err) = common::ensure_lifecycle_fn(&item, "result::Result") {
+		return err.to_compile_error().into();
+	}
+	let fn_name = &item.sig.ident;
+	quote::quote! {
+		#item
+
+		crate::__puniyu_submit!(on_unload, #fn_name);
+	}
+	.into()
 }
 
 #[proc_macro_attribute]
@@ -170,13 +179,46 @@ pub fn server(
 	_args: proc_macro::TokenStream,
 	item: proc_macro::TokenStream,
 ) -> proc_macro::TokenStream {
-	item
+	let item = match parse_attr::<syn::ItemFn>(item) {
+		Ok(item) => item,
+		Err(err) => return err,
+	};
+	if let Err(err) = common::ensure_no_params(&item.sig) {
+		return err.to_compile_error().into();
+	}
+	let fn_name = &item.sig.ident;
+	quote::quote! {
+		#item
+
+		crate::__puniyu_submit!(server, #fn_name);
+	}
+	.into()
 }
 
 #[proc_macro_attribute]
-pub fn config(
+pub fn plugin_config(
+	args: proc_macro::TokenStream,
+	item: proc_macro::TokenStream,
+) -> proc_macro::TokenStream {
+	config::config_impl(args, item, config::ConfigContext::Plugin)
+}
+
+#[proc_macro_attribute]
+pub fn adapter_config(
+	args: proc_macro::TokenStream,
+	item: proc_macro::TokenStream,
+) -> proc_macro::TokenStream {
+	config::config_impl(args, item, config::ConfigContext::Adapter)
+}
+
+#[proc_macro_attribute]
+pub fn api(
 	_args: proc_macro::TokenStream,
 	item: proc_macro::TokenStream,
 ) -> proc_macro::TokenStream {
-	item
+	let item = match parse_attr::<syn::ItemFn>(item) {
+		Ok(item) => item,
+		Err(err) => return err,
+	};
+	adapter::api_fn(item).into()
 }

@@ -1,164 +1,182 @@
-use crate::{
-	AdapterArgs,
-	common::{ensure_lifecycle, ensure_valid_host, extract_type_from_impl},
-};
-use quote::quote;
-use syn::{Ident, ImplItem, ItemImpl, ItemStruct};
-mod config;
-pub use config::derive_adapter_config;
+mod api;
+pub use api::api_fn;
 
-pub fn adapter_struct(item: ItemStruct, cfg: AdapterArgs) -> proc_macro2::TokenStream {
-	if let Err(err) = ensure_valid_host(&item, "Adapter") {
+use crate::AdapterArgs;
+use quote::quote;
+use syn::ItemStruct;
+
+pub fn adapter_struct(item: ItemStruct, _cfg: AdapterArgs) -> proc_macro2::TokenStream {
+	if let Err(err) = crate::common::ensure_valid_host(&item.ident, "Adapter") {
 		return err.to_compile_error();
 	}
 
-	let user_struct_name = &item.ident;
-
-	let config_body = cfg.config.map(|config_ty| {
-		quote! {
-			fn __puniyu_configs() -> ::std::vec::Vec<::std::sync::Arc<dyn ::puniyu_adapter::config::Config>> {
-				#config_ty::configs()
-			}
-		}
-	});
-
 	quote! {
 		#item
-
-		impl #user_struct_name {
-			#config_body
-		}
 
 		pub(crate) struct ConfigRegistry {
-			adapter_name: &'static str,
-			builder: fn() -> ::std::sync::Arc<dyn ::puniyu_adapter::config::Config>,
+			pub(crate) adapter_name: &'static str,
+			pub(crate) handler: fn() -> ::std::vec::Vec<::std::sync::Arc<dyn ::puniyu_adapter::config::Config>>,
+		}
+		impl ConfigRegistry {
+			pub(crate) fn get() -> ::std::vec::Vec<::std::sync::Arc<dyn ::puniyu_adapter::config::Config>> {
+				::puniyu_adapter::inventory::iter::<Self>()
+					.filter(|r| r.adapter_name == env!("CARGO_PKG_NAME"))
+					.flat_map(|r| (r.handler)())
+					.collect()
+			}
 		}
 		::puniyu_adapter::inventory::collect!(crate::ConfigRegistry);
-	}
-}
 
-pub fn adapter_impl(mut item: ItemImpl, cfg: AdapterArgs) -> proc_macro2::TokenStream {
-	let host_name = match extract_type_from_impl(&item) {
-		Ok(name) => name,
-		Err(err) => return err.to_compile_error(),
-	};
-
-	if cfg.config.is_some() {
-		return syn::Error::new(
-			host_name.span(),
-			"config = ... must be declared on #[adapter] struct",
-		)
-		.to_compile_error();
-	}
-
-	let mut load_fn_name: Option<Ident> = None;
-	let mut unload_fn_name: Option<Ident> = None;
-	let mut server_fn_name: Option<Ident> = None;
-	let mut config_fn_name: Option<Ident> = None;
-
-	for impl_item in &mut item.items {
-		let ImplItem::Fn(method) = impl_item else {
-			continue;
-		};
-		let mut retained = Vec::new();
-		let mut is_on_load = false;
-		let mut is_on_unload = false;
-		let mut is_server = false;
-		let mut is_config = false;
-		for attr in method.attrs.drain(..) {
-			if attr.path().is_ident("on_load") {
-				is_on_load = true;
-			} else if attr.path().is_ident("on_unload") {
-				is_on_unload = true;
-			} else if attr.path().is_ident("server") {
-				is_server = true;
-			} else if attr.path().is_ident("config") {
-				is_config = true;
-			} else {
-				retained.push(attr);
+		pub(crate) struct OnLoadRegistry {
+			pub(crate) handler: fn() -> ::std::pin::Pin<Box<dyn ::std::future::Future<Output = ::puniyu_adapter::result::Result> + Send>>,
+		}
+		impl OnLoadRegistry {
+			pub(crate) async fn execute() -> ::puniyu_adapter::result::Result {
+				if let Some(entry) = ::puniyu_adapter::inventory::iter::<Self>().next() {
+					(entry.handler)().await?;
+				}
+				Ok(())
 			}
 		}
-		method.attrs = retained;
+		::puniyu_adapter::inventory::collect!(crate::OnLoadRegistry);
 
-		if is_on_load {
-			if let Err(err) = ensure_lifecycle(method, "puniyu_adapter::result::Result") {
-				return err.to_compile_error();
-			}
-			if load_fn_name.is_some() {
-				return syn::Error::new(method.sig.ident.span(), "duplicate #[on_load] function")
-					.to_compile_error();
-			}
-			load_fn_name = Some(method.sig.ident.clone());
+		pub(crate) struct OnUnloadRegistry {
+			pub(crate) handler: fn() -> ::std::pin::Pin<Box<dyn ::std::future::Future<Output = ::puniyu_adapter::result::Result> + Send>>,
 		}
+		impl OnUnloadRegistry {
+			pub(crate) async fn execute() -> ::puniyu_adapter::result::Result {
+				if let Some(entry) = ::puniyu_adapter::inventory::iter::<Self>().next() {
+					(entry.handler)().await?;
+				}
+				Ok(())
+			}
+		}
+		::puniyu_adapter::inventory::collect!(crate::OnUnloadRegistry);
 
-		if is_on_unload {
-			if let Err(err) = ensure_lifecycle(method, "puniyu_adapter::result::Result") {
-				return err.to_compile_error();
-			}
-			if unload_fn_name.is_some() {
-				return syn::Error::new(method.sig.ident.span(), "duplicate #[on_unload] function")
-					.to_compile_error();
-			}
-			unload_fn_name = Some(method.sig.ident.clone());
+		pub(crate) struct ServerRegistry {
+			pub(crate) handler: fn() -> Option<::puniyu_adapter::server::ServerFunction>,
 		}
+		impl ServerRegistry {
+			pub(crate) fn get() -> Option<::puniyu_adapter::server::ServerFunction> {
+				::puniyu_adapter::inventory::iter::<Self>()
+					.next()
+					.and_then(|r| (r.handler)())
+			}
+		}
+		::puniyu_adapter::inventory::collect!(crate::ServerRegistry);
 
-		if is_server {
-			if server_fn_name.is_some() {
-				return syn::Error::new(method.sig.ident.span(), "duplicate #[server] function")
-					.to_compile_error();
-			}
-			server_fn_name = Some(method.sig.ident.clone());
+		pub(crate) struct ApiRegistry {
+			pub(crate) adapter_name: &'static str,
+			pub(crate) handler: fn() -> ::std::sync::Arc<dyn ::puniyu_adapter::AdapterApi>,
 		}
+		impl ApiRegistry {
+			pub(crate) fn get_api() -> ::std::sync::Arc<dyn ::puniyu_adapter::AdapterApi> {
+				::puniyu_adapter::inventory::iter::<Self>()
+					.find(|r| r.adapter_name == env!("CARGO_PKG_NAME"))
+					.map(|r| (r.handler)())
+					.expect("no AdapterApi registered, use #[api] to register")
+			}
+		}
+		::puniyu_adapter::inventory::collect!(crate::ApiRegistry);
 
-		if is_config {
-			if config_fn_name.is_some() {
-				return syn::Error::new(method.sig.ident.span(), "duplicate #[config] function")
-					.to_compile_error();
-			}
-			config_fn_name = Some(method.sig.ident.clone());
+		macro_rules! __puniyu_submit {
+			(on_load, $fn:ident) => {
+				::puniyu_adapter::inventory::submit! {
+					crate::OnLoadRegistry {
+						handler: || -> ::std::pin::Pin<Box<dyn ::std::future::Future<Output = ::puniyu_adapter::result::Result> + Send>> {
+							Box::pin($fn())
+						}
+					}
+				}
+			};
+			(on_unload, $fn:ident) => {
+				::puniyu_adapter::inventory::submit! {
+					crate::OnUnloadRegistry {
+						handler: || -> ::std::pin::Pin<Box<dyn ::std::future::Future<Output = ::puniyu_adapter::result::Result> + Send>> {
+							Box::pin($fn())
+						}
+					}
+				}
+			};
+			(server, $fn:ident) => {
+				::puniyu_adapter::inventory::submit! {
+					crate::ServerRegistry { handler: $fn }
+				}
+			};
+			(config, $fn:ident) => {
+				::puniyu_adapter::inventory::submit! {
+					crate::ConfigRegistry {
+						adapter_name: env!("CARGO_PKG_NAME"),
+						handler: $fn
+					}
+				}
+			};
+			(api, $fn:ident) => {
+				::puniyu_adapter::inventory::submit! {
+					crate::ApiRegistry {
+						adapter_name: env!("CARGO_PKG_NAME"),
+						handler: $fn
+					}
+				}
+			};
 		}
-	}
-
-	let load_override = load_fn_name.map(|name| {
-		quote! {
-			async fn on_load(&self) -> ::puniyu_adapter::result::Result {
-				#host_name::#name().await
-			}
-		}
-	});
-	let unload_override = unload_fn_name.map(|name| {
-		quote! {
-			async fn on_unload(&self) -> ::puniyu_adapter::result::Result {
-				#host_name::#name().await
-			}
-		}
-	});
-	let server_override = server_fn_name.map(|name| {
-		quote! {
-			fn server(&self) -> Option<::puniyu_adapter::server::ServerFunction> {
-				#host_name::#name()
-			}
-		}
-	});
-	let config_override = config_fn_name.map(|name| {
-		quote! {
-			fn config(&self) -> ::std::vec::Vec<::std::sync::Arc<dyn ::puniyu_adapter::config::Config>> {
-				#host_name::#name()
-			}
-		}
-	});
-
-	quote! {
-		#item
+		pub(crate) use __puniyu_submit;
 
 		pub struct Adapter;
 
 		#[::puniyu_adapter::async_trait::async_trait]
-		impl ::puniyu_adapter::Adapter for Adapter {
-			#config_override
-			#server_override
-			#load_override
-			#unload_override
+		impl ::puniyu_adapter::AdapterApi for Adapter {
+			#[inline]
+			async fn send_message(
+				&self,
+				contact: &::puniyu_adapter::contact::ContactType<'_>,
+				message: &::puniyu_adapter::message::Message,
+			) -> ::puniyu_adapter::result::Result<::puniyu_adapter::SendMsgType> {
+				crate::ApiRegistry::get_api().send_message(contact, message).await
+			}
+
+			#[inline]
+			fn adapter_info(&self) -> ::puniyu_adapter::AdapterInfo {
+				crate::ApiRegistry::get_api().adapter_info()
+			}
+
+			#[inline]
+			fn account_info(&self) -> ::puniyu_adapter::account::AccountInfo {
+				crate::ApiRegistry::get_api().account_info()
+			}
+
+			#[inline]
+			async fn call_api(
+				&self,
+				action: &str,
+				params: ::puniyu_adapter::serde_json::Value,
+			) -> ::puniyu_adapter::result::Result<::puniyu_adapter::Response<::puniyu_adapter::serde_json::Value>> {
+				crate::ApiRegistry::get_api().call_api(action, params).await
+			}
+
+			#[::puniyu_adapter::async_trait::async_trait]
+			impl ::puniyu_adapter::Adapter for Adapter {
+				#[inline]
+				fn server(&self) -> Option<::puniyu_adapter::server::ServerFunction> {
+					crate::ServerRegistry::get()
+				}
+
+				#[inline]
+				fn config(&self) -> ::std::vec::Vec<::std::sync::Arc<dyn ::puniyu_adapter::config::Config>> {
+					crate::ConfigRegistry::get()
+				}
+
+				#[inline]
+				async fn on_load(&self) -> ::puniyu_adapter::result::Result {
+					crate::OnLoadRegistry::execute().await
+				}
+
+				#[inline]
+				async fn on_unload(&self) -> ::puniyu_adapter::result::Result {
+					crate::OnUnloadRegistry::execute().await
+				}
+			}
 		}
+
 	}
 }

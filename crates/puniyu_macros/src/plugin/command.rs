@@ -29,6 +29,10 @@ pub fn command(mut item: ItemFn, cfg: CommandArgs) -> proc_macro2::TokenStream {
 		Some(desc) => quote!(Some(#desc)),
 		None => quote!(None),
 	};
+	let command_prefix = match cfg.prefix {
+		Some(prefix) => quote!(Some(#prefix)),
+		None => quote!(None),
+	};
 	let command_permission = if let Some(permission) = &cfg.permission {
 		match permission.value().as_str() {
 			"all" => quote!(::puniyu_plugin::command::Permission::All),
@@ -67,6 +71,10 @@ pub fn command(mut item: ItemFn, cfg: CommandArgs) -> proc_macro2::TokenStream {
 				#command_desc
 			}
 
+			fn prefix(&self) -> Option<&str> {
+				#command_prefix
+			}
+
 			fn priority(&self) -> u32 {
 				#command_priority
 			}
@@ -92,14 +100,7 @@ pub fn command(mut item: ItemFn, cfg: CommandArgs) -> proc_macro2::TokenStream {
 			}
 		}
 
-		::puniyu_plugin::inventory::submit! {
-			crate::CommandRegistry {
-				plugin_name: env!("CARGO_PKG_NAME"),
-				builder: || -> ::std::sync::Arc<dyn ::puniyu_plugin::command::Command> {
-					::std::sync::Arc::new(#struct_name {})
-				}
-			}
-		}
+		crate::__puniyu_submit!(command, #struct_name);
 	}
 }
 

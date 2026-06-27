@@ -21,11 +21,11 @@ bytes.workspace = true
 smol_str.workspace = true
 
 puniyu_core.workspace = true
+puniyu_logger.workspace = true
 
 puniyu_adapter_console = { version = "0.8.4" }
 puniyu_handler_command = { version = "0.9.0", path = "../crates/puniyu_handler_command" }
 puniyu_plugin_basic = { version = "0.8.3" }
-puniyu_logger = { version = "0.7.5" }
 puniyu_common = { version = "0.9.0" }
 puniyu_loader_builtin = { version = "0.9.0" }
 puniyu_plugin_echo = { version = "0.1.3" }
