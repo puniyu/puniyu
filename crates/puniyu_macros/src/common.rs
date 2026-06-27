@@ -1,6 +1,6 @@
 use convert_case::{Case, Casing};
 use quote::ToTokens;
-use syn::{FnArg, Ident, ImplItemFn, ItemImpl, ItemStruct, Result, Signature, Type, spanned::Spanned};
+use syn::{FnArg, Ident, ItemFn, Result, Signature, Type, spanned::Spanned};
 
 
 /// 函数必须是 async。
@@ -32,31 +32,29 @@ pub(crate) fn ensure_return_type(fn_sig: &Signature, expected: &str) -> Result<(
 	};
 	let actual = type_path.path.to_token_stream().to_string().replace(' ', "");
 	if actual == expected || actual == format!("::{expected}") {
-		Ok(())
-	} else {
-		err(ty.span())
+		return Ok(());
 	}
+	if actual.ends_with(&expected) || actual.ends_with(&format!("::{expected}")) {
+		return Ok(());
+	}
+	err(ty.span())
 }
 
-pub(crate) fn ensure_lifecycle(fn_item: &ImplItemFn, expected: &str) -> Result<()> {
+pub(crate) fn ensure_lifecycle_fn(fn_item: &ItemFn, expected: &str) -> Result<()> {
 	ensure_async(&fn_item.sig)?;
 	ensure_no_params(&fn_item.sig)?;
 	ensure_return_type(&fn_item.sig, expected)
 }
 
-
-pub(crate) fn ensure_valid_host(item: &ItemStruct, reserved: &str) -> Result<()> {
-	if item.ident == reserved {
+pub(crate) fn ensure_valid_host(ident: &Ident, reserved: &str) -> Result<()> {
+	if ident == reserved {
 		return Err(syn::Error::new(
-			item.ident.span(),
-			format!(
-				"struct name `{reserved}` is reserved for the generated wrapper; rename your struct"
-			),
+			ident.span(),
+			format!("struct name `{reserved}` is reserved for the generated wrapper; rename your struct"),
 		));
 	}
 	Ok(())
 }
-
 
 pub(crate) fn ensure_single_ref_param<'a>(
 	fn_sig: &'a Signature,
@@ -102,16 +100,6 @@ pub(crate) fn to_snake_case(ident: &Ident) -> String {
 
 
 
-pub(crate) fn extract_type_from_impl(item: &ItemImpl) -> Result<Ident> {
-	let Type::Path(type_path) = item.self_ty.as_ref() else {
-		return Err(syn::Error::new(item.self_ty.span(), "impl target must be a named type"));
-	};
-	let Some(segment) = type_path.path.segments.last() else {
-		return Err(syn::Error::new(type_path.path.span(), "impl target must not be empty"));
-	};
-	Ok(segment.ident.clone())
-}
-
 /// 类型路径末尾段是否与 `expected_segments` 末尾一致。
 /// 用于判断 `puniyu_plugin::result::Result` 和 `::puniyu_plugin::result::Result` 是否匹配。
 pub(crate) fn type_ends_with(ty: &Type, expected_segments: &[&str]) -> bool {
@@ -136,5 +124,4 @@ pub(crate) fn type_ends_with(ty: &Type, expected_segments: &[&str]) -> bool {
 	}
 	false
 }
-
 

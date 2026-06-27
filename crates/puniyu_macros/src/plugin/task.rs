@@ -47,13 +47,6 @@ pub fn task(item: ItemFn, cfg: TaskArgs) -> proc_macro2::TokenStream {
 			}
 		}
 
-		::puniyu_plugin::inventory::submit! {
-			crate::TaskRegistry {
-				plugin_name: env!("CARGO_PKG_NAME"),
-				builder: || -> ::std::sync::Arc<dyn ::puniyu_plugin::Task> {
-					::std::sync::Arc::new(#struct_name {})
-				},
-			}
-		}
+		crate::__puniyu_submit!(task, #struct_name);
 	}
 }

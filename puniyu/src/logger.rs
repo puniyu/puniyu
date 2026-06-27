@@ -4,7 +4,7 @@ use puniyu_core::{app_name, path::log_dir};
 use puniyu_logger::{LogLevel, LoggerOptions};
 use crate::config::LoggerConfig;
 
-pub(crate) async fn log_init() {
+pub(crate) fn log_init() {
     let config = LoggerConfig::get();
     let log_level = env::var("LOGGER_LEVEL").unwrap_or(config.level().to_string());
     let log_path = log_dir().to_string_lossy().to_string();

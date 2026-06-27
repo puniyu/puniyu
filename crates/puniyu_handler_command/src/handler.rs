@@ -9,8 +9,8 @@ use puniyu_core::config::{app_config, bot_config};
 use puniyu_core::context::MessageContext;
 use puniyu_core::event::{Event, EventBase, message::MessageBase};
 use puniyu_core::handler::Handler;
-use puniyu_core::logger::owo_colors::OwoColorize;
-use puniyu_core::plugin::PluginRegistry;
+use puniyu_logger::owo_colors::OwoColorize;
+
 use std::collections::HashMap;
 use puniyu_core::message::Message;
 
@@ -30,9 +30,15 @@ impl CommandHandler {
 		let global = config.prefix();
 		let mut prefixes: Vec<String> = global.iter().map(|s| s.to_string()).collect();
 
-		prefixes.extend(PluginRegistry::all().iter().filter_map(|p| p.prefix()).map(|pp| {
-			global.map(|g| format!("{}{}", g, pp)).unwrap_or_else(|| pp.to_string())
-		}));
+		prefixes.extend(
+			CommandRegistry::all()
+				.into_iter()
+				.filter_map(|c| c.handle.get().prefix().map(|p| p.to_string()))
+				.dedup()
+				.map(|pp| {
+					global.map(|g| format!("{}{}", g, pp)).unwrap_or(pp)
+				}),
+		);
 
 		prefixes
 	}
@@ -67,6 +73,7 @@ impl CommandHandler {
 		let parser = CommandParser::builder()
 			.aliases(aliases)
 			.prefix(Self::build_prefix())
+			.build()
 			.parse(&original_text)
 			.ok();
 
@@ -86,6 +93,7 @@ impl CommandHandler {
 		let parser = match CommandParser::builder()
 			.aliases(aliases)
 			.prefix(Self::build_prefix())
+			.build()
 			.parse(&original_text)
 		{
 			Ok(p) => p,
@@ -108,14 +116,15 @@ impl CommandHandler {
 	async fn execute_command(ctx: &MessageContext<'_>, command_name: &str) {
 		let commands = CommandRegistry::all()
 			.into_iter()
-			.filter(|cmd| cmd.builder.name() == command_name)
-			.sorted_by_key(|cmd| cmd.builder.priority());
+			.map(|c| c.handle.get())
+			.filter(|cmd| cmd.name() == command_name)
+			.sorted_by_key(|cmd| cmd.priority());
 
 		let perm = get_permission(ctx);
 
 		for command in commands {
-			if !has_permission!(&perm, command.builder.permission()) {
-				let msg = match command.builder.permission() {
+			if !has_permission!(&perm, command.permission()) {
+				let msg = match command.permission() {
 					Permission::Master => "暂无权限, 只有主人才能操作",
 					Permission::Owner => "暂无权限, 只有群主或频道主才能操作",
 					Permission::Admin => "暂无权限, 只有管理员才能操作!",
@@ -128,7 +137,7 @@ impl CommandHandler {
 			let start_time = std::time::Instant::now();
 			info!("[{}] 开始执行", format!("command:{}", command_name).yellow());
 
-			let result = command.builder.execute(ctx).await;
+			let result = command.execute(ctx).await;
 
 			info!(
 				"[{}] 执行完毕, 耗时{}ms",

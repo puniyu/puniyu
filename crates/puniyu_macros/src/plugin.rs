@@ -2,36 +2,22 @@ mod command;
 pub use command::command;
 mod task;
 pub use task::task;
-mod config;
-pub use config::derive_plugin_config;
 
-use crate::{
-	PluginArg,
-	common::{ensure_lifecycle, extract_type_from_impl},
-};
+use crate::PluginArg;
 use quote::quote;
-use syn::{Ident, ImplItem, ItemImpl, ItemStruct};
+use syn::ItemStruct;
 
 pub fn plugin_struct(item: ItemStruct, cfg: PluginArg) -> proc_macro2::TokenStream {
+	if let Err(err) = crate::common::ensure_valid_host(&item.ident, "Plugin") {
+		return err.to_compile_error();
+	}
+
 	let user_struct_name = &item.ident;
 
 	let plugin_desc = match cfg.desc {
 		Some(desc) => quote!(Some(#desc)),
 		None => quote!(None),
 	};
-
-	let plugin_prefix = match cfg.prefix {
-		Some(prefix) => quote!(Some(#prefix)),
-		None => quote!(None),
-	};
-
-	let config_body = cfg.config.map(|config_ty| {
-		quote! {
-			fn __puniyu_configs() -> ::std::vec::Vec<::std::sync::Arc<dyn ::puniyu_plugin::config::Config>> {
-				#config_ty::configs()
-			}
-		}
-	});
 
 	quote! {
 		#item
@@ -40,156 +26,153 @@ pub fn plugin_struct(item: ItemStruct, cfg: PluginArg) -> proc_macro2::TokenStre
 			fn __puniyu_description() -> Option<&'static str> {
 				#plugin_desc
 			}
-
-			fn __puniyu_prefix() -> Option<&'static str> {
-				#plugin_prefix
-			}
-
-			#config_body
 		}
 
 		pub(crate) struct TaskRegistry {
-			plugin_name: &'static str,
-			builder: fn() -> ::std::sync::Arc<dyn ::puniyu_plugin::task::Task>,
+			pub(crate) plugin_name: &'static str,
+			pub(crate) handler: fn() -> ::std::sync::Arc<dyn ::puniyu_plugin::task::Task>,
+		}
+		impl TaskRegistry {
+			pub(crate) fn tasks() -> ::std::vec::Vec<::puniyu_plugin::task::TaskHandle> {
+				::puniyu_plugin::inventory::iter::<Self>()
+					.filter(|r| r.plugin_name == env!("CARGO_PKG_NAME"))
+					.map(|r| ::puniyu_plugin::task::TaskHandle::new((r.handler)()))
+					.collect()
+			}
 		}
 		::puniyu_plugin::inventory::collect!(crate::TaskRegistry);
 
 		pub(crate) struct CommandRegistry {
-			plugin_name: &'static str,
-			builder: fn() -> ::std::sync::Arc<dyn ::puniyu_plugin::command::Command>,
+			pub(crate) plugin_name: &'static str,
+			pub(crate) handler: fn() -> ::std::sync::Arc<dyn ::puniyu_plugin::command::Command>,
+		}
+		impl CommandRegistry {
+			pub(crate) fn commands() -> ::std::vec::Vec<::puniyu_plugin::command::CommandHandle> {
+				::puniyu_plugin::inventory::iter::<Self>()
+					.filter(|r| r.plugin_name == env!("CARGO_PKG_NAME"))
+					.map(|r| ::puniyu_plugin::command::CommandHandle::new((r.handler)()))
+					.collect()
+			}
 		}
 		::puniyu_plugin::inventory::collect!(crate::CommandRegistry);
 
 		pub(crate) struct ConfigRegistry {
-			plugin_name: &'static str,
-			builder: fn() -> ::std::sync::Arc<dyn ::puniyu_plugin::config::Config>,
+			pub(crate) plugin_name: &'static str,
+			pub(crate) handler: fn() -> ::std::vec::Vec<::std::sync::Arc<dyn ::puniyu_plugin::config::Config>>,
+		}
+		impl ConfigRegistry {
+			pub(crate) fn get() -> ::std::vec::Vec<::std::sync::Arc<dyn ::puniyu_plugin::config::Config>> {
+				::puniyu_plugin::inventory::iter::<Self>()
+					.filter(|r| r.plugin_name == env!("CARGO_PKG_NAME"))
+					.flat_map(|r| (r.handler)())
+					.collect()
+			}
 		}
 		::puniyu_plugin::inventory::collect!(crate::ConfigRegistry);
-	}
-}
 
-pub fn plugin_impl(mut item: ItemImpl, cfg: PluginArg) -> proc_macro2::TokenStream {
-	let host_name = match extract_type_from_impl(&item) {
-		Ok(name) => name,
-		Err(err) => return err.to_compile_error(),
-	};
-
-	if cfg.desc.is_some() || cfg.prefix.is_some() || cfg.config.is_some() {
-		return syn::Error::new(
-			host_name.span(),
-			"desc, prefix and config must be declared on #[plugin] struct",
-		)
-		.to_compile_error();
-	}
-
-	let mut load_fn_name: Option<Ident> = None;
-	let mut unload_fn_name: Option<Ident> = None;
-	let mut server_fn_name: Option<Ident> = None;
-	let mut config_fn_name: Option<Ident> = None;
-
-	for impl_item in &mut item.items {
-		let ImplItem::Fn(method) = impl_item else {
-			continue;
-		};
-		let mut retained = Vec::new();
-		let mut is_on_load = false;
-		let mut is_on_unload = false;
-		let mut is_server = false;
-		let mut is_config = false;
-		for attr in method.attrs.drain(..) {
-			if attr.path().is_ident("on_load") {
-				is_on_load = true;
-			} else if attr.path().is_ident("on_unload") {
-				is_on_unload = true;
-			} else if attr.path().is_ident("server") {
-				is_server = true;
-			} else if attr.path().is_ident("config") {
-				is_config = true;
-			} else {
-				retained.push(attr);
+		pub(crate) struct OnLoadRegistry {
+			pub(crate) handler: fn() -> ::std::pin::Pin<Box<dyn ::std::future::Future<Output = ::puniyu_plugin::result::Result> + Send>>,
+		}
+		impl OnLoadRegistry {
+			pub(crate) async fn execute() -> ::puniyu_plugin::result::Result {
+				if let Some(entry) = ::puniyu_plugin::inventory::iter::<Self>().next() {
+					(entry.handler)().await?;
+				}
+				Ok(())
 			}
 		}
-		method.attrs = retained;
+		::puniyu_plugin::inventory::collect!(crate::OnLoadRegistry);
 
-		if is_on_load {
-			if let Err(err) = ensure_lifecycle(method, "puniyu_plugin::result::Result") {
-				return err.to_compile_error();
-			}
-			if load_fn_name.is_some() {
-				return syn::Error::new(method.sig.ident.span(), "duplicate #[on_load] function")
-					.to_compile_error();
-			}
-			load_fn_name = Some(method.sig.ident.clone());
+		pub(crate) struct OnUnloadRegistry {
+			pub(crate) handler: fn() -> ::std::pin::Pin<Box<dyn ::std::future::Future<Output = ::puniyu_plugin::result::Result> + Send>>,
 		}
+		impl OnUnloadRegistry {
+			pub(crate) async fn execute() -> ::puniyu_plugin::result::Result {
+				if let Some(entry) = ::puniyu_plugin::inventory::iter::<Self>().next() {
+					(entry.handler)().await?;
+				}
+				Ok(())
+			}
+		}
+		::puniyu_plugin::inventory::collect!(crate::OnUnloadRegistry);
 
-		if is_on_unload {
-			if let Err(err) = ensure_lifecycle(method, "puniyu_plugin::result::Result") {
-				return err.to_compile_error();
-			}
-			if unload_fn_name.is_some() {
-				return syn::Error::new(method.sig.ident.span(), "duplicate #[on_unload] function")
-					.to_compile_error();
-			}
-			unload_fn_name = Some(method.sig.ident.clone());
+		pub(crate) struct ServerRegistry {
+			pub(crate) handler: fn() -> Option<::puniyu_plugin::server::ServerFunction>,
 		}
+		impl ServerRegistry {
+			pub(crate) fn get() -> Option<::puniyu_plugin::server::ServerFunction> {
+				::puniyu_plugin::inventory::iter::<Self>()
+					.next()
+					.and_then(|r| (r.handler)())
+			}
+		}
+		::puniyu_plugin::inventory::collect!(crate::ServerRegistry);
 
-		if is_server {
-			if server_fn_name.is_some() {
-				return syn::Error::new(method.sig.ident.span(), "duplicate #[server] function")
-					.to_compile_error();
-			}
-			server_fn_name = Some(method.sig.ident.clone());
+		macro_rules! __puniyu_submit {
+			(on_load, $fn:ident) => {
+				::puniyu_plugin::inventory::submit! {
+					crate::OnLoadRegistry {
+						handler: || -> ::std::pin::Pin<Box<dyn ::std::future::Future<Output = ::puniyu_plugin::result::Result> + Send>> {
+							Box::pin($fn())
+						}
+					}
+				}
+			};
+			(on_unload, $fn:ident) => {
+				::puniyu_plugin::inventory::submit! {
+					crate::OnUnloadRegistry {
+						handler: || -> ::std::pin::Pin<Box<dyn ::std::future::Future<Output = ::puniyu_plugin::result::Result> + Send>> {
+							Box::pin($fn())
+						}
+					}
+				}
+			};
+			(server, $fn:ident) => {
+				::puniyu_plugin::inventory::submit! {
+					crate::ServerRegistry { handler: $fn }
+				}
+			};
+			(config, $fn:ident) => {
+				::puniyu_plugin::inventory::submit! {
+					crate::ConfigRegistry {
+						plugin_name: env!("CARGO_PKG_NAME"),
+						handler: $fn
+					}
+				}
+			};
+			(task, $struct_name:ident) => {
+				::puniyu_plugin::inventory::submit! {
+					crate::TaskRegistry {
+						plugin_name: env!("CARGO_PKG_NAME"),
+						handler: || -> ::std::sync::Arc<dyn ::puniyu_plugin::task::Task> {
+							::std::sync::Arc::new($struct_name {})
+						}
+					}
+				}
+			};
+			(command, $struct_name:ident) => {
+				::puniyu_plugin::inventory::submit! {
+					crate::CommandRegistry {
+						plugin_name: env!("CARGO_PKG_NAME"),
+						handler: || -> ::std::sync::Arc<dyn ::puniyu_plugin::command::Command> {
+							::std::sync::Arc::new($struct_name {})
+						}
+					}
+				}
+			};
 		}
-
-		if is_config {
-			if config_fn_name.is_some() {
-				return syn::Error::new(method.sig.ident.span(), "duplicate #[config] function")
-					.to_compile_error();
-			}
-			config_fn_name = Some(method.sig.ident.clone());
-		}
-	}
-
-	let load_override = load_fn_name.map(|name| {
-		quote! {
-			async fn on_load(&self) -> ::puniyu_plugin::result::Result {
-				#host_name::#name().await
-			}
-		}
-	});
-	let unload_override = unload_fn_name.map(|name| {
-		quote! {
-			async fn on_unload(&self) -> ::puniyu_plugin::result::Result {
-				#host_name::#name().await
-			}
-		}
-	});
-	let server_override = server_fn_name.map(|name| {
-		quote! {
-			fn server(&self) -> Option<::puniyu_plugin::server::ServerFunction> {
-				#host_name::#name()
-			}
-		}
-	});
-	let config_override = config_fn_name.map(|name| {
-		quote! {
-			fn config(&self) -> ::std::vec::Vec<::std::sync::Arc<dyn ::puniyu_plugin::config::Config>> {
-				#host_name::#name()
-			}
-		}
-	});
-
-	quote! {
-		#item
+		pub(crate) use __puniyu_submit;
 
 		pub struct Plugin;
 
 		#[::puniyu_plugin::async_trait]
 		impl ::puniyu_plugin::Plugin for Plugin {
+			#[inline]
 			fn name(&self) -> &str {
 				env!("CARGO_PKG_NAME")
 			}
 
+			#[inline]
 			fn version(&self) -> ::puniyu_plugin::Version {
 				::puniyu_plugin::Version {
 					major: env!("CARGO_PKG_VERSION_MAJOR").parse::<u64>().unwrap(),
@@ -198,32 +181,40 @@ pub fn plugin_impl(mut item: ItemImpl, cfg: PluginArg) -> proc_macro2::TokenStre
 				}
 			}
 
+			#[inline]
 			fn description(&self) -> Option<&str> {
-				#host_name::__puniyu_description()
+				#user_struct_name::__puniyu_description()
 			}
 
-			fn prefix(&self) -> Option<&str> {
-				#host_name::__puniyu_prefix()
+			#[inline]
+			fn tasks(&self) -> ::std::vec::Vec<::puniyu_plugin::task::TaskHandle> {
+				crate::TaskRegistry::tasks()
 			}
 
-			fn tasks(&self) -> ::std::vec::Vec<::std::sync::Arc<dyn ::puniyu_plugin::task::Task>> {
-				::puniyu_plugin::inventory::iter::<crate::TaskRegistry>()
-					.filter(|task| task.plugin_name == env!("CARGO_PKG_NAME"))
-					.map(|task| (task.builder)())
-					.collect()
+			#[inline]
+			fn commands(&self) -> ::std::vec::Vec<::puniyu_plugin::command::CommandHandle> {
+				crate::CommandRegistry::commands()
 			}
 
-			fn commands(&self) -> ::std::vec::Vec<::std::sync::Arc<dyn ::puniyu_plugin::command::Command>> {
-				::puniyu_plugin::inventory::iter::<crate::CommandRegistry>()
-					.filter(|command| command.plugin_name == env!("CARGO_PKG_NAME"))
-					.map(|command| (command.builder)())
-					.collect()
+			#[inline]
+			fn server(&self) -> Option<::puniyu_plugin::server::ServerFunction> {
+				crate::ServerRegistry::get()
 			}
 
-			#config_override
-			#server_override
-			#load_override
-			#unload_override
+			#[inline]
+			fn config(&self) -> ::std::vec::Vec<::std::sync::Arc<dyn ::puniyu_plugin::config::Config>> {
+				crate::ConfigRegistry::get()
+			}
+
+			#[inline]
+			async fn on_load(&self) -> ::puniyu_plugin::result::Result {
+				crate::OnLoadRegistry::execute().await
+			}
+
+			#[inline]
+			async fn on_unload(&self) -> ::puniyu_plugin::result::Result {
+				crate::OnUnloadRegistry::execute().await
+			}
 		}
 	}
 }

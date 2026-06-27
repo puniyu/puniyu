@@ -6,6 +6,9 @@ use puniyu_core::Version;
 
 mod logger;
 mod config;
+mod load;
+pub(crate) use load::load;
+mod unload;
 
 const fn app_name() -> &'static str {
 	env!("CARGO_PKG_NAME")
@@ -30,7 +33,7 @@ async fn main() -> std::io::Result<()> {
 		))))
 		.with_config(config::LoggerConfig::default())
 		.with_handler(puniyu_handler_command::Handler)
-		.with_on_start(logger::log_init)
+		.with_on_start(load)
 		.with_loader(
 			puniyu_loader_builtin::BuiltinLoader::new()
 				.with_adapter(puniyu_adapter_console::Adapter)

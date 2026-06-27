@@ -2,7 +2,7 @@ use log::info;
 use puniyu_core::context::MessageContext;
 use puniyu_core::element::receive::Elements;
 use puniyu_core::event::{EventBase, message::MessageBase};
-use puniyu_core::logger::owo_colors::OwoColorize;
+use puniyu_logger::owo_colors::OwoColorize;
 pub fn log(event: &MessageContext) {
 	let raw_message = event
 		.elements()
