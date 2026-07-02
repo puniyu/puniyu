@@ -1,12 +1,12 @@
 #![allow(clippy::unwrap_used)]
 
-use vergen_git2::{BuildBuilder, Emitter, Git2Builder};
+use vergen_git2::{Build, Emitter, Git2};
 
 fn main() {
 	println!("cargo:rerun-if-changed=build.rs");
 	println!("cargo:rerun-if-changed=../.git/HEAD");
-	let build = BuildBuilder::all_build().unwrap();
-	let git = Git2Builder::all_git().unwrap();
+	let build = Build::all_build();
+	let git = Git2::all_git();
 	Emitter::default()
 		.add_instructions(&build)
 		.unwrap()
