@@ -25,7 +25,7 @@ jobs:
           fetch-depth: 0 
 
       - name: 设置 rust
-        uses: puniyu/setup-rust@7393fd4d8c1f2a1669dde8a0e34cafc6add98c83 # main
+        uses: puniyu/setup-rust@6207651cfeee834ef1c841252c3c6d25550a00ca # main
         with:
           target: ${{ matrix.platform.target }}
           cache: true
@@ -69,7 +69,7 @@ jobs:
           fetch-depth: 0 
 
       - name: 设置 rust
-        uses: puniyu/setup-rust@7393fd4d8c1f2a1669dde8a0e34cafc6add98c83 # main
+        uses: puniyu/setup-rust@6207651cfeee834ef1c841252c3c6d25550a00ca # main
         with:
           target: ${{ matrix.platform.target }}
           cache: true
@@ -116,7 +116,7 @@ jobs:
           fetch-depth: 0 
 
       - name: 设置 rust
-        uses: puniyu/setup-rust@7393fd4d8c1f2a1669dde8a0e34cafc6add98c83 # main
+        uses: puniyu/setup-rust@6207651cfeee834ef1c841252c3c6d25550a00ca # main
         with:
           target: ${{ matrix.platform.target }}
           cache: true
