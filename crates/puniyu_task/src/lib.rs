@@ -55,7 +55,7 @@ static SCHEDULER: SetOnce<Arc<Mutex<JobScheduler>>> = SetOnce::const_new();
 
 /// 启动任务调度器
 ///
-/// 多次调用不会重复初始化，直接返回已初始化的调度器。
+/// 多次调用不会重复初始化
 pub async fn start_scheduler() -> Result<(), Error> {
 	if SCHEDULER.get().is_some() {
 		return Ok(());

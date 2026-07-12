@@ -245,17 +245,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "cfb"
-version = "0.7.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d38f2da7a0a2c4ccf0065be06397cc26a81f4e528be095826eee9d4adbb8c60f"
-dependencies = [
- "byteorder",
- "fnv",
- "uuid",
-]
-
-[[package]]
 name = "cfg-if"
 version = "1.0.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -763,28 +752,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "42703706b716c37f96a77aea830392ad231f44c9e9a67872fa5548707e11b11c"
 
 [[package]]
-name = "futures"
-version = "0.3.32"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8b147ee9d1f6d097cef9ce628cd2ee62288d963e16fb287bd9286455b241382d"
-dependencies = [
- "futures-channel",
- "futures-core",
- "futures-executor",
- "futures-io",
- "futures-sink",
- "futures-task",
- "futures-util",
-]
-
-[[package]]
 name = "futures-channel"
 version = "0.3.32"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "07bbe89c50d7a535e539b8c17bc0b49bdb77747034daa8087407d655f3f7cc1d"
 dependencies = [
  "futures-core",
- "futures-sink",
 ]
 
 [[package]]
@@ -792,17 +765,6 @@ name = "futures-core"
 version = "0.3.32"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7e3450815272ef58cec6d564423f6e755e25379b217b0bc688e295ba24df6b1d"
-
-[[package]]
-name = "futures-executor"
-version = "0.3.32"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "baf29c38818342a3b26b5b923639e7b1f4a61fc5e76102d4b1981c6dc7a7579d"
-dependencies = [
- "futures-core",
- "futures-task",
- "futures-util",
-]
 
 [[package]]
 name = "futures-io"
@@ -839,7 +801,6 @@ version = "0.3.32"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "389ca41296e6190b48053de0321d02a77f32f8a5d2461dd38762c0593805c6d6"
 dependencies = [
- "futures-channel",
  "futures-core",
  "futures-io",
  "futures-macro",
@@ -1222,15 +1183,6 @@ checksum = "d466e9454f08e4a911e14806c24e16fba1b4c121d1ea474396f396069cf949d9"
 dependencies = [
  "equivalent",
  "hashbrown",
-]
-
-[[package]]
-name = "infer"
-version = "0.19.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a588916bfdfd92e71cacef98a63d9b1f0d74d6599980d11894290e7ddefffcf7"
-dependencies = [
- "cfb",
 ]
 
 [[package]]
@@ -1792,12 +1744,26 @@ dependencies = [
  "async-trait",
  "bon",
  "bytes",
+ "convert_case",
+ "log",
+ "puniyu_adapter_core",
  "puniyu_app",
+ "puniyu_command",
+ "puniyu_config",
+ "puniyu_dispatch",
+ "puniyu_error",
  "puniyu_handler",
+ "puniyu_loader",
+ "puniyu_logger",
+ "puniyu_path",
+ "puniyu_plugin_core",
  "puniyu_server",
+ "puniyu_server_router",
+ "puniyu_task",
  "puniyu_version",
  "salvo",
  "semver",
+ "tokio",
 ]
 
 [[package]]
@@ -1820,7 +1786,6 @@ dependencies = [
  "log",
  "puniyu_account",
  "puniyu_adapter_types",
- "puniyu_common",
  "puniyu_contact",
  "puniyu_error",
  "puniyu_logger",
@@ -1839,7 +1804,6 @@ dependencies = [
  "puniyu_account",
  "puniyu_adapter_api",
  "puniyu_adapter_types",
- "puniyu_common",
  "puniyu_config",
  "puniyu_contact",
  "puniyu_error",
@@ -1899,6 +1863,7 @@ version = "0.9.5"
 dependencies = [
  "convert_case",
  "figlet-rs",
+ "puniyu",
  "puniyu_logger",
  "puniyu_server",
  "puniyu_server_middleware",
@@ -1960,10 +1925,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "puniyu_common"
-version = "0.9.5"
-
-[[package]]
 name = "puniyu_config"
 version = "0.9.5"
 dependencies = [
@@ -1995,24 +1956,14 @@ dependencies = [
 name = "puniyu_context"
 version = "0.9.5"
 dependencies = [
- "async-trait",
- "bytes",
- "puniyu_account",
- "puniyu_adapter_api",
- "puniyu_adapter_core",
  "puniyu_adapter_types",
  "puniyu_bot",
  "puniyu_command_types",
- "puniyu_common",
- "puniyu_config",
  "puniyu_contact",
- "puniyu_core",
  "puniyu_element",
  "puniyu_error",
  "puniyu_event",
  "puniyu_message",
- "puniyu_sender",
- "serde_json",
  "smol_str",
 ]
 
@@ -2020,42 +1971,21 @@ dependencies = [
 name = "puniyu_core"
 version = "0.9.5"
 dependencies = [
- "puniyu_core_bot",
- "puniyu_core_contact",
- "puniyu_core_element",
- "puniyu_core_event",
- "puniyu_core_sender",
-]
-
-[[package]]
-name = "puniyu_core_bot"
-version = "0.9.5"
-dependencies = [
  "bytes",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]
-name = "puniyu_core_contact"
-version = "0.9.5"
-
-[[package]]
-name = "puniyu_core_element"
-version = "0.9.5"
-
-[[package]]
-name = "puniyu_core_event"
+name = "puniyu_dispatch"
 version = "0.9.5"
 dependencies = [
- "puniyu_core_bot",
- "puniyu_core_contact",
- "puniyu_core_element",
- "puniyu_core_sender",
- "serde",
+ "log",
+ "puniyu_event",
+ "puniyu_handler",
+ "thiserror",
+ "tokio",
 ]
-
-[[package]]
-name = "puniyu_core_sender"
-version = "0.9.5"
 
 [[package]]
 name = "puniyu_element"
@@ -2159,7 +2089,6 @@ dependencies = [
  "async-trait",
  "const-str",
  "puniyu_command",
- "puniyu_common",
  "puniyu_config",
  "puniyu_error",
  "puniyu_server",
@@ -2196,19 +2125,10 @@ dependencies = [
 name = "puniyu_server"
 version = "0.9.5"
 dependencies = [
- "bytes",
- "futures",
- "infer",
  "log",
- "mime",
- "puniyu_common",
  "puniyu_logger",
- "puniyu_path",
  "salvo",
- "serde",
- "serde_json",
  "thiserror",
- "tokio",
 ]
 
 [[package]]
@@ -2225,6 +2145,7 @@ dependencies = [
 name = "puniyu_server_router"
 version = "0.9.5"
 dependencies = [
+ "bytes",
  "salvo",
 ]
 

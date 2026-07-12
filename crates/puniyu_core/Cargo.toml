@@ -1,14 +1,20 @@
 [package]
-name = "puniyu_common"
+name = "puniyu_core"
 version = "0.9.5"
-readme = "README.md"
 authors.workspace = true
 license.workspace = true
+readme.workspace = true
 homepage.workspace = true
 repository.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 
+[lints]
+workspace = true
 
+[dependencies]
+bytes.workspace = true
+serde.workspace = true
 
-
+[dev-dependencies]
+serde_json.workspace = true

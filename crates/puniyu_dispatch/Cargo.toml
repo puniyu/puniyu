@@ -1,9 +1,9 @@
 [package]
-name = "puniyu_server"
+name = "puniyu_dispatch"
 version = "0.9.5"
-readme = "README.md"
 authors.workspace = true
 license.workspace = true
+readme = "README.md"
 homepage.workspace = true
 repository.workspace = true
 edition.workspace = true
@@ -14,7 +14,10 @@ workspace = true
 
 [dependencies]
 log.workspace = true
-puniyu_logger.workspace = true
-salvo = { workspace = true, features = ["socket2"] }
 thiserror.workspace = true
+puniyu_event.workspace = true
+puniyu_handler.workspace = true
+tokio = { workspace = true, features = ["rt"] }
 
+[dev-dependencies]
+tokio = { workspace = true, features = ["rt", "sync", "macros", "time"] }

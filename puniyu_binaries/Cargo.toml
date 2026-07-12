@@ -25,6 +25,7 @@ tokio = { workspace = true, features = ["full"] }
 figlet-rs = { version = "1.0.0" }
 
 puniyu_version.workspace = true
+puniyu.workspace = true
 puniyu_logger.workspace = true
 puniyu_server.workspace = true
 puniyu_server_middleware.workspace = true

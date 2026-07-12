@@ -2,4 +2,5 @@ set windows-shell := ["powershell.exe", "-c"]
 set shell := ["bash", "-cu"]
 
 run: 
-    just puniyu_binaries
+    cargo run --bin puniyu --release
+

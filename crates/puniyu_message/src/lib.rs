@@ -60,18 +60,18 @@ impl fmt::Display for Message {
 
 impl From<Vec<Elements>> for Message {
 	fn from(message: Vec<Elements>) -> Self {
-		Message(message.into())
+		Self(message.into())
 	}
 }
 
 impl From<EcoVec<Elements>> for Message {
 	fn from(message: EcoVec<Elements>) -> Self {
-		Message(message)
+		Self(message)
 	}
 }
 impl From<Elements> for Message {
 	fn from(elements: Elements) -> Self {
-		Message(eco_vec![elements])
+		Self(eco_vec![elements])
 	}
 }
 

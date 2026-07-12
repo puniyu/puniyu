@@ -35,5 +35,4 @@ serde_json.workspace = true
 tokio = { workspace = true, features = ["rt", "macros"] }
 
 puniyu_contact.workspace = true
-puniyu_common.workspace = true
 puniyu_config.workspace = true

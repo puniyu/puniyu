@@ -1,0 +1,46 @@
+pub trait Contact: Send + Sync {
+	/// 联系人所属的场景
+	type Scene: Copy;
+
+	/// 获取场景类型
+	///
+	/// # 返回值
+	///
+	/// 返回联系人所属的场景引用,具体类型由 [`Self::Scene`] 决定。
+	fn scene(&self) -> Self::Scene;
+
+	/// 获取联系人 ID
+	///
+	/// # 返回值
+	///
+	/// 返回联系人的唯一标识符 [`str`]。
+	fn peer(&self) -> &str;
+
+	/// 获取联系人名称
+	///
+	/// # 返回值
+	///
+	/// 返回联系人的名称 [`Option<&str>`],如果未设置则返回 [`None`]。
+	fn name(&self) -> Option<&str>;
+}
+
+impl<T: Contact + ?Sized> Contact for &T {
+	type Scene = T::Scene;
+	fn scene(&self) -> Self::Scene {
+		(**self).scene()
+	}
+	fn peer(&self) -> &str {
+		(**self).peer()
+	}
+	fn name(&self) -> Option<&str> {
+		(**self).name()
+	}
+}
+
+impl<T: Copy + PartialEq> PartialEq for dyn Contact<Scene = T> {
+	fn eq(&self, other: &Self) -> bool {
+		self.scene() == other.scene() && self.peer() == other.peer() && self.name() == other.name()
+	}
+}
+
+impl<T: Copy + PartialEq + Eq> Eq for dyn Contact<Scene = T> {}

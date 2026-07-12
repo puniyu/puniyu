@@ -13,5 +13,6 @@ rust-version.workspace = true
 workspace = true
 
 [dependencies]
+bytes.workspace = true
 salvo.workspace = true
 

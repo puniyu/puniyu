@@ -35,8 +35,8 @@ pub async fn start_server(host: IpAddr, port: u16) -> io::Result<()> {
 	let inner = crate::app::take();
 	let mut router = Router::new();
 	router = inner.routers.into_iter().fold(router, Router::push);
-	for info in ServerRegistry::all() {
-		router = router.push(info.router.take());
+	for info in ServerRegistry::take_all() {
+		router = router.push(info.router);
 	}
 	let mut service = Service::new(router);
 	service.hoops.extend(inner.hoops);

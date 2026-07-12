@@ -1,15 +1,13 @@
-use std::sync::{LazyLock, RwLock};
+use std::sync::OnceLock;
 
 use bytes::Bytes;
 
-pub(crate) static LOGO: LazyLock<RwLock<Bytes>> = LazyLock::new(|| RwLock::new(Bytes::new()));
+static LOGO: OnceLock<Bytes> = OnceLock::new();
 
 pub fn set_logo(data: Bytes) {
-	if let Ok(mut logo) = LOGO.write() {
-		*logo = data;
-	}
+	LOGO.set(data).ok();
 }
 
 pub fn get_logo() -> Bytes {
-	LOGO.read().map(|s| s.clone()).unwrap_or_default()
+	LOGO.get().cloned().unwrap_or_default()
 }

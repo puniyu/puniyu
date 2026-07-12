@@ -27,7 +27,7 @@ bon = { version = "3.9.3" }
 strum = { version = "0.28.0", features = ["derive"] }
 derive_more = { version = "2.1.1" }
 bytes = { version = "1.12.1" }
-ecow = { version = "0.3.0",features = ["serde"] }
+ecow = { version = "0.3.0", features = ["serde"] }
 toml = { version = "1.1.2" }
 jiff = { version = "0.2.31", features = ["serde"] }
 tokio = { version = "1.47.1" }
@@ -36,7 +36,7 @@ salvo = { version = "0.94.0" }
 const-str = { version = "1.1.0" }
 convert_case = { version = "0.11.0" }
 
-puniyu_core = { version = "0.9.5" }
+puniyu_core = { version = "0.9.5", path = "./crates/puniyu_core" }
 puniyu_logger = { version = "0.7.5" }
 
 puniyu_contact = { version = "0.9.5", path = "./crates/puniyu_contact" }
@@ -51,7 +51,6 @@ puniyu_path = { version = "0.9.5", path = "./crates/puniyu_path" }
 puniyu_event = { version = "0.9.5", path = "./crates/puniyu_event" }
 puniyu_context = { version = "0.9.5", path = "./crates/puniyu_context" }
 puniyu_error = { version = "0.9.5", path = "./crates/puniyu_error" }
-puniyu_common = { version = "0.9.5", path = "./crates/puniyu_common" }
 puniyu_version = { version = "0.9.5", path = "./crates/puniyu_version" }
 puniyu_config = { version = "0.9.5", path = "./crates/puniyu_config" }
 puniyu_task = { version = "0.9.5", path = "./crates/puniyu_task" }
@@ -61,6 +60,7 @@ puniyu_server_middleware = { version = "0.9.5", path = "./crates/puniyu_server_m
 puniyu_server_router = { version = "0.9.5", path = "./crates/puniyu_server_router" }
 
 puniyu_handler = { version = "0.9.5", path = "./crates/puniyu_handler" }
+puniyu_dispatch = { version = "0.9.5", path = "./crates/puniyu_dispatch" }
 
 puniyu_loader = { version = "0.9.5", path = "./crates/puniyu_loader" }
 
@@ -74,6 +74,7 @@ puniyu_command_parser = { version = "0.9.5", path = "./crates/puniyu_command_par
 
 puniyu_plugin_core = { version = "0.9.5", path = "./crates/puniyu_plugin_core" }
 
+puniyu = { version = "0.9.5", path = "./crates/puniyu" }
 # puniyu_cooldown = { version = "0.9.0", path = "./crates/puniyu_cooldown" }
 # puniyu_macros = { version = "0.9.0", path = "./crates/puniyu_macros" }
 
