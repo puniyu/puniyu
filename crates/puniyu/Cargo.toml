@@ -1,0 +1,30 @@
+[package]
+name = "puniyu"
+version = "0.9.5"
+authors.workspace = true
+license.workspace = true
+readme.workspace = true
+homepage.workspace = true
+repository.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+async-trait.workspace = true
+bon.workspace = true
+bytes.workspace = true
+semver.workspace = true
+
+salvo = { workspace = true, optional = true }
+
+puniyu_app.workspace = true
+puniyu_version.workspace = true
+puniyu_handler.workspace = true
+puniyu_server = { workspace = true, optional = true }
+
+[features]
+default = ["server"]
+server = ["dep:salvo","dep:puniyu_server"]

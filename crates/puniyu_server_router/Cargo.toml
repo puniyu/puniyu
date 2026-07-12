@@ -1,0 +1,17 @@
+[package]
+name = "puniyu_server_router"
+version = "0.9.5"
+authors.workspace = true
+license.workspace = true
+readme.workspace = true
+homepage.workspace = true
+repository.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+salvo.workspace = true
+

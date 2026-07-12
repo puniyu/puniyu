@@ -1,0 +1,21 @@
+[package]
+name = "puniyu_command"
+version = "0.9.5"
+authors.workspace = true
+license.workspace = true
+readme = "README.md"
+homepage.workspace = true
+repository.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+async-trait.workspace = true
+puniyu_command_types.workspace = true
+puniyu_context.workspace = true
+puniyu_error.workspace = true
+thiserror.workspace = true
+

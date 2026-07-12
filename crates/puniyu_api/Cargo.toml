@@ -1,0 +1,33 @@
+[package]
+name = "puniyu_api"
+version = "0.9.5"
+authors.workspace = true
+license.workspace = true
+readme.workspace = true
+homepage.workspace = true
+repository.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+puniyu_handler.workspace = true
+puniyu_config.workspace = true
+puniyu_bot.workspace = true
+puniyu_account.workspace = true
+puniyu_path.workspace = true
+puniyu_command.workspace = true
+puniyu_event.workspace = true
+puniyu_context.workspace = true
+puniyu_sender.workspace = true
+puniyu_contact.workspace = true
+puniyu_element.workspace = true
+puniyu_segment.workspace = true
+puniyu_message.workspace = true
+puniyu_command_parser.workspace = true
+puniyu_error.workspace = true
+
+
+

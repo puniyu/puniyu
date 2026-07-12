@@ -1,0 +1,29 @@
+[package]
+name = "puniyu_server"
+version = "0.9.5"
+readme = "README.md"
+authors.workspace = true
+license.workspace = true
+homepage.workspace = true
+repository.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+log.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+puniyu_logger.workspace = true
+puniyu_path.workspace = true
+puniyu_common.workspace = true
+bytes.workspace = true
+salvo = { workspace = true, features = ["socket2"] }
+tokio = { workspace = true, features = ["full"] }
+futures.workspace = true
+thiserror.workspace = true
+mime = "0.3.17"
+infer = "0.19.0"
+

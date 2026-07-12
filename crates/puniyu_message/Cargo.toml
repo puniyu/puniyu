@@ -1,0 +1,25 @@
+[package]
+name = "puniyu_message"
+version = "0.9.5"
+authors.workspace = true
+license.workspace = true
+readme = "README.md"
+homepage.workspace = true
+repository.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+serde.workspace = true
+ecow.workspace = true
+
+puniyu_element.workspace = true
+
+[dev-dependencies]
+serde_json.workspace = true
+bytes.workspace = true
+
+puniyu_element.workspace = true

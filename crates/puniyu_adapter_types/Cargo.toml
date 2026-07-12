@@ -1,0 +1,28 @@
+[package]
+name = "puniyu_adapter_types"
+version = "0.9.5"
+authors.workspace = true
+license.workspace = true
+readme = "README.md"
+homepage.workspace = true
+repository.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+serde.workspace = true
+strum.workspace = true
+semver.workspace = true
+jiff.workspace = true
+bon.workspace = true
+smol_str.workspace = true
+puniyu_sender.workspace = true
+puniyu_contact.workspace = true
+puniyu_element.workspace = true
+
+[dev-dependencies]
+semver.workspace = true
+

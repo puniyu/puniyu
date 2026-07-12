@@ -1,0 +1,21 @@
+[package]
+name = "puniyu_path"
+version = "0.9.5"
+authors.workspace = true
+license.workspace = true
+readme = "README.md"
+homepage.workspace = true
+repository.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[lib]
+doctest = false
+
+[lints]
+workspace = true
+
+[dependencies]
+puniyu_app.workspace = true
+
+[dev-dependencies]
