@@ -46,6 +46,7 @@ puniyu_message = { version = "0.9.5", path = "./crates/puniyu_message" }
 puniyu_segment = { version = "0.9.5", path = "./crates/puniyu_segment" }
 puniyu_account = { version = "0.9.5", path = "./crates/puniyu_account" }
 puniyu_bot = { version = "0.9.5", path = "./crates/puniyu_bot" }
+puniyu_api = { version = "0.9.5", path = "./crates/puniyu_api" }
 puniyu_app = { version = "0.9.5", path = "./crates/puniyu_app" }
 puniyu_path = { version = "0.9.5", path = "./crates/puniyu_path" }
 puniyu_event = { version = "0.9.5", path = "./crates/puniyu_event" }

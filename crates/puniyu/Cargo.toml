@@ -33,6 +33,7 @@ puniyu_command.workspace = true
 puniyu_dispatch.workspace = true
 puniyu_task.workspace = true
 puniyu_error.workspace = true
+puniyu_api.workspace = true
 
 puniyu_server = { workspace = true, optional = true }
 

@@ -1746,6 +1746,7 @@ dependencies = [
  "convert_case",
  "log",
  "puniyu_adapter_core",
+ "puniyu_api",
  "puniyu_app",
  "puniyu_command",
  "puniyu_config",
