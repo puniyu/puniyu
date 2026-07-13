@@ -30,7 +30,7 @@ use std::{borrow::Cow, fmt, ops::Deref};
 pub struct Message(EcoVec<Elements>);
 
 impl Deref for Message {
-	type Target = EcoVec<Elements>;
+	type Target = [Elements];
 
 	fn deref(&self) -> &Self::Target {
 		&self.0
