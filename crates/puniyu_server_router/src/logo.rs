@@ -1,18 +1,8 @@
-use std::sync::OnceLock;
-
-use bytes::Bytes;
-use salvo::{Response, handler};
-
-static LOGO: OnceLock<Bytes> = OnceLock::new();
-
-pub fn set_logo(data: Bytes) {
-	LOGO.set(data).ok();
-}
-
+use salvo::{Depot, Response, handler, hyper::body::Bytes};
 
 #[handler]
-pub async fn logo(res: &mut Response) {
-	let Some(data) = LOGO.get() else {
+pub async fn logo(depot: &mut Depot, res: &mut Response) {
+	let Ok(data) = depot.get::<Bytes>("logo") else {
 		res.status_code(salvo::http::StatusCode::NOT_FOUND);
 		return;
 	};

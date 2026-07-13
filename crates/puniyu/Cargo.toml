@@ -17,15 +17,12 @@ log.workspace = true
 convert_case.workspace = true
 async-trait.workspace = true
 bon.workspace = true
-bytes.workspace = true
-semver.workspace = true
 tokio.workspace = true
 
 salvo = { workspace = true, optional = true }
 
 puniyu_logger.workspace = true
 puniyu_app.workspace = true
-puniyu_version.workspace = true
 puniyu_config.workspace = true
 puniyu_handler.workspace = true
 puniyu_loader.workspace = true
@@ -38,8 +35,7 @@ puniyu_task.workspace = true
 puniyu_error.workspace = true
 
 puniyu_server = { workspace = true, optional = true }
-puniyu_server_router = { workspace = true, optional = true }
 
 [features]
 default = ["server"]
-server = ["dep:salvo", "dep:puniyu_server", "dep:puniyu_server_router"]
+server = ["dep:salvo", "dep:puniyu_server"]

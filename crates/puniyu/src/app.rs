@@ -4,7 +4,6 @@ mod plugin;
 pub(crate) mod server;
 
 use bon::Builder;
-use bytes::Bytes;
 use convert_case::{Case, Casing};
 use log::{debug, info};
 use puniyu_dispatch::EventEmitter;
@@ -33,9 +32,7 @@ pub struct App {
 	#[builder(field)]
 	on_exit: Option<AsyncFn>,
 	#[builder(default = "puniyu")]
-	name: &'static str,
-    #[cfg(feature = "server")]
-    assets: Option<Bytes>
+	name: &'static str
 }
 
 impl<S: app_builder::State> AppBuilder<S> {
@@ -152,9 +149,6 @@ impl App {
 			self.routers.into_iter().for_each(puniyu_server::App::router);
 			self.hoops.into_iter().for_each(puniyu_server::App::hoop);
 			let config = puniyu_config::app::AppConfig::get().server();
-            if let Some(logo) = self.assets {
-                puniyu_server_router::logo::set_logo(logo);
-            }
 			tokio::spawn(puniyu_server::start_server(config.host(), config.port()));
 		}
 		tokio::signal::ctrl_c().await?;

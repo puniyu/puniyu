@@ -17,8 +17,10 @@ name = "puniyu"
 path = "src/main.rs"
 
 [dependencies]
+bytes.workspace = true
 semver.workspace = true
 convert_case.workspace = true
+salvo.workspace = true
 
 tokio = { workspace = true, features = ["full"] }
 
@@ -26,9 +28,11 @@ figlet-rs = { version = "1.0.0" }
 
 puniyu_version.workspace = true
 puniyu.workspace = true
+puniyu_path.workspace = true
 puniyu_logger.workspace = true
 puniyu_server.workspace = true
 puniyu_server_middleware.workspace = true
+puniyu_server_router.workspace = true
 
 [build-dependencies]
 vergen-git2 = { version = "10.0.0", features = ["build"] }

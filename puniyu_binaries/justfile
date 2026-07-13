@@ -2,5 +2,5 @@ set windows-shell := ["powershell.exe", "-c"]
 set shell := ["bash", "-cu"]
 
 run: 
-    cargo run --bin puniyu --release
+    cargo run --bin puniyu
 

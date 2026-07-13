@@ -1743,7 +1743,6 @@ version = "0.9.5"
 dependencies = [
  "async-trait",
  "bon",
- "bytes",
  "convert_case",
  "log",
  "puniyu_adapter_core",
@@ -1758,11 +1757,8 @@ dependencies = [
  "puniyu_path",
  "puniyu_plugin_core",
  "puniyu_server",
- "puniyu_server_router",
  "puniyu_task",
- "puniyu_version",
  "salvo",
- "semver",
  "tokio",
 ]
 
@@ -1861,13 +1857,17 @@ version = "0.9.5"
 name = "puniyu_binaries"
 version = "0.9.5"
 dependencies = [
+ "bytes",
  "convert_case",
  "figlet-rs",
  "puniyu",
  "puniyu_logger",
+ "puniyu_path",
  "puniyu_server",
  "puniyu_server_middleware",
+ "puniyu_server_router",
  "puniyu_version",
+ "salvo",
  "semver",
  "tokio",
  "vergen-git2",
@@ -2145,7 +2145,6 @@ dependencies = [
 name = "puniyu_server_router"
 version = "0.9.5"
 dependencies = [
- "bytes",
  "salvo",
 ]
 
