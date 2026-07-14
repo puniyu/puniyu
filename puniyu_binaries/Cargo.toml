@@ -33,6 +33,9 @@ puniyu_logger.workspace = true
 puniyu_server.workspace = true
 puniyu_server_middleware.workspace = true
 puniyu_server_router.workspace = true
+puniyu_handler_log.workspace = true
+puniyu_handler_access.workspace = true
+puniyu_handler_command.workspace = true
 
 [build-dependencies]
 vergen-git2 = { version = "10.0.0", features = ["build"] }

@@ -1,5 +1,5 @@
-use std::ops::Deref;
 use puniyu_bot::Bot;
+use std::ops::Deref;
 
 /// 机器人上下文
 #[derive(Clone, Copy)]

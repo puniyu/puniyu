@@ -9,7 +9,7 @@ pub(crate) struct Inner {
 }
 
 impl Inner {
-    #[inline]
+	#[inline]
 	pub fn new() -> Self {
 		Self::default()
 	}
@@ -34,8 +34,7 @@ impl App {
 	}
 }
 
-
 pub(crate) fn take() -> Inner {
-    let mut guard = INNER.lock().expect("router mutex poisoned");
-    std::mem::take(&mut *guard)
+	let mut guard = INNER.lock().expect("router mutex poisoned");
+	std::mem::take(&mut *guard)
 }

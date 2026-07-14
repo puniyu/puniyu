@@ -255,7 +255,6 @@ impl From<bool> for ArgValue {
 	}
 }
 
-
 pub trait FromArgValue: Sized {
 	fn from_arg_value(value: &ArgValue) -> Option<Self>;
 }

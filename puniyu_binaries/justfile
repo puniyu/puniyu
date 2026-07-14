@@ -4,3 +4,5 @@ set shell := ["bash", "-cu"]
 run: 
     cargo run --bin puniyu
 
+build:
+    cargo build --bin puniyu --release

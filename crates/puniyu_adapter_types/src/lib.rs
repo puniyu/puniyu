@@ -138,11 +138,10 @@ pub struct SendMsgResult {
 	pub time: Duration,
 }
 
-#[derive(Debug, Default,Clone, Deserialize, Serialize, PartialEq, Eq, Builder)]
+#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, Eq, Builder)]
 pub struct SendMessageOptions {
 	/// 是否回复消息
 	#[builder(default)]
 	#[serde(default)]
 	reply: bool,
 }
-

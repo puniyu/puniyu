@@ -36,7 +36,7 @@ pub struct BotConfig {
 	///
 	/// 作为所有 Bot 的默认配置
 	#[serde(default)]
-	global: OptionConfig,
+	global: OptionConfigRaw,
 
 	/// 特定 Bot 配置映射
 	///
@@ -52,18 +52,17 @@ impl BotConfig {
 	}
 
 	pub fn global(&self) -> OptionConfig {
-		self.global.clone()
+		self.global.merge_with(&OptionConfig::default())
 	}
 
 	pub fn bot(&self, bot_id: &str) -> OptionConfig {
-		self.bot
-			.get(bot_id)
-			.map(|raw| raw.merge_with(&self.global))
-			.unwrap_or_else(|| self.global.clone())
+		let global = self.global();
+		self.bot.get(bot_id).map(|raw| raw.merge_with(&global)).unwrap_or(global)
 	}
 
 	pub fn list(&self) -> HashMap<&str, OptionConfig> {
-		self.bot.iter().map(|(k, v)| (k.as_str(), v.merge_with(&self.global))).collect()
+		let global = self.global();
+		self.bot.iter().map(|(k, v)| (k.as_str(), v.merge_with(&global))).collect()
 	}
 }
 

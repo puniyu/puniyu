@@ -42,12 +42,7 @@ fn alice() -> TestSender {
 }
 
 fn bob() -> TestSender {
-	TestSender {
-		user_id: "u2".into(),
-		name: Some("Bob".into()),
-		sex: TestSex::Male,
-		age: Some(30),
-	}
+	TestSender { user_id: "u2".into(), name: Some("Bob".into()), sex: TestSex::Male, age: Some(30) }
 }
 
 #[test]
@@ -61,12 +56,7 @@ fn trait_method_returns() {
 
 #[test]
 fn trait_method_returns_none_name() {
-	let s = TestSender {
-		user_id: "u3".into(),
-		name: None,
-		sex: TestSex::Unknown,
-		age: None,
-	};
+	let s = TestSender { user_id: "u3".into(), name: None, sex: TestSex::Unknown, age: None };
 	assert_eq!(s.name(), None);
 	assert_eq!(s.age(), None);
 }

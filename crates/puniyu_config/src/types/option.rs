@@ -1,8 +1,8 @@
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 use smol_str::SmolStr;
-use strum::{Display, EnumString, IntoStaticStr};
 use std::time::Duration;
+use strum::{Display, EnumString, IntoStaticStr};
 
 const fn default_cd() -> u64 {
 	0
@@ -69,7 +69,6 @@ pub enum ReactiveMode {
 	Master = 4,
 }
 
-
 /// Bot 配置
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct OptionConfig {
@@ -86,7 +85,11 @@ pub struct OptionConfig {
 impl Default for OptionConfig {
 	#[inline]
 	fn default() -> Self {
-		Self { cd: Duration::from_millis(default_cd()), mode: Default::default(), alias: Default::default() }
+		Self {
+			cd: Duration::from_millis(default_cd()),
+			mode: Default::default(),
+			alias: Default::default(),
+		}
 	}
 }
 

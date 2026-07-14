@@ -31,12 +31,7 @@ impl<'c> CommandRegistry {
 		map.insert(index, command);
 		drop(map);
 
-		PLUGIN_MAP
-			.write()
-			.expect("poisoned lock")
-			.entry(plugin_id)
-			.or_default()
-			.push(index);
+		PLUGIN_MAP.write().expect("poisoned lock").entry(plugin_id).or_default().push(index);
 
 		Ok(index)
 	}
@@ -70,11 +65,8 @@ impl<'c> CommandRegistry {
 	/// 通过名称卸载命令。
 	pub fn unregister_with_command_name(name: &str) -> Result<(), Error> {
 		let mut map = STORE.raw().write().expect("poisoned lock");
-		let ids: Vec<u64> = map
-			.iter()
-			.filter(|(_, c)| c.name() == name)
-			.map(|(&id, _)| id)
-			.collect();
+		let ids: Vec<u64> =
+			map.iter().filter(|(_, c)| c.name() == name).map(|(&id, _)| id).collect();
 
 		if ids.is_empty() {
 			return Err(Error::NotFound);

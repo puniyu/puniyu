@@ -38,7 +38,6 @@
 //! }
 //! ```
 
-
 mod error;
 pub use error::Error as CommandError;
 mod registry;

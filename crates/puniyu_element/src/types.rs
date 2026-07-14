@@ -44,16 +44,7 @@ pub enum ElementType {
 }
 
 #[derive(
-	Debug,
-	Clone,
-	PartialEq,
-	Eq,
-	Hash,
-	EnumString,
-	Display,
-	IntoStaticStr,
-	Deserialize,
-	Serialize,
+	Debug, Clone, PartialEq, Eq, Hash, EnumString, Display, IntoStaticStr, Deserialize, Serialize,
 )]
 #[serde(rename_all = "lowercase", tag = "type", content = "field0")]
 #[strum(serialize_all = "lowercase")]

@@ -1,0 +1,26 @@
+[package]
+name = "puniyu_handler_command"
+version = "0.9.5"
+description = "puniyu 命令处理器"
+authors.workspace = true
+license.workspace = true
+readme = "README.md"
+homepage.workspace = true
+repository.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+async-trait.workspace = true
+log.workspace = true
+puniyu_command.workspace = true
+puniyu_command_parser.workspace = true
+puniyu_config.workspace = true
+puniyu_context.workspace = true
+puniyu_cooldown.workspace = true
+puniyu_event.workspace = true
+puniyu_handler.workspace = true
+puniyu_logger.workspace = true

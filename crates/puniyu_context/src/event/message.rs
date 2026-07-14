@@ -145,11 +145,7 @@ impl<'c> MessageContext<'c> {
 	/// }
 	/// ```
 	pub fn arg_list<T: FromArgValue>(&self, name: impl Into<SmolStr>) -> Option<Vec<T>> {
-		self.args
-			.get(&name.into())?
-			.iter()
-			.map(FromArgValue::from_arg_value)
-			.collect()
+		self.args.get(&name.into())?.iter().map(FromArgValue::from_arg_value).collect()
 	}
 
 	/// TODO: 完善

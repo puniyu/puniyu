@@ -1862,6 +1862,9 @@ dependencies = [
  "convert_case",
  "figlet-rs",
  "puniyu",
+ "puniyu_handler_access",
+ "puniyu_handler_command",
+ "puniyu_handler_log",
  "puniyu_logger",
  "puniyu_path",
  "puniyu_server",
@@ -1969,6 +1972,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "puniyu_cooldown"
+version = "0.9.5"
+dependencies = [
+ "smol_str",
+]
+
+[[package]]
 name = "puniyu_core"
 version = "0.9.5"
 dependencies = [
@@ -1978,10 +1988,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "puniyu_database"
+version = "0.9.5"
+
+[[package]]
 name = "puniyu_dispatch"
 version = "0.9.5"
 dependencies = [
- "log",
  "puniyu_event",
  "puniyu_handler",
  "thiserror",
@@ -2023,9 +2036,46 @@ name = "puniyu_handler"
 version = "0.9.5"
 dependencies = [
  "async-trait",
- "puniyu_error",
  "puniyu_event",
  "thiserror",
+]
+
+[[package]]
+name = "puniyu_handler_access"
+version = "0.9.5"
+dependencies = [
+ "async-trait",
+ "puniyu_config",
+ "puniyu_handler",
+]
+
+[[package]]
+name = "puniyu_handler_command"
+version = "0.9.5"
+dependencies = [
+ "async-trait",
+ "log",
+ "puniyu_command",
+ "puniyu_command_parser",
+ "puniyu_config",
+ "puniyu_context",
+ "puniyu_cooldown",
+ "puniyu_event",
+ "puniyu_handler",
+ "puniyu_logger",
+]
+
+[[package]]
+name = "puniyu_handler_log"
+version = "0.9.5"
+dependencies = [
+ "async-trait",
+ "log",
+ "puniyu_core",
+ "puniyu_element",
+ "puniyu_event",
+ "puniyu_handler",
+ "puniyu_logger",
 ]
 
 [[package]]

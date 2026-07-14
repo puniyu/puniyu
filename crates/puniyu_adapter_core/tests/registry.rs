@@ -83,7 +83,8 @@ fn adapter_registry_full_lifecycle() {
 	assert!(not_found.is_none(), "nonexistent should return None");
 
 	let all = AdapterRegistry::all();
-	let names: Vec<String> = all.iter().map(|a| a.adapter_info().name.clone().to_string()).collect();
+	let names: Vec<String> =
+		all.iter().map(|a| a.adapter_info().name.clone().to_string()).collect();
 	assert!(names.contains(&"integration_test".to_string()), "all() should contain registered");
 
 	let unreg_result = AdapterRegistry::unregister("integration_test".to_string());
@@ -127,7 +128,8 @@ fn adapter_registry_all_contains_only_registered() {
 	AdapterRegistry::register(adapter).expect("register should succeed");
 
 	let all = AdapterRegistry::all();
-	let names: Vec<String> = all.iter().map(|a| a.adapter_info().name.clone().to_string()).collect();
+	let names: Vec<String> =
+		all.iter().map(|a| a.adapter_info().name.clone().to_string()).collect();
 	assert!(names.contains(&"all_test_unique".to_string()), "all() should contain registered");
 
 	AdapterRegistry::unregister("all_test_unique".to_string()).ok();

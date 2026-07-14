@@ -71,7 +71,6 @@ pub struct AccountInfo {
 	pub avatar: Bytes,
 }
 
-
 /// 构建机器人账户信息。
 ///
 /// 支持命名字段与位置参数两种写法。

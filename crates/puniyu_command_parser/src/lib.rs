@@ -5,7 +5,7 @@
 //! ## 两阶段解析
 //!
 //! 1. `parse()` — 纯文本处理：剥离 alias/prefix → shlex 分词
-//! 2. `into_args(arg_defs)` — 传入命令参数定义，得到类型化参数
+//! 2. `parse_args(arg_defs)` — 传入命令参数定义，得到类型化参数
 //!
 //! ## 示例
 //!
@@ -21,7 +21,7 @@
 //! let result = parser.parse("@bot !greet Alice")?;
 //! assert_eq!(result.command(), "greet");
 //!
-//! let args = result.into_args(&[Arg::string("name").positional().required()])?;
+//! let args = result.parse_args(&[Arg::string("name").positional().required()])?;
 //! # Ok::<(), puniyu_command_parser::Error>(())
 //! ```
 
@@ -87,13 +87,7 @@ impl CommandParser {
 	fn strip_first<'t>(text: &'t str, patterns: &[String]) -> &'t str {
 		patterns
 			.iter()
-			.find_map(|p| {
-				if p.is_empty() {
-					None
-				} else {
-					text.strip_prefix(p.as_str())
-				}
-			})
+			.find_map(|p| if p.is_empty() { None } else { text.strip_prefix(p.as_str()) })
 			.map(str::trim_start)
 			.unwrap_or(text)
 	}
@@ -117,7 +111,10 @@ impl ParseResult {
 	}
 
 	/// 根据参数定义，将 token 列表解析为类型化的参数映射。
-	pub fn into_args(self, arg: &[Arg<'_>]) -> Result<HashMap<SmolStr, Vec<puniyu_command_types::ArgValue>>, Error> {
+	pub fn parse_args(
+		&self,
+		arg: &[Arg<'_>],
+	) -> Result<HashMap<SmolStr, Vec<puniyu_command_types::ArgValue>>, Error> {
 		args::parse_args(&self.tokens, arg)
 	}
 }

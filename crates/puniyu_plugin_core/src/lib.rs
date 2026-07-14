@@ -9,9 +9,9 @@ pub use registry::PluginRegistry;
 use async_trait::async_trait;
 use puniyu_config::Config;
 use puniyu_error::AnyError;
+use salvo::Router;
 use semver::{Comparator, Op, Version, VersionReq};
 use std::sync::Arc;
-use salvo::Router;
 
 #[async_trait]
 pub trait Plugin: Send + Sync {

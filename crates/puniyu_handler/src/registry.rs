@@ -3,8 +3,8 @@ mod store;
 use crate::error::Error;
 use crate::registry::store::HandlerStore;
 use crate::{Handler, HandlerId};
-use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::LazyLock;
+use std::sync::atomic::{AtomicU64, Ordering};
 
 static HANDLER_INDEX: AtomicU64 = AtomicU64::new(0);
 static STORE: LazyLock<HandlerStore> = LazyLock::new(HandlerStore::new);

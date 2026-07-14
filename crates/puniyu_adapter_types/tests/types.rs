@@ -27,7 +27,6 @@ fn adapter_info_named_macro_applies_custom_fields() {
 	assert_eq!(info.secret.as_deref(), Some("token"));
 }
 
-
 #[test]
 fn adapter_platform_supports_display_and_parse() {
 	assert_eq!(AdapterPlatform::QQ.to_string(), "qq");

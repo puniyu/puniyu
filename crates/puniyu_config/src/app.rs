@@ -1,10 +1,7 @@
-use std::{
-	path::PathBuf,
-	sync::LazyLock,
-};
+use std::{path::PathBuf, sync::LazyLock};
 
-use crate::{CommandConfig, ListConfig, ServerConfig, common::read_config};
 use crate::Config;
+use crate::{CommandConfig, ListConfig, ServerConfig, common::read_config};
 use serde::{Deserialize, Serialize};
 
 const NAME: &str = "app";

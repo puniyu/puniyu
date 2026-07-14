@@ -1,5 +1,5 @@
-use crate::error::Error;
 use crate::TaskInfo;
+use crate::error::Error;
 use std::{
 	collections::HashMap,
 	sync::{
@@ -36,12 +36,8 @@ impl TaskStore {
 
 		let job = tokio_cron_scheduler::Job::from(&info);
 		let scheduler = crate::get_scheduler()?;
-		let uuid = scheduler
-			.lock()
-			.await
-			.add(job)
-			.await
-			.map_err(|e| Error::Start(e.to_string()))?;
+		let uuid =
+			scheduler.lock().await.add(job).await.map_err(|e| Error::Start(e.to_string()))?;
 
 		{
 			let mut map = self.tasks.write().expect("Failed to acquire write lock");

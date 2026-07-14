@@ -3,7 +3,6 @@ use puniyu_command_types::{Arg, ArgMode, ArgValue, ElemType};
 use smol_str::SmolStr;
 use std::collections::HashMap;
 
-
 pub(crate) fn parse_args(
 	tokens: &[String],
 	arg_defs: &[Arg<'_>],
@@ -50,7 +49,6 @@ pub(crate) fn parse_args(
 	Ok(result)
 }
 
-
 fn parse_option(token: &str) -> Option<&str> {
 	if let Some(long) = token.strip_prefix("--") {
 		Some(long)
@@ -64,7 +62,6 @@ fn parse_option(token: &str) -> Option<&str> {
 fn is_option(token: &str) -> bool {
 	token.starts_with('-')
 }
-
 
 fn find_named_def<'a>(arg_defs: &'a [Arg<'_>], option: &str) -> Result<&'a Arg<'a>, Error> {
 	arg_defs
@@ -100,8 +97,12 @@ fn consume_value(
 fn parse_value(raw: &str, elem_type: &ElemType, arg_name: &str) -> Result<ArgValue, Error> {
 	match elem_type {
 		ElemType::String => Ok(ArgValue::String(raw.to_string())),
-		ElemType::Int => raw.parse::<i64>().map(ArgValue::Int).map_err(|_| invalid(arg_name, "integer", raw)),
-		ElemType::Float => raw.parse::<f64>().map(ArgValue::Float).map_err(|_| invalid(arg_name, "float", raw)),
+		ElemType::Int => {
+			raw.parse::<i64>().map(ArgValue::Int).map_err(|_| invalid(arg_name, "integer", raw))
+		}
+		ElemType::Float => {
+			raw.parse::<f64>().map(ArgValue::Float).map_err(|_| invalid(arg_name, "float", raw))
+		}
 		ElemType::Bool => match raw {
 			"true" | "1" | "yes" => Ok(ArgValue::Bool(true)),
 			"false" | "0" | "no" => Ok(ArgValue::Bool(false)),

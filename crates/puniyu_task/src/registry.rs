@@ -13,7 +13,10 @@ pub struct TaskRegistry;
 
 impl<'t> TaskRegistry {
 	/// 注册任务
-	pub async fn register(plugin_id: u64, task: impl Into<Arc<dyn crate::Task>>) -> Result<u64, Error> {
+	pub async fn register(
+		plugin_id: u64,
+		task: impl Into<Arc<dyn crate::Task>>,
+	) -> Result<u64, Error> {
 		if SCHEDULER.get().is_none() {
 			return Err(Error::NotInitialized);
 		}
@@ -52,10 +55,7 @@ impl<'t> TaskRegistry {
 		let task_ids: Vec<u64> = {
 			let raw = STORE.raw();
 			let map = raw.read().expect("Failed to acquire lock");
-			map.iter()
-				.filter(|(_, info)| info.task.name() == name)
-				.map(|(id, _)| *id)
-				.collect()
+			map.iter().filter(|(_, info)| info.task.name() == name).map(|(id, _)| *id).collect()
 		};
 
 		if task_ids.is_empty() {

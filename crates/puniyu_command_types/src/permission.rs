@@ -33,7 +33,7 @@ pub enum Permission {
 
 impl Permission {
 	/// 判断当前权限是否满足目标权限。
-	pub const fn satisfies(self, required: Permission) -> bool {
-		matches!(required, Permission::All) || (self as u8) >= (required as u8)
+	pub const fn satisfies(self, required: Self) -> bool {
+		matches!(required, Self::All) || (self as u8) >= (required as u8)
 	}
 }

@@ -65,11 +65,10 @@ impl<'c> EventContext<'c> {
 	pub fn as_message(&self) -> Option<MessageContext<'_>> {
 		self.inner.as_message().map(|message| MessageContext::new(message, HashMap::new()))
 	}
-
 }
 impl<'e> Deref for EventContext<'e> {
 	type Target = Event<'e>;
-	
+
 	fn deref(&self) -> &Self::Target {
 		self.inner
 	}

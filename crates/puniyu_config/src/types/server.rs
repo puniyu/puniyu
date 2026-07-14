@@ -29,7 +29,7 @@ pub struct ServerConfig {
 }
 
 const fn default_server_host() -> IpAddr {
-    use std::net::Ipv4Addr;
+	use std::net::Ipv4Addr;
 	let addr = Ipv4Addr::new(127, 0, 0, 1);
 	IpAddr::V4(addr)
 }

@@ -10,7 +10,7 @@ use puniyu_element::send::{
 	AtElement, FaceElement, FileElement, ImageElement, JsonElement, RecordElement, ReplyElement,
 	TextElement, VideoElement, XmlElement,
 };
-use puniyu_element::{receive, send, Element, ElementType, File};
+use puniyu_element::{Element, ElementType, File, receive, send};
 
 #[test]
 fn test_element_type_str_roundtrip() {
@@ -100,8 +100,11 @@ fn test_receive_each_variant_constructs_and_serializes() {
 	let at: RecvAtElement = "u1".into();
 	let reply: RecvReplyElement = "m1".into();
 	let face = RecvFaceElement { id: 1 };
-	let file: RecvFileElement =
-		RecvFileElement { file: File::Bytes(bytes::Bytes::from_static(b"x")), file_size: 1, file_name: "x.bin" };
+	let file: RecvFileElement = RecvFileElement {
+		file: File::Bytes(bytes::Bytes::from_static(b"x")),
+		file_size: 1,
+		file_name: "x.bin",
+	};
 	let image: RecvImageElement = RecvImageElement {
 		file: File::Bytes(bytes::Bytes::from_static(b"x")),
 		file_name: "i.png",
@@ -111,8 +114,10 @@ fn test_receive_each_variant_constructs_and_serializes() {
 	};
 	let video: RecvVideoElement =
 		RecvVideoElement { file: File::Bytes(bytes::Bytes::from_static(b"v")), file_name: "v.mp4" };
-	let record: RecvRecordElement =
-		RecvRecordElement { file: File::Bytes(bytes::Bytes::from_static(b"a")), file_name: "a.silk" };
+	let record: RecvRecordElement = RecvRecordElement {
+		file: File::Bytes(bytes::Bytes::from_static(b"a")),
+		file_name: "a.silk",
+	};
 	let json_e: RecvJsonElement = "{}".into();
 	let xml: RecvXmlElement = "<r/>".into();
 

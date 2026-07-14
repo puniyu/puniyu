@@ -1,23 +1,22 @@
+use super::SubEventType;
+use super::impl_message;
 use ecow::EcoVec;
 use puniyu_bot::Bot;
 use puniyu_contact::Contact;
-use puniyu_element::receive::Elements;
 use puniyu_contact::GuildContact;
+use puniyu_element::receive::Elements;
 use puniyu_sender::Role;
 use puniyu_sender::{GuildSender, Sender};
-use super::SubEventType;
-use super::impl_message;
-
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct GuildMessage<'m> {
-    time: u64,
-    event_id: &'m str,
-    message_id: &'m str,
-    bot: &'m Bot,
-    elements: EcoVec<Elements<'m>>,
-    contact: &'m GuildContact,
-    sender: &'m GuildSender,
+	time: u64,
+	event_id: &'m str,
+	message_id: &'m str,
+	bot: &'m Bot,
+	elements: EcoVec<Elements<'m>>,
+	contact: &'m GuildContact,
+	sender: &'m GuildSender,
 }
 
 impl_message!(GuildMessage, GuildContact, GuildSender, SubEventType::Guild);

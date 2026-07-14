@@ -11,8 +11,8 @@
 pub mod adapter;
 pub mod plugin;
 
-use std::path::PathBuf;
 use puniyu_app::App;
+use std::path::PathBuf;
 
 /// 获取工作目录。
 pub fn cwd_dir() -> PathBuf {

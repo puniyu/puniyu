@@ -29,19 +29,11 @@ impl Contact for TestContact {
 }
 
 fn friend_alice() -> TestContact {
-	TestContact {
-		scene: TestScene::Friend,
-		peer: "u1".into(),
-		name: Some("Alice".into()),
-	}
+	TestContact { scene: TestScene::Friend, peer: "u1".into(), name: Some("Alice".into()) }
 }
 
 fn group_dev() -> TestContact {
-	TestContact {
-		scene: TestScene::Group,
-		peer: "g1".into(),
-		name: Some("Dev Team".into()),
-	}
+	TestContact { scene: TestScene::Group, peer: "g1".into(), name: Some("Dev Team".into()) }
 }
 
 #[test]
@@ -54,11 +46,7 @@ fn trait_method_returns() {
 
 #[test]
 fn trait_method_returns_none_name() {
-	let c = TestContact {
-		scene: TestScene::Guild,
-		peer: "gc1".into(),
-		name: None,
-	};
+	let c = TestContact { scene: TestScene::Guild, peer: "gc1".into(), name: None };
 	assert_eq!(c.name(), None);
 	assert_eq!(c.scene(), TestScene::Guild);
 }

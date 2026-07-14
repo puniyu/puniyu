@@ -1,8 +1,8 @@
-pub mod bot;
 pub mod app;
+pub mod bot;
+mod error;
 pub mod friend;
 pub mod group;
-mod error;
 pub use error::Error;
 mod registry;
 pub use registry::ConfigRegistry;
@@ -11,5 +11,3 @@ mod common;
 mod types;
 #[doc(inline)]
 pub use types::*;
-
-

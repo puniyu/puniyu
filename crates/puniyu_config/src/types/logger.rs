@@ -25,7 +25,7 @@ where
 }
 
 const fn default_retention_days() -> u8 {
-    8
+	8
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

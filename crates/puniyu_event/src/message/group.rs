@@ -4,24 +4,23 @@ use puniyu_sender::Role;
 #[doc(inline)]
 pub use temp::GroupTempMessage;
 
-use ecow::EcoVec;
-use puniyu_bot::Bot;
-use puniyu_element::receive::Elements;
-use puniyu_contact::GroupContact;
-use puniyu_sender::{GroupSender, Sender};
 use super::SubEventType;
 use super::impl_message;
-
+use ecow::EcoVec;
+use puniyu_bot::Bot;
+use puniyu_contact::GroupContact;
+use puniyu_element::receive::Elements;
+use puniyu_sender::{GroupSender, Sender};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct GroupMessage<'m> {
-    time: u64,
-    event_id: &'m str,
-    message_id: &'m str,
-    bot: &'m Bot,
-    elements: EcoVec<Elements<'m>>,
-    contact: &'m GroupContact,
-    sender: &'m GroupSender,
+	time: u64,
+	event_id: &'m str,
+	message_id: &'m str,
+	bot: &'m Bot,
+	elements: EcoVec<Elements<'m>>,
+	contact: &'m GroupContact,
+	sender: &'m GroupSender,
 }
 
 impl_message!(GroupMessage, GroupContact, GroupSender, SubEventType::Group);

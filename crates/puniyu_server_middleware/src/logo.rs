@@ -17,7 +17,7 @@ impl Handler for Logo {
 		res: &mut Response,
 		ctrl: &mut FlowCtrl,
 	) {
-        depot.insert("logo", self.0.clone());
-        ctrl.call_next(req, depot,res).await;
+		depot.insert("logo", self.0.clone());
+		ctrl.call_next(req, depot, res).await;
 	}
 }

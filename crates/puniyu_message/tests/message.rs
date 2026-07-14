@@ -1,5 +1,8 @@
-use puniyu_element::send::{AtElement, Elements, FaceElement, FileElement, ImageElement, JsonElement, RecordElement, ReplyElement, TextElement, VideoElement, XmlElement};
 use puniyu_element::File;
+use puniyu_element::send::{
+	AtElement, Elements, FaceElement, FileElement, ImageElement, JsonElement, RecordElement,
+	ReplyElement, TextElement, VideoElement, XmlElement,
+};
 use puniyu_message::message;
 
 #[test]
@@ -10,18 +13,14 @@ fn test_message_macro_single() {
 
 #[test]
 fn test_message_macro_multiple() {
-	let msg = message!(
-		Elements::Text(TextElement::new("hello")),
-		Elements::At(AtElement::new("123456"))
-	);
+	let msg =
+		message!(Elements::Text(TextElement::new("hello")), Elements::At(AtElement::new("123456")));
 	assert_eq!(msg.len(), 2);
 }
 
 #[test]
 fn test_message_macro_trailing_comma() {
-	let msg = message!(
-		Elements::Text(TextElement::new("hi")),
-	);
+	let msg = message!(Elements::Text(TextElement::new("hi")),);
 	assert_eq!(msg.len(), 1);
 }
 
@@ -40,10 +39,8 @@ fn test_from_single_element() {
 
 #[test]
 fn test_from_vec_elements() {
-	let vec = vec![
-		Elements::Text(TextElement::new("hello")),
-		Elements::Text(TextElement::new("world")),
-	];
+	let vec =
+		vec![Elements::Text(TextElement::new("hello")), Elements::Text(TextElement::new("world"))];
 	let msg: puniyu_message::Message = vec.into();
 	assert_eq!(msg.len(), 2);
 }
@@ -80,10 +77,8 @@ fn test_deref() {
 
 #[test]
 fn test_iter() {
-	let msg = message!(
-		Elements::Text(TextElement::new("a")),
-		Elements::Text(TextElement::new("b")),
-	);
+	let msg =
+		message!(Elements::Text(TextElement::new("a")), Elements::Text(TextElement::new("b")),);
 	let count = msg.iter().count();
 	assert_eq!(count, 2);
 }
@@ -99,7 +94,6 @@ fn test_serde_roundtrip() {
 	assert_eq!(msg, restored);
 }
 
-
 #[test]
 fn test_display_alternate() {
 	let msg = message!(
@@ -109,7 +103,6 @@ fn test_display_alternate() {
 	assert_eq!(format!("{:#}", msg), "Text\nText");
 }
 
-
 #[test]
 fn test_all_element_types() {
 	let msg = message!(
@@ -117,10 +110,17 @@ fn test_all_element_types() {
 		Elements::At(AtElement::new("u1")),
 		Elements::Reply(ReplyElement::new("r1")),
 		Elements::Face(FaceElement::new(1u64)),
-		Elements::Image(ImageElement::new(File::Bytes(bytes::Bytes::from_static(b"png")), "i.png", None::<&str>)),
+		Elements::Image(ImageElement::new(
+			File::Bytes(bytes::Bytes::from_static(b"png")),
+			"i.png",
+			None::<&str>
+		)),
 		Elements::File(FileElement::new(File::Bytes(bytes::Bytes::from_static(b"bin")), "f.bin")),
 		Elements::Video(VideoElement::new(File::Bytes(bytes::Bytes::from_static(b"mp4")), "v.mp4")),
-		Elements::Record(RecordElement::new(File::Bytes(bytes::Bytes::from_static(b"silk")), "a.silk")),
+		Elements::Record(RecordElement::new(
+			File::Bytes(bytes::Bytes::from_static(b"silk")),
+			"a.silk"
+		)),
 		Elements::Json(JsonElement::new("{}")),
 		Elements::Xml(XmlElement::new("<r/>")),
 	);

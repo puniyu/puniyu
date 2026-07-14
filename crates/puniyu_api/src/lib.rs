@@ -5,11 +5,11 @@ pub mod config;
 pub mod contact;
 pub mod context;
 pub mod element;
+pub mod error;
 pub mod event;
 pub mod handler;
 pub mod message;
 pub mod path;
-pub mod error;
 pub mod segment;
 pub mod sender;
 

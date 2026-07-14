@@ -30,7 +30,8 @@ impl Handler for AccessLog {
 		let duration = start.elapsed();
 		let method = req.method();
 		let path = req.uri().path();
-		let status_code = res.status_code.map(|s| s.as_u16().to_string()).unwrap_or("unknown".to_string());
+		let status_code =
+			res.status_code.map(|s| s.as_u16().to_string()).unwrap_or("unknown".to_string());
 		let headers = req.headers();
 		let ip_str = parse_ip(headers)
 			.or_else(|| req.remote_addr().ip())

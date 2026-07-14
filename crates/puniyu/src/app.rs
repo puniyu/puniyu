@@ -32,7 +32,7 @@ pub struct App {
 	#[builder(field)]
 	on_exit: Option<AsyncFn>,
 	#[builder(default = "puniyu")]
-	name: &'static str
+	name: &'static str,
 }
 
 impl<S: app_builder::State> AppBuilder<S> {
@@ -84,7 +84,6 @@ impl App {
 		if let Some(callback) = self.on_start {
 			(callback)().await;
 		}
-        info!("{} starting...", self.name.to_case(Case::Lower));
 		init_dir().await?;
 
 		debug!("handlers loading...");

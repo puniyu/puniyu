@@ -3,8 +3,8 @@ mod store;
 use crate::Bot;
 use crate::error::Error;
 use crate::types::BotId;
-use std::sync::{Arc, LazyLock};
 use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::{Arc, LazyLock};
 use store::BotStore;
 
 static BOT_INDEX: AtomicU64 = AtomicU64::new(0);
@@ -44,10 +44,8 @@ impl BotRegistry {
 	/// 按机器人 UIN 卸载并销毁所有匹配的机器人。
 	pub fn unregister_with_bot_id(bot_id: &str) -> Result<(), Error> {
 		let mut map = STORE.raw().write().expect("poisoned lock");
-		let keys: Vec<u64> = map
-			.iter()
-			.filter_map(|(k, v)| if v.id == bot_id { Some(*k) } else { None })
-			.collect();
+		let keys: Vec<u64> =
+			map.iter().filter_map(|(k, v)| if v.id == bot_id { Some(*k) } else { None }).collect();
 		if keys.is_empty() {
 			return Err(Error::NotFound);
 		}

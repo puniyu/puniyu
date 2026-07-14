@@ -33,9 +33,10 @@ impl EventEmitter {
 		DispatchStore::is_running()
 	}
 
-	/// 将事件分发到所有已注册的处理器。
+	/// 通过洋葱调用链分发事件。
 	///
-	/// 处理器按 `priority()` 升序依次执行，单个处理器出错不会中断后续处理器。
+	/// 处理器按注册顺序进入调用链。Handler 需要调用 `HandleContext::next`
+	/// 才会继续传播事件。
 	///
 	/// # Errors
 	///
@@ -44,13 +45,8 @@ impl EventEmitter {
 		if !DispatchStore::is_running() {
 			return Err(Error::NotRunning);
 		}
-		let mut handles = puniyu_handler::HandlerRegistry::all();
-		handles.sort_by_key(|h| h.priority());
-		for handler in handles {
-			if let Err(e) = handler.handle(&event).await {
-				log::error!("[{}] handler error: {}", handler.name(), e);
-			}
-		}
+		let handlers = puniyu_handler::HandlerRegistry::all();
+		puniyu_handler::HandleContext::new(&event, &handlers).next().await;
 		Ok(())
 	}
 }

@@ -1,16 +1,7 @@
 use std::{fs, path::Path};
 
-use serde::{Deserialize, Serialize};
 use crate::Error;
-
-fn write_to_file<T: Serialize>(path: impl AsRef<Path>, data: &T) -> Result<(), Error> {
-    let path = path.as_ref();
-	if let Some(parent) = path.parent() {
-		fs::create_dir_all(parent)?;
-	}
-	fs::write(path, toml::to_string_pretty(data)?)?;
-	Ok(())
-}
+use serde::Deserialize;
 
 /// 读取配置文件
 ///
@@ -36,7 +27,6 @@ where
 	let config_str = fs::read_to_string(path)?;
 	Ok(toml::from_str(&config_str)?)
 }
-
 
 pub(crate) trait MergeWith {
 	type Value;

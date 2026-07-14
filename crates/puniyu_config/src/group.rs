@@ -3,11 +3,11 @@ use std::{collections::HashMap, path::PathBuf, sync::LazyLock};
 use serde::{Deserialize, Serialize};
 use smol_str::SmolStr;
 
+use crate::Config;
 use crate::{
 	OptionConfig, OptionConfigRaw,
 	common::{MergeWith, read_config},
 };
-use crate::Config;
 
 const NAME: &str = "group";
 
@@ -39,7 +39,7 @@ pub struct GroupConfig {
 	///
 	/// 作为所有群组的默认配置
 	#[serde(default)]
-	global: OptionConfig,
+	global: OptionConfigRaw,
 
 	/// 特定群组配置映射
 	///
@@ -55,18 +55,22 @@ impl GroupConfig {
 	}
 
 	pub fn global(&self) -> OptionConfig {
-		self.global.clone()
+		self.global.merge_with(&OptionConfig::default())
 	}
 
 	pub fn group(&self, group_id: &str) -> OptionConfig {
-		self.group
-			.get(group_id)
-			.map(|raw| raw.merge_with(&self.global))
-			.unwrap_or_else(|| self.global.clone())
+		self.resolve(group_id, &OptionConfig::default())
+	}
+
+	/// 在上层配置基础上解析群组最终配置。
+	pub fn resolve(&self, group_id: &str, inherited: &OptionConfig) -> OptionConfig {
+		let global = self.global.merge_with(inherited);
+		self.group.get(group_id).map(|raw| raw.merge_with(&global)).unwrap_or(global)
 	}
 
 	pub fn list(&self) -> HashMap<&str, OptionConfig> {
-		self.group.iter().map(|(k, v)| (k.as_str(), v.merge_with(&self.global))).collect()
+		let global = self.global();
+		self.group.iter().map(|(k, v)| (k.as_str(), v.merge_with(&global))).collect()
 	}
 }
 

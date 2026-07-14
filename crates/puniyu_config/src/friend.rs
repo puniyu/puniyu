@@ -3,11 +3,15 @@ use std::{collections::HashMap, path::PathBuf, sync::LazyLock};
 use serde::{Deserialize, Serialize};
 use smol_str::SmolStr;
 
-use crate::{common::{read_config, MergeWith}, OptionConfig, OptionConfigRaw};
 use crate::Config;
+use crate::{
+	OptionConfig, OptionConfigRaw,
+	common::{MergeWith, read_config},
+};
 const NAME: &str = "friend";
 
-static CONFIG_PATH: LazyLock<PathBuf> = LazyLock::new(|| puniyu_path::config_dir().join(NAME).with_extension("toml"));
+static CONFIG_PATH: LazyLock<PathBuf> =
+	LazyLock::new(|| puniyu_path::config_dir().join(NAME).with_extension("toml"));
 
 /// 好友配置结构
 ///
@@ -32,7 +36,7 @@ pub struct FriendConfig {
 	///
 	/// 作为所有好友的默认配置
 	#[serde(default)]
-	global: OptionConfig,
+	global: OptionConfigRaw,
 
 	/// 特定好友配置映射
 	///
@@ -48,18 +52,22 @@ impl FriendConfig {
 	}
 
 	pub fn global(&self) -> OptionConfig {
-		self.global.clone()
+		self.global.merge_with(&OptionConfig::default())
 	}
 
 	pub fn friend(&self, user_id: &str) -> OptionConfig {
-		self.friend
-			.get(user_id)
-			.map(|raw| raw.merge_with(&self.global))
-			.unwrap_or_else(|| self.global.clone())
+		self.resolve(user_id, &OptionConfig::default())
+	}
+
+	/// 在上层配置基础上解析好友最终配置。
+	pub fn resolve(&self, user_id: &str, inherited: &OptionConfig) -> OptionConfig {
+		let global = self.global.merge_with(inherited);
+		self.friend.get(user_id).map(|raw| raw.merge_with(&global)).unwrap_or(global)
 	}
 
 	pub fn list(&self) -> HashMap<&str, OptionConfig> {
-		self.friend.iter().map(|(k, v)| (k.as_str(), v.merge_with(&self.global))).collect()
+		let global = self.global();
+		self.friend.iter().map(|(k, v)| (k.as_str(), v.merge_with(&global))).collect()
 	}
 }
 
