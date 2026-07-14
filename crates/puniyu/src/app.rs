@@ -135,7 +135,9 @@ impl App {
 		info!("adapters: {}", puniyu_adapter_core::AdapterRegistry::all().len());
 		info!("plugins: {}", puniyu_plugin_core::PluginRegistry::all().len());
 		info!("commands: {}", puniyu_command::CommandRegistry::all().len());
+		info!("tasks: {}", puniyu_task::TaskRegistry::all().len());
 		info!("handlers: {}", puniyu_handler::HandlerRegistry::all().len());
+		
 
 		info!(
 			"{} initialized in {}",

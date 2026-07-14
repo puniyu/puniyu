@@ -1988,10 +1988,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "puniyu_database"
-version = "0.9.5"
-
-[[package]]
 name = "puniyu_dispatch"
 version = "0.9.5"
 dependencies = [

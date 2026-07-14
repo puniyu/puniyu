@@ -1,7 +1,7 @@
 use std::{path::PathBuf, sync::LazyLock};
 
 use crate::Config;
-use crate::{CommandConfig, ListConfig, ServerConfig, common::read_config};
+use crate::{CommandConfig, ListConfig, LoggerConfig, ServerConfig, common::read_config};
 use serde::{Deserialize, Serialize};
 
 const NAME: &str = "app";
@@ -46,6 +46,12 @@ pub struct AppConfig {
 	/// 包含配置命令前缀
 	#[serde(default)]
 	command: CommandConfig,
+
+	/// 日志配置
+	///
+	/// 控制文件日志、日志等级和日志文件保留天数
+	#[serde(default)]
+	logger: LoggerConfig,
 }
 
 impl AppConfig {
@@ -71,6 +77,9 @@ impl AppConfig {
 	}
 	pub fn command(&self) -> CommandConfig {
 		self.command.clone()
+	}
+	pub fn logger(&self) -> LoggerConfig {
+		self.logger.clone()
 	}
 }
 

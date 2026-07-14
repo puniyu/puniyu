@@ -1,11 +1,24 @@
+use std::{env, str::FromStr};
+
 use crate::{NAME, VERSION};
 use convert_case::{Case, Casing};
 use figlet_rs::FIGlet;
-use puniyu_logger::LoggerOptions;
+use puniyu::config::app::AppConfig;
+use puniyu_logger::{LogLevel, LoggerOptions};
+use puniyu_path::log_dir;
 
 pub fn init() {
-	let options = LoggerOptions::default();
-
+	let config = AppConfig::get().logger();
+	let log_level = env::var("LOGGER_LEVEL").unwrap_or(config.level().to_string());
+	let log_path = log_dir().to_string_lossy().to_string();
+	let log_retention_days = config.retention_days();
+	let is_file_logging = config.enable_file();
+	let options = LoggerOptions::default()
+		.with_prefix(crate::NAME)
+		.with_level(LogLevel::from_str(log_level.as_str()).unwrap_or(LogLevel::Info))
+		.with_file_logging(is_file_logging)
+		.with_log_directory(log_path)
+		.with_retention_days(log_retention_days);
 	puniyu_logger::init(Some(options));
 }
 
