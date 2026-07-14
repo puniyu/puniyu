@@ -1,7 +1,9 @@
 use std::{path::PathBuf, sync::LazyLock};
 
 use crate::Config;
-use crate::{CommandConfig, ListConfig, LoggerConfig, ServerConfig, common::read_config};
+use crate::{
+	CommandConfig, ListConfig, LoggerConfig, MasterConfig, ServerConfig, common::read_config,
+};
 use serde::{Deserialize, Serialize};
 
 const NAME: &str = "app";
@@ -47,6 +49,12 @@ pub struct AppConfig {
 	#[serde(default)]
 	command: CommandConfig,
 
+	/// Bot Master 权限配置
+	///
+	/// 以 Adapter 名称为键，配置对应的 Master 用户 ID 列表
+	#[serde(default)]
+	master: MasterConfig,
+
 	/// 日志配置
 	///
 	/// 控制文件日志、日志等级和日志文件保留天数
@@ -77,6 +85,9 @@ impl AppConfig {
 	}
 	pub fn command(&self) -> CommandConfig {
 		self.command.clone()
+	}
+	pub fn master(&self) -> MasterConfig {
+		self.master.clone()
 	}
 	pub fn logger(&self) -> LoggerConfig {
 		self.logger.clone()

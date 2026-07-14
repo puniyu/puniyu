@@ -4,6 +4,7 @@ use puniyu_config::{
 	OptionConfig, ReactiveMode, app::AppConfig, bot::BotConfig, friend::FriendConfig,
 	group::GroupConfig,
 };
+use puniyu_context::MessageContext;
 use puniyu_event::message::MessageEvent;
 use std::sync::Arc;
 
@@ -38,13 +39,8 @@ pub(crate) fn parse<'m, 'e>(
 	let has_alias = aliases.iter().any(|alias| !alias.is_empty() && text.starts_with(alias));
 	let has_prefix = prefixes.iter().any(|prefix| !prefix.is_empty() && text.starts_with(prefix));
 	let mentions_bot = message.get_at().contains(&message.self_id());
-	let active = match options.mode {
-		ReactiveMode::All => true,
-		ReactiveMode::AtBot => mentions_bot,
-		ReactiveMode::Alias => has_alias,
-		ReactiveMode::AtOrAlias => mentions_bot || has_alias,
-		ReactiveMode::Master => false,
-	};
+	let is_master = MessageContext::new(message, Default::default()).is_master();
+	let active = is_active(options.mode, mentions_bot, has_alias, is_master);
 	if !active {
 		return ParseOutcome::NotMatched;
 	}
@@ -73,6 +69,16 @@ pub(crate) fn parse<'m, 'e>(
 	}
 
 	ParseOutcome::Matched(CommandInvocation { message, parsed, candidates, options })
+}
+
+fn is_active(mode: ReactiveMode, mentions_bot: bool, has_alias: bool, is_master: bool) -> bool {
+	match mode {
+		ReactiveMode::All => true,
+		ReactiveMode::AtBot => mentions_bot,
+		ReactiveMode::Alias => has_alias,
+		ReactiveMode::AtOrAlias => mentions_bot || has_alias,
+		ReactiveMode::Master => is_master,
+	}
 }
 
 fn command_prefixes(commands: &[Arc<dyn Command>]) -> Vec<String> {

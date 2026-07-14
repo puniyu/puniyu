@@ -1778,7 +1778,6 @@ dependencies = [
 name = "puniyu_adapter_api"
 version = "0.9.5"
 dependencies = [
- "anyhow",
  "async-trait",
  "log",
  "puniyu_account",
@@ -1787,7 +1786,6 @@ dependencies = [
  "puniyu_error",
  "puniyu_logger",
  "puniyu_message",
- "serde",
  "serde_json",
 ]
 
@@ -1963,6 +1961,7 @@ dependencies = [
  "puniyu_adapter_types",
  "puniyu_bot",
  "puniyu_command_types",
+ "puniyu_config",
  "puniyu_contact",
  "puniyu_element",
  "puniyu_error",

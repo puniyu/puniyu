@@ -148,10 +148,14 @@ impl<'c> MessageContext<'c> {
 		self.args.get(&name.into())?.iter().map(FromArgValue::from_arg_value).collect()
 	}
 
-	/// TODO: 完善
 	/// 判断当前消息发送者是否为 Bot Master。
 	pub fn is_master(&self) -> bool {
-		false
+		let adapter_name = self.bot.adapter_info().name;
+		puniyu_config::app::AppConfig::get()
+			.master()
+			.get(adapter_name.as_str())
+			.iter()
+			.any(|master| master.as_str() == self.user_id())
 	}
 }
 

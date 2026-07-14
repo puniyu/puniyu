@@ -16,6 +16,9 @@ pub use logger::*;
 mod command;
 #[doc(inline)]
 pub use command::*;
+mod master;
+#[doc(inline)]
+pub use master::*;
 mod option;
 #[doc(inline)]
 pub use option::*;
