@@ -1,3 +1,4 @@
+use bon::Builder;
 use serde::{Deserialize, Serialize};
 
 use puniyu_core::element::Element;
@@ -5,7 +6,8 @@ use smol_str::SmolStr;
 
 use crate::ElementType;
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, Builder)]
+#[builder(on(SmolStr, into))]
 pub struct JsonElement {
 	/// Json数据，未序列化
 	pub data: SmolStr,
@@ -60,8 +62,8 @@ impl AsRef<str> for JsonElement {
 
 impl Element for JsonElement {
 	type ElementType = ElementType;
-	fn r#type(&self) -> ElementType {
-		ElementType::Json
+	fn r#type(&self) -> Self::ElementType {
+		Self::ElementType::Json
 	}
 }
 

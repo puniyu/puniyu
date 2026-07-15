@@ -27,8 +27,8 @@ impl From<FaceElement> for String {
 impl Element for FaceElement {
 	type ElementType = ElementType;
 
-    fn r#type(&self) -> ElementType {
-        ElementType::Face
+    fn r#type(&self) -> Self::ElementType {
+        Self::ElementType::Face
     }
 }
 

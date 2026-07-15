@@ -51,7 +51,7 @@ forward_event!(user_id -> &str);
 forward_event!(contact -> ContactType);
 forward_event!(sender -> SenderType);
 forward_event!(message_id -> &str);
-forward_event!(elements -> &EcoVec<Elements<'_>>);
+forward_event!(elements -> &EcoVec<Elements>);
 forward_event!(get_text -> Vec<&str>);
 forward_event!(get_at -> Vec<&str>);
 forward_event!(get_reply_id -> Option<&str>);

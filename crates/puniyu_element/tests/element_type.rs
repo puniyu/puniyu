@@ -103,20 +103,22 @@ fn test_receive_each_variant_constructs_and_serializes() {
 	let file: RecvFileElement = RecvFileElement {
 		file: File::Bytes(bytes::Bytes::from_static(b"x")),
 		file_size: 1,
-		file_name: "x.bin",
+		file_name: "x.bin".into(),
 	};
 	let image: RecvImageElement = RecvImageElement {
 		file: File::Bytes(bytes::Bytes::from_static(b"x")),
-		file_name: "i.png",
+		file_name: "i.png".into(),
 		summary: Some("s".into()),
 		width: 1,
 		height: 1,
 	};
-	let video: RecvVideoElement =
-		RecvVideoElement { file: File::Bytes(bytes::Bytes::from_static(b"v")), file_name: "v.mp4" };
+	let video: RecvVideoElement = RecvVideoElement {
+		file: File::Bytes(bytes::Bytes::from_static(b"v")),
+		file_name: "v.mp4".into(),
+	};
 	let record: RecvRecordElement = RecvRecordElement {
 		file: File::Bytes(bytes::Bytes::from_static(b"a")),
-		file_name: "a.silk",
+		file_name: "a.silk".into(),
 	};
 	let json_e: RecvJsonElement = "{}".into();
 	let xml: RecvXmlElement = "<r/>".into();

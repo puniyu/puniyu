@@ -1,31 +1,49 @@
 use serde::{Deserialize, Serialize};
+use smol_str::SmolStr;
 
 use crate::{Element, ElementType};
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub struct ReplyElement<'r> {
+pub struct ReplyElement {
 	/// 回复元素id
-	#[serde(borrow)]
-	pub message_id: &'r str,
+	pub message_id: SmolStr,
 }
 
-impl<'r> From<ReplyElement<'r>> for String {
-	fn from(elem: ReplyElement<'r>) -> Self {
-		elem.message_id.to_string()
+impl From<ReplyElement> for String {
+	fn from(elem: ReplyElement) -> Self {
+		elem.message_id.into()
 	}
 }
 
-impl<'r> From<&'r str> for ReplyElement<'r> {
-	fn from(text: &'r str) -> Self {
-		Self { message_id: text }
+impl From<ReplyElement> for SmolStr {
+	fn from(elem: ReplyElement) -> Self {
+		elem.message_id
 	}
 }
 
-impl<'r> Element for ReplyElement<'r> {
+impl From<&str> for ReplyElement {
+	fn from(message_id: &str) -> Self {
+		Self { message_id: message_id.into() }
+	}
+}
+
+impl From<String> for ReplyElement {
+	fn from(message_id: String) -> Self {
+		Self { message_id: message_id.into() }
+	}
+}
+
+impl From<SmolStr> for ReplyElement {
+	fn from(message_id: SmolStr) -> Self {
+		Self { message_id }
+	}
+}
+
+impl Element for ReplyElement {
 	type ElementType = ElementType;
 
-	fn r#type(&self) -> ElementType {
-		ElementType::Reply
+	fn r#type(&self) -> Self::ElementType {
+		Self::ElementType::Reply
 	}
 }
 
@@ -45,5 +63,9 @@ mod tests {
 		assert_eq!(e.message_id, "m");
 		let s: String = ReplyElement::from("x").into();
 		assert_eq!(s, "x");
+
+		let from_smol = ReplyElement::from(SmolStr::new("y"));
+		let s: SmolStr = from_smol.into();
+		assert_eq!(s, "y");
 	}
 }

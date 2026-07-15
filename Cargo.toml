@@ -12,7 +12,7 @@ readme = "README.md"
 homepage = "https://github.com/puniyu/puniyu"
 repository = "https://github.com/puniyu/puniyu"
 edition = "2024"
-rust-version = "1.88.0"
+rust-version = "1.97.0"
 
 [workspace.dependencies]
 log = { version = "0.4.33" }
@@ -43,7 +43,6 @@ puniyu_contact = { version = "0.9.5", path = "./crates/puniyu_contact" }
 puniyu_sender = { version = "0.9.5", path = "./crates/puniyu_sender" }
 puniyu_element = { version = "0.9.5", path = "./crates/puniyu_element" }
 puniyu_message = { version = "0.9.5", path = "./crates/puniyu_message" }
-puniyu_segment = { version = "0.9.5", path = "./crates/puniyu_segment" }
 puniyu_account = { version = "0.9.5", path = "./crates/puniyu_account" }
 puniyu_bot = { version = "0.9.5", path = "./crates/puniyu_bot" }
 puniyu_api = { version = "0.9.5", path = "./crates/puniyu_api" }

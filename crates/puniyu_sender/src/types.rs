@@ -82,16 +82,16 @@ pub enum Sex {
 impl Sex {
 	/// 是否为男性。
 	pub fn is_male(&self) -> bool {
-		matches!(self, Sex::Male)
+		matches!(self, Self::Male)
 	}
 
 	/// 是否为女性。
 	pub fn is_female(&self) -> bool {
-		matches!(self, Sex::Female)
+		matches!(self, Self::Female)
 	}
 
 	/// 是否为未知性别。
 	pub fn is_unknown(&self) -> bool {
-		matches!(self, Sex::Unknown)
+		matches!(self, Self::Unknown)
 	}
 }

@@ -20,41 +20,41 @@ codegen_reexport! {
 
 /// 接收元素枚举。
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename_all = "lowercase", tag = "type", content = "field0", bound(deserialize = "'de: 'e"))]
-pub enum Elements<'e> {
-	Text(TextElement<'e>),
-	At(AtElement<'e>),
-	Reply(ReplyElement<'e>),
+#[serde(rename_all = "lowercase", tag = "type", content = "field0")]
+pub enum Elements {
+	Text(TextElement),
+	At(AtElement),
+	Reply(ReplyElement),
 	Face(FaceElement),
-	Image(ImageElement<'e>),
-	File(FileElement<'e>),
-	Video(VideoElement<'e>),
-	Record(RecordElement<'e>),
-	Json(JsonElement<'e>),
-	Xml(XmlElement<'e>),
+	Image(ImageElement),
+	File(FileElement),
+	Video(VideoElement),
+	Record(RecordElement),
+	Json(JsonElement),
+	Xml(XmlElement),
 }
 
-impl<'e> Elements<'e> {
+impl Elements {
 	/// 若为文本元素，返回文本内容。
 	pub fn as_text(&self) -> Option<&str> {
 		match self {
-			Elements::Text(element) => Some(element.text),
+			Self::Text(element) => Some(element.text.as_str()),
 			_ => None,
 		}
 	}
 
 	/// 若为 At 元素，返回元素引用。
-	pub fn as_at(&self) -> Option<&AtElement<'_>> {
+	pub fn as_at(&self) -> Option<&AtElement> {
 		match self {
-			Elements::At(element) => Some(element),
+			Self::At(element) => Some(element),
 			_ => None,
 		}
 	}
 
 	/// 若为回复元素，返回元素引用。
-	pub fn as_reply(&self) -> Option<&ReplyElement<'_>> {
+	pub fn as_reply(&self) -> Option<&ReplyElement> {
 		match self {
-			Elements::Reply(element) => Some(element),
+			Self::Reply(element) => Some(element),
 			_ => None,
 		}
 	}
@@ -62,144 +62,144 @@ impl<'e> Elements<'e> {
 	/// 若为表情元素，返回元素引用。
 	pub fn as_face(&self) -> Option<&FaceElement> {
 		match self {
-			Elements::Face(element) => Some(element),
+			Self::Face(element) => Some(element),
 			_ => None,
 		}
 	}
 
 	/// 若为图片元素，返回元素引用。
-	pub fn as_image(&self) -> Option<&ImageElement<'_>> {
+	pub fn as_image(&self) -> Option<&ImageElement> {
 		match self {
-			Elements::Image(element) => Some(element),
+			Self::Image(element) => Some(element),
 			_ => None,
 		}
 	}
 
 	/// 若为文件元素，返回元素引用。
-	pub fn as_file(&self) -> Option<&FileElement<'_>> {
+	pub fn as_file(&self) -> Option<&FileElement> {
 		match self {
-			Elements::File(element) => Some(element),
+			Self::File(element) => Some(element),
 			_ => None,
 		}
 	}
 
 	/// 若为视频元素，返回元素引用。
-	pub fn as_video(&self) -> Option<&VideoElement<'_>> {
+	pub fn as_video(&self) -> Option<&VideoElement> {
 		match self {
-			Elements::Video(element) => Some(element),
+			Self::Video(element) => Some(element),
 			_ => None,
 		}
 	}
 
 	/// 若为语音元素，返回元素引用。
-	pub fn as_record(&self) -> Option<&RecordElement<'_>> {
+	pub fn as_record(&self) -> Option<&RecordElement> {
 		match self {
-			Elements::Record(element) => Some(element),
+			Self::Record(element) => Some(element),
 			_ => None,
 		}
 	}
 
 	/// 若为 JSON 元素，返回元素引用。
-	pub fn as_json(&self) -> Option<&JsonElement<'_>> {
+	pub fn as_json(&self) -> Option<&JsonElement> {
 		match self {
-			Elements::Json(element) => Some(element),
+			Self::Json(element) => Some(element),
 			_ => None,
 		}
 	}
 
 	/// 若为 XML 元素，返回元素引用。
-	pub fn as_xml(&self) -> Option<&XmlElement<'_>> {
+	pub fn as_xml(&self) -> Option<&XmlElement> {
 		match self {
-			Elements::Xml(element) => Some(element),
+			Self::Xml(element) => Some(element),
 			_ => None,
 		}
 	}
 }
 
-impl<'e> Element for Elements<'e> {
+impl Element for Elements {
 	type ElementType = ElementType;
-	fn r#type(&self) -> ElementType {
+	fn r#type(&self) -> Self::ElementType {
 		match self {
-			Elements::Text(element) => element.r#type(),
-			Elements::File(element) => element.r#type(),
-			Elements::Face(element) => element.r#type(),
-			Elements::Image(element) => element.r#type(),
-			Elements::Json(element) => element.r#type(),
-			Elements::Record(element) => element.r#type(),
-			Elements::Reply(element) => element.r#type(),
-			Elements::Video(element) => element.r#type(),
-			Elements::Xml(element) => element.r#type(),
-			Elements::At(element) => element.r#type(),
+			Self::Text(element) => element.r#type(),
+			Self::File(element) => element.r#type(),
+			Self::Face(element) => element.r#type(),
+			Self::Image(element) => element.r#type(),
+			Self::Json(element) => element.r#type(),
+			Self::Record(element) => element.r#type(),
+			Self::Reply(element) => element.r#type(),
+			Self::Video(element) => element.r#type(),
+			Self::Xml(element) => element.r#type(),
+			Self::At(element) => element.r#type(),
 		}
 	}
 }
 
-impl<'e> From<TextElement<'e>> for Elements<'e> {
+impl From<TextElement> for Elements {
 	#[inline]
-	fn from(element: TextElement<'e>) -> Self {
+	fn from(element: TextElement) -> Self {
 		Self::Text(element)
 	}
 }
 
-impl<'e> From<AtElement<'e>> for Elements<'e> {
+impl From<AtElement> for Elements {
 	#[inline]
-	fn from(element: AtElement<'e>) -> Self {
+	fn from(element: AtElement) -> Self {
 		Self::At(element)
 	}
 }
 
-impl<'e> From<ReplyElement<'e>> for Elements<'e> {
+impl From<ReplyElement> for Elements {
 	#[inline]
-	fn from(element: ReplyElement<'e>) -> Self {
+	fn from(element: ReplyElement) -> Self {
 		Self::Reply(element)
 	}
 }
 
-impl From<FaceElement> for Elements<'_> {
+impl From<FaceElement> for Elements {
 	#[inline]
 	fn from(element: FaceElement) -> Self {
 		Self::Face(element)
 	}
 }
 
-impl<'e> From<ImageElement<'e>> for Elements<'e> {
+impl From<ImageElement> for Elements {
 	#[inline]
-	fn from(element: ImageElement<'e>) -> Self {
+	fn from(element: ImageElement) -> Self {
 		Self::Image(element)
 	}
 }
 
-impl<'e> From<FileElement<'e>> for Elements<'e> {
+impl From<FileElement> for Elements {
 	#[inline]
-	fn from(element: FileElement<'e>) -> Self {
+	fn from(element: FileElement) -> Self {
 		Self::File(element)
 	}
 }
 
-impl<'e> From<VideoElement<'e>> for Elements<'e> {
+impl From<VideoElement> for Elements {
 	#[inline]
-	fn from(element: VideoElement<'e>) -> Self {
+	fn from(element: VideoElement) -> Self {
 		Self::Video(element)
 	}
 }
 
-impl<'e> From<RecordElement<'e>> for Elements<'e> {
+impl From<RecordElement> for Elements {
 	#[inline]
-	fn from(element: RecordElement<'e>) -> Self {
+	fn from(element: RecordElement) -> Self {
 		Self::Record(element)
 	}
 }
 
-impl<'e> From<JsonElement<'e>> for Elements<'e> {
+impl From<JsonElement> for Elements {
 	#[inline]
-	fn from(element: JsonElement<'e>) -> Self {
+	fn from(element: JsonElement) -> Self {
 		Self::Json(element)
 	}
 }
 
-impl<'e> From<XmlElement<'e>> for Elements<'e> {
+impl From<XmlElement> for Elements {
 	#[inline]
-	fn from(element: XmlElement<'e>) -> Self {
+	fn from(element: XmlElement) -> Self {
 		Self::Xml(element)
 	}
 }
@@ -218,13 +218,15 @@ mod tests {
 		let file: FileElement = FileElement {
 			file: File::Bytes(bytes::Bytes::from_static(b"x")),
 			file_size: 1,
-			file_name: "x.bin",
+			file_name: "x.bin".into(),
 		};
-		let video: VideoElement =
-			VideoElement { file: File::Bytes(bytes::Bytes::from_static(b"v")), file_name: "v.mp4" };
+		let video: VideoElement = VideoElement {
+			file: File::Bytes(bytes::Bytes::from_static(b"v")),
+			file_name: "v.mp4".into(),
+		};
 		let record: RecordElement = RecordElement {
 			file: File::Bytes(bytes::Bytes::from_static(b"a")),
-			file_name: "a.silk",
+			file_name: "a.silk".into(),
 		};
 		let json_e: JsonElement = "{}".into();
 		let xml: XmlElement = "<r/>".into();

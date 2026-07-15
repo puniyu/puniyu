@@ -1,8 +1,10 @@
 use crate::{Element, ElementType};
+use bon::Builder;
 use serde::{Deserialize, Serialize};
 use smol_str::SmolStr;
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, Builder)]
+#[builder(on(SmolStr, into))]
 pub struct TextElement {
 	/// 文本元素内容
 	pub text: SmolStr,
@@ -55,8 +57,8 @@ impl AsRef<str> for TextElement {
 impl Element for TextElement {
 	type ElementType = ElementType;
 
-	fn r#type(&self) -> ElementType {
-		ElementType::Text
+	fn r#type(&self) -> Self::ElementType {
+		Self::ElementType::Text
 	}
 }
 

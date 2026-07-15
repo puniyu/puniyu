@@ -1,4 +1,3 @@
-#![allow(clippy::duplicated_attributes)]
 //! # puniyu_account
 //!
 //! 统一的机器人账户信息类型，描述账号 UIN、昵称与头像数据。
@@ -61,13 +60,15 @@ use smol_str::SmolStr;
 /// assert_eq!(account.name, "Puniyu");
 /// ```
 #[derive(Debug, Default, Clone, PartialEq, Eq, Serialize, Deserialize, Builder)]
-#[builder(on(SmolStr, into), on(Bytes, into))]
 pub struct AccountInfo {
 	/// 机器人账号Id
+	#[builder(into)]
 	pub id: SmolStr,
-	/// 机器人账号名称。
+	/// 机器人账号名称
+	#[builder(into)]
 	pub name: SmolStr,
 	/// 机器人头像数据
+	#[builder(into)]
 	pub avatar: Bytes,
 }
 

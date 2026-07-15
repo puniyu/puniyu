@@ -1,31 +1,49 @@
 use serde::{Deserialize, Serialize};
+use smol_str::SmolStr;
 
 use crate::{Element, ElementType};
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub struct XmlElement<'x> {
+pub struct XmlElement {
 	/// Xml数据，未序列化
-	#[serde(borrow)]
-	pub data: &'x str,
+	pub data: SmolStr,
 }
 
-impl<'t> From<XmlElement<'t>> for String {
-	fn from(elem: XmlElement<'t>) -> Self {
-		elem.data.to_string()
+impl From<XmlElement> for String {
+	fn from(elem: XmlElement) -> Self {
+		elem.data.into()
 	}
 }
 
-impl<'t> From<&'t str> for XmlElement<'t> {
-	fn from(text: &'t str) -> Self {
-		Self { data: text }
+impl From<XmlElement> for SmolStr {
+	fn from(elem: XmlElement) -> Self {
+		elem.data
 	}
 }
 
-impl<'x> Element for XmlElement<'x> {
+impl From<&str> for XmlElement {
+	fn from(data: &str) -> Self {
+		Self { data: data.into() }
+	}
+}
+
+impl From<String> for XmlElement {
+	fn from(data: String) -> Self {
+		Self { data: data.into() }
+	}
+}
+
+impl From<SmolStr> for XmlElement {
+	fn from(data: SmolStr) -> Self {
+		Self { data }
+	}
+}
+
+impl Element for XmlElement {
 	type ElementType = ElementType;
 
-	fn r#type(&self) -> ElementType {
-		ElementType::Xml
+	fn r#type(&self) -> Self::ElementType {
+		Self::ElementType::Xml
 	}
 }
 

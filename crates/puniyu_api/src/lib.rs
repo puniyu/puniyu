@@ -10,7 +10,6 @@ pub mod event;
 pub mod handler;
 pub mod message;
 pub mod path;
-pub mod segment;
 pub mod sender;
 
 #[macro_export]

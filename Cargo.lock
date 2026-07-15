@@ -1844,7 +1844,6 @@ dependencies = [
  "puniyu_handler",
  "puniyu_message",
  "puniyu_path",
- "puniyu_segment",
  "puniyu_sender",
 ]
 
@@ -2000,6 +1999,7 @@ dependencies = [
 name = "puniyu_element"
 version = "0.9.5"
 dependencies = [
+ "bon",
  "bytes",
  "puniyu_core",
  "serde",
@@ -2114,11 +2114,13 @@ dependencies = [
 name = "puniyu_message"
 version = "0.9.5"
 dependencies = [
+ "bon",
  "bytes",
  "ecow",
  "puniyu_element",
  "serde",
  "serde_json",
+ "smol_str",
 ]
 
 [[package]]
@@ -2143,16 +2145,6 @@ dependencies = [
  "salvo",
  "semver",
  "thiserror",
-]
-
-[[package]]
-name = "puniyu_segment"
-version = "0.9.5"
-dependencies = [
- "ecow",
- "puniyu_element",
- "puniyu_message",
- "smol_str",
 ]
 
 [[package]]

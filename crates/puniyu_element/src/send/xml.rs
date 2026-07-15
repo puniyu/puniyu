@@ -1,8 +1,10 @@
 use crate::{Element, ElementType};
+use bon::Builder;
 use serde::{Deserialize, Serialize};
 use smol_str::SmolStr;
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, Builder)]
+#[builder(on(SmolStr, into))]
 pub struct XmlElement {
 	/// Xml数据，未序列化
 	pub data: SmolStr,
@@ -58,8 +60,8 @@ impl AsRef<str> for XmlElement {
 impl Element for XmlElement {
 	type ElementType = ElementType;
 
-	fn r#type(&self) -> ElementType {
-		ElementType::Xml
+	fn r#type(&self) -> Self::ElementType {
+		Self::ElementType::Xml
 	}
 }
 

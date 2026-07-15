@@ -14,7 +14,7 @@ pub struct GroupTempMessage<'m> {
 	event_id: &'m str,
 	message_id: &'m str,
 	bot: &'m Bot,
-	elements: EcoVec<Elements<'m>>,
+	elements: EcoVec<Elements>,
 	contact: &'m GroupTempContact,
 	sender: &'m GroupTempSender,
 }

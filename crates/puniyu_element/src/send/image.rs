@@ -1,3 +1,4 @@
+use bon::Builder;
 use serde::{Deserialize, Serialize};
 
 use puniyu_core::element::Element;
@@ -5,13 +6,16 @@ use smol_str::SmolStr;
 
 use crate::{ElementType, File};
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, Builder)]
 pub struct ImageElement {
 	/// 图片元素
+	#[builder(into)]
 	pub file: File,
 	/// 图片文件名
+	#[builder(into)]
 	pub file_name: SmolStr,
 	/// 图片外显
+	#[builder(into)]
 	pub summary: Option<SmolStr>,
 }
 
@@ -27,8 +31,8 @@ impl ImageElement {
 
 impl Element for ImageElement {
 	type ElementType = ElementType;
-	fn r#type(&self) -> ElementType {
-		ElementType::Image
+	fn r#type(&self) -> Self::ElementType {
+		Self::ElementType::Image
 	}
 }
 

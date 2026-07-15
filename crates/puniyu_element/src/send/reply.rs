@@ -1,8 +1,10 @@
 use crate::{Element, ElementType};
+use bon::Builder;
 use serde::{Deserialize, Serialize};
 use smol_str::SmolStr;
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, Builder)]
+#[builder(on(SmolStr, into))]
 pub struct ReplyElement {
 	/// 回复元素id
 	pub message_id: SmolStr,
@@ -58,8 +60,8 @@ impl AsRef<str> for ReplyElement {
 impl Element for ReplyElement {
 	type ElementType = ElementType;
 
-	fn r#type(&self) -> ElementType {
-		ElementType::Reply
+	fn r#type(&self) -> Self::ElementType {
+		Self::ElementType::Reply
 	}
 }
 

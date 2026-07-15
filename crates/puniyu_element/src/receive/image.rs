@@ -1,27 +1,27 @@
 use serde::{Deserialize, Serialize};
+use smol_str::SmolStr;
 
 use crate::{Element, ElementType, File};
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub struct ImageElement<'m> {
+pub struct ImageElement {
 	/// 图片元素
 	pub file: File,
 	/// 图片文件名
-	#[serde(borrow)]
-	pub file_name: &'m str,
+	pub file_name: SmolStr,
 	/// 图片外显, 默认拿不到则默认为图片文件名
-	pub summary: Option<String>,
+	pub summary: Option<SmolStr>,
 	/// 图片宽度
 	pub width: u32,
 	/// 图片高度
 	pub height: u32,
 }
 
-impl<'m> Element for ImageElement<'m> {
+impl Element for ImageElement {
 	type ElementType = ElementType;
 
-	fn r#type(&self) -> ElementType {
-		ElementType::Image
+	fn r#type(&self) -> Self::ElementType {
+		Self::ElementType::Image
 	}
 }
 
@@ -33,7 +33,7 @@ mod tests {
 	fn test_type() {
 		let e: ImageElement = ImageElement {
 			file: File::Bytes(bytes::Bytes::from_static(b"\x89PNG")),
-			file_name: "img.png",
+			file_name: "img.png".into(),
 			summary: Some("示例".into()),
 			width: 100,
 			height: 200,
@@ -45,7 +45,7 @@ mod tests {
 	fn test_serde_roundtrip() {
 		let e: ImageElement = ImageElement {
 			file: File::Bytes(bytes::Bytes::from_static(b"x")),
-			file_name: "i.png",
+			file_name: "i.png".into(),
 			summary: Some("s".into()),
 			width: 10,
 			height: 20,

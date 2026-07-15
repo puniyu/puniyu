@@ -1,31 +1,49 @@
 use serde::{Deserialize, Serialize};
+use smol_str::SmolStr;
 
 use crate::{Element, ElementType};
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub struct JsonElement<'j> {
+pub struct JsonElement {
 	/// Json数据，未序列化
-	#[serde(borrow)]
-	pub data: &'j str,
+	pub data: SmolStr,
 }
 
-impl<'t> From<JsonElement<'t>> for String {
-	fn from(elem: JsonElement<'t>) -> Self {
-		elem.data.to_string()
+impl From<JsonElement> for String {
+	fn from(elem: JsonElement) -> Self {
+		elem.data.into()
 	}
 }
 
-impl<'t> From<&'t str> for JsonElement<'t> {
-	fn from(text: &'t str) -> Self {
-		Self { data: text }
+impl From<JsonElement> for SmolStr {
+	fn from(elem: JsonElement) -> Self {
+		elem.data
 	}
 }
 
-impl<'j> Element for JsonElement<'j> {
+impl From<&str> for JsonElement {
+	fn from(data: &str) -> Self {
+		Self { data: data.into() }
+	}
+}
+
+impl From<String> for JsonElement {
+	fn from(data: String) -> Self {
+		Self { data: data.into() }
+	}
+}
+
+impl From<SmolStr> for JsonElement {
+	fn from(data: SmolStr) -> Self {
+		Self { data }
+	}
+}
+
+impl Element for JsonElement {
 	type ElementType = ElementType;
 
-	fn r#type(&self) -> ElementType {
-		ElementType::Json
+	fn r#type(&self) -> Self::ElementType {
+		Self::ElementType::Json
 	}
 }
 

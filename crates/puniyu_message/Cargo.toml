@@ -13,13 +13,13 @@ rust-version.workspace = true
 workspace = true
 
 [dependencies]
+bon.workspace = true
 serde.workspace = true
 ecow.workspace = true
+smol_str.workspace = true
 
 puniyu_element.workspace = true
 
 [dev-dependencies]
 serde_json.workspace = true
 bytes.workspace = true
-
-puniyu_element.workspace = true

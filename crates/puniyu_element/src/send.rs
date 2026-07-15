@@ -39,7 +39,7 @@ impl Elements {
 	/// 若为文本元素，返回文本内容。
 	pub fn as_text(&self) -> Option<&str> {
 		match self {
-			Elements::Text(element) => Some(element.text.as_str()),
+			Self::Text(element) => Some(element.text.as_str()),
 			_ => None,
 		}
 	}
@@ -47,7 +47,7 @@ impl Elements {
 	/// 若为 At 元素，返回元素引用。
 	pub fn as_at(&self) -> Option<&AtElement> {
 		match self {
-			Elements::At(element) => Some(element),
+			Self::At(element) => Some(element),
 			_ => None,
 		}
 	}
@@ -55,7 +55,7 @@ impl Elements {
 	/// 若为回复元素，返回元素引用。
 	pub fn as_reply(&self) -> Option<&ReplyElement> {
 		match self {
-			Elements::Reply(element) => Some(element),
+			Self::Reply(element) => Some(element),
 			_ => None,
 		}
 	}
@@ -63,7 +63,7 @@ impl Elements {
 	/// 若为表情元素，返回元素引用。
 	pub fn as_face(&self) -> Option<&FaceElement> {
 		match self {
-			Elements::Face(element) => Some(element),
+			Self::Face(element) => Some(element),
 			_ => None,
 		}
 	}
@@ -71,7 +71,7 @@ impl Elements {
 	/// 若为图片元素，返回元素引用。
 	pub fn as_image(&self) -> Option<&ImageElement> {
 		match self {
-			Elements::Image(element) => Some(element),
+			Self::Image(element) => Some(element),
 			_ => None,
 		}
 	}
@@ -79,7 +79,7 @@ impl Elements {
 	/// 若为文件元素，返回元素引用。
 	pub fn as_file(&self) -> Option<&FileElement> {
 		match self {
-			Elements::File(element) => Some(element),
+			Self::File(element) => Some(element),
 			_ => None,
 		}
 	}
@@ -87,7 +87,7 @@ impl Elements {
 	/// 若为视频元素，返回元素引用。
 	pub fn as_video(&self) -> Option<&VideoElement> {
 		match self {
-			Elements::Video(element) => Some(element),
+			Self::Video(element) => Some(element),
 			_ => None,
 		}
 	}
@@ -95,7 +95,7 @@ impl Elements {
 	/// 若为语音元素，返回元素引用。
 	pub fn as_record(&self) -> Option<&RecordElement> {
 		match self {
-			Elements::Record(element) => Some(element),
+			Self::Record(element) => Some(element),
 			_ => None,
 		}
 	}
@@ -103,7 +103,7 @@ impl Elements {
 	/// 若为 JSON 元素，返回元素引用。
 	pub fn as_json(&self) -> Option<&JsonElement> {
 		match self {
-			Elements::Json(element) => Some(element),
+			Self::Json(element) => Some(element),
 			_ => None,
 		}
 	}
@@ -111,7 +111,7 @@ impl Elements {
 	/// 若为 XML 元素，返回元素引用。
 	pub fn as_xml(&self) -> Option<&XmlElement> {
 		match self {
-			Elements::Xml(element) => Some(element),
+			Self::Xml(element) => Some(element),
 			_ => None,
 		}
 	}
@@ -119,18 +119,18 @@ impl Elements {
 
 impl Element for Elements {
 	type ElementType = ElementType;
-	fn r#type(&self) -> ElementType {
+	fn r#type(&self) -> Self::ElementType {
 		match self {
-			Elements::Text(element) => element.r#type(),
-			Elements::At(element) => element.r#type(),
-			Elements::Reply(element) => element.r#type(),
-			Elements::Face(element) => element.r#type(),
-			Elements::Image(element) => element.r#type(),
-			Elements::File(element) => element.r#type(),
-			Elements::Video(element) => element.r#type(),
-			Elements::Record(element) => element.r#type(),
-			Elements::Json(element) => element.r#type(),
-			Elements::Xml(element) => element.r#type(),
+			Self::Text(element) => element.r#type(),
+			Self::At(element) => element.r#type(),
+			Self::Reply(element) => element.r#type(),
+			Self::Face(element) => element.r#type(),
+			Self::Image(element) => element.r#type(),
+			Self::File(element) => element.r#type(),
+			Self::Video(element) => element.r#type(),
+			Self::Record(element) => element.r#type(),
+			Self::Json(element) => element.r#type(),
+			Self::Xml(element) => element.r#type(),
 		}
 	}
 }
@@ -208,6 +208,9 @@ impl From<XmlElement> for Elements {
 #[cfg(test)]
 mod tests {
 	use super::*;
+	use crate::File;
+	use smol_str::SmolStr;
+	use std::path::PathBuf;
 
 	#[test]
 	fn test_send_variants_report_their_types() {
@@ -261,5 +264,99 @@ mod tests {
 		assert!(json.contains("\"type\":\"text\""));
 		let restored: Elements = serde_json::from_str(&json).expect("deserialize");
 		assert_eq!(restored.r#type(), ElementType::Text);
+	}
+
+	#[test]
+	fn test_all_send_element_builders() {
+		let text = TextElement::builder().text("hello").build();
+		let at = AtElement::builder().target_id(String::from("user-1")).build();
+		let reply = ReplyElement::builder().message_id(SmolStr::new("message-1")).build();
+		let face = FaceElement::builder().id(1).build();
+		let file = FileElement::builder()
+			.file(bytes::Bytes::from_static(b"file"))
+			.file_name("file.bin")
+			.build();
+		let image =
+			ImageElement::builder().file(PathBuf::from("image.png")).file_name("image.png").build();
+		let video = VideoElement::builder()
+			.file(File::Bytes(bytes::Bytes::from_static(b"video")))
+			.file_name("video.mp4")
+			.build();
+		let record = RecordElement::builder()
+			.file(bytes::Bytes::from_static(b"record"))
+			.file_name("record.silk")
+			.build();
+		let json = JsonElement::builder().data("{}").build();
+		let xml = XmlElement::builder().data("<root/>").build();
+
+		assert_eq!(text.text, "hello");
+		assert_eq!(at.target_id, "user-1");
+		assert_eq!(reply.message_id, "message-1");
+		assert_eq!(face.id, 1);
+		assert_eq!(file.file_name, "file.bin");
+		assert!(matches!(&file.file, File::Bytes(_)));
+		assert_eq!(image.file_name, "image.png");
+		assert!(matches!(&image.file, File::Path(path) if path == &PathBuf::from("image.png")));
+		assert_eq!(video.file_name, "video.mp4");
+		assert!(matches!(&video.file, File::Bytes(_)));
+		assert_eq!(record.file_name, "record.silk");
+		assert_eq!(json.data, "{}");
+		assert_eq!(xml.data, "<root/>");
+
+		let cases = [
+			(Elements::from(text), ElementType::Text),
+			(Elements::from(at), ElementType::At),
+			(Elements::from(reply), ElementType::Reply),
+			(Elements::from(face), ElementType::Face),
+			(Elements::from(file), ElementType::File),
+			(Elements::from(image), ElementType::Image),
+			(Elements::from(video), ElementType::Video),
+			(Elements::from(record), ElementType::Record),
+			(Elements::from(json), ElementType::Json),
+			(Elements::from(xml), ElementType::Xml),
+		];
+
+		for (element, expected) in cases {
+			assert_eq!(element.r#type(), expected);
+		}
+	}
+
+	#[test]
+	fn test_image_builder_optional_summary() {
+		let without_summary = ImageElement::builder()
+			.file(bytes::Bytes::from_static(b"image"))
+			.file_name("image.png")
+			.build();
+		assert_eq!(without_summary.summary, None);
+
+		let with_summary = ImageElement::builder()
+			.file(bytes::Bytes::from_static(b"image"))
+			.file_name("image.png")
+			.summary("图片描述")
+			.build();
+		assert_eq!(with_summary.summary.as_deref(), Some("图片描述"));
+	}
+
+	#[test]
+	fn test_new_builder_and_shortcut_serde_consistency() {
+		let new = AtElement::new("all");
+		let built = AtElement::builder().target_id("all").build();
+		let shortcut = AtElement::everyone();
+
+		let expected = serde_json::to_string(&new).expect("serialize new element");
+		assert_eq!(serde_json::to_string(&built).expect("serialize built element"), expected);
+		assert_eq!(serde_json::to_string(&shortcut).expect("serialize shortcut element"), expected);
+
+		let new =
+			ImageElement::new(bytes::Bytes::from_static(b"image"), "image.png", Some("图片描述"));
+		let built = ImageElement::builder()
+			.file(bytes::Bytes::from_static(b"image"))
+			.file_name("image.png")
+			.summary("图片描述")
+			.build();
+		assert_eq!(
+			serde_json::to_string(&built).expect("serialize built image"),
+			serde_json::to_string(&new).expect("serialize new image"),
+		);
 	}
 }

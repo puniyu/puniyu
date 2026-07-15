@@ -1,3 +1,4 @@
+use bon::Builder;
 use serde::{Deserialize, Serialize};
 
 use puniyu_core::element::Element;
@@ -5,7 +6,8 @@ use smol_str::SmolStr;
 
 use crate::ElementType;
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, Builder)]
+#[builder(on(SmolStr, into))]
 pub struct AtElement {
 	/// 目标id
 	pub target_id: SmolStr,
@@ -14,11 +16,6 @@ pub struct AtElement {
 impl AtElement {
 	pub fn new(target_id: impl Into<SmolStr>) -> Self {
 		Self { target_id: target_id.into() }
-	}
-
-	/// 是否为艾特全体。
-	pub fn is_everyone(&self) -> bool {
-		self.target_id == "all"
 	}
 }
 
@@ -71,8 +68,8 @@ impl AtElement {
 
 impl Element for AtElement {
 	type ElementType = ElementType;
-	fn r#type(&self) -> ElementType {
-		ElementType::At
+	fn r#type(&self) -> Self::ElementType {
+		Self::ElementType::At
 	}
 }
 
@@ -88,19 +85,9 @@ mod tests {
 	}
 
 	#[test]
-	fn test_everyone() {
-		let e = AtElement::new("all");
-		assert!(e.is_everyone());
-
-		let e = AtElement::new("user_1");
-		assert!(!e.is_everyone());
-	}
-
-	#[test]
 	fn test_everyone_constructor() {
 		let e = AtElement::everyone();
 		assert_eq!(e.target_id, "all");
-		assert!(e.is_everyone());
 	}
 
 	#[test]

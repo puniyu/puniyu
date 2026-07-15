@@ -1,10 +1,11 @@
+use bon::Builder;
 use serde::{Deserialize, Serialize};
 
 use puniyu_core::element::Element;
 
 use crate::ElementType;
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash, Builder)]
 pub struct FaceElement {
 	/// 表情元素id
 	pub id: u64,
@@ -18,8 +19,8 @@ impl FaceElement {
 
 impl Element for FaceElement {
 	type ElementType = ElementType;
-	fn r#type(&self) -> ElementType {
-		ElementType::Face
+	fn r#type(&self) -> Self::ElementType {
+		Self::ElementType::Face
 	}
 }
 

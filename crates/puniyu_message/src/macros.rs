@@ -1,17 +1,19 @@
-/// 快速构建 `Message`。
+/// 快速构建 [`Message`](crate::Message)。
+///
+/// 每个参数都可以是具体发送元素或已经包装的 `Elements`。
 ///
 /// ```rust
+/// use puniyu_element::send::{AtElement, TextElement};
 /// use puniyu_message::message;
-/// use puniyu_element::send::{AtElement, Elements, TextElement};
 ///
-/// let msg = message!(
-///     Elements::At(AtElement::new("123456")),
-///     Elements::Text(TextElement::new("hello")),
-/// );
+/// let msg = message!(AtElement::new("123456"), TextElement::new("hello"));
+/// assert_eq!(msg.len(), 2);
 /// ```
 #[macro_export]
 macro_rules! message {
     ($($element:expr),* $(,)?) => {
-        $crate::Message::from(vec![$($element),*])
+        $crate::Message::builder()
+            $(.element($element))*
+            .build()
     };
 }

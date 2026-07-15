@@ -1,31 +1,49 @@
 use serde::{Deserialize, Serialize};
+use smol_str::SmolStr;
 
 use crate::{Element, ElementType};
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub struct TextElement<'t> {
+pub struct TextElement {
 	/// 文本元素内容
-	#[serde(borrow)]
-	pub text: &'t str,
+	pub text: SmolStr,
 }
 
-impl<'t> From<TextElement<'t>> for String {
-	fn from(elem: TextElement<'t>) -> Self {
-		elem.text.to_string()
+impl From<TextElement> for String {
+	fn from(elem: TextElement) -> Self {
+		elem.text.into()
 	}
 }
 
-impl<'t> From<&'t str> for TextElement<'t> {
-	fn from(text: &'t str) -> Self {
+impl From<TextElement> for SmolStr {
+	fn from(elem: TextElement) -> Self {
+		elem.text
+	}
+}
+
+impl From<&str> for TextElement {
+	fn from(text: &str) -> Self {
+		Self { text: text.into() }
+	}
+}
+
+impl From<String> for TextElement {
+	fn from(text: String) -> Self {
+		Self { text: text.into() }
+	}
+}
+
+impl From<SmolStr> for TextElement {
+	fn from(text: SmolStr) -> Self {
 		Self { text }
 	}
 }
 
-impl<'t> Element for TextElement<'t> {
+impl Element for TextElement {
 	type ElementType = ElementType;
 
-	fn r#type(&self) -> ElementType {
-		ElementType::Text
+	fn r#type(&self) -> Self::ElementType {
+		Self::ElementType::Text
 	}
 }
 
@@ -47,6 +65,17 @@ mod tests {
 
 		let s: String = TextElement::from("abc").into();
 		assert_eq!(s, "abc");
+
+		let from_string: TextElement = String::from("中文内容").into();
+		let s: SmolStr = from_string.into();
+		assert_eq!(s, "中文内容");
+	}
+
+	#[test]
+	fn test_long_text() {
+		let text = "这是一段长度超过 SmolStr 内联容量的消息正文";
+		let element = TextElement::from(text);
+		assert_eq!(element.text, text);
 	}
 
 	#[test]

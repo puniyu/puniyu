@@ -1,3 +1,4 @@
+use bon::Builder;
 use serde::{Deserialize, Serialize};
 
 use puniyu_core::element::Element;
@@ -5,11 +6,13 @@ use smol_str::SmolStr;
 
 use crate::{ElementType, File};
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, Builder)]
 pub struct FileElement {
 	/// 文件元素
+	#[builder(into)]
 	pub file: File,
 	/// 文件名
+	#[builder(into)]
 	pub file_name: SmolStr,
 }
 
@@ -21,8 +24,8 @@ impl FileElement {
 
 impl Element for FileElement {
 	type ElementType = ElementType;
-	fn r#type(&self) -> ElementType {
-		ElementType::File
+	fn r#type(&self) -> Self::ElementType {
+		Self::ElementType::File
 	}
 }
 

@@ -1,13 +1,16 @@
+use bon::Builder;
 use serde::{Deserialize, Serialize};
 use smol_str::SmolStr;
 
 use crate::{Element, ElementType, File};
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, Builder)]
 pub struct VideoElement {
 	/// 视频元素
+	#[builder(into)]
 	pub file: File,
 	/// 视频文件名
+	#[builder(into)]
 	pub file_name: SmolStr,
 }
 
@@ -20,8 +23,8 @@ impl VideoElement {
 impl Element for VideoElement {
 	type ElementType = ElementType;
 
-	fn r#type(&self) -> ElementType {
-		ElementType::Video
+	fn r#type(&self) -> Self::ElementType {
+		Self::ElementType::Video
 	}
 }
 

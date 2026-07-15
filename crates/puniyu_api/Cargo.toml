@@ -24,10 +24,8 @@ puniyu_context.workspace = true
 puniyu_sender.workspace = true
 puniyu_contact.workspace = true
 puniyu_element.workspace = true
-puniyu_segment.workspace = true
 puniyu_message.workspace = true
 puniyu_command_parser.workspace = true
 puniyu_error.workspace = true
-
 
 

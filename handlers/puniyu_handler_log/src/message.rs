@@ -85,14 +85,14 @@ fn format_message(event: &MessageEvent<'_>) -> String {
 	)
 }
 
-fn format_element(element: &Elements<'_>) -> String {
+fn format_element(element: &Elements) -> String {
 	match element {
 		Elements::Text(value) => format!("text:{}", value.text),
 		Elements::At(value) => format!("at:{}", value.target_id),
 		Elements::Reply(value) => format!("reply:{}", value.message_id),
 		Elements::Face(value) => format!("face:{}", value.id),
 		Elements::Image(value) => {
-			format!("image:{}", value.summary.as_deref().unwrap_or(value.file_name))
+			format!("image:{}", value.summary.as_deref().unwrap_or(value.file_name.as_str()))
 		}
 		Elements::File(value) => format!("file:{}", value.file_name),
 		Elements::Video(value) => format!("video:{}", value.file_name),

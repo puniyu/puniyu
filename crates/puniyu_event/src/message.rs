@@ -117,20 +117,20 @@ impl MessageEvent<'_> {
 	}
 }
 forward_event!(message_id -> &str);
-forward_event!(elements -> &EcoVec<Elements<'_>>);
+forward_event!(elements -> &EcoVec<Elements>);
 forward_event!(get_text -> Vec<&str>);
 forward_event!(get_at -> Vec<&str>);
 forward_event!(get_reply_id -> Option<&str>);
 
 pub trait MessageBase: EventBase {
 	fn message_id(&self) -> &str;
-	fn elements(&self) -> &EcoVec<Elements<'_>>;
+	fn elements(&self) -> &EcoVec<Elements>;
 
 	fn get_text(&self) -> Vec<&str> {
 		self.elements()
 			.iter()
 			.filter_map(|element| match element {
-				Elements::Text(text) => Some(text.text),
+				Elements::Text(text) => Some(text.text.as_str()),
 				_ => None,
 			})
 			.collect()
@@ -140,7 +140,7 @@ pub trait MessageBase: EventBase {
 		self.elements()
 			.iter()
 			.filter_map(|element| match element {
-				Elements::At(at) => Some(at.target_id),
+				Elements::At(at) => Some(at.target_id.as_str()),
 				_ => None,
 			})
 			.collect()
@@ -148,7 +148,7 @@ pub trait MessageBase: EventBase {
 
 	fn get_reply_id(&self) -> Option<&str> {
 		self.elements().iter().find_map(|element| match element {
-			Elements::Reply(reply) => Some(reply.message_id),
+			Elements::Reply(reply) => Some(reply.message_id.as_str()),
 			_ => None,
 		})
 	}
@@ -198,7 +198,7 @@ macro_rules! impl_message {
 			fn message_id(&self) -> &str {
 				self.message_id
 			}
-			fn elements(&self) -> &ecow::EcoVec<puniyu_element::receive::Elements<'_>> {
+			fn elements(&self) -> &ecow::EcoVec<puniyu_element::receive::Elements> {
 				&self.elements
 			}
 		}
@@ -206,3 +206,80 @@ macro_rules! impl_message {
 }
 
 pub(crate) use impl_message;
+
+#[cfg(test)]
+mod tests {
+	use super::*;
+	use puniyu_contact::FriendContact;
+	use puniyu_element::receive::{AtElement, ReplyElement, TextElement};
+	use puniyu_sender::FriendSender;
+
+	#[derive(Debug, PartialEq, Eq)]
+	struct TestMessage {
+		elements: EcoVec<Elements>,
+	}
+
+	impl EventBase for TestMessage {
+		type Bot = Bot;
+		type Contact = FriendContact;
+		type Sender = FriendSender;
+		type EventType = ();
+		type SubEventType = ();
+
+		fn time(&self) -> u64 {
+			0
+		}
+
+		fn event_type(&self) {}
+
+		fn event_id(&self) -> &str {
+			"event"
+		}
+
+		fn sub_event(&self) {}
+
+		fn bot(&self) -> &Bot {
+			unreachable!("访问器测试不需要机器人实例")
+		}
+
+		fn user_id(&self) -> &str {
+			"user"
+		}
+
+		fn contact(&self) -> FriendContact {
+			unreachable!("访问器测试不需要联系人实例")
+		}
+
+		fn sender(&self) -> FriendSender {
+			unreachable!("访问器测试不需要发送者实例")
+		}
+	}
+
+	impl MessageBase for TestMessage {
+		fn message_id(&self) -> &str {
+			"message"
+		}
+
+		fn elements(&self) -> &EcoVec<Elements> {
+			&self.elements
+		}
+	}
+
+	#[test]
+	fn test_message_element_accessors_return_str_slices() {
+		let message = TestMessage {
+			elements: [
+				Elements::from(TextElement::from("第一段")),
+				Elements::from(AtElement::from("user-1")),
+				Elements::from(TextElement::from("第二段")),
+				Elements::from(ReplyElement::from("message-1")),
+			]
+			.into_iter()
+			.collect(),
+		};
+
+		assert_eq!(message.get_text(), vec!["第一段", "第二段"]);
+		assert_eq!(message.get_at(), vec!["user-1"]);
+		assert_eq!(message.get_reply_id(), Some("message-1"));
+	}
+}

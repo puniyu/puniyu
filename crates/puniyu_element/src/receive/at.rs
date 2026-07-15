@@ -1,36 +1,54 @@
 use crate::{Element, ElementType};
 use serde::{Deserialize, Serialize};
+use smol_str::SmolStr;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub struct AtElement<'a> {
+pub struct AtElement {
 	/// at元素目标id
-	#[serde(borrow)]
-	pub target_id: &'a str,
+	pub target_id: SmolStr,
 }
 
-impl<'a> AtElement<'a> {
+impl AtElement {
 	/// 是否为艾特全体
 	pub fn is_everyone(&self) -> bool {
 		self.target_id == "all"
 	}
 }
-impl<'a> From<AtElement<'a>> for String {
-	fn from(elem: AtElement<'a>) -> Self {
-		elem.target_id.to_string()
+impl From<AtElement> for String {
+	fn from(elem: AtElement) -> Self {
+		elem.target_id.into()
 	}
 }
 
-impl<'a> From<&'a str> for AtElement<'a> {
-	fn from(target_id: &'a str) -> Self {
+impl From<AtElement> for SmolStr {
+	fn from(elem: AtElement) -> Self {
+		elem.target_id
+	}
+}
+
+impl From<&str> for AtElement {
+	fn from(target_id: &str) -> Self {
+		Self { target_id: target_id.into() }
+	}
+}
+
+impl From<String> for AtElement {
+	fn from(target_id: String) -> Self {
+		Self { target_id: target_id.into() }
+	}
+}
+
+impl From<SmolStr> for AtElement {
+	fn from(target_id: SmolStr) -> Self {
 		Self { target_id }
 	}
 }
 
-impl<'a> Element for AtElement<'a> {
+impl Element for AtElement {
 	type ElementType = ElementType;
 
-	fn r#type(&self) -> ElementType {
-		ElementType::At
+	fn r#type(&self) -> Self::ElementType {
+		Self::ElementType::At
 	}
 }
 
@@ -58,5 +76,9 @@ mod tests {
 
 		let s: String = AtElement::from("u3").into();
 		assert_eq!(s, "u3");
+
+		let from_string: AtElement = String::from("u4").into();
+		let s: SmolStr = from_string.into();
+		assert_eq!(s, "u4");
 	}
 }
