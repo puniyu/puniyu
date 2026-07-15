@@ -171,13 +171,13 @@ fn validate_command_args(fn_sig: &Signature) -> syn::Result<()> {
 		fn_sig,
 		"command function parameter must not be `self`",
 	)?;
-	if !type_ends_with(arg_type, &["MessageContext"])
-		&& !type_ends_with(arg_type, &["puniyu_context", "MessageContext"])
-		&& !type_ends_with(arg_type, &["puniyu_plugin", "context", "MessageContext"])
+	if !type_ends_with(arg_type, &["MessageSession"])
+		&& !type_ends_with(arg_type, &["puniyu_session", "MessageSession"])
+		&& !type_ends_with(arg_type, &["puniyu_plugin", "context", "MessageSession"])
 	{
 		return Err(syn::Error::new(
 			arg_type.span(),
-			"command function parameter type must be `MessageContext`, `puniyu_plugin::context::MessageContext` or `puniyu_context::MessageContext`",
+			"command function parameter type must be `MessageSession`, `puniyu_plugin::context::MessageSession` or `puniyu_session::MessageSession`",
 		));
 	}
 	Ok(())

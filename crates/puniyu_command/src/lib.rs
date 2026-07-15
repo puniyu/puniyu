@@ -14,7 +14,7 @@
 //! ```rust,ignore
 //! use async_trait::async_trait;
 //! use puniyu_command::{Arg, Command, CommandAction, Permission};
-//! use puniyu_context::MessageContext;
+//! use puniyu_session::MessageSession;
 //!
 //! struct HelloCommand;
 //!
@@ -32,7 +32,7 @@
 //!         Permission::All
 //!     }
 //!
-//!     async fn execute(&self, _ctx: &MessageContext) -> puniyu_error::Result<CommandAction> {
+//!     async fn execute(&self, _ctx: &MessageSession) -> puniyu_error::Result<CommandAction> {
 //!         CommandAction::done()
 //!     }
 //! }
@@ -48,7 +48,7 @@ mod types;
 #[doc(inline)]
 pub use types::*;
 
-use puniyu_context::MessageContext;
+use puniyu_session::MessageSession;
 
 #[async_trait]
 pub trait Command: Send + Sync {
@@ -86,7 +86,7 @@ pub trait Command: Send + Sync {
 	}
 
 	/// 执行命令。
-	async fn execute(&self, ctx: &MessageContext) -> puniyu_error::AnyError<CommandAction>;
+	async fn execute(&self, ctx: &MessageSession) -> puniyu_error::AnyError<CommandAction>;
 }
 
 impl PartialEq for dyn Command {

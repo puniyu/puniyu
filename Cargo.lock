@@ -1837,7 +1837,6 @@ dependencies = [
  "puniyu_command_parser",
  "puniyu_config",
  "puniyu_contact",
- "puniyu_context",
  "puniyu_element",
  "puniyu_error",
  "puniyu_event",
@@ -1845,6 +1844,7 @@ dependencies = [
  "puniyu_message",
  "puniyu_path",
  "puniyu_sender",
+ "puniyu_session",
 ]
 
 [[package]]
@@ -1898,8 +1898,8 @@ version = "0.9.5"
 dependencies = [
  "async-trait",
  "puniyu_command_types",
- "puniyu_context",
  "puniyu_error",
+ "puniyu_session",
  "thiserror",
 ]
 
@@ -1951,22 +1951,6 @@ dependencies = [
  "serde_json",
  "smol_str",
  "strum 0.28.0",
-]
-
-[[package]]
-name = "puniyu_context"
-version = "0.9.5"
-dependencies = [
- "puniyu_adapter_types",
- "puniyu_bot",
- "puniyu_command_types",
- "puniyu_config",
- "puniyu_contact",
- "puniyu_element",
- "puniyu_error",
- "puniyu_event",
- "puniyu_message",
- "smol_str",
 ]
 
 [[package]]
@@ -2053,11 +2037,11 @@ dependencies = [
  "puniyu_command",
  "puniyu_command_parser",
  "puniyu_config",
- "puniyu_context",
  "puniyu_cooldown",
  "puniyu_event",
  "puniyu_handler",
  "puniyu_logger",
+ "puniyu_session",
 ]
 
 [[package]]
@@ -2184,6 +2168,22 @@ name = "puniyu_server_router"
 version = "0.9.5"
 dependencies = [
  "salvo",
+]
+
+[[package]]
+name = "puniyu_session"
+version = "0.9.5"
+dependencies = [
+ "puniyu_adapter_types",
+ "puniyu_bot",
+ "puniyu_command_types",
+ "puniyu_config",
+ "puniyu_contact",
+ "puniyu_element",
+ "puniyu_error",
+ "puniyu_event",
+ "puniyu_message",
+ "smol_str",
 ]
 
 [[package]]

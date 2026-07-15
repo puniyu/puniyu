@@ -1,22 +1,22 @@
 mod message;
 #[doc(inline)]
-pub use message::MessageContext;
+pub use message::MessageSession;
 
-use crate::BotContext;
+use crate::BotSession;
 use puniyu_event::Event;
 use std::{collections::HashMap, ops::Deref};
 
-/// 事件上下文
+/// 事件会话
 ///
 /// 提供对事件信息和命令参数的访问。
 ///
 /// # 示例
 ///
 /// ```rust,ignore
-/// use puniyu_context::{BotContext, EventContext};
+/// use puniyu_session::{BotSession, EventSession};
 ///
-/// let bot_context = BotContext::new(&bot);
-/// let event_context = EventContext::new(&event, args);
+/// let bot_context = BotSession::new(&bot);
+/// let event_context = EventSession::new(&event, args);
 ///
 /// // 判断事件类型
 /// if event_context.is_message() {
@@ -33,12 +33,12 @@ use std::{collections::HashMap, ops::Deref};
 /// }
 /// ```
 #[derive(Clone)]
-pub struct EventContext<'c> {
+pub struct EventSession<'c> {
 	inner: &'c Event<'c>,
 }
 
-impl<'c> EventContext<'c> {
-	/// 创建新的事件上下文
+impl<'c> EventSession<'c> {
+	/// 创建新的事件会话
 	///
 	/// # 参数
 	///
@@ -48,25 +48,25 @@ impl<'c> EventContext<'c> {
 	/// # 示例
 	///
 	/// ```rust,ignore
-	/// let event_context = EventContext::new(&event, args);
+	/// let event_context = EventSession::new(&event, args);
 	/// ```
 	pub fn new(event: &'c Event) -> Self {
 		Self { inner: event }
 	}
 
-	/// 获取当前事件关联的机器人上下文。
-	pub fn as_bot(&self) -> BotContext<'_> {
-		BotContext::new(self.inner.bot())
+	/// 获取当前事件关联的机器人会话。
+	pub fn as_bot(&self) -> BotSession<'_> {
+		BotSession::new(self.inner.bot())
 	}
 
-	/// 尝试将当前事件上下文转换为消息上下文。
+	/// 尝试将当前事件会话转换为消息会话。
 	///
 	/// 当事件为消息事件时返回 [`Some`]，否则返回 [`None`]。
-	pub fn as_message(&self) -> Option<MessageContext<'_>> {
-		self.inner.as_message().map(|message| MessageContext::new(message, HashMap::new()))
+	pub fn as_message(&self) -> Option<MessageSession<'_>> {
+		self.inner.as_message().map(|message| MessageSession::new(message, HashMap::new()))
 	}
 }
-impl<'e> Deref for EventContext<'e> {
+impl<'e> Deref for EventSession<'e> {
 	type Target = Event<'e>;
 
 	fn deref(&self) -> &Self::Target {
@@ -74,16 +74,16 @@ impl<'e> Deref for EventContext<'e> {
 	}
 }
 
-impl<'e> From<&'e Event<'e>> for EventContext<'e> {
+impl<'e> From<&'e Event<'e>> for EventSession<'e> {
 	#[inline]
 	fn from(event: &'e Event) -> Self {
 		Self::new(event)
 	}
 }
 
-impl<'e> From<&'e EventContext<'e>> for &'e Event<'e> {
+impl<'e> From<&'e EventSession<'e>> for &'e Event<'e> {
 	#[inline]
-	fn from(context: &'e EventContext<'e>) -> Self {
+	fn from(context: &'e EventSession<'e>) -> Self {
 		context.inner
 	}
 }

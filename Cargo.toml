@@ -49,7 +49,7 @@ puniyu_api = { version = "0.9.5", path = "./crates/puniyu_api" }
 puniyu_app = { version = "0.9.5", path = "./crates/puniyu_app" }
 puniyu_path = { version = "0.9.5", path = "./crates/puniyu_path" }
 puniyu_event = { version = "0.9.5", path = "./crates/puniyu_event" }
-puniyu_context = { version = "0.9.5", path = "./crates/puniyu_context" }
+puniyu_session = { version = "0.9.5", path = "./crates/puniyu_session" }
 puniyu_error = { version = "0.9.5", path = "./crates/puniyu_error" }
 puniyu_version = { version = "0.9.5", path = "./crates/puniyu_version" }
 puniyu_config = { version = "0.9.5", path = "./crates/puniyu_config" }

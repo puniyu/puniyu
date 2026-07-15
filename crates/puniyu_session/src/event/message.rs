@@ -1,6 +1,6 @@
 use std::ops::Deref;
 
-use crate::{BotContext, EventArg};
+use crate::{BotSession, EventArg};
 use puniyu_adapter_types::{SendMessageOptions, SendMsgResult};
 use puniyu_command_types::FromArgValue;
 use puniyu_contact::ContactType;
@@ -11,7 +11,7 @@ use puniyu_event::message::{
 use puniyu_message::Message;
 use smol_str::SmolStr;
 
-/// 消息上下文
+/// 消息会话
 ///
 /// 提供对消息事件的专门处理，包括消息回复、参数获取、发送者信息等。
 ///
@@ -21,9 +21,9 @@ use smol_str::SmolStr;
 /// # 示例
 ///
 /// ```rust,ignore
-/// use puniyu_context::MessageContext;
+/// use puniyu_session::MessageSession;
 ///
-/// async fn handle_message(ctx: &MessageContext<'_>) {
+/// async fn handle_message(ctx: &MessageSession<'_>) {
 ///     // 回复消息
 ///     ctx.reply("Hello!").await?;
 ///
@@ -43,14 +43,14 @@ use smol_str::SmolStr;
 /// }
 /// ```
 #[derive(Clone)]
-pub struct MessageContext<'c> {
+pub struct MessageSession<'c> {
 	event: &'c MessageEvent<'c>,
-	bot: BotContext<'c>,
+	bot: BotSession<'c>,
 	args: EventArg,
 }
 
-impl<'c> MessageContext<'c> {
-	/// 创建新的消息上下文
+impl<'c> MessageSession<'c> {
+	/// 创建新的消息会话
 	///
 	/// # 参数
 	///
@@ -60,10 +60,10 @@ impl<'c> MessageContext<'c> {
 	/// # 示例
 	///
 	/// ```rust,ignore
-	/// let msg_context = MessageContext::new(&message_event, args);
+	/// let msg_context = MessageSession::new(&message_event, args);
 	/// ```
 	pub fn new(event: &'c MessageEvent, args: EventArg) -> Self {
-		Self { event, bot: BotContext::new(event.bot()), args }
+		Self { event, bot: BotSession::new(event.bot()), args }
 	}
 
 	/// 获取内部消息事件
@@ -71,8 +71,8 @@ impl<'c> MessageContext<'c> {
 		self.event
 	}
 
-	/// 获取当前消息关联的机器人上下文。
-	pub fn as_bot(&self) -> &BotContext<'_> {
+	/// 获取当前消息关联的机器人会话。
+	pub fn as_bot(&self) -> &BotSession<'_> {
 		&self.bot
 	}
 
@@ -159,7 +159,7 @@ impl<'c> MessageContext<'c> {
 	}
 }
 
-impl MessageContext<'_> {
+impl MessageSession<'_> {
 	pub fn is_friend(&self) -> bool {
 		matches!(self.event.contact(), ContactType::Friend(_))
 	}
@@ -177,7 +177,7 @@ impl MessageContext<'_> {
 	}
 }
 
-impl<'c> MessageContext<'c> {
+impl<'c> MessageSession<'c> {
 	/// 判断消息内容是否艾特了当前机器人。
 	pub fn mentions_bot(&self) -> bool {
 		self.get_at().contains(&self.self_id())
@@ -189,7 +189,7 @@ impl<'c> MessageContext<'c> {
 	}
 }
 
-impl<'e> Deref for MessageContext<'e> {
+impl<'e> Deref for MessageSession<'e> {
 	type Target = MessageEvent<'e>;
 	fn deref(&self) -> &Self::Target {
 		self.event

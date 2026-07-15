@@ -3,7 +3,7 @@ use crate::invocation::CommandInvocation;
 use crate::policy::{denied_message, permission};
 use log::{debug, error, info};
 use puniyu_command::CommandAction;
-use puniyu_context::MessageContext;
+use puniyu_session::MessageSession;
 use puniyu_cooldown::CooldownState;
 use puniyu_logger::owo_colors::OwoColorize;
 use std::collections::HashMap;
@@ -37,7 +37,7 @@ pub(crate) async fn execute(invocation: CommandInvocation<'_, '_>) -> CommandOut
 				continue;
 			}
 		};
-		let context = MessageContext::new(invocation.message, arguments);
+		let context = MessageSession::new(invocation.message, arguments);
 
 		if !cooldown_checked {
 			if matches!(
@@ -81,7 +81,7 @@ pub(crate) async fn execute(invocation: CommandInvocation<'_, '_>) -> CommandOut
 		return CommandOutcome::Continue;
 	}
 
-	let context = MessageContext::new(invocation.message, HashMap::new());
+	let context = MessageSession::new(invocation.message, HashMap::new());
 	if let Some(error) = argument_error {
 		if let Err(reply_error) = context.reply(error.to_string(), None).await {
 			error!("[{}] 回复失败: {reply_error}", format!("command:{invoked_name}").yellow());

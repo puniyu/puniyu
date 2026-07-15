@@ -14,7 +14,7 @@
 
 ```rust
 use puniyu_command::{Arg, Command, CommandAction, Permission};
-use puniyu_context::MessageContext;
+use puniyu_session::MessageSession;
 
 struct HelloCommand;
 
@@ -30,7 +30,7 @@ impl Command for HelloCommand {
         Permission::All
     }
 
-    async fn execute(&self, ctx: &MessageContext) -> puniyu_error::Result<CommandAction> {
+    async fn execute(&self, ctx: &MessageSession) -> puniyu_error::Result<CommandAction> {
         CommandAction::done()
     }
 }

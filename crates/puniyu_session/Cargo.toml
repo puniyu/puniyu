@@ -1,5 +1,5 @@
 [package]
-name = "puniyu_context"
+name = "puniyu_session"
 version = "0.9.5"
 authors.workspace = true
 license.workspace = true
