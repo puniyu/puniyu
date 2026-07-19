@@ -1,24 +1,16 @@
-mod error;
-#[doc(inline)]
-pub use error::Error;
-mod registry;
-#[doc(inline)]
-pub use registry::AdapterRegistry;
-mod types;
-#[doc(inline)]
-pub use types::*;
-
 use puniyu_adapter_api::AdapterApi;
-use puniyu_config::Config;
+use puniyu_context::AdapterContext;
 use puniyu_error::AnyError;
-use salvo::Router;
 use semver::{Comparator, Op, Version, VersionReq};
-use std::sync::Arc;
 
 #[async_trait::async_trait]
-pub trait Adapter: Send + Sync + AdapterApi {
+pub trait Adapter: Send + Sync + AdapterApi + 'static {
+	/// 生命周期优先级，数值越小越先执行。默认 500。
+	fn priority(&self) -> u32 {
+		500
+	}
 	/// 所需核心版本范围
-	fn version_range(&self) -> VersionReq {
+	fn required_version(&self) -> VersionReq {
 		const VERSION: Version = puniyu_version::VERSION;
 		VersionReq {
 			comparators: vec![Comparator {
@@ -31,19 +23,21 @@ pub trait Adapter: Send + Sync + AdapterApi {
 		}
 	}
 
-	fn config(&self) -> Vec<Arc<dyn Config>> {
-		Vec::new()
-	}
+	/// 启动连接、监听循环和其他适配器自己拥有的运行时资源。
+	async fn on_start(&self, ctx: &AdapterContext) -> AnyError;
 
-	fn server(&self) -> Option<Router> {
-		None
-	}
-
-	async fn on_load(&self) -> AnyError {
+	/// 取得共享能力并完成跨组件装配。
+	async fn on_load(&self, _ctx: &AdapterContext) -> AnyError {
 		Ok(())
 	}
 
-	async fn on_unload(&self) -> AnyError {
+	/// 解除加载阶段完成的跨组件装配。
+	async fn on_unload(&self, _ctx: &AdapterContext) -> AnyError {
+		Ok(())
+	}
+
+	/// 停止运行时资源并等待其退出。
+	async fn on_stop(&self, _ctx: &AdapterContext) -> AnyError {
 		Ok(())
 	}
 }

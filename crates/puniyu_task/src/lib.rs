@@ -6,7 +6,7 @@
 //!
 //! - `Task` trait：统一定义任务名称、Cron 和执行逻辑
 //! - 标准 6 位 Cron：`秒 分 时 日 月 周`
-//! - `registry` feature：启用任务注册与调度能力
+//! - 实例级 [`TaskRegistry`]：隔离管理任务定义与调度器生命周期
 //!
 //! ## 示例
 //!
@@ -32,8 +32,6 @@
 //!     }
 //! }
 //! ```
-//!
-//! 说明：启用 `registry` feature 后可使用 [`TaskRegistry`] 进行注册、查询和卸载。
 
 mod error;
 pub use error::Error;
@@ -47,40 +45,6 @@ pub use types::*;
 
 use async_trait::async_trait;
 use puniyu_error::AnyError;
-use std::sync::Arc;
-use tokio::sync::{Mutex, SetOnce};
-use tokio_cron_scheduler::JobScheduler;
-
-static SCHEDULER: SetOnce<Arc<Mutex<JobScheduler>>> = SetOnce::const_new();
-
-/// 启动任务调度器
-///
-/// 多次调用不会重复初始化
-pub async fn start_scheduler() -> Result<(), Error> {
-	if SCHEDULER.get().is_some() {
-		return Ok(());
-	}
-
-	let sched = JobScheduler::new().await.map_err(|e| Error::Create(e.to_string()))?;
-	sched.start().await.map_err(|e| Error::Start(e.to_string()))?;
-	let arc = Arc::new(Mutex::new(sched));
-
-	SCHEDULER.set(arc).map_err(|_| Error::AlreadyInitialized)?;
-	Ok(())
-}
-
-/// 获取调度器
-pub fn get_scheduler() -> Result<Arc<Mutex<JobScheduler>>, Error> {
-	SCHEDULER.get().cloned().ok_or(Error::NotInitialized)
-}
-
-/// 停止任务调度器
-pub async fn stop_scheduler() -> Result<(), Error> {
-	let arc = get_scheduler()?;
-	let mut sched = arc.lock().await;
-	sched.shutdown().await.map_err(|e| Error::Shutdown(e.to_string()))?;
-	Ok(())
-}
 
 /// 定时任务 trait。
 ///

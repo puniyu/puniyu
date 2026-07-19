@@ -7,21 +7,22 @@ use puniyu_contact::GuildContact;
 use puniyu_element::receive::Elements;
 use puniyu_sender::Role;
 use puniyu_sender::{GuildSender, Sender};
+use smol_str::SmolStr;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct GuildMessage<'m> {
+pub struct GuildMessage {
 	time: u64,
-	event_id: &'m str,
-	message_id: &'m str,
-	bot: &'m Bot,
+	event_id: SmolStr,
+	message_id: SmolStr,
+	bot: Bot,
 	elements: EcoVec<Elements>,
-	contact: &'m GuildContact,
-	sender: &'m GuildSender,
+	contact: GuildContact,
+	sender: GuildSender,
 }
 
 impl_message!(GuildMessage, GuildContact, GuildSender, SubEventType::Guild);
 
-impl GuildMessage<'_> {
+impl GuildMessage {
 	/// 获取频道 ID
 	pub fn guild_id(&self) -> &str {
 		self.contact.peer()

@@ -5,7 +5,6 @@
 //! ## 特性
 //!
 //! - 提供 [`Command`] trait 定义命令行为
-//! - 提供 `CommandRegistry` 管理命令注册与查询
 //! - 复用 `puniyu_command_types` 中的参数、权限和动作类型
 //! - 支持命令别名、优先级和权限控制
 //!
@@ -38,16 +37,11 @@
 //! }
 //! ```
 
-mod error;
-pub use error::Error as CommandError;
-mod registry;
-
-use async_trait::async_trait;
-pub use registry::CommandRegistry;
 mod types;
 #[doc(inline)]
 pub use types::*;
 
+use async_trait::async_trait;
 use puniyu_session::MessageSession;
 
 #[async_trait]

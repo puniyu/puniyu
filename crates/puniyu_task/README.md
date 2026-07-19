@@ -6,15 +6,15 @@
 
 - 提供 `Task` trait 统一定义任务
 - 支持 6 位标准 Cron：`秒 分 时 日 月 周`
-- 提供 `TaskRegistry` 管理任务注册（需启用 `registry` feature）
-- 提供 `init` 函数初始化任务调度
+- 提供实例级 `TaskRegistry` 管理任务注册与调度
+- 支持启动前登记任务，以及停止后重新创建调度器
 
 ## 快速开始
 
 ```rust
-use puniyu_task::{Task, init};
 use async_trait::async_trait;
-use puniyu_error::Result;
+use puniyu_error::AnyError;
+use puniyu_task::{Task, TaskRegistry};
 
 struct MyTask;
 
@@ -22,9 +22,11 @@ struct MyTask;
 impl Task for MyTask {
     fn name(&self) -> &'static str { "my_task" }
     fn cron(&self) -> &'static str { "0 0 3 * * *" }
-    async fn execute(&self) -> Result { Ok(()) }
+    async fn execute(&self) -> AnyError { Ok(()) }
 }
 
-// 初始化任务调度
-init();
+let registry = TaskRegistry::new();
+registry.register(1, MyTask).await?;
+registry.start().await?;
+registry.stop().await?;
 ```

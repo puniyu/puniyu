@@ -1,30 +1,25 @@
 # puniyu_server
 
-HTTP 服务能力库，基于 Actix Web 提供可直接运行的服务入口。
+基于 Salvo 的实例级 HTTP 服务能力库。
 
 ## 特性
 
-- 提供 `start_server`、`run_server`、`stop_server`、`restart_server`
-- 基于 Actix Web 提供统一服务能力
-- 支持命令行参数指定监听地址和端口
-- 支持 Logo 设置与获取（`set_logo` / `get_logo`）
+- `Server` 管理监听端口、连接和关闭流程
+- `Http` 支持动态添加 Router 和全局 Hoop
+- `HttpMount` 支持在不重启 Listener 的情况下卸载 HTTP 组件
+- 所有路由和运行状态均为实例级
 
 ## 快速开始
 
-```bash
-# 默认启动
-cargo run -p puniyu_server
-
-# 指定地址和端口
-cargo run -p puniyu_server -- --host 127.0.0.1 --port 33700
-```
-
 ```rust
-use puniyu_server::{run_server, stop_server};
+use puniyu_server::{Http, Server, ServerOptions};
+use salvo::Router;
 
-// 启动服务
-run_server("127.0.0.1", 33700).await;
+let http = Http::new();
+let server = Server::new(ServerOptions::default(), http.clone())?;
+server.start().await?;
 
-// 停止服务
-stop_server();
+let mount = http.router(|| Router::with_path("status").get(status));
+mount?.unmount()?;
+server.stop().await?;
 ```

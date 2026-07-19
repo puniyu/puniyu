@@ -15,7 +15,6 @@ use std::{ops::Deref, sync::Arc};
 
 use bytes::Bytes;
 use puniyu_adapter_api::AdapterApi;
-use puniyu_adapter_core::Adapter;
 use smol_str::SmolStr;
 
 #[derive(Clone)]
@@ -41,7 +40,7 @@ impl puniyu_core::bot::Bot for Bot {
 }
 
 impl Bot {
-	pub fn new(adapter: Arc<dyn Adapter>) -> Self {
+	pub fn new(adapter: Arc<dyn AdapterApi>) -> Self {
 		let account_info = adapter.account_info();
 
 		Self {

@@ -5,9 +5,9 @@
 //! ## 使用方式
 //!
 //! ```rust,ignore
-//! use puniyu_loader_builtin::BuiltinLoader;
+//! use puniyu_loader_builtin::Loader;
 //!
-//! let loader = BuiltinLoader::new()
+//! let loader = Loader::new()
 //!     .with_adapter(MyAdapter)
 //!     .with_plugin(MyPlugin);
 //! ```
@@ -15,17 +15,16 @@
 use async_trait::async_trait;
 use puniyu_adapter_core::Adapter;
 use puniyu_error::AnyError;
-use puniyu_loader::Loader;
 use puniyu_plugin_core::Plugin;
 use std::sync::Arc;
 
 #[derive(Default)]
-pub struct BuiltinLoader {
+pub struct Loader {
 	adapters: Vec<Arc<dyn Adapter>>,
 	plugins: Vec<Arc<dyn Plugin>>,
 }
 
-impl BuiltinLoader {
+impl Loader {
 	#[inline]
 	pub fn new() -> Self {
 		Self::default()
@@ -43,7 +42,7 @@ impl BuiltinLoader {
 }
 
 #[async_trait]
-impl Loader for BuiltinLoader {
+impl puniyu_loader::Loader for Loader {
 	fn name(&self) -> &str {
 		"builtin"
 	}

@@ -2,7 +2,9 @@ use crate::Task;
 use std::borrow::Cow;
 use std::sync::Arc;
 use std::time::Instant;
-use tokio_cron_scheduler::JobBuilder;
+use tokio_cron_scheduler::{Job, JobBuilder};
+
+use crate::Error;
 
 macro_rules! info {
     ($name:expr, $($arg:tt)*) => {
@@ -32,48 +34,45 @@ macro_rules! error {
 /// 任务信息
 #[derive(Clone)]
 pub struct TaskInfo {
-	/// 关联的插件 ID
-	pub plugin_id: u64,
+	/// 关联的 Scope ID
+	pub scope_id: u64,
 	/// 任务
 	pub task: Arc<dyn Task>,
 }
 
-impl From<&TaskInfo> for tokio_cron_scheduler::Job {
-	fn from(info: &TaskInfo) -> Self {
-		let task = info.task.clone();
-		let cron_str = task.cron().to_string();
-		let task_name = task.name().to_string();
-		JobBuilder::new()
-			.with_timezone(chrono::Local)
-			.with_cron_job_type()
-			.with_schedule(&cron_str)
-			.expect("Invalid cron schedule")
-			.with_run_async(Box::new(move |_uuid, _lock| {
-				let task_name = task_name.clone();
-				let task = task.clone();
-				Box::pin(async move {
-					info!(task_name, "开始执行");
+pub(crate) fn build_job(info: &TaskInfo) -> Result<Job, Error> {
+	let task = info.task.clone();
+	let cron_str = task.cron().to_string();
+	let task_name = task.name().to_string();
+	JobBuilder::new()
+		.with_timezone(chrono::Local)
+		.with_cron_job_type()
+		.with_schedule(&cron_str)
+		.map_err(|error| Error::InvalidSchedule {
+			task: task_name.clone(),
+			message: error.to_string(),
+		})?
+		.with_run_async(Box::new(move |_uuid, _lock| {
+			let task_name = task_name.clone();
+			let task = task.clone();
+			Box::pin(async move {
+				info!(task_name, "开始执行");
 
-					let start_time = Instant::now();
-					let result = task.execute().await;
-					let duration = start_time.elapsed().as_millis();
+				let start_time = Instant::now();
+				let result = task.execute().await;
+				let duration = start_time.elapsed().as_millis();
 
-					match result {
-						Ok(_) => info!(task_name, "执行完成,耗时: {}ms", duration),
-						Err(e) => error!(task_name, "执行失败,耗时: {}ms, 错误: {}", duration, e),
-					}
-				})
-			}))
-			.build()
-			.expect("Failed to create job")
-	}
-}
-
-impl From<TaskInfo> for tokio_cron_scheduler::Job {
-	#[inline]
-	fn from(task: TaskInfo) -> Self {
-		tokio_cron_scheduler::Job::from(&task)
-	}
+				match result {
+					Ok(_) => info!(task_name, "执行完成,耗时: {}ms", duration),
+					Err(e) => error!(task_name, "执行失败,耗时: {}ms, 错误: {}", duration, e),
+				}
+			})
+		}))
+		.build()
+		.map_err(|error| Error::InvalidSchedule {
+			task: info.task.name().to_string(),
+			message: error.to_string(),
+		})
 }
 
 /// 任务 ID 枚举

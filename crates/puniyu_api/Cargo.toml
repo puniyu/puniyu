@@ -13,7 +13,7 @@ rust-version.workspace = true
 workspace = true
 
 [dependencies]
-puniyu_handler.workspace = true
+puniyu_middleware.workspace = true
 puniyu_config.workspace = true
 puniyu_bot.workspace = true
 puniyu_account.workspace = true

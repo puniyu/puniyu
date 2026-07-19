@@ -10,13 +10,13 @@ use puniyu_element::receive::Elements;
 use puniyu_sender::SenderType;
 
 #[derive(Debug, Clone)]
-pub enum Event<'e> {
-	Message(message::MessageEvent<'e>),
+pub enum Event {
+	Message(message::MessageEvent),
 }
 
-impl Event<'_> {
+impl Event {
 	#[allow(unreachable_patterns)]
-	pub fn as_message(&self) -> Option<&message::MessageEvent<'_>> {
+	pub fn as_message(&self) -> Option<&message::MessageEvent> {
 		match self {
 			Self::Message(event) => Some(event),
 			_ => None,
@@ -26,7 +26,7 @@ impl Event<'_> {
 
 macro_rules! forward_event {
 	($name:ident -> $ret:ty) => {
-		impl Event<'_> {
+		impl Event {
 			pub fn $name(&self) -> $ret {
 				match self {
 					Self::Message(e) => e.$name(),
@@ -39,7 +39,7 @@ macro_rules! forward_event {
 forward_event!(time -> u64);
 forward_event!(event_type -> crate::EventType);
 forward_event!(event_id -> &str);
-impl Event<'_> {
+impl Event {
 	pub fn sub_event(&self) -> SubEventType {
 		match self {
 			Self::Message(e) => SubEventType::Message(e.sub_event()),

@@ -50,7 +50,7 @@ pub struct GroupConfig {
 
 impl GroupConfig {
 	pub fn get() -> Self {
-		crate::ConfigRegistry::get(CONFIG_PATH.as_path())
+		crate::ConfigStore::get(CONFIG_PATH.as_path())
 			.unwrap_or_else(|| read_config::<Self>(CONFIG_PATH.as_path()).unwrap_or_default())
 	}
 

@@ -7,8 +7,8 @@ pub mod context;
 pub mod element;
 pub mod error;
 pub mod event;
-pub mod handler;
 pub mod message;
+pub mod middleware;
 pub mod path;
 pub mod sender;
 
@@ -30,7 +30,7 @@ macro_rules! pkg_version {
 			}
 			inner(s.as_bytes(), 0, 0)
 		}
-		$crate::semver::Version::new(
+		::semver::Version::new(
 			parse(env!("CARGO_PKG_VERSION_MAJOR")),
 			parse(env!("CARGO_PKG_VERSION_MINOR")),
 			parse(env!("CARGO_PKG_VERSION_PATCH")),

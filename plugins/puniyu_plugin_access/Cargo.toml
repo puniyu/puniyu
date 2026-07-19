@@ -1,0 +1,26 @@
+[package]
+name = "puniyu_plugin_access"
+version = "0.9.5"
+description = "puniyu 事件访问控制插件"
+authors.workspace = true
+license.workspace = true
+readme = "README.md"
+homepage.workspace = true
+repository.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+async-trait.workspace = true
+semver.workspace = true
+
+puniyu_api.workspace = true
+puniyu_config.workspace = true
+puniyu_context.workspace = true
+puniyu_error.workspace = true
+puniyu_middleware.workspace = true
+puniyu_plugin_core.workspace = true
+puniyu_plugin_event_bus.workspace = true

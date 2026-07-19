@@ -1,20 +1,20 @@
-use puniyu_loader::Loader;
-use puniyu_loader_builtin::BuiltinLoader;
+use puniyu_loader::Loader as _;
+use puniyu_loader_builtin::Loader;
 
 #[test]
 fn test_builtin_loader_default() {
-	let loader = BuiltinLoader::default();
+	let loader = Loader::default();
 	assert_eq!(loader.name(), "builtin");
 }
 
 #[test]
 fn test_builtin_loader_name() {
-	let loader = BuiltinLoader::new();
+	let loader = Loader::new();
 	assert_eq!(loader.name(), "builtin");
 }
 
 #[test]
 fn test_builtin_loader_new() {
-	let loader = BuiltinLoader::new();
+	let loader = Loader::new();
 	assert_eq!(loader.name(), "builtin");
 }

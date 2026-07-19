@@ -7,21 +7,22 @@ use puniyu_contact::GroupTempContact;
 use puniyu_element::receive::Elements;
 use puniyu_sender::Role;
 use puniyu_sender::{GroupTempSender, Sender};
+use smol_str::SmolStr;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct GroupTempMessage<'m> {
+pub struct GroupTempMessage {
 	time: u64,
-	event_id: &'m str,
-	message_id: &'m str,
-	bot: &'m Bot,
+	event_id: SmolStr,
+	message_id: SmolStr,
+	bot: Bot,
 	elements: EcoVec<Elements>,
-	contact: &'m GroupTempContact,
-	sender: &'m GroupTempSender,
+	contact: GroupTempContact,
+	sender: GroupTempSender,
 }
 
 impl_message!(GroupTempMessage, GroupTempContact, GroupTempSender, SubEventType::GroupTemp);
 
-impl GroupTempMessage<'_> {
+impl GroupTempMessage {
 	/// 获取群 ID
 	pub fn group_id(&self) -> &str {
 		self.contact.peer()

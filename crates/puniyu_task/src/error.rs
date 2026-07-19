@@ -3,14 +3,6 @@ use thiserror::Error;
 /// 调度器错误。
 #[derive(Error, Debug)]
 pub enum Error {
-	/// 调度器尚未初始化。
-	#[error("scheduler not initialized")]
-	NotInitialized,
-
-	/// 调度器已初始化，无法重复初始化。
-	#[error("scheduler already initialized")]
-	AlreadyInitialized,
-
 	/// 项不存在。
 	#[error("not found: {0}")]
 	NotFound(String),
@@ -18,6 +10,14 @@ pub enum Error {
 	/// 项已存在。
 	#[error("exists: {0}")]
 	Exists(String),
+
+	/// Cron 表达式无效。
+	#[error("invalid task schedule for '{task}': {message}")]
+	InvalidSchedule { task: String, message: String },
+
+	/// 任务 ID 已耗尽。
+	#[error("task id exhausted")]
+	IdExhausted,
 
 	/// 创建调度器失败。
 	#[error("failed to create scheduler: {0}")]

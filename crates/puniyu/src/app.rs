@@ -1,15 +1,20 @@
 mod adapter;
+mod error;
 mod plugin;
-#[cfg(feature = "server")]
-pub(crate) mod server;
+
+pub use adapter::AdapterState;
+pub use error::{
+	AdapterLifecycleFailure, AdapterLifecyclePhase, AppError, PluginLifecycleFailure,
+	PluginLifecyclePhase,
+};
+pub use plugin::PluginState;
 
 use bon::Builder;
 use convert_case::{Case, Casing};
 use log::{debug, info};
-use puniyu_dispatch::EventEmitter;
-use puniyu_handler::HandlerRegistry;
+use puniyu_context::AppContext;
 use puniyu_logger::owo_colors::OwoColorize;
-use std::io;
+use std::sync::Arc;
 use std::time::{Duration, Instant};
 
 type BoxFuture = std::pin::Pin<Box<dyn std::future::Future<Output = ()> + Send>>;
@@ -19,14 +24,6 @@ type AsyncFn = Box<dyn Fn() -> BoxFuture + Send + Sync>;
 pub struct App {
 	#[builder(field)]
 	loaders: Vec<Box<dyn puniyu_loader::Loader>>,
-	#[builder(field)]
-	handlers: Vec<Box<dyn puniyu_handler::Handler>>,
-	#[builder(field)]
-	#[cfg(feature = "server")]
-	routers: Vec<salvo::Router>,
-	#[builder(field)]
-	#[cfg(feature = "server")]
-	hoops: Vec<server::ArcHandler>,
 	#[builder(field)]
 	on_start: Option<AsyncFn>,
 	#[builder(field)]
@@ -40,23 +37,6 @@ impl<S: app_builder::State> AppBuilder<S> {
 		self.loaders.push(Box::new(loader));
 		self
 	}
-	pub fn handler(mut self, handler: impl puniyu_handler::Handler + 'static) -> Self {
-		self.handlers.push(Box::new(handler));
-		self
-	}
-
-	#[cfg(feature = "server")]
-	pub fn router(mut self, router: salvo::Router) -> Self {
-		self.routers.push(router);
-		self
-	}
-
-	#[cfg(feature = "server")]
-	pub fn hoop(mut self, hoop: impl salvo::Handler + 'static) -> Self {
-		self.hoops.push(server::ArcHandler::new(hoop));
-		self
-	}
-
 	pub fn on_start<F, Fut>(mut self, f: F) -> Self
 	where
 		F: Fn() -> Fut + Send + Sync + 'static,
@@ -77,96 +57,92 @@ impl<S: app_builder::State> AppBuilder<S> {
 }
 
 impl App {
-	pub async fn run(self) -> io::Result<()> {
+	pub async fn run(self) -> Result<(), AppError> {
+		let Self { loaders, on_start, on_exit, name } = self;
 		let start_time = Instant::now();
-		let cwd_dir = Box::leak(Box::new(std::env::current_dir()?));
-		puniyu_app::App::init(self.name, cwd_dir);
-		if let Some(callback) = self.on_start {
+		if let Some(callback) = on_start {
 			(callback)().await;
 		}
-		init_dir().await?;
 
-		debug!("handlers loading...");
-		for handler in self.handlers {
-			let name = handler.name();
-			match HandlerRegistry::register(handler) {
-				Ok(_) => debug!("handler '{}' loaded", name),
-				Err(e) => log::error!("failed to register handler '{}': {}", name, e),
-			}
-		}
-		debug!("handlers loaded");
+		let app_ctx = Arc::new(AppContext::new());
 
-		if let Err(e) = puniyu_task::start_scheduler().await {
-			log::error!("failed to start task scheduler: {}", e);
-		}
-
-		for loader in self.loaders {
-			debug!("adapters loading...");
-			match loader.adapters().await {
-				Ok(adapters) => {
-					for adapter in adapters {
-						if let Err(e) = adapter::init(adapter).await {
-							log::error!("failed to init adapter: {}", e);
-						}
-					}
-				}
-				Err(e) => log::error!("failed to discover adapters: {}", e),
-			}
-			debug!("adapters loaded");
-
-			debug!("plugins loading...");
-			match loader.plugins().await {
-				Ok(plugins) => {
-					for plugin in plugins {
-						if let Err(e) = plugin::init(plugin).await {
-							log::error!("failed to init plugin: {}", e);
-						}
-					}
-				}
-				Err(e) => log::error!("failed to discover plugins: {}", e),
-			}
-			debug!("plugins loaded");
+		let mut discovered_adapters = Vec::new();
+		let mut discovered_plugins = Vec::new();
+		for loader in loaders {
+			let loader_name = loader.name().to_string();
+			debug!("components discovering from loader '{loader_name}'...");
+			let adapters = loader.adapters().await.map_err(|source| AppError::LoaderDiscovery {
+				loader: loader_name.clone(),
+				component: "adapters",
+				source,
+			})?;
+			discovered_adapters.extend(adapters);
+			let plugins = loader.plugins().await.map_err(|source| AppError::LoaderDiscovery {
+				loader: loader_name.clone(),
+				component: "plugins",
+				source,
+			})?;
+			discovered_plugins.extend(plugins);
+			debug!("components discovered from loader '{loader_name}'");
 		}
 
-		if let Err(e) = EventEmitter::run() {
-			log::error!("failed to start EventEmitter: {}", e);
-		}
+		let mut plugin_runtime =
+			plugin::PluginRuntime::new(Arc::clone(&app_ctx), discovered_plugins)?;
+		plugin_runtime.start().await?;
+		plugin_runtime.load().await?;
 
-		info!("adapters: {}", puniyu_adapter_core::AdapterRegistry::all().len());
-		info!("plugins: {}", puniyu_plugin_core::PluginRegistry::all().len());
-		info!("commands: {}", puniyu_command::CommandRegistry::all().len());
-		info!("tasks: {}", puniyu_task::TaskRegistry::all().len());
-		info!("handlers: {}", puniyu_handler::HandlerRegistry::all().len());
-		
+		let mut adapter_runtime =
+			adapter::AdapterRuntime::new(Arc::clone(&app_ctx), discovered_adapters);
+		for failure in adapter_runtime.start().await {
+			log_adapter_failure(&failure);
+		}
+		for failure in adapter_runtime.load().await {
+			log_adapter_failure(&failure);
+		}
 
 		info!(
 			"{} initialized in {}",
-			self.name.fg_rgb::<64, 224, 208>(),
+			name.fg_rgb::<64, 224, 208>(),
 			format_duration(start_time.elapsed()).fg_rgb::<255, 127, 80>()
 		);
 
-		#[cfg(feature = "server")]
-		{
-			self.routers.into_iter().for_each(puniyu_server::App::router);
-			self.hoops.into_iter().for_each(puniyu_server::App::hoop);
-			let config = puniyu_config::app::AppConfig::get().server();
-			tokio::spawn(puniyu_server::start_server(config.host(), config.port()));
-		}
-		tokio::signal::ctrl_c().await?;
+		let mut primary_error = tokio::signal::ctrl_c().await.err().map(AppError::Io);
 		info!("Puniyu stopping...");
-		puniyu_server::stop_server().await?;
-		debug!("Server stopped");
-		if let Some(callback) = self.on_exit {
+
+		let adapter_failures = adapter_runtime.shutdown().await;
+		if !adapter_failures.is_empty() {
+			let error = AppError::AdapterShutdown(adapter_failures);
+			if primary_error.is_none() {
+				primary_error = Some(error);
+			} else {
+				log::error!("failed to shutdown adapters: {error}");
+			}
+		}
+		if let Err(error) = plugin_runtime.shutdown().await {
+			if primary_error.is_none() {
+				primary_error = Some(error);
+			} else {
+				log::error!("failed to shutdown plugins: {error}");
+			}
+		}
+		if let Some(callback) = on_exit {
 			(callback)().await;
 		}
 		let uptime = start_time.elapsed();
 		info!(
 			"{} uptime: {}",
-			self.name.to_case(Case::Lower).fg_rgb::<64, 224, 208>(),
+			name.to_case(Case::Lower).fg_rgb::<64, 224, 208>(),
 			format_duration(uptime).fg_rgb::<255, 127, 80>()
 		);
-		Ok(())
+		match primary_error {
+			Some(error) => Err(error),
+			None => Ok(()),
+		}
 	}
+}
+
+fn log_adapter_failure(failure: &AdapterLifecycleFailure) {
+	log::error!("adapter '{}' {} failed: {}", failure.adapter, failure.phase, failure.message);
 }
 fn format_duration(duration: Duration) -> String {
 	let mins = duration.as_secs() / 60;
@@ -179,28 +155,4 @@ fn format_duration(duration: Duration) -> String {
 		(0, _, _) => format!("{}s", secs as f64 + ms as f64 / 1000.0),
 		(_, _, _) => format!("{mins}m {secs}s"),
 	}
-}
-async fn init_dir() -> io::Result<()> {
-	let dirs = vec![
-		puniyu_path::app_dir(),
-		puniyu_path::adapter_dir(),
-		puniyu_path::data_dir(),
-		puniyu_path::config_dir(),
-		puniyu_path::resource_dir(),
-		puniyu_path::plugin_dir(),
-		puniyu_path::log_dir(),
-		puniyu_path::temp_dir(),
-		puniyu_path::plugin::config_dir(),
-		puniyu_path::plugin::data_dir(),
-		puniyu_path::plugin::resource_dir(),
-		puniyu_path::plugin::temp_dir(),
-		puniyu_path::adapter::config_dir(),
-		puniyu_path::adapter::data_dir(),
-		puniyu_path::adapter::resource_dir(),
-		puniyu_path::adapter::temp_dir(),
-	];
-	for dir in dirs {
-		tokio::fs::create_dir_all(dir).await?;
-	}
-	Ok(())
 }

@@ -1,12 +1,4 @@
 #![allow(clippy::unwrap_used)]
-
-mod load;
-mod log;
-
-use std::io;
-
-use bytes::Bytes;
-use salvo::Router;
 use semver::Version;
 
 pub(crate) const NAME: &str = "puniyu";
@@ -15,16 +7,27 @@ pub(crate) const ASSETS: &[u8] =
 	include_bytes!(concat!(env!("CARGO_MANIFEST_DIR"), "/assets/logo.png"));
 
 #[tokio::main]
-async fn main() -> io::Result<()> {
+async fn main() -> Result<(), puniyu::AppError> {
+	let cwd_dir = Box::leak(Box::new(std::env::current_dir()?));
 	puniyu::App::builder()
 		.name(NAME)
-		.handler(puniyu_handler_log::LogHandler)
-		.handler(puniyu_handler_access::AccessHandler)
-		.handler(puniyu_handler_command::CommandHandler)
-		.router(Router::with_path("logo").get(puniyu_server_router::logo::logo))
-		.hoop(puniyu_server_middleware::AccessLog)
-		.hoop(puniyu_server_middleware::Logo::new(Bytes::from_static(ASSETS)))
-		.on_start(load::load)
+		.loader(
+			puniyu_loader_builtin::Loader::new()
+				.with_plugin(
+					puniyu_plugin_puniyu::Plugin::with_name(NAME)
+						.with_cwd_dir(cwd_dir)
+						.with_version(VERSION)
+						.with_git_sha(env!("VERGEN_GIT_SHA"))
+						.with_repo(env!("CARGO_PKG_REPOSITORY")),
+				)
+				.with_plugin(puniyu_plugin_log::Plugin)
+				.with_plugin(puniyu_plugin_server::Plugin)
+				.with_plugin(puniyu_plugin_logo::Plugin::with_logo(ASSETS))
+				.with_plugin(puniyu_plugin_event_bus::Plugin)
+				.with_plugin(puniyu_plugin_access::Plugin)
+				.with_plugin(puniyu_plugin_command::Plugin)
+				.with_plugin(puniyu_plugin_task::Plugin),
+		)
 		.build()
 		.run()
 		.await

@@ -83,6 +83,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2a4385e2e34eb35d6b3efe798b9eb88096925d87726c0798709bf56d9ed84af3"
 
 [[package]]
+name = "arc-swap"
+version = "1.9.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c049c0be4daef0b145cb3555416b3b8ef5b7888a38aea1a3a155801fe7b0810b"
+dependencies = [
+ "rustversion",
+]
+
+[[package]]
 name = "async-trait"
 version = "0.1.89"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1748,18 +1757,14 @@ dependencies = [
  "puniyu_adapter_core",
  "puniyu_api",
  "puniyu_app",
- "puniyu_command",
- "puniyu_config",
- "puniyu_dispatch",
+ "puniyu_context",
  "puniyu_error",
- "puniyu_handler",
  "puniyu_loader",
  "puniyu_logger",
  "puniyu_path",
  "puniyu_plugin_core",
- "puniyu_server",
- "puniyu_task",
- "salvo",
+ "puniyu_version",
+ "thiserror",
  "tokio",
 ]
 
@@ -1794,22 +1799,11 @@ name = "puniyu_adapter_core"
 version = "0.9.5"
 dependencies = [
  "async-trait",
- "bytes",
- "const-str",
- "puniyu_account",
  "puniyu_adapter_api",
- "puniyu_adapter_types",
- "puniyu_config",
- "puniyu_contact",
+ "puniyu_context",
  "puniyu_error",
- "puniyu_message",
  "puniyu_version",
- "salvo",
  "semver",
- "serde_json",
- "thiserror",
- "tokio",
- "toml",
 ]
 
 [[package]]
@@ -1840,8 +1834,8 @@ dependencies = [
  "puniyu_element",
  "puniyu_error",
  "puniyu_event",
- "puniyu_handler",
  "puniyu_message",
+ "puniyu_middleware",
  "puniyu_path",
  "puniyu_sender",
  "puniyu_session",
@@ -1850,6 +1844,9 @@ dependencies = [
 [[package]]
 name = "puniyu_app"
 version = "0.9.5"
+dependencies = [
+ "semver",
+]
 
 [[package]]
 name = "puniyu_binaries"
@@ -1857,18 +1854,19 @@ version = "0.9.5"
 dependencies = [
  "bytes",
  "convert_case",
- "figlet-rs",
  "puniyu",
- "puniyu_handler_access",
- "puniyu_handler_command",
- "puniyu_handler_log",
+ "puniyu_loader_builtin",
  "puniyu_logger",
  "puniyu_path",
- "puniyu_server",
- "puniyu_server_middleware",
- "puniyu_server_router",
+ "puniyu_plugin_access",
+ "puniyu_plugin_command",
+ "puniyu_plugin_event_bus",
+ "puniyu_plugin_log",
+ "puniyu_plugin_logo",
+ "puniyu_plugin_puniyu",
+ "puniyu_plugin_server",
+ "puniyu_plugin_task",
  "puniyu_version",
- "salvo",
  "semver",
  "tokio",
  "vergen-git2",
@@ -1880,7 +1878,6 @@ version = "0.9.5"
 dependencies = [
  "bytes",
  "puniyu_adapter_api",
- "puniyu_adapter_core",
  "puniyu_adapter_types",
  "puniyu_contact",
  "puniyu_core",
@@ -1900,7 +1897,6 @@ dependencies = [
  "puniyu_command_types",
  "puniyu_error",
  "puniyu_session",
- "thiserror",
 ]
 
 [[package]]
@@ -1954,6 +1950,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "puniyu_context"
+version = "0.9.5"
+dependencies = [
+ "puniyu_middleware",
+ "smol_str",
+ "thiserror",
+]
+
+[[package]]
 name = "puniyu_cooldown"
 version = "0.9.5"
 dependencies = [
@@ -1967,16 +1972,6 @@ dependencies = [
  "bytes",
  "serde",
  "serde_json",
-]
-
-[[package]]
-name = "puniyu_dispatch"
-version = "0.9.5"
-dependencies = [
- "puniyu_event",
- "puniyu_handler",
- "thiserror",
- "tokio",
 ]
 
 [[package]]
@@ -2007,54 +2002,8 @@ dependencies = [
  "puniyu_element",
  "puniyu_sender",
  "serde",
+ "smol_str",
  "strum 0.28.0",
-]
-
-[[package]]
-name = "puniyu_handler"
-version = "0.9.5"
-dependencies = [
- "async-trait",
- "puniyu_event",
- "thiserror",
-]
-
-[[package]]
-name = "puniyu_handler_access"
-version = "0.9.5"
-dependencies = [
- "async-trait",
- "puniyu_config",
- "puniyu_handler",
-]
-
-[[package]]
-name = "puniyu_handler_command"
-version = "0.9.5"
-dependencies = [
- "async-trait",
- "log",
- "puniyu_command",
- "puniyu_command_parser",
- "puniyu_config",
- "puniyu_cooldown",
- "puniyu_event",
- "puniyu_handler",
- "puniyu_logger",
- "puniyu_session",
-]
-
-[[package]]
-name = "puniyu_handler_log"
-version = "0.9.5"
-dependencies = [
- "async-trait",
- "log",
- "puniyu_core",
- "puniyu_element",
- "puniyu_event",
- "puniyu_handler",
- "puniyu_logger",
 ]
 
 [[package]]
@@ -2070,7 +2019,7 @@ dependencies = [
 
 [[package]]
 name = "puniyu_loader_builtin"
-version = "0.9.3"
+version = "0.9.5"
 dependencies = [
  "async-trait",
  "puniyu_adapter_core",
@@ -2108,6 +2057,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "puniyu_middleware"
+version = "0.9.5"
+dependencies = [
+ "async-trait",
+ "puniyu_event",
+ "thiserror",
+]
+
+[[package]]
 name = "puniyu_path"
 version = "0.9.5"
 dependencies = [
@@ -2115,20 +2073,158 @@ dependencies = [
 ]
 
 [[package]]
+name = "puniyu_plugin_access"
+version = "0.9.5"
+dependencies = [
+ "async-trait",
+ "puniyu_api",
+ "puniyu_config",
+ "puniyu_context",
+ "puniyu_error",
+ "puniyu_middleware",
+ "puniyu_plugin_core",
+ "puniyu_plugin_event_bus",
+ "semver",
+]
+
+[[package]]
+name = "puniyu_plugin_command"
+version = "0.9.5"
+dependencies = [
+ "async-trait",
+ "log",
+ "puniyu_api",
+ "puniyu_command",
+ "puniyu_command_parser",
+ "puniyu_config",
+ "puniyu_context",
+ "puniyu_cooldown",
+ "puniyu_error",
+ "puniyu_event",
+ "puniyu_logger",
+ "puniyu_middleware",
+ "puniyu_plugin_core",
+ "puniyu_plugin_event_bus",
+ "puniyu_session",
+ "semver",
+ "thiserror",
+]
+
+[[package]]
 name = "puniyu_plugin_core"
 version = "0.9.5"
 dependencies = [
  "async-trait",
- "const-str",
- "puniyu_command",
- "puniyu_config",
+ "puniyu_context",
  "puniyu_error",
- "puniyu_server",
- "puniyu_task",
  "puniyu_version",
+ "semver",
+]
+
+[[package]]
+name = "puniyu_plugin_event_bus"
+version = "0.9.5"
+dependencies = [
+ "async-trait",
+ "puniyu_api",
+ "puniyu_context",
+ "puniyu_error",
+ "puniyu_event",
+ "puniyu_middleware",
+ "puniyu_plugin_core",
+ "semver",
+ "smol_str",
+ "thiserror",
+ "tokio",
+]
+
+[[package]]
+name = "puniyu_plugin_log"
+version = "0.9.5"
+dependencies = [
+ "async-trait",
+ "client-ip",
+ "log",
+ "puniyu_api",
+ "puniyu_app",
+ "puniyu_config",
+ "puniyu_context",
+ "puniyu_core",
+ "puniyu_element",
+ "puniyu_error",
+ "puniyu_event",
+ "puniyu_logger",
+ "puniyu_middleware",
+ "puniyu_path",
+ "puniyu_plugin_core",
+ "puniyu_plugin_event_bus",
+ "puniyu_server",
  "salvo",
  "semver",
- "thiserror",
+]
+
+[[package]]
+name = "puniyu_plugin_logo"
+version = "0.9.5"
+dependencies = [
+ "async-trait",
+ "bytes",
+ "puniyu_api",
+ "puniyu_context",
+ "puniyu_error",
+ "puniyu_path",
+ "puniyu_plugin_core",
+ "puniyu_server",
+ "salvo",
+ "semver",
+ "tokio",
+]
+
+[[package]]
+name = "puniyu_plugin_puniyu"
+version = "0.9.5"
+dependencies = [
+ "async-trait",
+ "convert_case",
+ "figlet-rs",
+ "log",
+ "puniyu_api",
+ "puniyu_app",
+ "puniyu_config",
+ "puniyu_context",
+ "puniyu_error",
+ "puniyu_logger",
+ "puniyu_path",
+ "puniyu_plugin_core",
+ "semver",
+ "tokio",
+]
+
+[[package]]
+name = "puniyu_plugin_server"
+version = "0.9.5"
+dependencies = [
+ "async-trait",
+ "puniyu_api",
+ "puniyu_config",
+ "puniyu_context",
+ "puniyu_error",
+ "puniyu_plugin_core",
+ "puniyu_server",
+ "semver",
+]
+
+[[package]]
+name = "puniyu_plugin_task"
+version = "0.9.5"
+dependencies = [
+ "async-trait",
+ "puniyu_api",
+ "puniyu_context",
+ "puniyu_error",
+ "puniyu_plugin_core",
+ "puniyu_task",
+ "semver",
 ]
 
 [[package]]
@@ -2147,27 +2243,12 @@ dependencies = [
 name = "puniyu_server"
 version = "0.9.5"
 dependencies = [
+ "arc-swap",
  "log",
  "puniyu_logger",
  "salvo",
  "thiserror",
-]
-
-[[package]]
-name = "puniyu_server_middleware"
-version = "0.9.5"
-dependencies = [
- "client-ip",
- "log",
- "puniyu_logger",
- "salvo",
-]
-
-[[package]]
-name = "puniyu_server_router"
-version = "0.9.5"
-dependencies = [
- "salvo",
+ "tokio",
 ]
 
 [[package]]

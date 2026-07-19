@@ -1,62 +1,69 @@
-use salvo::conn::TcpListener;
-use salvo::prelude::*;
+use crate::dispatcher::HttpDispatcher;
+use crate::{Error, Http, ServerOptions};
+use salvo::conn::{Listener, TcpListener};
+use salvo::prelude::{Router, Service};
 use salvo::server::ServerHandle;
+use std::net::SocketAddr;
+use std::sync::Mutex;
+use tokio::task::JoinHandle;
 
-use crate::registry::ServerRegistry;
-use std::io;
-use std::net::{IpAddr, SocketAddr};
-use std::sync::{LazyLock, Mutex};
-
-macro_rules! info {
-    ($($arg:tt)*) => {
-        {
-            {
-                use ::puniyu_logger::owo_colors::OwoColorize;
-                let prefix = "Server".fg_rgb::<132,112,255>();
-                ::log::info!("[{}] {}", prefix, format!($($arg)*))
-            }
-        }
-    };
+struct Running {
+	handle: ServerHandle,
+	task: JoinHandle<()>,
 }
 
-static SERVER_HANDLE: LazyLock<Mutex<Option<ServerHandle>>> = LazyLock::new(|| Mutex::new(None));
+pub struct Server {
+	options: ServerOptions,
+	http: Http,
+	runtime: Mutex<Option<Running>>,
+}
 
-pub async fn start_server(host: IpAddr, port: u16) -> io::Result<()> {
-	{
-		let guard = SERVER_HANDLE.lock().map_err(|e| io::Error::other(e.to_string()))?;
-		if guard.is_some() {
-			return Err(io::Error::new(io::ErrorKind::AlreadyExists, "Server already running"));
+impl Server {
+	pub fn new(options: ServerOptions, http: Http) -> Result<Self, Error> {
+		http.attach()?;
+		Ok(Self { options, http, runtime: Mutex::new(None) })
+	}
+
+	pub async fn start(&self) -> Result<(), Error> {
+		self.http.begin_start()?;
+		let address = SocketAddr::new(self.options.host, self.options.port);
+		let listener = TcpListener::new(address)
+			.try_bind()
+			.await
+			.map_err(|error| Error::Bind(error.to_string()))?;
+		let dispatcher = HttpDispatcher::new(self.http.inner.clone());
+		let entry = Router::with_path("{**path}").goal(dispatcher);
+		let service = Service::new(entry);
+		let server = salvo::Server::new(listener);
+		let handle = server.handle();
+		let task = tokio::spawn(server.serve(service));
+
+		let mut runtime = self.runtime.lock().map_err(|_| Error::Poisoned)?;
+		if runtime.is_some() {
+			handle.stop_forceful();
+			return Err(Error::AlreadyRunning);
 		}
+		*runtime = Some(Running { handle, task });
+		self.http.mark_running();
+		log::info!("Server running on {address}");
+		Ok(())
 	}
 
-	info!("Server running on {}:{}", host, port);
-
-	let listener = TcpListener::new(SocketAddr::new(host, port)).bind().await;
-	let inner = crate::app::take();
-	let mut router = Router::new();
-	router = inner.routers.into_iter().fold(router, Router::push);
-	for info in ServerRegistry::take_all() {
-		router = router.push(info.router);
+	pub fn drain(&self) -> Result<(), Error> {
+		self.http.drain()?;
+		if let Some(running) = self.runtime.lock().map_err(|_| Error::Poisoned)?.as_ref() {
+			running.handle.stop_graceful(Some(self.options.shutdown_timeout));
+		}
+		Ok(())
 	}
-	let mut service = Service::new(router);
-	service.hoops.extend(inner.hoops);
 
-	let server = Server::new(listener);
-	let handle = server.handle();
-
-	SERVER_HANDLE.lock().map_err(|e| io::Error::other(e.to_string()))?.replace(handle);
-
-	server.serve(service).await;
-	Ok(())
-}
-
-pub async fn stop_server() -> io::Result<()> {
-	let handle = SERVER_HANDLE
-		.lock()
-		.map_err(|e| io::Error::other(e.to_string()))?
-		.take()
-		.ok_or_else(|| io::Error::new(io::ErrorKind::NotFound, "Server not running"))?;
-
-	handle.stop_forceful();
-	Ok(())
+	pub async fn stop(&self) -> Result<(), Error> {
+		let _ = self.drain();
+		let running = self.runtime.lock().map_err(|_| Error::Poisoned)?.take();
+		if let Some(running) = running {
+			running.task.await?;
+		}
+		self.http.mark_stopped();
+		Ok(())
+	}
 }

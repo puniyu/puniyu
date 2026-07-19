@@ -4,8 +4,8 @@ mod error;
 pub mod friend;
 pub mod group;
 pub use error::Error;
-mod registry;
-pub use registry::ConfigRegistry;
+pub mod store;
+pub use store::ConfigStore;
 mod common;
 
 mod types;

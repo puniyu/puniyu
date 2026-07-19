@@ -1,14 +1,15 @@
 # puniyu_command
 
-命令系统库，统一命令定义、元信息与注册表管理。
+命令系统库，统一命令定义与元信息。
 
 ## 特性
 
 - 提供 `Command` trait 定义命令行为
-- 提供 `CommandRegistry` 管理命令注册（需启用 `registry` feature）
 - 提供 `has_permission!` 宏判断权限
 - 支持命令别名、优先级和权限控制
 - 提供 `Arg`、`ArgValue`、`Permission`、`CommandAction` 等类型
+
+实例级命令注册与事件处理由 `puniyu_plugin_command::CommandRegistry` 提供。
 
 ## 快速开始
 

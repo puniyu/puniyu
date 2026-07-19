@@ -40,33 +40,33 @@ pub enum SubEventType {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub enum MessageEvent<'e> {
-	Friend(FriendMessage<'e>),
-	Group(GroupMessage<'e>),
-	GroupTemp(GroupTempMessage<'e>),
-	Guild(GuildMessage<'e>),
+pub enum MessageEvent {
+	Friend(FriendMessage),
+	Group(GroupMessage),
+	GroupTemp(GroupTempMessage),
+	Guild(GuildMessage),
 }
 
-impl MessageEvent<'_> {
-	pub fn as_friend(&self) -> Option<&FriendMessage<'_>> {
+impl MessageEvent {
+	pub fn as_friend(&self) -> Option<&FriendMessage> {
 		match self {
 			MessageEvent::Friend(e) => Some(e),
 			_ => None,
 		}
 	}
-	pub fn as_group(&self) -> Option<&GroupMessage<'_>> {
+	pub fn as_group(&self) -> Option<&GroupMessage> {
 		match self {
 			MessageEvent::Group(e) => Some(e),
 			_ => None,
 		}
 	}
-	pub fn as_group_temp(&self) -> Option<&GroupTempMessage<'_>> {
+	pub fn as_group_temp(&self) -> Option<&GroupTempMessage> {
 		match self {
 			MessageEvent::GroupTemp(e) => Some(e),
 			_ => None,
 		}
 	}
-	pub fn as_guild(&self) -> Option<&GuildMessage<'_>> {
+	pub fn as_guild(&self) -> Option<&GuildMessage> {
 		match self {
 			MessageEvent::Guild(e) => Some(e),
 			_ => None,
@@ -76,7 +76,7 @@ impl MessageEvent<'_> {
 
 macro_rules! forward_event {
 	($name:ident -> $ret:ty) => {
-		impl MessageEvent<'_> {
+		impl MessageEvent {
 			pub fn $name(&self) -> $ret {
 				match self {
 					Self::Friend(m) => m.$name(),
@@ -96,7 +96,7 @@ forward_event!(sub_event -> SubEventType);
 forward_event!(bot -> &Bot);
 forward_event!(self_id -> &str);
 forward_event!(user_id -> &str);
-impl MessageEvent<'_> {
+impl MessageEvent {
 	pub fn contact(&self) -> ContactType {
 		match self {
 			Self::Friend(m) => ContactType::Friend(m.contact()),
@@ -106,7 +106,7 @@ impl MessageEvent<'_> {
 		}
 	}
 }
-impl MessageEvent<'_> {
+impl MessageEvent {
 	pub fn sender(&self) -> SenderType {
 		match self {
 			Self::Friend(m) => SenderType::Friend(m.sender()),
@@ -161,7 +161,7 @@ macro_rules! impl_message {
 		$sender:ty,
 		$sub_event:expr
 	) => {
-		impl<'e> puniyu_core::event::EventBase for $name<'e> {
+		impl puniyu_core::event::EventBase for $name {
 			type Bot = puniyu_bot::Bot;
 			type Contact = $contact;
 			type Sender = $sender;
@@ -175,13 +175,13 @@ macro_rules! impl_message {
 				$crate::EventType::Message
 			}
 			fn event_id(&self) -> &str {
-				self.event_id
+				&self.event_id
 			}
 			fn sub_event(&self) -> $crate::message::SubEventType {
 				$sub_event
 			}
 			fn bot(&self) -> &puniyu_bot::Bot {
-				self.bot
+				&self.bot
 			}
 			fn user_id(&self) -> &str {
 				self.sender.user_id()
@@ -194,9 +194,9 @@ macro_rules! impl_message {
 			}
 		}
 
-		impl<'m> $crate::message::MessageBase for $name<'m> {
+		impl $crate::message::MessageBase for $name {
 			fn message_id(&self) -> &str {
-				self.message_id
+				&self.message_id
 			}
 			fn elements(&self) -> &ecow::EcoVec<puniyu_element::receive::Elements> {
 				&self.elements

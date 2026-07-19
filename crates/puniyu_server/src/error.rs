@@ -1,17 +1,21 @@
 use thiserror::Error;
 
-/// 注册表错误。
 #[derive(Error, Debug)]
 pub enum Error {
-	/// 未找到指定项。
-	#[error("not found: {0}")]
-	NotFound(String),
-
-	/// 项已存在。
-	#[error("exists: {0}")]
-	Exists(String),
-
-	/// IO 错误。
-	#[error("io error: {0}")]
-	Io(#[from] std::io::Error),
+	#[error("http capability is already attached to a server")]
+	AlreadyAttached,
+	#[error("server is already running")]
+	AlreadyRunning,
+	#[error("http capability is not running")]
+	NotRunning,
+	#[error("server is draining")]
+	Draining,
+	#[error("http mount id exhausted")]
+	MountIdExhausted,
+	#[error("server state lock is poisoned")]
+	Poisoned,
+	#[error("server bind failed: {0}")]
+	Bind(String),
+	#[error("server task failed: {0}")]
+	Task(#[from] tokio::task::JoinError),
 }

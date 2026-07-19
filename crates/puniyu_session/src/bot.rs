@@ -2,20 +2,24 @@ use puniyu_bot::Bot;
 use std::ops::Deref;
 
 /// 机器人会话
-#[derive(Clone, Copy)]
-pub struct BotSession<'c> {
-	inner: &'c Bot,
+#[derive(Clone)]
+pub struct BotSession {
+	inner: Bot,
 }
 
-impl<'c> BotSession<'c> {
-	pub fn new(bot: &'c Bot) -> Self {
-		Self { inner: bot }
+impl BotSession {
+	pub fn new(bot: &Bot) -> Self {
+		Self { inner: bot.clone() }
+	}
+
+	pub fn bot(&self) -> &Bot {
+		&self.inner
 	}
 }
 
-impl Deref for BotSession<'_> {
+impl Deref for BotSession {
 	type Target = Bot;
 	fn deref(&self) -> &Self::Target {
-		self.inner
+		&self.inner
 	}
 }

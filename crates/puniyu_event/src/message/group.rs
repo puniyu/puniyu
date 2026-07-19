@@ -11,21 +11,22 @@ use puniyu_bot::Bot;
 use puniyu_contact::GroupContact;
 use puniyu_element::receive::Elements;
 use puniyu_sender::{GroupSender, Sender};
+use smol_str::SmolStr;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct GroupMessage<'m> {
+pub struct GroupMessage {
 	time: u64,
-	event_id: &'m str,
-	message_id: &'m str,
-	bot: &'m Bot,
+	event_id: SmolStr,
+	message_id: SmolStr,
+	bot: Bot,
 	elements: EcoVec<Elements>,
-	contact: &'m GroupContact,
-	sender: &'m GroupSender,
+	contact: GroupContact,
+	sender: GroupSender,
 }
 
 impl_message!(GroupMessage, GroupContact, GroupSender, SubEventType::Group);
 
-impl GroupMessage<'_> {
+impl GroupMessage {
 	/// 获取群 ID
 	pub fn group_id(&self) -> &str {
 		self.contact.peer()
