@@ -47,11 +47,11 @@ impl Plugin {
 	fn with(self, f: impl FnOnce(&mut Inner)) -> Self {
 		let mut guard = INFO.lock().expect("puniyu info lock poisoned");
 		let mut info = guard.take().unwrap_or(Inner {
-			name: "",
+			name: env!("CARGO_PKG_NAME"),
 			cwd_dir: &CWD_DIR,
-			version: Version::new(0, 0, 0),
-			git_sha: "",
-			repo: "",
+			version: puniyu_version::VERSION,
+			git_sha: "unknown",
+			repo: env!("CARGO_PKG_REPOSITORY"),
 		});
 		f(&mut info);
 		guard.replace(info);

@@ -23,7 +23,7 @@ async fn main() -> Result<(), puniyu::AppError> {
 				.with_plugin(puniyu_plugin_log::Plugin)
 				.with_plugin(puniyu_plugin_server::Plugin)
 				.with_plugin(puniyu_plugin_logo::Plugin::with_logo(ASSETS))
-				.with_plugin(puniyu_plugin_event_bus::Plugin)
+				.with_plugin(puniyu_plugin_event::Plugin)
 				.with_plugin(puniyu_plugin_access::Plugin)
 				.with_plugin(puniyu_plugin_command::Plugin)
 				.with_plugin(puniyu_plugin_task::Plugin),

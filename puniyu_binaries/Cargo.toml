@@ -16,6 +16,7 @@ workspace = true
 name = "puniyu"
 path = "src/main.rs"
 
+
 [dependencies]
 bytes.workspace = true
 semver.workspace = true
@@ -33,7 +34,7 @@ puniyu_plugin_puniyu.workspace = true
 puniyu_plugin_log.workspace = true
 puniyu_plugin_access.workspace = true
 puniyu_plugin_command.workspace = true
-puniyu_plugin_event_bus.workspace = true
+puniyu_plugin_event.workspace = true
 puniyu_plugin_task.workspace = true
 puniyu_plugin_server.workspace = true
 puniyu_plugin_logo.workspace = true

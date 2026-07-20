@@ -1,5 +1,5 @@
 [package]
-name = "puniyu_plugin_event_bus"
+name = "puniyu_plugin_event"
 version = "0.9.5"
 authors.workspace = true
 license.workspace = true
@@ -13,7 +13,9 @@ rust-version.workspace = true
 workspace = true
 
 [dependencies]
+arc-swap.workspace = true
 async-trait.workspace = true
+parking_lot.workspace = true
 semver.workspace = true
 smol_str.workspace = true
 thiserror.workspace = true

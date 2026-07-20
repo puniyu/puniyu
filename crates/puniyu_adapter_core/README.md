@@ -21,7 +21,7 @@ impl Adapter for MyAdapter {
     }
 
     async fn on_load(&self, ctx: &AdapterContext) -> AnyError {
-        let event_bus = ctx.require::<EventBus>()?;
+		let emitter = ctx.require::<EventEmitter>()?;
         // 完成跨组件装配
         Ok(())
     }

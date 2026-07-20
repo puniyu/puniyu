@@ -111,7 +111,7 @@ graph TB
         direction LR
         Adapter["puniyu_adapter_core<br>适配器生命周期"]
         Plugin["puniyu_plugin_core<br>插件生命周期"]
-        EventBus["puniyu_plugin_event_bus<br>实例级事件总线"]
+        EventEmitter["puniyu_plugin_event<br>实例级事件发射器"]
         Cooldown["puniyu_cooldown<br>冷却管理"]
     end
 
@@ -136,7 +136,7 @@ graph TB
 |-------|------|------|
 | `puniyu_adapter_core` | 0.9.5 | Adapter 四段生命周期接口，由 App 的实例级 AdapterRuntime 编排 |
 | `puniyu_plugin_core` | 0.9.5 | Plugin 生命周期、依赖和版本约束接口 |
-| `puniyu_plugin_event_bus` | 0.9.5 | 实例级事件总线，负责 Middleware 洋葱链分发与停机排空 |
+| `puniyu_plugin_event` | 0.9.5 | 按事件类型组织 Middleware 洋葱链，并负责发射与停机排空 |
 | `puniyu_plugin_command` | 0.9.5 | 发布实例级命令注册能力并处理命令事件 |
 | `puniyu_cooldown` | 0.8.5 | 冷却管理库，用于控制命令或功能的触发频率 |
 | `puniyu_macros` | 0.8.7 | 过程宏库，提供 `#[plugin]`、`#[adapter]`、`#[command]`、`#[task]` 等声明式入口 |

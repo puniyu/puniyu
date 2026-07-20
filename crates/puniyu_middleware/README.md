@@ -9,7 +9,7 @@
 - Middleware 按优先级和注册顺序执行
 - 支持前置、后置和短路的洋葱调用链
 - 同一层重复调用 `next()` 时静默忽略后续调用
-- 通过 `puniyu_plugin_event_bus::EventBus` 注册和分发
+- 通过 `puniyu_plugin_event::EventEmitter` 按事件类型监听和分发
 
 ## 快速开始
 

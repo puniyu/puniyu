@@ -8,10 +8,10 @@ use {
 	log::info,
 	puniyu_core::event::EventBase,
 	puniyu_element::receive::Elements,
-	puniyu_event::message::MessageEvent,
+	puniyu_event::{EventType, message::MessageEvent},
 	puniyu_logger::owo_colors::OwoColorize,
 	puniyu_middleware::{Middleware, MiddlewareContext},
-	puniyu_plugin_event_bus::EventBus,
+	puniyu_plugin_event::EventEmitter,
 	std::sync::Arc,
 	std::time::Instant,
 };
@@ -48,8 +48,15 @@ impl puniyu_plugin_core::Plugin for Plugin {
 	async fn on_load(&self, ctx: &PluginContext) -> AnyError {
 		#[cfg(feature = "event_log")]
 		{
+			let emitter = ctx.require::<EventEmitter>()?;
 			let middleware: Arc<dyn Middleware> = Arc::new(EventLog);
-			ctx.require::<EventBus>()?.register(ctx, middleware)?;
+			emitter.on(EventType::Message, Arc::clone(&middleware))?;
+			if let Err(error) =
+				ctx.provide(Arc::new(EventLogInner { middleware: Arc::clone(&middleware) }))
+			{
+				emitter.off(EventType::Message, Arc::clone(&middleware));
+				return Err(Box::new(error));
+			}
 		}
 
 		#[cfg(feature = "access_log")]
@@ -64,7 +71,10 @@ impl puniyu_plugin_core::Plugin for Plugin {
 	async fn on_unload(&self, ctx: &PluginContext) -> AnyError {
 		#[cfg(feature = "event_log")]
 		{
-			ctx.require::<EventBus>()?.unregister(ctx)?;
+			let emitter = ctx.require::<EventEmitter>()?;
+			if let Some(inner) = ctx.remove::<Arc<EventLogInner>>() {
+				emitter.off(EventType::Message, Arc::clone(&inner.middleware));
+			}
 		}
 
 		#[cfg(feature = "access_log")]
@@ -102,6 +112,11 @@ fn log_init() {
 		.with_log_directory(log_path)
 		.with_retention_days(log_retention_days);
 	puniyu_logger::init(Some(options));
+}
+
+#[cfg(feature = "event_log")]
+struct EventLogInner {
+	middleware: Arc<dyn Middleware>,
 }
 
 #[cfg(feature = "event_log")]

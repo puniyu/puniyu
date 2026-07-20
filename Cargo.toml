@@ -82,7 +82,7 @@ puniyu_plugin_puniyu = { version = "0.9.5", path = "./plugins/puniyu_plugin_puni
 puniyu_plugin_log = { version = "0.9.5", path = "./plugins/puniyu_plugin_log" }
 puniyu_plugin_access = { version = "0.9.5", path = "./plugins/puniyu_plugin_access" }
 puniyu_plugin_command = { version = "0.9.5", path = "./plugins/puniyu_plugin_command" }
-puniyu_plugin_event_bus = { version = "0.9.5", path = "./plugins/puniyu_plugin_event_bus" }
+puniyu_plugin_event = { version = "0.9.5", path = "./plugins/puniyu_plugin_event" }
 puniyu_plugin_task = { version = "0.9.5", path = "./plugins/puniyu_plugin_task" }
 puniyu_plugin_server = { version = "0.9.5", path = "./plugins/puniyu_plugin_server" }
 puniyu_plugin_logo = { version = "0.9.5", path = "./plugins/puniyu_plugin_logo" }

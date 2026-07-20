@@ -1860,7 +1860,7 @@ dependencies = [
  "puniyu_path",
  "puniyu_plugin_access",
  "puniyu_plugin_command",
- "puniyu_plugin_event_bus",
+ "puniyu_plugin_event",
  "puniyu_plugin_log",
  "puniyu_plugin_logo",
  "puniyu_plugin_puniyu",
@@ -2081,9 +2081,10 @@ dependencies = [
  "puniyu_config",
  "puniyu_context",
  "puniyu_error",
+ "puniyu_event",
  "puniyu_middleware",
  "puniyu_plugin_core",
- "puniyu_plugin_event_bus",
+ "puniyu_plugin_event",
  "semver",
 ]
 
@@ -2104,7 +2105,7 @@ dependencies = [
  "puniyu_logger",
  "puniyu_middleware",
  "puniyu_plugin_core",
- "puniyu_plugin_event_bus",
+ "puniyu_plugin_event",
  "puniyu_session",
  "semver",
  "thiserror",
@@ -2122,10 +2123,12 @@ dependencies = [
 ]
 
 [[package]]
-name = "puniyu_plugin_event_bus"
+name = "puniyu_plugin_event"
 version = "0.9.5"
 dependencies = [
+ "arc-swap",
  "async-trait",
+ "parking_lot",
  "puniyu_api",
  "puniyu_context",
  "puniyu_error",
@@ -2157,7 +2160,7 @@ dependencies = [
  "puniyu_middleware",
  "puniyu_path",
  "puniyu_plugin_core",
- "puniyu_plugin_event_bus",
+ "puniyu_plugin_event",
  "puniyu_server",
  "salvo",
  "semver",
@@ -2196,6 +2199,7 @@ dependencies = [
  "puniyu_logger",
  "puniyu_path",
  "puniyu_plugin_core",
+ "puniyu_version",
  "semver",
  "tokio",
 ]

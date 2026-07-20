@@ -19,7 +19,7 @@ event_log = [
     "dep:puniyu_element",
     "dep:puniyu_event",
     "dep:puniyu_middleware",
-    "dep:puniyu_plugin_event_bus",
+    "dep:puniyu_plugin_event",
     "dep:puniyu_logger",
 ]
 access_log = [
@@ -44,7 +44,7 @@ puniyu_core = { workspace = true, optional = true }
 puniyu_element = { workspace = true, optional = true }
 puniyu_event = { workspace = true, optional = true }
 puniyu_middleware = { workspace = true, optional = true }
-puniyu_plugin_event_bus = { workspace = true, optional = true }
+puniyu_plugin_event = { workspace = true, optional = true }
 
 # always required
 puniyu_app.workspace = true
