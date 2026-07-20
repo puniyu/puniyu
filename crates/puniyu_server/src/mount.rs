@@ -1,30 +1,46 @@
 use crate::Error;
-use crate::http::{HttpInner, MountId};
-use std::sync::Weak;
+use crate::http::{HttpInner, MountContent, MountId};
+use std::sync::{Arc, Weak};
 
 pub struct HttpMount {
-	pub(crate) inner: Weak<HttpInner>,
-	pub(crate) id: MountId,
-	pub(crate) mounted: bool,
+	inner: Weak<HttpInner>,
+	content: MountContent,
+	id: Option<MountId>,
 }
 
 impl HttpMount {
-	pub fn unmount(mut self) -> Result<(), Error> {
-		if let Some(inner) = self.inner.upgrade() {
-			inner.unmount(self.id)?;
+	pub(crate) fn new(inner: &Arc<HttpInner>, content: MountContent) -> Self {
+		Self { inner: Arc::downgrade(inner), content, id: None }
+	}
+
+	pub fn mount(&mut self) -> Result<(), Error> {
+		if self.id.is_some() {
+			return Err(Error::AlreadyMounted);
 		}
-		self.mounted = false;
+		let inner = self.inner.upgrade().ok_or(Error::HttpUnavailable)?;
+		self.id = Some(inner.mount(self.content.clone())?);
 		Ok(())
+	}
+
+	pub fn unmount(&mut self) {
+		let Some(id) = self.id else {
+			return;
+		};
+		let Some(inner) = self.inner.upgrade() else {
+			self.id = None;
+			return;
+		};
+		inner.unmount(id);
+		self.id = None;
+	}
+
+	pub fn is_mounted(&self) -> bool {
+		self.id.is_some() && self.inner.strong_count() > 0
 	}
 }
 
 impl Drop for HttpMount {
 	fn drop(&mut self) {
-		if !self.mounted {
-			return;
-		}
-		if let Some(inner) = self.inner.upgrade() {
-			let _ = inner.unmount(self.id);
-		}
+		self.unmount();
 	}
 }

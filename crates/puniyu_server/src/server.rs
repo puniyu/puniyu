@@ -1,69 +1,124 @@
-use crate::dispatcher::HttpDispatcher;
+use crate::proxy::HttpServiceProxy;
 use crate::{Error, Http, ServerOptions};
 use salvo::conn::{Listener, TcpListener};
 use salvo::prelude::{Router, Service};
 use salvo::server::ServerHandle;
 use std::net::SocketAddr;
-use std::sync::Mutex;
+use tokio::sync::Mutex;
 use tokio::task::JoinHandle;
 
 struct Running {
 	handle: ServerHandle,
-	task: JoinHandle<()>,
+	task: JoinHandle<std::io::Result<()>>,
+}
+
+enum ServerState {
+	Idle,
+	Running(Running),
+	Draining(Running),
 }
 
 pub struct Server {
 	options: ServerOptions,
 	http: Http,
-	runtime: Mutex<Option<Running>>,
+	state: Mutex<ServerState>,
 }
 
 impl Server {
-	pub fn new(options: ServerOptions, http: Http) -> Result<Self, Error> {
-		http.attach()?;
-		Ok(Self { options, http, runtime: Mutex::new(None) })
+	pub fn new(options: ServerOptions) -> Self {
+		Self { options, http: Http::new(), state: Mutex::new(ServerState::Idle) }
+	}
+
+	pub fn http(&self) -> Http {
+		self.http.clone()
 	}
 
 	pub async fn start(&self) -> Result<(), Error> {
+		let mut state = self.state.lock().await;
+		if !matches!(*state, ServerState::Idle) {
+			return Err(Error::AlreadyRunning);
+		}
 		self.http.begin_start()?;
 		let address = SocketAddr::new(self.options.host, self.options.port);
-		let listener = TcpListener::new(address)
-			.try_bind()
-			.await
-			.map_err(|error| Error::Bind(error.to_string()))?;
-		let dispatcher = HttpDispatcher::new(self.http.inner.clone());
-		let entry = Router::with_path("{**path}").goal(dispatcher);
+		let listener = match TcpListener::new(address).try_bind().await {
+			Ok(listener) => listener,
+			Err(error) => {
+				self.http.abort_start();
+				return Err(Error::Bind(error.to_string()));
+			}
+		};
+		let proxy = HttpServiceProxy::new(self.http.inner.clone());
+		let entry = Router::with_path("{**path}").goal(proxy);
 		let service = Service::new(entry);
 		let server = salvo::Server::new(listener);
 		let handle = server.handle();
-		let task = tokio::spawn(server.serve(service));
 
-		let mut runtime = self.runtime.lock().map_err(|_| Error::Poisoned)?;
-		if runtime.is_some() {
-			handle.stop_forceful();
-			return Err(Error::AlreadyRunning);
+		if let Err(error) = self.http.mark_running() {
+			self.http.abort_start();
+			return Err(error);
 		}
-		*runtime = Some(Running { handle, task });
-		self.http.mark_running();
+		let task = tokio::spawn(server.try_serve(service));
+		*state = ServerState::Running(Running { handle, task });
 		log::info!("Server running on {address}");
 		Ok(())
 	}
 
-	pub fn drain(&self) -> Result<(), Error> {
-		self.http.drain()?;
-		if let Some(running) = self.runtime.lock().map_err(|_| Error::Poisoned)?.as_ref() {
-			running.handle.stop_graceful(Some(self.options.shutdown_timeout));
+	pub async fn drain(&self) -> Result<(), Error> {
+		let mut state = self.state.lock().await;
+		let current = std::mem::replace(&mut *state, ServerState::Idle);
+		match current {
+			ServerState::Idle => Err(Error::NotRunning),
+			ServerState::Draining(running) => {
+				*state = ServerState::Draining(running);
+				Ok(())
+			}
+			ServerState::Running(running) => {
+				if let Err(error) = self.http.drain() {
+					*state = ServerState::Running(running);
+					return Err(error);
+				}
+				running.handle.stop_graceful(Some(self.options.shutdown_timeout));
+				*state = ServerState::Draining(running);
+				Ok(())
+			}
 		}
-		Ok(())
 	}
 
 	pub async fn stop(&self) -> Result<(), Error> {
-		let _ = self.drain();
-		let running = self.runtime.lock().map_err(|_| Error::Poisoned)?.take();
-		if let Some(running) = running {
-			running.task.await?;
+		let mut state = self.state.lock().await;
+		let current = std::mem::replace(&mut *state, ServerState::Idle);
+		let running = match current {
+			ServerState::Idle => {
+				self.http.finish_stop();
+				return Ok(());
+			}
+			ServerState::Draining(running) => running,
+			ServerState::Running(running) => {
+				if let Err(error) = self.http.drain() {
+					*state = ServerState::Running(running);
+					return Err(error);
+				}
+				running.handle.stop_graceful(Some(self.options.shutdown_timeout));
+				running
+			}
+		};
+		let result = match running.task.await {
+			Ok(Ok(())) => Ok(()),
+			Ok(Err(error)) => Err(Error::Serve(error)),
+			Err(error) => Err(Error::Task(error)),
+		};
+		self.http.finish_stop();
+		result
+	}
+}
+
+impl Drop for Server {
+	fn drop(&mut self) {
+		self.http.finish_stop();
+		let state = std::mem::replace(self.state.get_mut(), ServerState::Idle);
+		if let ServerState::Running(running) | ServerState::Draining(running) = state {
+			running.handle.stop_forceful();
+			running.task.abort();
 		}
-		self.http.mark_stopped();
-		Ok(())
 	}
 }

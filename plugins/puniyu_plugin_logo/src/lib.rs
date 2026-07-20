@@ -50,9 +50,10 @@ impl puniyu_plugin_core::Plugin for Plugin {
 
 	async fn on_load(&self, ctx: &PluginContext) -> AnyError {
 		let data = ctx.require::<Logo>()?;
-		let mount = ctx
+		let mut mount = ctx
 			.require::<Http>()?
-			.router(move || Router::with_path("logo").get(LogoHandler(data.clone())))?;
+			.router(move || Router::with_path("logo").get(LogoHandler(data.clone())));
+		mount.mount()?;
 		ctx.provide(Arc::new(Inner { mount: Mutex::new(Some(mount)) }))?;
 		Ok(())
 	}
@@ -64,8 +65,8 @@ impl puniyu_plugin_core::Plugin for Plugin {
 				.lock()
 				.map_err(|_| std::io::Error::other("http mount lock is poisoned"))?
 				.take();
-			if let Some(mount) = mount {
-				mount.unmount()?;
+			if let Some(mut mount) = mount {
+				mount.unmount();
 			}
 		}
 		Ok(())

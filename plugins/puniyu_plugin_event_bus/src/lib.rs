@@ -102,7 +102,6 @@ impl EventBus {
 		Ok(())
 	}
 
-	/// 移除当前插件作用域注册的全部中间件。
 	pub fn unregister(&self, ctx: &PluginContext) -> Result<(), Error> {
 		let mut registry = self.inner.registry.write().map_err(|_| Error::Poisoned)?;
 		if matches!(self.inner.phase.load(Ordering::Acquire), STOPPING | UNLOADED) {

@@ -18,4 +18,5 @@ puniyu_logger.workspace = true
 salvo = { workspace = true, features = ["socket2"] }
 thiserror.workspace = true
 arc-swap.workspace = true
+parking_lot.workspace = true
 tokio = { workspace = true, features = ["rt", "sync", "time"] }

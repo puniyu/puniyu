@@ -2245,6 +2245,7 @@ version = "0.9.5"
 dependencies = [
  "arc-swap",
  "log",
+ "parking_lot",
  "puniyu_logger",
  "salvo",
  "thiserror",

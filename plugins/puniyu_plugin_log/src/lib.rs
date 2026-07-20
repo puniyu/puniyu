@@ -3,7 +3,6 @@ use puniyu_api::{pkg_name, pkg_version};
 use puniyu_context::PluginContext;
 use puniyu_error::AnyError;
 use semver::Version;
-
 #[cfg(feature = "event_log")]
 use {
 	log::info,
@@ -55,7 +54,8 @@ impl puniyu_plugin_core::Plugin for Plugin {
 
 		#[cfg(feature = "access_log")]
 		{
-			let mount = ctx.require::<Http>()?.hoop(AccessLog)?;
+			let mut mount = ctx.require::<Http>()?.hoop(AccessLog);
+			mount.mount()?;
 			ctx.provide(Arc::new(AccessLogInner { mount: Mutex::new(Some(mount)) }))?;
 		}
 		Ok(())
@@ -75,8 +75,8 @@ impl puniyu_plugin_core::Plugin for Plugin {
 					.lock()
 					.map_err(|_| std::io::Error::other("http mount lock is poisoned"))?
 					.take();
-				if let Some(mount) = mount {
-					mount.unmount()?;
+				if let Some(mut mount) = mount {
+					mount.unmount();
 				}
 			}
 		}
@@ -103,7 +103,6 @@ fn log_init() {
 		.with_retention_days(log_retention_days);
 	puniyu_logger::init(Some(options));
 }
-
 
 #[cfg(feature = "event_log")]
 #[derive(Debug, Default, Clone, Copy)]
@@ -200,7 +199,6 @@ fn format_element(element: &Elements) -> String {
 		Elements::Xml(value) => format!("xml:{}", value.data),
 	}
 }
-
 
 #[cfg(feature = "access_log")]
 struct AccessLogInner {

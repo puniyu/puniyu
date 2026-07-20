@@ -8,7 +8,6 @@ use semver::Version;
 use std::sync::Arc;
 use std::time::Duration;
 
-
 #[derive(Debug, Default, Clone, Copy)]
 pub struct Plugin;
 
@@ -32,15 +31,12 @@ impl puniyu_plugin_core::Plugin for Plugin {
 
 	async fn on_start(&self, ctx: &PluginContext) -> AnyError {
 		let config = AppConfig::get().server();
-		let http = Http::new();
-		let server = Server::new(
-			ServerOptions {
-				host: config.host(),
-				port: config.port(),
-				shutdown_timeout: Duration::from_secs(10),
-			},
-			http.clone(),
-		)?;
+		let server = Server::new(ServerOptions {
+			host: config.host(),
+			port: config.port(),
+			shutdown_timeout: Duration::from_secs(10),
+		});
+		let http = server.http();
 		server.start().await?;
 
 		if let Err(error) = ctx.provide(http) {
@@ -57,7 +53,7 @@ impl puniyu_plugin_core::Plugin for Plugin {
 	}
 
 	async fn on_unload(&self, ctx: &PluginContext) -> AnyError {
-		ctx.require::<Arc<Inner>>()?.server.drain()?;
+		ctx.require::<Arc<Inner>>()?.server.drain().await?;
 		Ok(())
 	}
 

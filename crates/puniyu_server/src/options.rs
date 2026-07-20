@@ -13,7 +13,7 @@ impl Default for ServerOptions {
 		Self {
 			host: IpAddr::V4(Ipv4Addr::LOCALHOST),
 			port: 10721,
-			shutdown_timeout: Duration::from_secs(30),
+			shutdown_timeout: Duration::from_secs(10),
 		}
 	}
 }

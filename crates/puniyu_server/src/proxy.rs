@@ -4,18 +4,18 @@ use salvo::http::StatusCode;
 use salvo::{Depot, FlowCtrl, Handler, Request, Response};
 use std::sync::Arc;
 
-pub(crate) struct HttpDispatcher {
+pub(crate) struct HttpServiceProxy {
 	inner: Arc<HttpInner>,
 }
 
-impl HttpDispatcher {
+impl HttpServiceProxy {
 	pub(crate) fn new(inner: Arc<HttpInner>) -> Self {
 		Self { inner }
 	}
 }
 
 #[async_trait]
-impl Handler for HttpDispatcher {
+impl Handler for HttpServiceProxy {
 	async fn handle(
 		&self,
 		req: &mut Request,
@@ -24,7 +24,7 @@ impl Handler for HttpDispatcher {
 		ctrl: &mut FlowCtrl,
 	) {
 		if !self.inner.is_running() {
-			res.status_code = Some(StatusCode::SERVICE_UNAVAILABLE);
+			res.status_code(StatusCode::SERVICE_UNAVAILABLE);
 			ctrl.skip_rest();
 			return;
 		}
