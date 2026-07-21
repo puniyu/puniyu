@@ -44,6 +44,7 @@ impl puniyu_plugin_core::Plugin for Plugin {
 
 	async fn on_start(&self, ctx: &PluginContext) -> AnyError {
 		let data = DATA.get().cloned().unwrap_or_default();
+		tokio::fs::write(puniyu_path::assets_dir().join("logo.png"), data.clone()).await?;
 		ctx.provide(Logo(data))?;
 		Ok(())
 	}

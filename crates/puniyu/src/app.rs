@@ -1,17 +1,7 @@
-mod adapter;
-mod error;
-mod plugin;
-
-pub use adapter::AdapterState;
-pub use error::{
-	AdapterLifecycleFailure, AdapterLifecyclePhase, AppError, PluginLifecycleFailure,
-	PluginLifecyclePhase,
-};
-pub use plugin::PluginState;
-
+use crate::runtime::{AdapterRuntime, PluginRuntime};
 use bon::Builder;
 use convert_case::{Case, Casing};
-use log::{debug, info};
+use log::info;
 use puniyu_context::AppContext;
 use puniyu_logger::owo_colors::OwoColorize;
 use std::sync::Arc;
@@ -57,9 +47,10 @@ impl<S: app_builder::State> AppBuilder<S> {
 }
 
 impl App {
-	pub async fn run(self) -> Result<(), AppError> {
+	pub async fn run(self) -> Result<(), std::io::Error> {
 		let Self { loaders, on_start, on_exit, name } = self;
 		let start_time = Instant::now();
+
 		if let Some(callback) = on_start {
 			(callback)().await;
 		}
@@ -70,35 +61,36 @@ impl App {
 		let mut discovered_plugins = Vec::new();
 		for loader in loaders {
 			let loader_name = loader.name().to_string();
-			debug!("components discovering from loader '{loader_name}'...");
-			let adapters = loader.adapters().await.map_err(|source| AppError::LoaderDiscovery {
-				loader: loader_name.clone(),
-				component: "adapters",
-				source,
-			})?;
-			discovered_adapters.extend(adapters);
-			let plugins = loader.plugins().await.map_err(|source| AppError::LoaderDiscovery {
-				loader: loader_name.clone(),
-				component: "plugins",
-				source,
-			})?;
-			discovered_plugins.extend(plugins);
-			debug!("components discovered from loader '{loader_name}'");
+			info!("discovering components from loader '{loader_name}'...");
+			match loader.adapters().await {
+				Ok(adapters) => {
+					info!("  found {} adapter(s)", adapters.len());
+					discovered_adapters.extend(adapters);
+				}
+				Err(e) => log::error!("  failed to discover adapters: {e}"),
+			}
+			match loader.plugins().await {
+				Ok(plugins) => {
+					info!("  found {} plugin(s)", plugins.len());
+					discovered_plugins.extend(plugins);
+				}
+				Err(e) => log::error!("  failed to discover plugins: {e}"),
+			}
 		}
 
-		let mut plugin_runtime =
-			plugin::PluginRuntime::new(Arc::clone(&app_ctx), discovered_plugins)?;
-		plugin_runtime.start().await?;
-		plugin_runtime.load().await?;
+		info!(
+			"starting {} plugin(s), {} adapter(s)...",
+			discovered_plugins.len(),
+			discovered_adapters.len()
+		);
 
-		let mut adapter_runtime =
-			adapter::AdapterRuntime::new(Arc::clone(&app_ctx), discovered_adapters);
-		for failure in adapter_runtime.start().await {
-			log_adapter_failure(&failure);
-		}
-		for failure in adapter_runtime.load().await {
-			log_adapter_failure(&failure);
-		}
+		let mut plugin_runtime = PluginRuntime::new(Arc::clone(&app_ctx), discovered_plugins);
+		plugin_runtime.start().await;
+		plugin_runtime.load().await;
+
+		let mut adapter_runtime = AdapterRuntime::new(Arc::clone(&app_ctx), discovered_adapters);
+		adapter_runtime.start().await;
+		adapter_runtime.load().await;
 
 		info!(
 			"{} initialized in {}",
@@ -106,44 +98,26 @@ impl App {
 			format_duration(start_time.elapsed()).fg_rgb::<255, 127, 80>()
 		);
 
-		let mut primary_error = tokio::signal::ctrl_c().await.err().map(AppError::Io);
-		info!("Puniyu stopping...");
+		tokio::signal::ctrl_c().await?;
+		info!("shutting down...");
 
-		let adapter_failures = adapter_runtime.shutdown().await;
-		if !adapter_failures.is_empty() {
-			let error = AppError::AdapterShutdown(adapter_failures);
-			if primary_error.is_none() {
-				primary_error = Some(error);
-			} else {
-				log::error!("failed to shutdown adapters: {error}");
-			}
-		}
-		if let Err(error) = plugin_runtime.shutdown().await {
-			if primary_error.is_none() {
-				primary_error = Some(error);
-			} else {
-				log::error!("failed to shutdown plugins: {error}");
-			}
-		}
+		adapter_runtime.shutdown().await;
+		plugin_runtime.shutdown().await;
+
 		if let Some(callback) = on_exit {
 			(callback)().await;
 		}
-		let uptime = start_time.elapsed();
+
 		info!(
 			"{} uptime: {}",
 			name.to_case(Case::Lower).fg_rgb::<64, 224, 208>(),
-			format_duration(uptime).fg_rgb::<255, 127, 80>()
+			format_duration(start_time.elapsed()).fg_rgb::<255, 127, 80>()
 		);
-		match primary_error {
-			Some(error) => Err(error),
-			None => Ok(()),
-		}
+
+		Ok(())
 	}
 }
 
-fn log_adapter_failure(failure: &AdapterLifecycleFailure) {
-	log::error!("adapter '{}' {} failed: {}", failure.adapter, failure.phase, failure.message);
-}
 fn format_duration(duration: Duration) -> String {
 	let mins = duration.as_secs() / 60;
 	let secs = duration.as_secs() % 60;

@@ -4,7 +4,7 @@ use puniyu_config::{ListConfig, app::AppConfig};
 use puniyu_context::PluginContext;
 use puniyu_error::AnyError;
 use puniyu_event::EventType;
-use puniyu_middleware::{Middleware, MiddlewareContext};
+use puniyu_handler::{Handler, HandlerContext};
 use puniyu_plugin_event::EventEmitter;
 use semver::Version;
 use std::sync::Arc;
@@ -30,10 +30,10 @@ impl puniyu_plugin_core::Plugin for Plugin {
 
 	async fn on_load(&self, ctx: &PluginContext) -> AnyError {
 		let emitter = ctx.require::<EventEmitter>()?;
-		let middleware: Arc<dyn Middleware> = Arc::new(AccessMiddleware);
-		emitter.on(EventType::Message, Arc::clone(&middleware))?;
-		if let Err(error) = ctx.provide(Arc::new(Inner { middleware: Arc::clone(&middleware) })) {
-			emitter.off(EventType::Message, Arc::clone(&middleware));
+		let handler: Arc<dyn Handler> = Arc::new(AccessHandler);
+		emitter.on(EventType::Message, Arc::clone(&handler))?;
+		if let Err(error) = ctx.provide(Arc::new(Inner { handler: Arc::clone(&handler) })) {
+			emitter.off(EventType::Message, Arc::clone(&handler));
 			return Err(Box::new(error));
 		}
 		Ok(())
@@ -42,21 +42,21 @@ impl puniyu_plugin_core::Plugin for Plugin {
 	async fn on_unload(&self, ctx: &PluginContext) -> AnyError {
 		let emitter = ctx.require::<EventEmitter>()?;
 		if let Some(inner) = ctx.remove::<Arc<Inner>>() {
-			emitter.off(EventType::Message, Arc::clone(&inner.middleware));
+			emitter.off(EventType::Message, Arc::clone(&inner.handler));
 		}
 		Ok(())
 	}
 }
 
 struct Inner {
-	middleware: Arc<dyn Middleware>,
+	handler: Arc<dyn Handler>,
 }
 
 #[derive(Debug, Default, Clone, Copy)]
-struct AccessMiddleware;
+struct AccessHandler;
 
 #[async_trait]
-impl Middleware for AccessMiddleware {
+impl Handler for AccessHandler {
 	fn name(&self) -> &'static str {
 		"access"
 	}
@@ -65,7 +65,7 @@ impl Middleware for AccessMiddleware {
 		200
 	}
 
-	async fn handle(&self, mut ctx: MiddlewareContext<'_>) {
+	async fn handle(&self, mut ctx: HandlerContext<'_>) {
 		let Some(message) = ctx.as_message() else {
 			ctx.next().await;
 			return;

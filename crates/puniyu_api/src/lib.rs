@@ -1,15 +1,10 @@
-pub mod account;
-pub mod bot;
-pub mod command;
-pub mod config;
 pub mod contact;
-pub mod context;
+pub mod session;
 pub mod element;
 pub mod error;
 pub mod event;
 pub mod message;
-pub mod middleware;
-pub mod path;
+pub mod handler;
 pub mod sender;
 
 #[macro_export]

@@ -10,7 +10,8 @@ pub struct AdapterContext {
 }
 
 impl AdapterContext {
-	pub fn new(app: Arc<AppContext>, scope_id: ScopeId, adapter_name: impl Into<SmolStr>) -> Self {
+	pub fn new(app: Arc<AppContext>, adapter_name: impl Into<SmolStr>) -> Self {
+		let scope_id = app.depot.new_scope();
 		Self { scoped: ScopedContext::new(app, scope_id), adapter_name: adapter_name.into() }
 	}
 

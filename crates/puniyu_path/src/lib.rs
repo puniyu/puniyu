@@ -55,7 +55,7 @@ pub fn data_dir() -> PathBuf {
 	app_dir().join("data")
 }
 
-/// 获取资源目录，格式为 `{app_dir}/resources`。
-pub fn resource_dir() -> PathBuf {
-	app_dir().join("resources")
+/// 获取资源目录，格式为 `{app_dir}/assets`。
+pub fn assets_dir() -> PathBuf {
+	app_dir().join("assets")
 }

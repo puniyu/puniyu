@@ -15,4 +15,4 @@ workspace = true
 [dependencies]
 smol_str.workspace = true
 thiserror.workspace = true
-puniyu_middleware.workspace = true
+puniyu_handler.workspace = true

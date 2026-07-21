@@ -16,6 +16,7 @@ doctest = false
 workspace = true
 
 [dependencies]
+convert_case.workspace = true
 puniyu_app.workspace = true
 
 [dev-dependencies]

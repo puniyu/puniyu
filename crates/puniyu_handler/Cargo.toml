@@ -1,5 +1,5 @@
 [package]
-name = "puniyu_middleware"
+name = "puniyu_handler"
 version = "0.9.5"
 authors.workspace = true
 license.workspace = true

@@ -15,6 +15,7 @@ workspace = true
 [dependencies]
 arc-swap.workspace = true
 async-trait.workspace = true
+log.workspace = true
 parking_lot.workspace = true
 semver.workspace = true
 smol_str.workspace = true
@@ -23,7 +24,9 @@ tokio = { workspace = true, features = ["sync"] }
 
 puniyu_api.workspace = true
 puniyu_context.workspace = true
+puniyu_element.workspace = true
 puniyu_error.workspace = true
 puniyu_event.workspace = true
-puniyu_middleware.workspace = true
+puniyu_logger.workspace = true
+puniyu_handler.workspace = true
 puniyu_plugin_core.workspace = true

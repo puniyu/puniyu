@@ -11,7 +11,8 @@ pub struct PluginContext {
 }
 
 impl PluginContext {
-	pub fn new(app: Arc<AppContext>, scope_id: ScopeId, plugin_name: impl Into<SmolStr>) -> Self {
+	pub fn new(app: Arc<AppContext>, plugin_name: impl Into<SmolStr>) -> Self {
+		let scope_id = app.depot.new_scope();
 		Self { scoped: ScopedContext::new(app, scope_id), plugin_name: plugin_name.into() }
 	}
 

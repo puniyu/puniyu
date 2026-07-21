@@ -18,20 +18,23 @@ path = "src/main.rs"
 
 
 [dependencies]
+log.workspace = true
 bytes.workspace = true
 semver.workspace = true
 convert_case.workspace = true
 
 tokio = { workspace = true, features = ["full"] }
+figlet-rs = { version = "1.0.0" }
 
+puniyu_app.workspace = true
+puniyu_config.workspace = true
 puniyu_version.workspace = true
 puniyu.workspace = true
 puniyu_path.workspace = true
 puniyu_logger.workspace = true
+
 puniyu_loader_builtin.workspace = true
 
-puniyu_plugin_puniyu.workspace = true
-puniyu_plugin_log.workspace = true
 puniyu_plugin_access.workspace = true
 puniyu_plugin_command.workspace = true
 puniyu_plugin_event.workspace = true

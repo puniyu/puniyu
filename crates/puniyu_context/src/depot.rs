@@ -2,20 +2,28 @@ use crate::{Error, ScopeId};
 use std::any::{Any, TypeId, type_name};
 use std::collections::HashMap;
 use std::sync::RwLock;
+use std::sync::atomic::{AtomicU64, Ordering};
 
 struct Entry {
 	owner: ScopeId,
 	value: Box<dyn Any + Send + Sync>,
 }
 
-#[derive(Default)]
 pub(crate) struct Depot {
 	map: RwLock<HashMap<TypeId, Entry>>,
+	next_scope_id: AtomicU64,
 }
 
 impl Depot {
 	pub fn new() -> Self {
-		Self::default()
+		Self {
+			map: RwLock::new(HashMap::new()),
+			next_scope_id: AtomicU64::new(1),
+		}
+	}
+
+	pub fn new_scope(&self) -> ScopeId {
+		ScopeId::new(self.next_scope_id.fetch_add(1, Ordering::Relaxed))
 	}
 
 	pub fn insert<V: Any + Send + Sync>(&self, owner: ScopeId, value: V) -> Result<(), Error> {

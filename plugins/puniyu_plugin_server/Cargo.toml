@@ -11,6 +11,9 @@ rust-version.workspace = true
 
 [dependencies]
 async-trait.workspace = true
+client-ip = { version = "0.2.1" }
+log.workspace = true
+salvo.workspace = true
 semver.workspace = true
 puniyu_api.workspace = true
 puniyu_config.workspace = true

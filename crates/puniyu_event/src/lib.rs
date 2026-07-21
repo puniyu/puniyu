@@ -2,6 +2,7 @@ pub mod message;
 mod types;
 #[doc(inline)]
 pub use types::*;
+pub use puniyu_core::event::EventBase;
 
 use ecow::EcoVec;
 use puniyu_bot::Bot;

@@ -15,18 +15,11 @@ workspace = true
 [dependencies]
 log.workspace = true
 convert_case.workspace = true
-async-trait.workspace = true
 bon.workspace = true
-tokio = { workspace = true, features = ["fs", "rt", "signal"] }
-thiserror.workspace = true
+tokio = { workspace = true, features = ["rt", "signal"] }
 
 puniyu_logger.workspace = true
 puniyu_context.workspace = true
-puniyu_app.workspace = true
 puniyu_loader.workspace = true
-puniyu_path.workspace = true
 puniyu_plugin_core.workspace = true
 puniyu_adapter_core.workspace = true
-puniyu_error.workspace = true
-puniyu_api.workspace = true
-puniyu_version.workspace = true

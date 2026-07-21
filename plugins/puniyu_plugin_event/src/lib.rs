@@ -4,32 +4,33 @@ use parking_lot::Mutex;
 use puniyu_api::{pkg_name, pkg_version};
 use puniyu_context::PluginContext;
 use puniyu_error::AnyError;
-use puniyu_event::{Event, EventType};
-use puniyu_middleware::{Middleware, MiddlewareContext};
+use puniyu_event::{Event, EventType, message::MessageEvent};
+use puniyu_handler::{Handler, HandlerContext};
+use puniyu_logger::owo_colors::OwoColorize;
 use semver::Version;
 use smol_str::SmolStr;
 use std::collections::{BTreeMap, HashMap};
 use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
 use std::sync::{Arc, Weak};
+use std::time::Instant;
 use thiserror::Error;
 use tokio::sync::Notify;
 
-pub const NAME: &str = "puniyu_plugin_event";
 
 #[derive(Debug, Error)]
 pub enum Error {
 	#[error("event emitter is not running")]
 	NotRunning,
-	#[error("middleware '{middleware}' is already listening to '{event_type}'")]
-	AlreadyListening { event_type: EventType, middleware: SmolStr },
-	#[error("event emitter middleware id exhausted")]
+	#[error("handler '{handler}' is already listening to '{event_type}'")]
+	AlreadyListening { event_type: EventType, handler: SmolStr },
+	#[error("event emitter handler id exhausted")]
 	IdExhausted,
 }
 
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
-struct MiddlewareId(u64);
+struct HandlerId(u64);
 
-impl MiddlewareId {
+impl HandlerId {
 	fn next(self) -> Option<Self> {
 		self.0.checked_add(1).map(Self)
 	}
@@ -37,17 +38,17 @@ impl MiddlewareId {
 
 struct Registration {
 	name: SmolStr,
-	middleware: Weak<dyn Middleware>,
+	handler: Weak<dyn Handler>,
 }
 
 #[derive(Default)]
 struct Topic {
-	entries: BTreeMap<(u32, MiddlewareId), Registration>,
+	entries: BTreeMap<(u32, HandlerId), Registration>,
 }
 
 impl Topic {
 	fn prune(&mut self) {
-		self.entries.retain(|_, entry| entry.middleware.strong_count() > 0);
+		self.entries.retain(|_, entry| entry.handler.strong_count() > 0);
 	}
 }
 
@@ -62,25 +63,25 @@ enum EventState {
 
 struct Registry {
 	state: EventState,
-	next_id: Option<MiddlewareId>,
+	next_id: Option<HandlerId>,
 	topics: HashMap<EventType, Topic>,
 }
 
 impl Default for Registry {
 	fn default() -> Self {
-		Self { state: EventState::Idle, next_id: Some(MiddlewareId(0)), topics: HashMap::new() }
+		Self { state: EventState::Idle, next_id: Some(HandlerId(0)), topics: HashMap::new() }
 	}
 }
 
 impl Registry {
-	fn allocate_id(&mut self) -> Result<MiddlewareId, Error> {
+	fn allocate_id(&mut self) -> Result<HandlerId, Error> {
 		let id = self.next_id.ok_or(Error::IdExhausted)?;
 		self.next_id = id.next();
 		Ok(id)
 	}
 }
 
-type Snapshot = HashMap<EventType, Vec<Weak<dyn Middleware>>>;
+type Snapshot = HashMap<EventType, Vec<Weak<dyn Handler>>>;
 
 struct Inner {
 	accepting: AtomicBool,
@@ -115,10 +116,10 @@ impl EventEmitter {
 	pub fn on(
 		&self,
 		event_type: EventType,
-		middleware: impl Into<Arc<dyn Middleware>>,
+		handler: impl Into<Arc<dyn Handler>>,
 	) -> Result<(), Error> {
-		let middleware = middleware.into();
-		let name = SmolStr::new(middleware.name());
+		let handler = handler.into();
+		let name = SmolStr::new(handler.name());
 		let mut registry = self.inner.registry.lock();
 		if registry.state != EventState::Running {
 			return Err(Error::NotRunning);
@@ -128,26 +129,26 @@ impl EventEmitter {
 			let topic = registry.topics.entry(event_type).or_default();
 			topic.prune();
 			if topic.entries.values().any(|entry| entry.name == name) {
-				return Err(Error::AlreadyListening { event_type, middleware: name });
+				return Err(Error::AlreadyListening { event_type, handler: name });
 			}
 		}
 
 		let id = registry.allocate_id()?;
 		registry.topics.entry(event_type).or_default().entries.insert(
-			(middleware.priority(), id),
-			Registration { name, middleware: Arc::downgrade(&middleware) },
+			(handler.priority(), id),
+			Registration { name, handler: Arc::downgrade(&handler) },
 		);
 		self.inner.publish(&registry);
 		Ok(())
 	}
 
-	pub fn off(&self, event_type: EventType, middleware: impl Into<Arc<dyn Middleware>>) {
-		let middleware = middleware.into();
-		let target = Arc::downgrade(&middleware);
+	pub fn off(&self, event_type: EventType, handler: impl Into<Arc<dyn Handler>>) {
+		let handler = handler.into();
+		let target = Arc::downgrade(&handler);
 		let mut registry = self.inner.registry.lock();
 		let remove_topic = if let Some(topic) = registry.topics.get_mut(&event_type) {
 			topic.entries.retain(|_, entry| {
-				entry.middleware.strong_count() > 0 && !Weak::ptr_eq(&entry.middleware, &target)
+				entry.handler.strong_count() > 0 && !Weak::ptr_eq(&entry.handler, &target)
 			});
 			topic.entries.is_empty()
 		} else {
@@ -163,13 +164,13 @@ impl EventEmitter {
 		let _guard = self.inner.enter()?;
 		let event_type = event.event_type();
 		let snapshot = self.inner.snapshot.load();
-		let middlewares = snapshot
+		let handlers = snapshot
 			.get(&event_type)
 			.into_iter()
 			.flatten()
 			.filter_map(Weak::upgrade)
 			.collect::<Vec<_>>();
-		MiddlewareContext::new(&event, &middlewares).next().await;
+		HandlerContext::new(&event, &handlers).next().await;
 		Ok(())
 	}
 
@@ -194,7 +195,6 @@ impl EventEmitter {
 					registry.state = EventState::Stopping;
 				}
 				EventState::Idle | EventState::Stopped => {
-					registry.state = EventState::Stopped;
 					registry.topics.clear();
 					self.inner.publish(&registry);
 					return;
@@ -223,13 +223,13 @@ impl Inner {
 			.topics
 			.iter()
 			.filter_map(|(event_type, topic)| {
-				let middlewares = topic
+				let handlers = topic
 					.entries
 					.values()
-					.filter(|entry| entry.middleware.strong_count() > 0)
-					.map(|entry| entry.middleware.clone())
+					.filter(|entry| entry.handler.strong_count() > 0)
+					.map(|entry| entry.handler.clone())
 					.collect::<Vec<_>>();
-				(!middlewares.is_empty()).then_some((*event_type, middlewares))
+				(!handlers.is_empty()).then_some((*event_type, handlers))
 			})
 			.collect();
 		self.snapshot.store(Arc::new(snapshot));
@@ -285,10 +285,135 @@ impl puniyu_plugin_core::Plugin for Plugin {
 		Ok(())
 	}
 
+	async fn on_load(&self, ctx: &PluginContext) -> AnyError {
+		let emitter = ctx.require::<EventEmitter>()?;
+		let handler: Arc<dyn Handler> = Arc::new(EventLog);
+		emitter.on(EventType::Message, Arc::clone(&handler))?;
+		if let Err(error) =
+			ctx.provide(Arc::new(EventLogInner { handler: Arc::clone(&handler) }))
+		{
+			emitter.off(EventType::Message, Arc::clone(&handler));
+			return Err(Box::new(error));
+		}
+		Ok(())
+	}
+
+	async fn on_unload(&self, ctx: &PluginContext) -> AnyError {
+		let emitter = ctx.require::<EventEmitter>()?;
+		if let Some(inner) = ctx.remove::<Arc<EventLogInner>>() {
+			emitter.off(EventType::Message, Arc::clone(&inner.handler));
+		}
+		Ok(())
+	}
+
 	async fn on_stop(&self, ctx: &PluginContext) -> AnyError {
 		if let Some(emitter) = ctx.remove::<EventEmitter>() {
 			emitter.stop().await;
 		}
 		Ok(())
+	}
+}
+
+struct EventLogInner {
+	handler: Arc<dyn Handler>,
+}
+
+#[derive(Debug, Default, Clone, Copy)]
+struct EventLog;
+
+#[async_trait]
+impl Handler for EventLog {
+	fn name(&self) -> &'static str {
+		"event_log"
+	}
+
+	fn priority(&self) -> u32 {
+		100
+	}
+
+	async fn handle(&self, mut ctx: HandlerContext<'_>) {
+		let Some(message) = ctx.as_message() else {
+			ctx.next().await;
+			return;
+		};
+
+		let event_id = message.event_id().to_owned();
+		log::info!("{}", format_message(message));
+		let started_at = Instant::now();
+		ctx.next().await;
+		let elapsed = started_at.elapsed().as_millis();
+		log::info!(
+			"[{}:{}] 处理完成, 耗时{}ms",
+			"Event".yellow(),
+			event_id.green(),
+			elapsed
+		);
+	}
+}
+
+fn format_message(event: &MessageEvent) -> String {
+	use puniyu_event::EventBase;
+
+	let raw_message =
+		event.elements().iter().map(format_element).collect::<Vec<_>>().join("");
+
+	if let Some(event) = event.as_group() {
+		return format!(
+			"[{}:{}][{}:{}-{}]: {}",
+			"Bot".yellow(),
+			event.self_id().green(),
+			"GroupMessage".yellow(),
+			event.group_id().green(),
+			event.user_id().green(),
+			raw_message
+		);
+	}
+	if let Some(event) = event.as_group_temp() {
+		return format!(
+			"[{}:{}][{}:{}-{}]: {}",
+			"Bot".yellow(),
+			event.self_id().green(),
+			"GroupTempMessage".yellow(),
+			event.group_id().green(),
+			event.user_id().green(),
+			raw_message
+		);
+	}
+	if let Some(event) = event.as_guild() {
+		return format!(
+			"[{}:{}][{}:{}-{}]: {}",
+			"Bot".yellow(),
+			event.self_id().green(),
+			"GuildMessage".yellow(),
+			event.guild_id().green(),
+			event.user_id().green(),
+			raw_message
+		);
+	}
+
+	format!(
+		"[{}:{}][{}:{}]: {}",
+		"Bot".yellow(),
+		event.self_id().green(),
+		"FriendMessage".yellow(),
+		event.user_id().green(),
+		raw_message
+	)
+}
+
+fn format_element(element: &puniyu_element::receive::Elements) -> String {
+	match element {
+		puniyu_element::receive::Elements::Text(value) => format!("text:{}", value.text),
+		puniyu_element::receive::Elements::At(value) => format!("at:{}", value.target_id),
+		puniyu_element::receive::Elements::Reply(value) => format!("reply:{}", value.message_id),
+		puniyu_element::receive::Elements::Face(value) => format!("face:{}", value.id),
+		puniyu_element::receive::Elements::Image(value) => {
+			format!("image:{}", value.summary.as_deref().unwrap_or(value.file_name.as_str()))
+		}
+		puniyu_element::receive::Elements::File(value) => format!("file:{}", value.file_name),
+		puniyu_element::receive::Elements::Video(value) => format!("video:{}", value.file_name),
+		puniyu_element::receive::Elements::Record(value) => format!("record:{}", value.file_name),
+		puniyu_element::receive::Elements::Json(value) => format!("json:{}", value.data),
+		puniyu_element::receive::Elements::Xml(value) => format!("xml:{}", value.data),
 	}
 }
