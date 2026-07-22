@@ -18,4 +18,4 @@ convert_case = { version = "0.11.0" }
 croner = { version = "3.0.1" }
 proc-macro2 = { version = "1.0.106" }
 quote = { version = "1.0.45" }
-syn = { version = "2", features = ["full"] }
+syn = { version = "3", features = ["full"] }
