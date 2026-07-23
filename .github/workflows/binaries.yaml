@@ -20,12 +20,12 @@ jobs:
 
     steps:
       - name: 检出仓库
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0 
 
       - name: 设置 rust
-        uses: puniyu/setup-rust@6207651cfeee834ef1c841252c3c6d25550a00ca # main
+        uses: puniyu/setup-rust@f5e7448bce67a5c83ac1d9a679fbaa1b1536c167 # main
         with:
           target: ${{ matrix.platform.target }}
           cache: true
@@ -64,12 +64,12 @@ jobs:
 
     steps:
       - name: 检出仓库
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0 
 
       - name: 设置 rust
-        uses: puniyu/setup-rust@6207651cfeee834ef1c841252c3c6d25550a00ca # main
+        uses: puniyu/setup-rust@f5e7448bce67a5c83ac1d9a679fbaa1b1536c167 # main
         with:
           target: ${{ matrix.platform.target }}
           cache: true
@@ -111,12 +111,12 @@ jobs:
 
     steps:
       - name: 检出仓库
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0 
 
       - name: 设置 rust
-        uses: puniyu/setup-rust@6207651cfeee834ef1c841252c3c6d25550a00ca # main
+        uses: puniyu/setup-rust@f5e7448bce67a5c83ac1d9a679fbaa1b1536c167 # main
         with:
           target: ${{ matrix.platform.target }}
           cache: true
@@ -161,7 +161,7 @@ jobs:
           path: .
 
       - name: 上传Release
-        uses: softprops/action-gh-release@718ea10b132b3b2eba29c1007bb80653f286566b # v3.0.1
+        uses: softprops/action-gh-release@3d0d9888cb7fd7b750713d6e236d1fcb99157228 # v3.0.2
         with:
           token: ${{ steps.app-token.outputs.token }}
           files: |
