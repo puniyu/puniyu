@@ -9,7 +9,7 @@ use strum::{Display, EnumString, IntoStaticStr};
 )]
 #[serde(rename_all = "lowercase")]
 #[strum(serialize_all = "lowercase")]
-pub enum ElemType {
+pub enum ArgType {
 	/// 字符串。
 	String,
 	/// 整数。
@@ -49,7 +49,7 @@ pub struct Arg<'a> {
 	/// 参数名。
 	pub name: Cow<'a, str>,
 	/// 参数类型。
-	pub arg_type: ElemType,
+	pub arg_type: ArgType,
 	/// 参数模式。
 	pub mode: ArgMode,
 	/// 是否必需。
@@ -66,7 +66,7 @@ impl<'a> Default for Arg<'a> {
 	fn default() -> Self {
 		Self {
 			name: Cow::Borrowed(""),
-			arg_type: ElemType::String,
+			arg_type: ArgType::String,
 			mode: ArgMode::Positional,
 			required: false,
 			short: None,
@@ -85,29 +85,29 @@ impl<'a> Arg<'a> {
 	/// 创建字符串参数
 	#[inline]
 	pub fn string(name: impl Into<Cow<'a, str>>) -> Self {
-		Self::new(name).with_type(ElemType::String)
+		Self::new(name).with_type(ArgType::String)
 	}
 
 	/// 创建整数参数
 	#[inline]
 	pub fn int(name: impl Into<Cow<'a, str>>) -> Self {
-		Self::new(name).with_type(ElemType::Int)
+		Self::new(name).with_type(ArgType::Int)
 	}
 
 	/// 创建浮点数参数
 	#[inline]
 	pub fn float(name: impl Into<Cow<'a, str>>) -> Self {
-		Self::new(name).with_type(ElemType::Float)
+		Self::new(name).with_type(ArgType::Float)
 	}
 
 	/// 创建布尔参数
 	#[inline]
 	pub fn bool(name: impl Into<Cow<'a, str>>) -> Self {
-		Self::new(name).with_type(ElemType::Bool)
+		Self::new(name).with_type(ArgType::Bool)
 	}
 
 	/// 设置参数类型
-	pub fn with_type(mut self, arg_type: ElemType) -> Self {
+	pub fn with_type(mut self, arg_type: ArgType) -> Self {
 		self.arg_type = arg_type;
 		self
 	}

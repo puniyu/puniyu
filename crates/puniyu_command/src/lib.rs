@@ -41,6 +41,8 @@ mod types;
 #[doc(inline)]
 pub use types::*;
 
+pub type CommandRegistry = puniyu_registry::Registry<std::sync::Arc<dyn Command>>;
+
 use async_trait::async_trait;
 use puniyu_session::MessageSession;
 

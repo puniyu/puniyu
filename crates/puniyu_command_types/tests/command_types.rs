@@ -2,15 +2,15 @@ use puniyu_command_types::*;
 
 #[test]
 fn test_elem_type() {
-	assert_eq!(ElemType::String, ElemType::String);
-	assert_eq!(ElemType::Int, ElemType::Int);
-	assert_eq!(ElemType::Float, ElemType::Float);
-	assert_eq!(ElemType::Bool, ElemType::Bool);
+	assert_eq!(ArgType::String, ArgType::String);
+	assert_eq!(ArgType::Int, ArgType::Int);
+	assert_eq!(ArgType::Float, ArgType::Float);
+	assert_eq!(ArgType::Bool, ArgType::Bool);
 }
 
 #[test]
 fn test_elem_type_copy() {
-	let a = ElemType::String;
+	let a = ArgType::String;
 	let b = a;
 	assert_eq!(a, b);
 }
@@ -19,25 +19,25 @@ fn test_elem_type_copy() {
 fn test_arg_string() {
 	let arg = Arg::string("name");
 	assert_eq!(arg.name.as_ref(), "name");
-	assert_eq!(arg.arg_type, ElemType::String);
+	assert_eq!(arg.arg_type, ArgType::String);
 }
 
 #[test]
 fn test_arg_int() {
 	let arg = Arg::int("count");
-	assert_eq!(arg.arg_type, ElemType::Int);
+	assert_eq!(arg.arg_type, ArgType::Int);
 }
 
 #[test]
 fn test_arg_float() {
 	let arg = Arg::float("price");
-	assert_eq!(arg.arg_type, ElemType::Float);
+	assert_eq!(arg.arg_type, ArgType::Float);
 }
 
 #[test]
 fn test_arg_bool() {
 	let arg = Arg::bool("flag");
-	assert_eq!(arg.arg_type, ElemType::Bool);
+	assert_eq!(arg.arg_type, ArgType::Bool);
 }
 
 #[test]

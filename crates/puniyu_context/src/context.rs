@@ -4,6 +4,8 @@ mod plugin;
 pub use plugin::PluginContext;
 mod adapter;
 pub use adapter::AdapterContext;
+mod service;
+pub use service::ServiceContext;
 
 use crate::Error;
 use crate::depot::Depot;

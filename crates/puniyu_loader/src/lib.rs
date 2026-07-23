@@ -6,6 +6,7 @@ use async_trait::async_trait;
 use puniyu_adapter_core::Adapter;
 use puniyu_error::AnyError;
 use puniyu_plugin_core::Plugin;
+use puniyu_service::Service;
 use std::sync::Arc;
 
 /// 组件加载器。
@@ -13,6 +14,11 @@ use std::sync::Arc;
 pub trait Loader: Send + Sync + 'static {
 	/// 加载器名称
 	fn name(&self) -> &str;
+
+	/// 发现服务
+	async fn services(&self) -> AnyError<Vec<Arc<dyn Service>>> {
+		Ok(Vec::new())
+	}
 
 	/// 发现适配器
 	async fn adapters(&self) -> AnyError<Vec<Arc<dyn Adapter>>> {

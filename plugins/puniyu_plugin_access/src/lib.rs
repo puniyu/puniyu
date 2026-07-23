@@ -5,14 +5,21 @@ use puniyu_context::PluginContext;
 use puniyu_error::AnyError;
 use puniyu_event::EventType;
 use puniyu_handler::{Handler, HandlerContext};
-use puniyu_plugin_event::EventEmitter;
+use puniyu_service::Service;
+use puniyu_service_event::EventEmitter;
 use semver::Version;
-use std::sync::Arc;
+use std::sync::{Arc, OnceLock};
 
-pub const NAME: &str = "puniyu_plugin_access";
+#[derive(Debug, Default)]
+pub struct Plugin {
+	inner: OnceLock<Arc<Inner>>,
+}
 
-#[derive(Debug, Default, Clone, Copy)]
-pub struct Plugin;
+impl Plugin {
+	pub fn new() -> Self {
+		Self::default()
+	}
+}
 
 #[async_trait]
 impl puniyu_plugin_core::Plugin for Plugin {
@@ -24,24 +31,21 @@ impl puniyu_plugin_core::Plugin for Plugin {
 		pkg_version!()
 	}
 
-	async fn on_start(&self, _ctx: &PluginContext) -> AnyError {
-		Ok(())
+	fn using(&self) -> Vec<&str> {
+		vec![puniyu_service_event::Service {}.name()]
 	}
 
 	async fn on_load(&self, ctx: &PluginContext) -> AnyError {
 		let emitter = ctx.require::<EventEmitter>()?;
 		let handler: Arc<dyn Handler> = Arc::new(AccessHandler);
 		emitter.on(EventType::Message, Arc::clone(&handler))?;
-		if let Err(error) = ctx.provide(Arc::new(Inner { handler: Arc::clone(&handler) })) {
-			emitter.off(EventType::Message, Arc::clone(&handler));
-			return Err(Box::new(error));
-		}
+		self.inner.set(Arc::new(Inner { handler: Arc::clone(&handler) })).ok();
 		Ok(())
 	}
 
 	async fn on_unload(&self, ctx: &PluginContext) -> AnyError {
 		let emitter = ctx.require::<EventEmitter>()?;
-		if let Some(inner) = ctx.remove::<Arc<Inner>>() {
+		if let Some(inner) = self.inner.get() {
 			emitter.off(EventType::Message, Arc::clone(&inner.handler));
 		}
 		Ok(())
@@ -50,6 +54,12 @@ impl puniyu_plugin_core::Plugin for Plugin {
 
 struct Inner {
 	handler: Arc<dyn Handler>,
+}
+
+impl std::fmt::Debug for Inner {
+	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+		f.debug_struct("Inner").field("handler", &"<handler>").finish()
+	}
 }
 
 #[derive(Debug, Default, Clone, Copy)]
@@ -71,7 +81,7 @@ impl Handler for AccessHandler {
 			return;
 		};
 
-		let app = AppConfig::get();
+		let app = AppConfig::from_path(puniyu_path::config_dir().join("app").with_extension("toml"));
 		let allowed = if let Some(group) = message.as_group() {
 			is_allowed(&app.group(), group.group_id())
 		} else if let Some(group) = message.as_group_temp() {

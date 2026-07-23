@@ -1,0 +1,23 @@
+[package]
+name = "puniyu_service_config"
+version = "0.9.5"
+authors.workspace = true
+license.workspace = true
+readme = "README.md"
+homepage.workspace = true
+repository.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+async-trait.workspace = true
+semver.workspace = true
+
+puniyu_api.workspace = true
+puniyu_config.workspace = true
+puniyu_context.workspace = true
+puniyu_error.workspace = true
+puniyu_service.workspace = true

@@ -3,9 +3,9 @@ mod executor;
 mod handler;
 mod invocation;
 mod policy;
-mod registry;
 
-pub use registry::{CommandRegistry, Error};
+pub use puniyu_command::CommandRegistry;
+use puniyu_service::Service;
 
 use async_trait::async_trait;
 use handler::CommandHandler;
@@ -14,14 +14,20 @@ use puniyu_context::PluginContext;
 use puniyu_error::AnyError;
 use puniyu_event::EventType;
 use puniyu_handler::Handler;
-use puniyu_plugin_event::EventEmitter;
+use puniyu_service_event::EventEmitter;
 use semver::Version;
-use std::sync::Arc;
+use std::sync::{Arc, OnceLock};
 
-pub const NAME: &str = "puniyu_plugin_command";
+#[derive(Debug, Default)]
+pub struct Plugin {
+	inner: OnceLock<Arc<Inner>>,
+}
 
-#[derive(Debug, Default, Clone, Copy)]
-pub struct Plugin;
+impl Plugin {
+	pub fn new() -> Self {
+		Self::default()
+	}
+}
 
 #[async_trait]
 impl puniyu_plugin_core::Plugin for Plugin {
@@ -33,10 +39,11 @@ impl puniyu_plugin_core::Plugin for Plugin {
 		pkg_version!()
 	}
 
-	async fn on_start(&self, ctx: &PluginContext) -> AnyError {
-		let registry = CommandRegistry::new();
-		ctx.provide(registry)?;
-		Ok(())
+	fn using(&self) -> Vec<&str> {
+		vec![
+			puniyu_service_command::Service.name(),
+			puniyu_service_event::Service.name(),
+		]
 	}
 
 	async fn on_load(&self, ctx: &PluginContext) -> AnyError {
@@ -44,24 +51,14 @@ impl puniyu_plugin_core::Plugin for Plugin {
 		let emitter = ctx.require::<EventEmitter>()?;
 		let handler: Arc<dyn Handler> = Arc::new(CommandHandler::new(registry.clone()));
 		emitter.on(EventType::Message, Arc::clone(&handler))?;
-		if let Err(error) = ctx.provide(Arc::new(Inner { handler: Arc::clone(&handler) })) {
-			emitter.off(EventType::Message, Arc::clone(&handler));
-			return Err(Box::new(error));
-		}
+		self.inner.set(Arc::new(Inner { handler: Arc::clone(&handler) })).ok();
 		Ok(())
 	}
 
 	async fn on_unload(&self, ctx: &PluginContext) -> AnyError {
 		let emitter = ctx.require::<EventEmitter>()?;
-		if let Some(inner) = ctx.remove::<Arc<Inner>>() {
+		if let Some(inner) = self.inner.get() {
 			emitter.off(EventType::Message, Arc::clone(&inner.handler));
-		}
-		Ok(())
-	}
-
-	async fn on_stop(&self, ctx: &PluginContext) -> AnyError {
-		if let Some(registry) = ctx.remove::<CommandRegistry>() {
-			registry.clear()?;
 		}
 		Ok(())
 	}
@@ -69,4 +66,10 @@ impl puniyu_plugin_core::Plugin for Plugin {
 
 struct Inner {
 	handler: Arc<dyn Handler>,
+}
+
+impl std::fmt::Debug for Inner {
+	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+		f.debug_struct("Inner").field("handler", &"<handler>").finish()
+	}
 }

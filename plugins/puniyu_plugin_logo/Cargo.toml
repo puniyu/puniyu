@@ -25,5 +25,5 @@ puniyu_error.workspace = true
 puniyu_path.workspace = true
 puniyu_plugin_core.workspace = true
 puniyu_server.workspace = true
-
-
+puniyu_service.workspace = true
+puniyu_service_server.workspace = true

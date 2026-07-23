@@ -1,24 +1,24 @@
 use async_trait::async_trait;
 use puniyu_api::pkg_version;
-use puniyu_context::PluginContext;
+use puniyu_context::ServiceContext;
 use puniyu_error::AnyError;
 use puniyu_task::TaskRegistry;
 use semver::Version;
 
-pub const NAME: &str = "puniyu_plugin_task";
+pub const NAME: &str = "puniyu_service_task";
 
 #[derive(Debug, Default, Clone, Copy)]
-pub struct Plugin;
+pub struct Service;
 
 #[async_trait]
-impl puniyu_plugin_core::Plugin for Plugin {
+impl puniyu_service::Service for Service {
 	fn name(&self) -> &str {
 		NAME
 	}
 	fn version(&self) -> Version {
 		pkg_version!()
 	}
-	async fn on_start(&self, ctx: &PluginContext) -> AnyError {
+	async fn setup(&self, ctx: &ServiceContext) -> AnyError {
 		let registry = TaskRegistry::new();
 		registry.start().await?;
 		if let Err(error) = ctx.provide(registry.clone()) {
@@ -27,7 +27,7 @@ impl puniyu_plugin_core::Plugin for Plugin {
 		}
 		Ok(())
 	}
-	async fn on_stop(&self, ctx: &PluginContext) -> AnyError {
+	async fn cleanup(&self, ctx: &ServiceContext) -> AnyError {
 		if let Some(registry) = ctx.remove::<TaskRegistry>() {
 			registry.stop().await?;
 		}

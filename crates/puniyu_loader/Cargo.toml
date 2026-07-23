@@ -17,6 +17,7 @@ async-trait.workspace = true
 puniyu_error.workspace = true
 puniyu_adapter_core.workspace = true
 puniyu_plugin_core.workspace = true
+puniyu_service.workspace = true
 
 [dev-dependencies]
 tokio = { workspace = true, features = ["macros", "rt"] }

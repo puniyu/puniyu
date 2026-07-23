@@ -1,7 +1,7 @@
 use async_trait::async_trait;
 use puniyu_api::{pkg_name, pkg_version};
 use puniyu_config::app::AppConfig;
-use puniyu_context::PluginContext;
+use puniyu_context::ServiceContext;
 use puniyu_error::AnyError;
 use puniyu_server::{Http, HttpMount, Server, ServerOptions};
 use salvo::{Depot, FlowCtrl, Handler, Request, Response};
@@ -10,8 +10,9 @@ use std::net::IpAddr;
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 
+/// HTTP 服务器服务。
 #[derive(Debug, Default, Clone, Copy)]
-pub struct Plugin;
+pub struct Service;
 
 struct Inner {
 	server: Server,
@@ -22,7 +23,7 @@ struct AccessLogInner {
 }
 
 #[async_trait]
-impl puniyu_plugin_core::Plugin for Plugin {
+impl puniyu_service::Service for Service {
 	fn name(&self) -> &str {
 		pkg_name!()
 	}
@@ -31,8 +32,8 @@ impl puniyu_plugin_core::Plugin for Plugin {
 		pkg_version!()
 	}
 
-	async fn on_start(&self, ctx: &PluginContext) -> AnyError {
-		let config = AppConfig::get().server();
+	async fn setup(&self, ctx: &ServiceContext) -> AnyError {
+		let config = AppConfig::from_path(puniyu_path::config_dir().join("app").with_extension("toml")).server();
 		let server = Server::new(ServerOptions {
 			host: config.host(),
 			port: config.port(),
@@ -61,7 +62,7 @@ impl puniyu_plugin_core::Plugin for Plugin {
 		Ok(())
 	}
 
-	async fn on_unload(&self, ctx: &PluginContext) -> AnyError {
+	async fn cleanup(&self, ctx: &ServiceContext) -> AnyError {
 		if let Some(inner) = ctx.remove::<Arc<AccessLogInner>>() {
 			let mount = inner
 				.mount
@@ -72,12 +73,8 @@ impl puniyu_plugin_core::Plugin for Plugin {
 				mount.unmount();
 			}
 		}
-		ctx.require::<Arc<Inner>>()?.server.drain().await?;
-		Ok(())
-	}
-
-	async fn on_stop(&self, ctx: &PluginContext) -> AnyError {
 		if let Some(inner) = ctx.remove::<Arc<Inner>>() {
+			inner.server.drain().await?;
 			inner.server.stop().await?;
 		}
 		ctx.remove::<Http>();

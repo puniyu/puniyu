@@ -1,11 +1,11 @@
 pub mod contact;
-pub mod session;
 pub mod element;
 pub mod error;
 pub mod event;
-pub mod message;
 pub mod handler;
+pub mod message;
 pub mod sender;
+pub mod session;
 
 #[macro_export]
 macro_rules! pkg_name {
@@ -31,4 +31,9 @@ macro_rules! pkg_version {
 			parse(env!("CARGO_PKG_VERSION_PATCH")),
 		)
 	}};
+}
+
+#[macro_export]
+macro_rules! pkg_description {
+	() => {{ env!("CARGO_PKG_DESCRIPTION") }};
 }

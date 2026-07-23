@@ -1,4 +1,4 @@
-use crate::runtime::{AdapterRuntime, PluginRuntime};
+use crate::runtime::{AdapterRuntime, PluginRuntime, ServiceRuntime};
 use bon::Builder;
 use convert_case::{Case, Casing};
 use log::info;
@@ -57,11 +57,19 @@ impl App {
 
 		let app_ctx = Arc::new(AppContext::new());
 
+		let mut discovered_services = Vec::new();
 		let mut discovered_adapters = Vec::new();
 		let mut discovered_plugins = Vec::new();
 		for loader in loaders {
 			let loader_name = loader.name().to_string();
 			info!("discovering components from loader '{loader_name}'...");
+			match loader.services().await {
+				Ok(services) => {
+					info!("  found {} service(s)", services.len());
+					discovered_services.extend(services);
+				}
+				Err(e) => log::error!("  failed to discover services: {e}"),
+			}
 			match loader.adapters().await {
 				Ok(adapters) => {
 					info!("  found {} adapter(s)", adapters.len());
@@ -79,15 +87,21 @@ impl App {
 		}
 
 		info!(
-			"starting {} plugin(s), {} adapter(s)...",
+			"starting {} service(s), {} plugin(s), {} adapter(s)...",
+			discovered_services.len(),
 			discovered_plugins.len(),
 			discovered_adapters.len()
 		);
 
+		let mut service_runtime = ServiceRuntime::new(Arc::clone(&app_ctx), discovered_services);
+		service_runtime.start().await;
+
+		// Phase 2: Plugins (start + load)
 		let mut plugin_runtime = PluginRuntime::new(Arc::clone(&app_ctx), discovered_plugins);
 		plugin_runtime.start().await;
 		plugin_runtime.load().await;
 
+		// Phase 3: Adapters (start + load)
 		let mut adapter_runtime = AdapterRuntime::new(Arc::clone(&app_ctx), discovered_adapters);
 		adapter_runtime.start().await;
 		adapter_runtime.load().await;
@@ -103,6 +117,7 @@ impl App {
 
 		adapter_runtime.shutdown().await;
 		plugin_runtime.shutdown().await;
+		service_runtime.shutdown().await;
 
 		if let Some(callback) = on_exit {
 			(callback)().await;

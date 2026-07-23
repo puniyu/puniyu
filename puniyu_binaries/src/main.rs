@@ -7,8 +7,7 @@ use semver::Version;
 
 const NAME: &str = "puniyu";
 const VERSION: Version = puniyu_version::VERSION;
-const ASSETS: &[u8] =
-	include_bytes!(concat!(env!("CARGO_MANIFEST_DIR"), "/assets/logo.png"));
+const ASSETS: &[u8] = include_bytes!(concat!(env!("CARGO_MANIFEST_DIR"), "/assets/logo.png"));
 
 #[tokio::main]
 async fn main() {
@@ -23,12 +22,16 @@ async fn main() {
 		.on_start(load)
 		.loader(
 			puniyu_loader_builtin::Loader::new()
-				.with_plugin(puniyu_plugin_server::Plugin)
-				.with_plugin(puniyu_plugin_logo::Plugin::with_logo(ASSETS))
+				.with_service(puniyu_service_config::Service)
+				.with_service(puniyu_service_server::Service)
+				.with_service(puniyu_service_event::Service)
+				.with_service(puniyu_service_command::Service)
+				.with_service(puniyu_service_task::Service)
+				.with_plugin(puniyu_plugin_config::Plugin)
 				.with_plugin(puniyu_plugin_event::Plugin)
-				.with_plugin(puniyu_plugin_access::Plugin)
-				.with_plugin(puniyu_plugin_command::Plugin)
-				.with_plugin(puniyu_plugin_task::Plugin),
+				.with_plugin(puniyu_plugin_logo::Plugin::with_logo(ASSETS))
+				.with_plugin(puniyu_plugin_access::Plugin::new())
+				.with_plugin(puniyu_plugin_command::Plugin::new()),
 		)
 		.build();
 
@@ -60,7 +63,8 @@ fn log_init() {
 	use puniyu_path::log_dir;
 	use std::env;
 
-	let config = AppConfig::get().logger();
+	let config =
+		AppConfig::from_path(puniyu_path::config_dir().join("app").with_extension("toml")).logger();
 	let log_level = env::var("LOGGER_LEVEL").unwrap_or(config.level().to_string());
 	let log_path = log_dir().to_string_lossy().to_string();
 	let log_retention_days = config.retention_days();
@@ -75,7 +79,7 @@ fn log_init() {
 }
 
 async fn load() {
-	init_dir().await.expect("failed to initialize application directories");
+	init_dir().await.unwrap()
 }
 
 async fn init_dir() -> io::Result<()> {

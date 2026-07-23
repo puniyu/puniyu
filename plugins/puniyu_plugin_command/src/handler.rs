@@ -1,4 +1,4 @@
-use crate::CommandRegistry;
+use puniyu_command::CommandRegistry;
 use crate::executor::{CommandOutcome, execute};
 use crate::invocation::{ParseOutcome, parse};
 use async_trait::async_trait;
@@ -30,13 +30,7 @@ impl Handler for CommandHandler {
 			return;
 		};
 
-		let commands = match self.commands.all() {
-			Ok(commands) => commands,
-			Err(e) => {
-				error!("[{}] 读取命令失败: {e}", "command".yellow());
-				return;
-			}
-		};
+		let commands = self.commands.values();
 		match parse(message, commands) {
 			ParseOutcome::NotMatched => ctx.next().await,
 			ParseOutcome::Invalid(e) => {

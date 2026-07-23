@@ -24,3 +24,4 @@ toml.workspace = true
 thiserror.workspace = true
 
 puniyu_path.workspace = true
+puniyu_registry.workspace = true

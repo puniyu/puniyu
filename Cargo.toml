@@ -3,6 +3,7 @@ members = [
     "crates/*",
     "loaders/*",
     "plugins/*",
+    "services/*",
     "puniyu_binaries",
 ]
 resolver = "2"
@@ -73,17 +74,25 @@ puniyu_adapter_types = { version = "0.9.5", path = "./crates/puniyu_adapter_type
 puniyu_adapter_api = { version = "0.9.5", path = "./crates/puniyu_adapter_api" }
 puniyu_adapter_core = { version = "0.9.5", path = "./crates/puniyu_adapter_core" }
 
+puniyu_registry = { version = "0.9.5", path = "./crates/puniyu_registry" }
+
 puniyu_command_types = { version = "0.9.5", path = "./crates/puniyu_command_types" }
 puniyu_command = { version = "0.9.5", path = "./crates/puniyu_command" }
 puniyu_command_parser = { version = "0.9.5", path = "./crates/puniyu_command_parser" }
 
 puniyu_plugin_core = { version = "0.9.5", path = "./crates/puniyu_plugin_core" }
+puniyu_plugin_config = { version = "0.9.5", path = "./plugins/puniyu_plugin_config" }
 puniyu_plugin_access = { version = "0.9.5", path = "./plugins/puniyu_plugin_access" }
 puniyu_plugin_command = { version = "0.9.5", path = "./plugins/puniyu_plugin_command" }
 puniyu_plugin_event = { version = "0.9.5", path = "./plugins/puniyu_plugin_event" }
-puniyu_plugin_task = { version = "0.9.5", path = "./plugins/puniyu_plugin_task" }
-puniyu_plugin_server = { version = "0.9.5", path = "./plugins/puniyu_plugin_server" }
 puniyu_plugin_logo = { version = "0.9.5", path = "./plugins/puniyu_plugin_logo" }
+
+puniyu_service = { version = "0.9.5", path = "./crates/puniyu_service" }
+puniyu_service_config = { version = "0.9.5", path = "./services/puniyu_service_config" }
+puniyu_service_event = { version = "0.9.5", path = "./services/puniyu_service_event" }
+puniyu_service_server = { version = "0.9.5", path = "./services/puniyu_service_server" }
+puniyu_service_task = { version = "0.9.5", path = "./services/puniyu_service_task" }
+puniyu_service_command = { version = "0.9.5", path = "./services/puniyu_service_command" }
 
 puniyu = { version = "0.9.5", path = "./crates/puniyu" }
 puniyu_context = { version = "0.9.5", path = "./crates/puniyu_context" }

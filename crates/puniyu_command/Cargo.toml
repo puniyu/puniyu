@@ -15,5 +15,6 @@ workspace = true
 [dependencies]
 async-trait.workspace = true
 puniyu_command_types.workspace = true
+puniyu_registry.workspace = true
 puniyu_session.workspace = true
 puniyu_error.workspace = true

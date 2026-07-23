@@ -31,20 +31,12 @@ impl MessageSession {
 	/// 创建新的消息会话
 	pub fn new(event: &MessageEvent, args: EventArg) -> Self {
 		let bot = BotSession::new(event.bot());
-		let is_master = {
-			let adapter_name = bot.adapter_info().name;
-			puniyu_config::app::AppConfig::get()
-				.master()
-				.get(adapter_name.as_str())
-				.iter()
-				.any(|master| master.as_str() == event.user_id())
-		};
 		Self {
 			inner: Arc::new(MessageSessionInner {
 				event: event.clone(),
 				bot,
 				args,
-				is_master,
+				is_master: false,
 			}),
 		}
 	}

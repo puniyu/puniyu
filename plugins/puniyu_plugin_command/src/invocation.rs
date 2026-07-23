@@ -1,7 +1,7 @@
 use puniyu_command::Command;
 use puniyu_command_parser::{CommandParser, Error, ParseResult};
 use puniyu_config::{
-	OptionConfig, ReactiveMode, app::AppConfig, bot::BotConfig, friend::FriendConfig,
+	OptionConfig, ReactiveMode, app::AppConfig, friend::FriendConfig,
 	group::GroupConfig,
 };
 use puniyu_event::message::MessageEvent;
@@ -80,8 +80,15 @@ fn is_active(mode: ReactiveMode, mentions_bot: bool, has_alias: bool, is_master:
 	}
 }
 
+fn config_dir() -> std::path::PathBuf {
+	puniyu_path::config_dir()
+}
+
 fn command_prefixes(commands: &[Arc<dyn Command>]) -> Vec<String> {
-	let global = AppConfig::get().command().prefix().map(ToOwned::to_owned);
+	let global = AppConfig::from_path(config_dir().join("app").with_extension("toml"))
+		.command()
+		.prefix()
+		.map(ToOwned::to_owned);
 	let mut prefixes = global.iter().cloned().collect::<Vec<_>>();
 	prefixes.extend(commands.iter().filter_map(|command| {
 		command.prefix().map(|prefix| match &global {
@@ -111,14 +118,14 @@ fn resolve_candidates(commands: &[Arc<dyn Command>], name: &str) -> Vec<Arc<dyn 
 }
 
 fn resolve_options(message: &MessageEvent) -> OptionConfig {
-	let inherited = BotConfig::get().bot(message.self_id());
+	let dir = config_dir();
 	if let Some(group) = message.as_group() {
-		GroupConfig::get().resolve(group.group_id(), &inherited)
+		GroupConfig::from_path(dir.join("group").with_extension("toml")).group(group.group_id())
 	} else if let Some(group) = message.as_group_temp() {
-		GroupConfig::get().resolve(group.group_id(), &inherited)
+		GroupConfig::from_path(dir.join("group").with_extension("toml")).group(group.group_id())
 	} else if let Some(guild) = message.as_guild() {
-		GroupConfig::get().resolve(guild.guild_id(), &inherited)
+		GroupConfig::from_path(dir.join("group").with_extension("toml")).group(guild.guild_id())
 	} else {
-		FriendConfig::get().resolve(message.user_id(), &inherited)
+		FriendConfig::from_path(dir.join("friend").with_extension("toml")).friend(message.user_id())
 	}
 }

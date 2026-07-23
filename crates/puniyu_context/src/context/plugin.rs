@@ -28,10 +28,6 @@ impl PluginContext {
 		self.plugin_name.as_str()
 	}
 
-	pub fn provide<V: Any + Send + Sync>(&self, value: V) -> Result<(), Error> {
-		self.scoped.insert(value)
-	}
-
 	pub fn get<V: Any + Send + Sync + Clone>(&self) -> Option<V> {
 		self.scoped.get()
 	}
@@ -45,9 +41,5 @@ impl PluginContext {
 
 	pub fn contains<V: Any + Send + Sync>(&self) -> bool {
 		self.scoped.contains::<V>()
-	}
-
-	pub fn remove<V: Any + Send + Sync>(&self) -> Option<V> {
-		self.scoped.remove()
 	}
 }

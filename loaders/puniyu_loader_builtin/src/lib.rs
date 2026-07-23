@@ -16,10 +16,12 @@ use async_trait::async_trait;
 use puniyu_adapter_core::Adapter;
 use puniyu_error::AnyError;
 use puniyu_plugin_core::Plugin;
+use puniyu_service::Service;
 use std::sync::Arc;
 
 #[derive(Default)]
 pub struct Loader {
+	services: Vec<Arc<dyn Service>>,
 	adapters: Vec<Arc<dyn Adapter>>,
 	plugins: Vec<Arc<dyn Plugin>>,
 }
@@ -28,6 +30,11 @@ impl Loader {
 	#[inline]
 	pub fn new() -> Self {
 		Self::default()
+	}
+
+	pub fn with_service(mut self, service: impl Service + 'static) -> Self {
+		self.services.push(Arc::new(service));
+		self
 	}
 
 	pub fn with_adapter(mut self, adapter: impl Adapter + 'static) -> Self {
@@ -45,6 +52,10 @@ impl Loader {
 impl puniyu_loader::Loader for Loader {
 	fn name(&self) -> &str {
 		"builtin"
+	}
+
+	async fn services(&self) -> AnyError<Vec<Arc<dyn Service>>> {
+		Ok(self.services.clone())
 	}
 
 	async fn adapters(&self) -> AnyError<Vec<Arc<dyn Adapter>>> {

@@ -13,6 +13,10 @@ pub trait Plugin: Send + Sync {
 	fn priority(&self) -> u32 {
 		500
 	}
+	/// 依赖项, 表示所依赖的service
+	fn using(&self) -> Vec<&str> {
+		vec![]
+	}
 	/// 核心版本范围
 	fn required_version(&self) -> VersionReq {
 		const VERSION: Version = puniyu_version::VERSION;

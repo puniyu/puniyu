@@ -1,5 +1,5 @@
 use crate::error::Error;
-use puniyu_command_types::{Arg, ArgMode, ArgValue, ElemType};
+use puniyu_command_types::{Arg, ArgMode, ArgValue, ArgType};
 use smol_str::SmolStr;
 use std::collections::HashMap;
 
@@ -79,10 +79,10 @@ fn consume_value(
 	i: &mut usize,
 	is_next_value: bool,
 	tokens: &[String],
-	elem_type: &ElemType,
+	elem_type: &ArgType,
 	name: &SmolStr,
 ) -> Result<ArgValue, Error> {
-	if *elem_type == ElemType::Bool && !is_next_value {
+	if *elem_type == ArgType::Bool && !is_next_value {
 		return Ok(ArgValue::Bool(true));
 	}
 
@@ -94,16 +94,16 @@ fn consume_value(
 	parse_value(&tokens[*i], elem_type, name)
 }
 
-fn parse_value(raw: &str, elem_type: &ElemType, arg_name: &str) -> Result<ArgValue, Error> {
+fn parse_value(raw: &str, elem_type: &ArgType, arg_name: &str) -> Result<ArgValue, Error> {
 	match elem_type {
-		ElemType::String => Ok(ArgValue::String(raw.to_string())),
-		ElemType::Int => {
+		ArgType::String => Ok(ArgValue::String(raw.to_string())),
+		ArgType::Int => {
 			raw.parse::<i64>().map(ArgValue::Int).map_err(|_| invalid(arg_name, "integer", raw))
 		}
-		ElemType::Float => {
+		ArgType::Float => {
 			raw.parse::<f64>().map(ArgValue::Float).map_err(|_| invalid(arg_name, "float", raw))
 		}
-		ElemType::Bool => match raw {
+		ArgType::Bool => match raw {
 			"true" | "1" | "yes" => Ok(ArgValue::Bool(true)),
 			"false" | "0" | "no" => Ok(ArgValue::Bool(false)),
 			_ => Err(invalid(arg_name, "boolean", raw)),
