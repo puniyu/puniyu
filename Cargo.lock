@@ -2056,6 +2056,7 @@ name = "puniyu_context"
 version = "0.9.5"
 dependencies = [
  "puniyu_handler",
+ "puniyu_registry",
  "smol_str",
  "thiserror",
 ]

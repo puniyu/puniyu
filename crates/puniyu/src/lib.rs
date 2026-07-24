@@ -1,5 +1,5 @@
 mod app;
-mod runtime;
+pub mod runtime;
 
 pub use app::{App, AppBuilder};
 

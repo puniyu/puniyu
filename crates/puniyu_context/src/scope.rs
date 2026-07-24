@@ -4,7 +4,7 @@ use std::fmt;
 pub struct ScopeId(u64);
 
 impl ScopeId {
-	pub(crate) const fn new(value: u64) -> Self {
+	pub const fn new(value: u64) -> Self {
 		Self(value)
 	}
 

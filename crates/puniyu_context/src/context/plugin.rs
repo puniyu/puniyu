@@ -1,27 +1,15 @@
-use crate::{AppContext, Error, ScopeId};
+use crate::{AppContext, Error};
 use smol_str::SmolStr;
 use std::{any::Any, sync::Arc};
 
-use super::ScopedContext;
-
-#[derive(Clone)]
 pub struct PluginContext {
-	scoped: ScopedContext,
+	inner: Arc<AppContext>,
 	plugin_name: SmolStr,
 }
 
 impl PluginContext {
 	pub fn new(app: Arc<AppContext>, plugin_name: impl Into<SmolStr>) -> Self {
-		let scope_id = app.depot.new_scope();
-		Self { scoped: ScopedContext::new(app, scope_id), plugin_name: plugin_name.into() }
-	}
-
-	pub fn scoped(&self) -> &ScopedContext {
-		&self.scoped
-	}
-
-	pub fn scope_id(&self) -> ScopeId {
-		self.scoped.scope_id()
+		Self { inner: app, plugin_name: plugin_name.into() }
 	}
 
 	pub fn plugin_name(&self) -> &str {
@@ -29,7 +17,7 @@ impl PluginContext {
 	}
 
 	pub fn get<V: Any + Send + Sync + Clone>(&self) -> Option<V> {
-		self.scoped.get()
+		self.inner.get()
 	}
 
 	pub fn require<V: Any + Send + Sync + Clone>(&self) -> Result<V, Error> {
@@ -40,6 +28,6 @@ impl PluginContext {
 	}
 
 	pub fn contains<V: Any + Send + Sync>(&self) -> bool {
-		self.scoped.contains::<V>()
+		self.inner.contains::<V>()
 	}
 }

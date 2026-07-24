@@ -1,27 +1,15 @@
-use crate::{AppContext, Error, ScopeId};
+use crate::{AppContext, Error};
 use smol_str::SmolStr;
 use std::{any::Any, sync::Arc};
 
-use super::ScopedContext;
-
-#[derive(Clone)]
 pub struct ServiceContext {
-	scoped: ScopedContext,
+	inner: Arc<AppContext>,
 	service_name: SmolStr,
 }
 
 impl ServiceContext {
 	pub fn new(app: Arc<AppContext>, service_name: impl Into<SmolStr>) -> Self {
-		let scope_id = app.depot.new_scope();
-		Self { scoped: ScopedContext::new(app, scope_id), service_name: service_name.into() }
-	}
-
-	pub fn scoped(&self) -> &ScopedContext {
-		&self.scoped
-	}
-
-	pub fn scope_id(&self) -> ScopeId {
-		self.scoped.scope_id()
+		Self { inner: app, service_name: service_name.into() }
 	}
 
 	pub fn service_name(&self) -> &str {
@@ -29,11 +17,11 @@ impl ServiceContext {
 	}
 
 	pub fn provide<V: Any + Send + Sync>(&self, value: V) -> Result<(), Error> {
-		self.scoped.insert(value)
+		self.inner.depot.insert(value)
 	}
 
 	pub fn get<V: Any + Send + Sync + Clone>(&self) -> Option<V> {
-		self.scoped.get()
+		self.inner.get()
 	}
 
 	pub fn require<V: Any + Send + Sync + Clone>(&self) -> Result<V, Error> {
@@ -44,10 +32,10 @@ impl ServiceContext {
 	}
 
 	pub fn contains<V: Any + Send + Sync>(&self) -> bool {
-		self.scoped.contains::<V>()
+		self.inner.contains::<V>()
 	}
 
 	pub fn remove<V: Any + Send + Sync>(&self) -> Option<V> {
-		self.scoped.remove()
+		self.inner.depot.remove()
 	}
 }

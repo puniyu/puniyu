@@ -16,3 +16,4 @@ workspace = true
 smol_str.workspace = true
 thiserror.workspace = true
 puniyu_handler.workspace = true
+puniyu_registry.workspace = true

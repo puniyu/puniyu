@@ -1,13 +1,16 @@
-use crate::runtime::{AdapterRuntime, PluginRuntime, ServiceRuntime};
+use crate::runtime::Runtime;
 use bon::Builder;
-use convert_case::{Case, Casing};
+use convert_case::Casing;
 use log::info;
-use puniyu_context::AppContext;
+use puniyu_adapter_core::Adapter;
+use puniyu_context::{AdapterContext, AppContext, PluginContext, ServiceContext};
 use puniyu_logger::owo_colors::OwoColorize;
+use puniyu_plugin_core::Plugin;
+use puniyu_service::Service;
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 
-type BoxFuture = std::pin::Pin<Box<dyn std::future::Future<Output = ()> + Send>>;
+type BoxFuture = std::pin::Pin<Box<dyn std::future::Future<Output = std::io::Result<()>> + Send>>;
 type AsyncFn = Box<dyn Fn() -> BoxFuture + Send + Sync>;
 
 #[derive(Builder)]
@@ -27,10 +30,11 @@ impl<S: app_builder::State> AppBuilder<S> {
 		self.loaders.push(Box::new(loader));
 		self
 	}
+
 	pub fn on_start<F, Fut>(mut self, f: F) -> Self
 	where
 		F: Fn() -> Fut + Send + Sync + 'static,
-		Fut: std::future::Future<Output = ()> + Send + 'static,
+		Fut: std::future::Future<Output = std::io::Result<()>> + Send + 'static,
 	{
 		self.on_start = Some(Box::new(move || Box::pin(f())));
 		self
@@ -39,7 +43,7 @@ impl<S: app_builder::State> AppBuilder<S> {
 	pub fn on_exit<F, Fut>(mut self, f: F) -> Self
 	where
 		F: Fn() -> Fut + Send + Sync + 'static,
-		Fut: std::future::Future<Output = ()> + Send + 'static,
+		Fut: std::future::Future<Output = std::io::Result<()>> + Send + 'static,
 	{
 		self.on_exit = Some(Box::new(move || Box::pin(f())));
 		self
@@ -51,60 +55,39 @@ impl App {
 		let Self { loaders, on_start, on_exit, name } = self;
 		let start_time = Instant::now();
 
-		if let Some(callback) = on_start {
-			(callback)().await;
+		if let Some(cb) = on_start {
+			(cb)().await?;
 		}
 
-		let app_ctx = Arc::new(AppContext::new());
+		let ctx = Arc::new(AppContext::new());
 
-		let mut discovered_services = Vec::new();
-		let mut discovered_adapters = Vec::new();
-		let mut discovered_plugins = Vec::new();
-		for loader in loaders {
-			let loader_name = loader.name().to_string();
-			info!("discovering components from loader '{loader_name}'...");
-			match loader.services().await {
-				Ok(services) => {
-					info!("  found {} service(s)", services.len());
-					discovered_services.extend(services);
+		let mut services: Runtime<Arc<dyn Service>, ServiceContext> = Runtime::new(Arc::clone(&ctx));
+		let mut plugins: Runtime<Arc<dyn Plugin>, PluginContext> = Runtime::new(Arc::clone(&ctx));
+		let mut adapters: Runtime<Arc<dyn Adapter>, AdapterContext> = Runtime::new(Arc::clone(&ctx));
+
+		for loader in &loaders {
+			if let Ok(s) = loader.services().await {
+				for svc in s {
+					services.add(svc);
 				}
-				Err(e) => log::error!("  failed to discover services: {e}"),
 			}
-			match loader.adapters().await {
-				Ok(adapters) => {
-					info!("  found {} adapter(s)", adapters.len());
-					discovered_adapters.extend(adapters);
+			if let Ok(p) = loader.plugins().await {
+				for plug in p {
+					plugins.add(plug);
 				}
-				Err(e) => log::error!("  failed to discover adapters: {e}"),
 			}
-			match loader.plugins().await {
-				Ok(plugins) => {
-					info!("  found {} plugin(s)", plugins.len());
-					discovered_plugins.extend(plugins);
+			if let Ok(a) = loader.adapters().await {
+				for adp in a {
+					adapters.add(adp);
 				}
-				Err(e) => log::error!("  failed to discover plugins: {e}"),
 			}
 		}
 
-		info!(
-			"starting {} service(s), {} plugin(s), {} adapter(s)...",
-			discovered_services.len(),
-			discovered_plugins.len(),
-			discovered_adapters.len()
-		);
-
-		let mut service_runtime = ServiceRuntime::new(Arc::clone(&app_ctx), discovered_services);
-		service_runtime.start().await;
-
-		// Phase 2: Plugins (start + load)
-		let mut plugin_runtime = PluginRuntime::new(Arc::clone(&app_ctx), discovered_plugins);
-		plugin_runtime.start().await;
-		plugin_runtime.load().await;
-
-		// Phase 3: Adapters (start + load)
-		let mut adapter_runtime = AdapterRuntime::new(Arc::clone(&app_ctx), discovered_adapters);
-		adapter_runtime.start().await;
-		adapter_runtime.load().await;
+		services.setup().await;
+		adapters.start().await;
+		plugins.start().await;
+		adapters.load().await;
+		plugins.load().await;
 
 		info!(
 			"{} initialized in {}",
@@ -115,17 +98,19 @@ impl App {
 		tokio::signal::ctrl_c().await?;
 		info!("shutting down...");
 
-		adapter_runtime.shutdown().await;
-		plugin_runtime.shutdown().await;
-		service_runtime.shutdown().await;
+		plugins.unload().await;
+		adapters.unload().await;
+		plugins.stop().await;
+		adapters.stop().await;
+		services.cleanup().await;
 
-		if let Some(callback) = on_exit {
-			(callback)().await;
+		if let Some(cb) = on_exit {
+			(cb)().await?;
 		}
 
 		info!(
 			"{} uptime: {}",
-			name.to_case(Case::Lower).fg_rgb::<64, 224, 208>(),
+			name.to_case(convert_case::Case::Lower).fg_rgb::<64, 224, 208>(),
 			format_duration(start_time.elapsed()).fg_rgb::<255, 127, 80>()
 		);
 
