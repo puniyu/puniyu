@@ -6,9 +6,7 @@ use bon::Builder;
 use serde::{Deserialize, Serialize};
 use smol_str::SmolStr;
 
-use puniyu_core::contact::Contact;
-
-use crate::SceneType;
+use crate::{Contact, SceneType};
 
 /// 群临时联系人
 ///
@@ -41,8 +39,7 @@ impl GroupTempContact {
 }
 
 impl Contact for GroupTempContact {
-	type Scene = SceneType;
-	fn scene(&self) -> Self::Scene {
+	fn scene(&self) -> SceneType {
 		SceneType::GroupTemp
 	}
 

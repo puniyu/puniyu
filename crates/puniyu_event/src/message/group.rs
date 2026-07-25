@@ -1,4 +1,6 @@
 mod temp;
+use std::sync::Arc;
+
 use puniyu_contact::Contact;
 use puniyu_sender::Role;
 #[doc(inline)]
@@ -13,18 +15,32 @@ use puniyu_element::receive::Elements;
 use puniyu_sender::{GroupSender, Sender};
 use smol_str::SmolStr;
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone)]
 pub struct GroupMessage {
 	time: u64,
 	event_id: SmolStr,
 	message_id: SmolStr,
-	bot: Bot,
+	bot: Arc<dyn Bot>,
 	elements: EcoVec<Elements>,
 	contact: GroupContact,
 	sender: GroupSender,
 }
 
-impl_message!(GroupMessage, GroupContact, GroupSender, SubEventType::Group);
+impl PartialEq for GroupMessage {
+	fn eq(&self, other: &Self) -> bool {
+		self.time == other.time
+			&& self.event_id == other.event_id
+			&& self.message_id == other.message_id
+			&& *self.bot == *other.bot
+			&& self.elements == other.elements
+			&& self.contact == other.contact
+			&& self.sender == other.sender
+	}
+}
+
+impl Eq for GroupMessage {}
+
+impl_message!(GroupMessage, crate::EventType::Message, SubEventType::Group, GroupContact, GroupSender);
 
 impl GroupMessage {
 	/// 获取群 ID

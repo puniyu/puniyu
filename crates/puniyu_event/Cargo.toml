@@ -18,7 +18,6 @@ strum.workspace = true
 smol_str.workspace = true
 ecow.workspace = true
 
-puniyu_core.workspace = true
 puniyu_contact.workspace = true
 puniyu_sender.workspace = true
 puniyu_element.workspace = true

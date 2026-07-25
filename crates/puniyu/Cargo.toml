@@ -14,10 +14,12 @@ workspace = true
 
 [dependencies]
 log.workspace = true
+semver.workspace = true
 convert_case.workspace = true
 bon.workspace = true
 tokio = { workspace = true, features = ["rt", "signal"] }
 
+puniyu_version.workspace = true
 puniyu_logger.workspace = true
 puniyu_context.workspace = true
 puniyu_loader.workspace = true

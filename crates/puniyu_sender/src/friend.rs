@@ -2,9 +2,7 @@ use bon::Builder;
 use serde::{Deserialize, Serialize};
 use smol_str::SmolStr;
 
-use puniyu_core::sender::Sender;
-
-use crate::Sex;
+use crate::{Sender, Sex};
 
 /// 好友发送者信息
 #[derive(Debug, Default, Clone, PartialEq, Eq, Hash, Deserialize, Serialize, Builder)]
@@ -15,14 +13,13 @@ pub struct FriendSender {
 	/// 用户昵称
 	nick: Option<SmolStr>,
 	/// 性别
-	#[builder(default)]
-	sex: Sex,
+	sex: Option<Sex>,
 	/// 年龄
 	age: Option<u32>,
 }
 
 impl FriendSender {
-	pub fn new<N>(user_id: N, nick: Option<N>, sex: Sex, age: Option<u32>) -> Self
+	pub fn new<N>(user_id: N, nick: Option<N>, sex: Option<Sex>, age: Option<u32>) -> Self
 	where
 		N: Into<SmolStr>,
 	{
@@ -31,14 +28,13 @@ impl FriendSender {
 }
 
 impl Sender for FriendSender {
-	type Sex = Sex;
 	fn user_id(&self) -> &str {
 		self.user_id.as_ref()
 	}
 	fn name(&self) -> Option<&str> {
 		self.nick.as_deref()
 	}
-	fn sex(&self) -> Sex {
+	fn sex(&self) -> Option<Sex> {
 		self.sex
 	}
 	fn age(&self) -> Option<u32> {
@@ -79,21 +75,21 @@ mod tests {
 
 	#[test]
 	fn test_new_basic() {
-		let sender = FriendSender::new("123456", Some("Alice"), Sex::Female, Some(25));
+		let sender = FriendSender::new("123456", Some("Alice"), Some(Sex::Female), Some(25));
 
 		assert_eq!(sender.user_id(), "123456");
 		assert_eq!(sender.name(), Some("Alice"));
-		assert_eq!(sender.sex(), Sex::Female);
+		assert_eq!(sender.sex(), Some(Sex::Female));
 		assert_eq!(sender.age(), Some(25));
 	}
 
 	#[test]
 	fn test_new_none_values() {
-		let sender = FriendSender::new("u1", None, Sex::Unknown, None);
+		let sender = FriendSender::new("u1", None, None, None);
 
 		assert_eq!(sender.user_id(), "u1");
 		assert_eq!(sender.name(), None);
-		assert_eq!(sender.sex(), Sex::Unknown);
+		assert_eq!(sender.sex(), None);
 		assert_eq!(sender.age(), None);
 	}
 
@@ -103,7 +99,7 @@ mod tests {
 
 		assert_eq!(sender.user_id(), "");
 		assert_eq!(sender.name(), None);
-		assert_eq!(sender.sex(), Sex::Unknown);
+		assert_eq!(sender.sex(), None);
 		assert_eq!(sender.age(), None);
 	}
 
@@ -112,19 +108,19 @@ mod tests {
 		let sender = FriendSender::new(
 			String::from("123456"),
 			Some(String::from("Alice")),
-			Sex::Female,
+			Some(Sex::Female),
 			Some(25),
 		);
 
 		assert_eq!(sender.user_id(), "123456");
 		assert_eq!(sender.name(), Some("Alice"));
-		assert_eq!(sender.sex(), Sex::Female);
+		assert_eq!(sender.sex(), Some(Sex::Female));
 		assert_eq!(sender.age(), Some(25));
 	}
 
 	#[test]
 	fn test_new_builder_equivalence() {
-		let a = FriendSender::new("123456", Some("Alice"), Sex::Female, Some(25));
+		let a = FriendSender::new("123456", Some("Alice"), Some(Sex::Female), Some(25));
 		let b = FriendSender::builder()
 			.user_id("123456")
 			.nick("Alice")
@@ -137,7 +133,7 @@ mod tests {
 
 	#[test]
 	fn test_serde_roundtrip() {
-		let sender = FriendSender::new("123456", Some("Alice"), Sex::Female, Some(25));
+		let sender = FriendSender::new("123456", Some("Alice"), Some(Sex::Female), Some(25));
 
 		let json = serde_json::to_string(&sender).expect("serialize");
 		let restored: FriendSender = serde_json::from_str(&json).expect("deserialize");

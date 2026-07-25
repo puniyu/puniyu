@@ -1,7 +1,7 @@
 use bon::Builder;
 use serde::{Deserialize, Serialize};
 
-use puniyu_core::element::Element;
+use crate::Element;
 use smol_str::SmolStr;
 
 use crate::ElementType;
@@ -67,9 +67,8 @@ impl AtElement {
 }
 
 impl Element for AtElement {
-	type ElementType = ElementType;
-	fn r#type(&self) -> Self::ElementType {
-		Self::ElementType::At
+	fn r#type(&self) -> ElementType {
+		ElementType::At
 	}
 }
 

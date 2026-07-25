@@ -21,10 +21,8 @@ impl VideoElement {
 }
 
 impl Element for VideoElement {
-	type ElementType = ElementType;
-
-	fn r#type(&self) -> Self::ElementType {
-		Self::ElementType::Video
+	fn r#type(&self) -> ElementType {
+		ElementType::Video
 	}
 }
 

@@ -18,7 +18,7 @@ readme = "README.md"
 homepage = "https://github.com/puniyu/puniyu"
 repository = "https://github.com/puniyu/puniyu"
 edition = "2024"
-rust-version = "1.97.0"
+rust-version = "1.91.0"
 
 [workspace.dependencies]
 log = { version = "0.4.33" }
@@ -44,7 +44,6 @@ salvo = { version = "0.95.0" }
 const-str = { version = "1.1.0" }
 convert_case = { version = "0.11.0" }
 
-puniyu_core = { version = "0.9.5", path = "./crates/puniyu_core" }
 puniyu_logger = { version = "0.8.2" }
 
 puniyu_contact = { version = "0.9.5", path = "./crates/puniyu_contact" }

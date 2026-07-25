@@ -45,10 +45,8 @@ impl From<SmolStr> for AtElement {
 }
 
 impl Element for AtElement {
-	type ElementType = ElementType;
-
-	fn r#type(&self) -> Self::ElementType {
-		Self::ElementType::At
+	fn r#type(&self) -> ElementType {
+		ElementType::At
 	}
 }
 

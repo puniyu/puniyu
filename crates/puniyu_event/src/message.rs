@@ -1,4 +1,6 @@
 mod friend;
+use std::sync::Arc;
+
 #[doc(inline)]
 pub use friend::FriendMessage;
 mod group;
@@ -11,11 +13,12 @@ pub use guild::GuildMessage;
 use ecow::EcoVec;
 use puniyu_bot::Bot;
 use puniyu_contact::ContactType;
-use puniyu_core::event::EventBase;
 use puniyu_element::receive::Elements;
 use puniyu_sender::SenderType;
 use serde::{Deserialize, Serialize};
 use strum::{Display, EnumString, IntoStaticStr};
+use crate::EventBase;
+
 
 #[derive(
 	Debug,
@@ -75,28 +78,43 @@ impl MessageEvent {
 }
 
 macro_rules! forward_event {
-	($name:ident -> $ret:ty) => {
+	($name:ident -> $ret:ty, |$m:ident| $body:expr) => {
 		impl MessageEvent {
 			pub fn $name(&self) -> $ret {
 				match self {
-					Self::Friend(m) => m.$name(),
-					Self::Group(m) => m.$name(),
-					Self::GroupTemp(m) => m.$name(),
-					Self::Guild(m) => m.$name(),
+					Self::Friend($m) => $body,
+					Self::Group($m) => $body,
+					Self::GroupTemp($m) => $body,
+					Self::Guild($m) => $body,
 				}
 			}
 		}
 	};
 }
 
-forward_event!(time -> u64);
-forward_event!(event_type -> crate::EventType);
-forward_event!(event_id -> &str);
-forward_event!(sub_event -> SubEventType);
-forward_event!(bot -> &Bot);
-forward_event!(self_id -> &str);
-forward_event!(user_id -> &str);
+forward_event!(time -> u64, |m| m.time());
+forward_event!(event_id -> &str, |m| m.event_id());
+forward_event!(bot -> Arc<dyn Bot>, |m| m.bot());
+forward_event!(self_id -> &str, |m| m.self_id());
+forward_event!(user_id -> &str, |m| m.user_id());
+forward_event!(message_id -> &str, |m| m.message_id());
+forward_event!(elements -> &EcoVec<Elements>, |m| m.elements());
+forward_event!(get_text -> Vec<&str>, |m| m.get_text());
+forward_event!(get_at -> Vec<&str>, |m| m.get_at());
+forward_event!(get_reply_id -> Option<&str>, |m| m.get_reply_id());
+
 impl MessageEvent {
+	pub fn event_type(&self) -> crate::EventType {
+		crate::EventType::Message
+	}
+	pub fn sub_event(&self) -> SubEventType {
+		match self {
+			Self::Friend(m) => m.sub_event(),
+			Self::Group(m) => m.sub_event(),
+			Self::GroupTemp(m) => m.sub_event(),
+			Self::Guild(m) => m.sub_event(),
+		}
+	}
 	pub fn contact(&self) -> ContactType {
 		match self {
 			Self::Friend(m) => ContactType::Friend(m.contact()),
@@ -105,8 +123,6 @@ impl MessageEvent {
 			Self::Guild(m) => ContactType::Guild(m.contact()),
 		}
 	}
-}
-impl MessageEvent {
 	pub fn sender(&self) -> SenderType {
 		match self {
 			Self::Friend(m) => SenderType::Friend(m.sender()),
@@ -116,11 +132,6 @@ impl MessageEvent {
 		}
 	}
 }
-forward_event!(message_id -> &str);
-forward_event!(elements -> &EcoVec<Elements>);
-forward_event!(get_text -> Vec<&str>);
-forward_event!(get_at -> Vec<&str>);
-forward_event!(get_reply_id -> Option<&str>);
 
 pub trait MessageBase: EventBase {
 	fn message_id(&self) -> &str;
@@ -157,31 +168,34 @@ pub trait MessageBase: EventBase {
 macro_rules! impl_message {
 	(
 		$name:ident,
+		$event_type:expr,
+		$sub_event:expr,
 		$contact:ty,
-		$sender:ty,
-		$sub_event:expr
+		$sender:ty
 	) => {
-		impl puniyu_core::event::EventBase for $name {
-			type Bot = puniyu_bot::Bot;
+		impl crate::EventBase for $name {
 			type Contact = $contact;
 			type Sender = $sender;
-			type EventType = $crate::EventType;
+			type EventType = crate::EventType;
 			type SubEventType = super::SubEventType;
 
 			fn time(&self) -> u64 {
 				self.time
 			}
-			fn event_type(&self) -> $crate::EventType {
-				$crate::EventType::Message
+			fn event_type(&self) -> Self::EventType {
+				$event_type
 			}
 			fn event_id(&self) -> &str {
 				&self.event_id
 			}
-			fn sub_event(&self) -> $crate::message::SubEventType {
+			fn sub_event(&self) -> Self::SubEventType {
 				$sub_event
 			}
-			fn bot(&self) -> &puniyu_bot::Bot {
-				&self.bot
+			fn bot(&self) -> std::sync::Arc<dyn puniyu_bot::Bot> {
+				self.bot.clone()
+			}
+			fn self_id(&self) -> &str {
+				self.bot.id()
 			}
 			fn user_id(&self) -> &str {
 				self.sender.user_id()
@@ -220,7 +234,6 @@ mod tests {
 	}
 
 	impl EventBase for TestMessage {
-		type Bot = Bot;
 		type Contact = FriendContact;
 		type Sender = FriendSender;
 		type EventType = ();
@@ -230,16 +243,24 @@ mod tests {
 			0
 		}
 
-		fn event_type(&self) {}
+		fn event_type(&self) -> Self::EventType {
+			
+		}
 
 		fn event_id(&self) -> &str {
 			"event"
 		}
 
-		fn sub_event(&self) {}
+		fn sub_event(&self) -> Self::SubEventType {
+			
+		}
 
-		fn bot(&self) -> &Bot {
+		fn bot(&self) -> Arc<dyn Bot> {
 			unreachable!("访问器测试不需要机器人实例")
+		}
+
+		fn self_id(&self) -> &str {
+			"bot"
 		}
 
 		fn user_id(&self) -> &str {

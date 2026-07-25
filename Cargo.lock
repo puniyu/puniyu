@@ -1863,6 +1863,8 @@ dependencies = [
  "puniyu_logger",
  "puniyu_plugin_core",
  "puniyu_service",
+ "puniyu_version",
+ "semver",
  "tokio",
 ]
 
@@ -1978,15 +1980,7 @@ version = "0.9.5"
 dependencies = [
  "bytes",
  "puniyu_adapter_api",
- "puniyu_adapter_types",
- "puniyu_contact",
- "puniyu_core",
- "puniyu_error",
- "puniyu_message",
- "serde",
- "serde_json",
- "smol_str",
- "thiserror",
+ "puniyu_registry",
 ]
 
 [[package]]
@@ -2044,7 +2038,6 @@ name = "puniyu_contact"
 version = "0.9.5"
 dependencies = [
  "bon",
- "puniyu_core",
  "serde",
  "serde_json",
  "smol_str",
@@ -2069,25 +2062,16 @@ dependencies = [
 ]
 
 [[package]]
-name = "puniyu_core"
-version = "0.9.5"
-dependencies = [
- "bytes",
- "serde",
- "serde_json",
-]
-
-[[package]]
 name = "puniyu_element"
 version = "0.9.5"
 dependencies = [
  "bon",
  "bytes",
- "puniyu_core",
  "serde",
  "serde_json",
  "smol_str",
  "strum 0.28.0",
+ "url",
 ]
 
 [[package]]
@@ -2101,7 +2085,6 @@ dependencies = [
  "ecow",
  "puniyu_bot",
  "puniyu_contact",
- "puniyu_core",
  "puniyu_element",
  "puniyu_sender",
  "serde",
@@ -2294,13 +2277,15 @@ dependencies = [
 [[package]]
 name = "puniyu_registry"
 version = "0.9.5"
+dependencies = [
+ "scc",
+]
 
 [[package]]
 name = "puniyu_sender"
 version = "0.9.5"
 dependencies = [
  "bon",
- "puniyu_core",
  "serde",
  "serde_json",
  "smol_str",
@@ -2788,6 +2773,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9774ba4a74de5f7b1c1451ed6cd5285a32eddb5cccb8cc655a4e50009e06477f"
 
 [[package]]
+name = "saa"
+version = "5.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "68f5acb362a0e75c2a963532fa7fabf13dff81626dc494df16488d30befcbea0"
+
+[[package]]
 name = "salvo"
 version = "0.95.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2901,6 +2892,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "scc"
+version = "3.8.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f733aa28b85255811ad1358d559fe9a182e39327cf5470140ed9d444de86e6d5"
+dependencies = [
+ "saa",
+ "sdd",
+]
+
+[[package]]
 name = "schannel"
 version = "0.1.29"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2914,6 +2915,15 @@ name = "scopeguard"
 version = "1.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "94143f37725109f92c262ed2cf5e59bce7498c01bcc1502d7b9afe439a4e9f49"
+
+[[package]]
+name = "sdd"
+version = "4.8.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1836bad8bdc9c6d665b63202da3d9c6d60ed1e597cae63620e21ebf89a3595a9"
+dependencies = [
+ "saa",
+]
 
 [[package]]
 name = "security-framework"
@@ -3585,6 +3595,7 @@ dependencies = [
  "idna",
  "percent-encoding",
  "serde",
+ "serde_derive",
 ]
 
 [[package]]

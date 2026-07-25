@@ -118,8 +118,7 @@ impl Elements {
 }
 
 impl Element for Elements {
-	type ElementType = ElementType;
-	fn r#type(&self) -> Self::ElementType {
+	fn r#type(&self) -> ElementType {
 		match self {
 			Self::Text(element) => element.r#type(),
 			Self::At(element) => element.r#type(),
@@ -296,7 +295,7 @@ mod tests {
 		assert_eq!(file.file_name, "file.bin");
 		assert!(matches!(&file.file, File::Bytes(_)));
 		assert_eq!(image.file_name, "image.png");
-		assert!(matches!(&image.file, File::Path(path) if path == &PathBuf::from("image.png")));
+		assert!(matches!(&image.file, File::Url(_)));
 		assert_eq!(video.file_name, "video.mp4");
 		assert!(matches!(&video.file, File::Bytes(_)));
 		assert_eq!(record.file_name, "record.silk");

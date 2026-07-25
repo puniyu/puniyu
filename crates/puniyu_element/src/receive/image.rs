@@ -18,10 +18,8 @@ pub struct ImageElement {
 }
 
 impl Element for ImageElement {
-	type ElementType = ElementType;
-
-	fn r#type(&self) -> Self::ElementType {
-		Self::ElementType::Image
+	fn r#type(&self) -> ElementType {
+		ElementType::Image
 	}
 }
 

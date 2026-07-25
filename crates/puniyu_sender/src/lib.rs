@@ -43,7 +43,7 @@ pub use types::*;
 use serde::{Deserialize, Serialize};
 use strum::{Display, IntoStaticStr};
 
-pub use puniyu_core::sender::Sender;
+
 
 /// 统一发送者枚举
 ///
@@ -200,7 +200,6 @@ impl SenderType {
 }
 
 impl Sender for SenderType {
-	type Sex = Sex;
 	fn user_id(&self) -> &str {
 		match self {
 			Self::Friend(sender) => sender.user_id(),
@@ -217,7 +216,7 @@ impl Sender for SenderType {
 			Self::Guild(sender) => sender.name(),
 		}
 	}
-	fn sex(&self) -> Sex {
+	fn sex(&self) -> Option<Sex> {
 		match &self {
 			Self::Friend(sender) => sender.sex(),
 			Self::Group(sender) => sender.sex(),

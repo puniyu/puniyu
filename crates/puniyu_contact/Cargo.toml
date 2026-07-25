@@ -18,7 +18,6 @@ strum.workspace = true
 bon.workspace = true
 smol_str.workspace = true
 
-puniyu_core.workspace = true
 
 [dev-dependencies]
 serde_json.workspace = true

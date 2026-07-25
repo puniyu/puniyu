@@ -55,10 +55,8 @@ impl AsRef<str> for TextElement {
 }
 
 impl Element for TextElement {
-	type ElementType = ElementType;
-
-	fn r#type(&self) -> Self::ElementType {
-		Self::ElementType::Text
+	fn r#type(&self) -> ElementType {
+		ElementType::Text
 	}
 }
 

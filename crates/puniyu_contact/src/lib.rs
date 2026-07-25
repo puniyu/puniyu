@@ -44,7 +44,7 @@ use serde::{Deserialize, Serialize};
 use smol_str::SmolStr;
 use strum::{Display, IntoStaticStr};
 
-pub use puniyu_core::contact::Contact;
+pub use types::Contact;
 
 /// 联系人类型枚举
 ///
@@ -189,8 +189,7 @@ impl ContactType {
 }
 
 impl Contact for ContactType {
-	type Scene = SceneType;
-	fn scene(&self) -> Self::Scene {
+	fn scene(&self) -> SceneType {
 		match self {
 			Self::Friend(contact) => contact.scene(),
 			Self::Group(contact) => contact.scene(),

@@ -40,10 +40,8 @@ impl From<SmolStr> for XmlElement {
 }
 
 impl Element for XmlElement {
-	type ElementType = ElementType;
-
-	fn r#type(&self) -> Self::ElementType {
-		Self::ElementType::Xml
+	fn r#type(&self) -> ElementType {
+		ElementType::Xml
 	}
 }
 

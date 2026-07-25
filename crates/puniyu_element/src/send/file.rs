@@ -1,7 +1,7 @@
 use bon::Builder;
 use serde::{Deserialize, Serialize};
 
-use puniyu_core::element::Element;
+use crate::Element;
 use smol_str::SmolStr;
 
 use crate::{ElementType, File};
@@ -23,9 +23,8 @@ impl FileElement {
 }
 
 impl Element for FileElement {
-	type ElementType = ElementType;
-	fn r#type(&self) -> Self::ElementType {
-		Self::ElementType::File
+	fn r#type(&self) -> ElementType {
+		ElementType::File
 	}
 }
 

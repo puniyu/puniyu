@@ -181,9 +181,9 @@ fn test_trait_object_equality() {
 	let same_friend = ContactType::new(SceneType::Friend, "123456", Some("Alice"));
 	let group = contact_group!(peer: "123456", name: "Alice");
 
-	let left: &dyn Contact<Scene = SceneType> = &friend;
-	let right: &dyn Contact<Scene = SceneType> = &same_friend;
-	let other: &dyn Contact<Scene = SceneType> = &group;
+	let left: &dyn Contact = &friend;
+	let right: &dyn Contact = &same_friend;
+	let other: &dyn Contact = &group;
 
 	assert!(left == right);
 	assert!(left != other);

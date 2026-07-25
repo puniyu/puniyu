@@ -2,9 +2,7 @@ use bon::Builder;
 use serde::{Deserialize, Serialize};
 use smol_str::SmolStr;
 
-use puniyu_core::sender::Sender;
-
-use crate::{Role, Sex};
+use crate::{Role, Sender, Sex};
 
 /// 频道发送者信息。
 #[derive(Debug, Default, Clone, PartialEq, Eq, Hash, Deserialize, Serialize, Builder)]
@@ -15,13 +13,11 @@ pub struct GuildSender {
 	/// 用户昵称
 	nick: Option<SmolStr>,
 	/// 性别
-	#[builder(default)]
-	sex: Sex,
+	sex: Option<Sex>,
 	/// 年龄
 	age: Option<u32>,
 	/// 角色
-	#[builder(default)]
-	role: Role,
+	role: Option<Role>,
 	/// 频道名片
 	card: Option<SmolStr>,
 	/// 等级
@@ -31,33 +27,13 @@ pub struct GuildSender {
 }
 
 impl GuildSender {
-	/// 获取频道角色。
-	pub fn role(&self) -> &Role {
-		&self.role
-	}
-
-	/// 获取频道名片。
-	pub fn card(&self) -> Option<&str> {
-		self.card.as_deref()
-	}
-
-	/// 获取等级。
-	pub fn level(&self) -> Option<u32> {
-		self.level
-	}
-
-	/// 获取专属头衔。
-	pub fn title(&self) -> Option<&str> {
-		self.title.as_deref()
-	}
-
 	#[allow(clippy::too_many_arguments)]
 	pub fn new<N>(
 		user_id: N,
 		nick: Option<N>,
-		sex: Sex,
+		sex: Option<Sex>,
 		age: Option<u32>,
-		role: Role,
+		role: Option<Role>,
 		card: Option<N>,
 		level: Option<u32>,
 		title: Option<N>,
@@ -76,17 +52,35 @@ impl GuildSender {
 			title: title.map(Into::into),
 		}
 	}
+	/// 获取频道角色。
+	pub fn role(&self) -> Option<Role> {
+		self.role
+	}
+
+	/// 获取频道名片。
+	pub fn card(&self) -> Option<&str> {
+		self.card.as_deref()
+	}
+
+	/// 获取等级。
+	pub fn level(&self) -> Option<u32> {
+		self.level
+	}
+
+	/// 获取专属头衔。
+	pub fn title(&self) -> Option<&str> {
+		self.title.as_deref()
+	}
 }
 
 impl Sender for GuildSender {
-	type Sex = Sex;
 	fn user_id(&self) -> &str {
 		self.user_id.as_ref()
 	}
 	fn name(&self) -> Option<&str> {
 		self.nick.as_deref()
 	}
-	fn sex(&self) -> Sex {
+	fn sex(&self) -> Option<Sex> {
 		self.sex
 	}
 	fn age(&self) -> Option<u32> {
@@ -118,9 +112,9 @@ mod tests {
 		let sender = GuildSender::new(
 			"123456",
 			Some("Alice"),
-			Sex::Female,
+			Some(Sex::Female),
 			Some(25),
-			Role::Admin,
+			Some(Role::Admin),
 			Some("频道管理员"),
 			Some(10),
 			Some("频道成员"),
@@ -128,9 +122,9 @@ mod tests {
 
 		assert_eq!(sender.user_id(), "123456");
 		assert_eq!(sender.name(), Some("Alice"));
-		assert_eq!(sender.sex(), Sex::Female);
+		assert_eq!(sender.sex(), Some(Sex::Female));
 		assert_eq!(sender.age(), Some(25));
-		assert_eq!(sender.role(), &Role::Admin);
+		assert_eq!(sender.role(), Some(Role::Admin));
 		assert_eq!(sender.card(), Some("频道管理员"));
 		assert_eq!(sender.level(), Some(10));
 		assert_eq!(sender.title(), Some("频道成员"));
@@ -140,20 +134,20 @@ mod tests {
 	fn test_new_none_values() {
 		let sender = GuildSender::new(
 			"u1",
-			None::<&str>,
-			Sex::Unknown,
 			None,
-			Role::Member,
-			None::<&str>,
 			None,
-			None::<&str>,
+			None,
+			None,
+			None,
+			None,
+			None,
 		);
 
 		assert_eq!(sender.user_id(), "u1");
 		assert_eq!(sender.name(), None);
-		assert_eq!(sender.sex(), Sex::Unknown);
+		assert_eq!(sender.sex(), None);
 		assert_eq!(sender.age(), None);
-		assert_eq!(sender.role(), &Role::Member);
+		assert_eq!(sender.role(), None);
 		assert_eq!(sender.card(), None);
 		assert_eq!(sender.level(), None);
 		assert_eq!(sender.title(), None);
@@ -165,9 +159,9 @@ mod tests {
 
 		assert_eq!(sender.user_id(), "");
 		assert_eq!(sender.name(), None);
-		assert_eq!(sender.sex(), Sex::Unknown);
+		assert_eq!(sender.sex(), None);
 		assert_eq!(sender.age(), None);
-		assert_eq!(sender.role(), &Role::Unknown);
+		assert_eq!(sender.role(), None);
 		assert_eq!(sender.card(), None);
 		assert_eq!(sender.level(), None);
 		assert_eq!(sender.title(), None);
@@ -178,9 +172,9 @@ mod tests {
 		let sender = GuildSender::new(
 			String::from("123456"),
 			Some(String::from("Alice")),
-			Sex::Female,
+			Some(Sex::Female),
 			Some(25),
-			Role::Admin,
+			Some(Role::Admin),
 			Some(String::from("频道管理员")),
 			Some(10),
 			Some(String::from("频道成员")),
@@ -197,9 +191,9 @@ mod tests {
 		let a = GuildSender::new(
 			"123456",
 			Some("Alice"),
-			Sex::Female,
+			Some(Sex::Female),
 			Some(25),
-			Role::Admin,
+			Some(Role::Admin),
 			Some("频道管理员"),
 			Some(10),
 			Some("频道成员"),
@@ -223,9 +217,9 @@ mod tests {
 		let sender = GuildSender::new(
 			"123456",
 			Some("Alice"),
-			Sex::Female,
+			Some(Sex::Female),
 			Some(25),
-			Role::Admin,
+			Some(Role::Admin),
 			Some("频道管理员"),
 			Some(10),
 			Some("频道成员"),

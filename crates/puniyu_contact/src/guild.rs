@@ -2,9 +2,7 @@ use bon::Builder;
 use serde::{Deserialize, Serialize};
 use smol_str::SmolStr;
 
-use puniyu_core::contact::Contact;
-
-use crate::SceneType;
+use crate::{Contact, SceneType};
 
 /// 频道联系人
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Deserialize, Serialize, Builder)]
@@ -32,8 +30,7 @@ impl GuildContact {
 }
 
 impl Contact for GuildContact {
-	type Scene = SceneType;
-	fn scene(&self) -> Self::Scene {
+	fn scene(&self) -> SceneType {
 		SceneType::Guild
 	}
 
@@ -119,7 +116,7 @@ mod tests {
 
 	#[test]
 	fn test_new_none_values() {
-		let guild = GuildContact::new("g1", None::<&str>, None::<&str>);
+		let guild = GuildContact::new("g1", None, None);
 
 		assert_eq!(guild.peer(), "g1");
 		assert_eq!(guild.name(), None);

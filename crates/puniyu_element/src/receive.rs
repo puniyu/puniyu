@@ -117,8 +117,7 @@ impl Elements {
 }
 
 impl Element for Elements {
-	type ElementType = ElementType;
-	fn r#type(&self) -> Self::ElementType {
+	fn r#type(&self) -> ElementType {
 		match self {
 			Self::Text(element) => element.r#type(),
 			Self::File(element) => element.r#type(),

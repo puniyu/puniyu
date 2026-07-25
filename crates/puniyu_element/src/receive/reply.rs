@@ -40,10 +40,8 @@ impl From<SmolStr> for ReplyElement {
 }
 
 impl Element for ReplyElement {
-	type ElementType = ElementType;
-
-	fn r#type(&self) -> Self::ElementType {
-		Self::ElementType::Reply
+	fn r#type(&self) -> ElementType {
+		ElementType::Reply
 	}
 }
 

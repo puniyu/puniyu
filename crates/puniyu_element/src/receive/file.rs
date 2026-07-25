@@ -14,10 +14,8 @@ pub struct FileElement {
 }
 
 impl Element for FileElement {
-	type ElementType = ElementType;
-
-	fn r#type(&self) -> Self::ElementType {
-		Self::ElementType::File
+	fn r#type(&self) -> ElementType {
+		ElementType::File
 	}
 }
 

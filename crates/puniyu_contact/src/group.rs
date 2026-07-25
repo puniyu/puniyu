@@ -9,9 +9,7 @@ use bon::Builder;
 use serde::{Deserialize, Serialize};
 use smol_str::SmolStr;
 
-use puniyu_core::contact::Contact;
-
-use crate::SceneType;
+use crate::{Contact, SceneType};
 
 /// 群聊联系人
 ///
@@ -44,8 +42,7 @@ impl GroupContact {
 }
 
 impl Contact for GroupContact {
-	type Scene = SceneType;
-	fn scene(&self) -> Self::Scene {
+	fn scene(&self) -> SceneType {
 		SceneType::Group
 	}
 
@@ -123,7 +120,7 @@ mod tests {
 
 	#[test]
 	fn test_new_none_name() {
-		let group = GroupContact::new("g1", None::<&str>);
+		let group = GroupContact::new("g1", None);
 
 		assert_eq!(group.peer(), "g1");
 		assert_eq!(group.name(), None);

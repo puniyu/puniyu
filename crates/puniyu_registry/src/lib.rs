@@ -1,125 +1,241 @@
-use std::collections::BTreeMap;
-use std::sync::{Arc, RwLock};
+use std::fmt;
+use std::sync::atomic::{AtomicU64, Ordering};
 
-#[derive(Clone)]
+pub use scc::hash_map::Entry;
+use scc::HashMap;
+
+
 pub struct Registry<V> {
-	inner: Arc<RwLock<BTreeMap<u64, V>>>,
+    map: HashMap<u64, V>,
+    next_id: AtomicU64,
 }
 
 impl<V> Default for Registry<V> {
-	fn default() -> Self {
-		Self { inner: Arc::new(RwLock::new(BTreeMap::new())) }
-	}
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl<V> Registry<V> {
-	/// 创建空注册表。
-	pub fn new() -> Self {
-		Self::default()
-	}
+    #[inline]
+    pub fn new() -> Self {
+        Self {
+            map: HashMap::new(),
+            next_id: AtomicU64::new(0),
+        }
+    }
 
-	/// 插入一个值，返回分配的 ID
-	pub fn insert(&self, value: V) -> u64 {
-		let mut map = self.inner.write().expect("poisoned lock");
-		let id = map.last_key_value().map(|(k, _)| k.wrapping_add(1)).unwrap_or(0);
-		map.insert(id, value);
-		id
-	}
+    #[inline]
+    pub fn with_capacity(capacity: usize) -> Self {
+        Self {
+            map: HashMap::with_capacity(capacity),
+            next_id: AtomicU64::new(0),
+        }
+    }
+}
 
-	/// 按 ID 获取值的克隆。
-	pub fn get(&self, id: u64) -> Option<V>
-	where
-		V: Clone,
-	{
-		self.inner.read().expect("poisoned lock").get(&id).cloned()
-	}
+impl<V> Registry<V> {
+    /// 插入键值对，返回被替换的旧值
+    #[inline]
+    pub fn insert(&self, id: u64, value: V) -> Option<V> {
+        match self.map.entry_sync(id) {
+            Entry::Occupied(mut entry) => Some(entry.insert(value)),
+            Entry::Vacant(entry) => {
+                entry.insert_entry(value);
+                None
+            }
+        }
+    }
 
-	/// 按 ID 移除并返回值。
-	pub fn remove(&self, id: u64) -> Option<V> {
-		self.inner.write().expect("poisoned lock").remove(&id)
-	}
+    /// 获取指定键的 Entry，用于就地操作
+    #[inline]
+    pub fn entry(&self, key: u64) -> Entry<'_, u64, V> {
+        self.map.entry_sync(key)
+    }
+}
 
-	/// 是否包含某个 ID
-	pub fn contains_key(&self, id: u64) -> bool {
-		self.inner.read().expect("poisoned lock").contains_key(&id)
-	}
+impl<V: Clone> Registry<V> {
+    /// 按键获取值的克隆
+    #[inline]
+    pub fn get(&self, id: u64) -> Option<V> {
+        self.map.read_sync(&id, |_, v| v.clone())
+    }
 
-	/// 返回条目数量。
-	pub fn len(&self) -> usize {
-		self.inner.read().expect("poisoned lock").len()
-	}
+    /// 按键获取键值对的克隆
+    #[inline]
+    pub fn get_key_value(&self, id: u64) -> Option<(u64, V)> {
+        self.map.read_sync(&id, |&k, v| (k, v.clone()))
+    }
+}
 
-	/// 是否为空。
-	pub fn is_empty(&self) -> bool {
-		self.inner.read().expect("poisoned lock").is_empty()
-	}
+impl<V> Registry<V> {
+    /// 按键获取值的可变引用，通过回调修改
+    #[inline]
+    pub fn get_mut<R, F>(&self, id: u64, f: F) -> Option<R>
+    where
+        F: FnOnce(&mut V) -> R,
+    {
+        self.map.update_sync(&id, |_, v| f(v))
+    }
 
-	/// 清空所有条目。
-	pub fn clear(&self) {
-		self.inner.write().expect("poisoned lock").clear();
-	}
+    /// 是否包含指定键
+    #[inline]
+    pub fn contains_key(&self, id: u64) -> bool {
+        self.map.contains_sync(&id)
+    }
+}
 
-	/// 获取所有值的克隆。
-	pub fn values(&self) -> Vec<V>
-	where
-		V: Clone,
-	{
-		self.inner.read().expect("poisoned lock").values().cloned().collect()
-	}
+impl<V> Registry<V> {
+    /// 移除指定键的条目，返回值
+    #[inline]
+    pub fn remove(&self, id: u64) -> Option<V> {
+        self.map.remove_sync(&id).map(|(_, v)| v)
+    }
 
-	/// 获取所有 ID。
-	pub fn keys(&self) -> Vec<u64> {
-		self.inner.read().expect("poisoned lock").keys().copied().collect()
-	}
+    /// 移除指定键的条目，返回键值对
+    #[inline]
+    pub fn remove_entry(&self, id: u64) -> Option<(u64, V)> {
+        self.map.remove_sync(&id)
+    }
 
-	/// 迭代：对每个 (id, value) 执行闭包。
-	pub fn iter<F>(&self, mut f: F)
-	where
-		F: FnMut(u64, &V),
-	{
-		let map = self.inner.read().expect("poisoned lock");
-		for (id, value) in map.iter() {
-			f(*id, value);
-		}
-	}
+    /// 保留满足谓词的条目，移除其余
+    #[inline]
+    pub fn retain<F>(&self, mut f: F)
+    where
+        F: FnMut(u64, &V) -> bool,
+    {
+        self.map.retain_sync(|&id, value| f(id, value));
+    }
 
-	/// 就地修改指定 ID 的值。闭包接收 `&mut V`。
-	pub fn get_mut<F>(&self, id: u64, f: F) -> bool
-	where
-		F: FnOnce(&mut V),
-	{
-		let mut map = self.inner.write().expect("poisoned lock");
-		if let Some(entry) = map.get_mut(&id) {
-			f(entry);
-			true
-		} else {
-			false
-		}
-	}
+    /// 清空所有条目
+    #[inline]
+    pub fn clear(&self) {
+        self.map.clear_sync();
+    }
+}
 
-	/// 如果 ID 不存在则插入，存在则更新。返回 ID。
-	pub fn upsert(&self, id: u64, value: V) -> u64 {
-		let mut map = self.inner.write().expect("poisoned lock");
-		map.insert(id, value);
-		id
-	}
+impl<V> Registry<V> {
+    /// 返回条目数量
+    #[inline]
+    pub fn len(&self) -> usize {
+        self.map.len()
+    }
 
-	/// 就地迭代：对每个 (id, value) 执行可变闭包。
-	pub fn iter_mut<F>(&self, mut f: F)
-	where
-		F: FnMut(u64, &mut V),
-	{
-		let mut map = self.inner.write().expect("poisoned lock");
-		for (id, value) in map.iter_mut() {
-			f(*id, value);
-		}
-	}
+    /// 是否为空
+    #[inline]
+    pub fn is_empty(&self) -> bool {
+        self.map.is_empty()
+    }
+}
 
-	/// 保留满足谓词的条目，移除其余
-	pub fn retain<F>(&self, mut f: F)
-	where
-		F: FnMut(u64, &V) -> bool,
-	{
-		self.inner.write().expect("poisoned lock").retain(|id, value| f(*id, value));
-	}
+impl<V> Registry<V> {
+    /// 对每个键值对执行闭包
+    pub fn for_each<F>(&self, mut f: F)
+    where
+        F: FnMut(u64, &V),
+    {
+        self.map.iter_sync(|&id, value| {
+            f(id, value);
+            true
+        });
+    }
+
+    /// 返回所有键的快照
+    pub fn keys(&self) -> Vec<u64> {
+        let mut result = Vec::new();
+        self.map.iter_sync(|&k, _| { result.push(k); true });
+        result
+    }
+
+    /// 返回所有值的克隆快照
+    pub fn values(&self) -> Vec<V>
+    where
+        V: Clone,
+    {
+        let mut result = Vec::new();
+        self.map.iter_sync(|_, v| { result.push(v.clone()); true });
+        result
+    }
+
+    /// 返回所有键值对的克隆快照
+    pub fn iter(&self) -> Vec<(u64, V)>
+    where
+        V: Clone,
+    {
+        let mut result = Vec::new();
+        self.map.iter_sync(|&k, v| { result.push((k, v.clone())); true });
+        result
+    }
+}
+
+impl<V: Clone> Clone for Registry<V> {
+    fn clone(&self) -> Self {
+        let reg = Self::new();
+        self.map.iter_sync(|&k, v| {
+            reg.map.insert_sync(k, v.clone()).ok();
+            true
+        });
+        let next = self.next_id.load(Ordering::Relaxed);
+        reg.next_id.store(next, Ordering::Relaxed);
+        reg
+    }
+}
+
+impl<V: fmt::Debug + Clone> fmt::Debug for Registry<V> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let mut debug = f.debug_struct("Registry");
+        let mut entries = Vec::new();
+        self.map.iter_sync(|&k, v| {
+            entries.push((k, v.clone()));
+            true
+        });
+        debug.field("len", &entries.len());
+        debug.field("entries", &entries);
+        debug.finish()
+    }
+}
+
+impl<V: PartialEq> PartialEq for Registry<V> {
+    fn eq(&self, other: &Self) -> bool {
+        if self.len() != other.len() {
+            return false;
+        }
+        self.map.iter_sync(|&k, v| {
+            other.map.read_sync(&k, |_, ov| v == ov).unwrap_or(false)
+        })
+    }
+}
+
+impl<V: Eq> Eq for Registry<V> {}
+
+impl<V> FromIterator<(u64, V)> for Registry<V> {
+    fn from_iter<I: IntoIterator<Item = (u64, V)>>(iter: I) -> Self {
+        let reg = Self::new();
+        for (k, v) in iter {
+            reg.map.insert_sync(k, v).ok();
+            let _ = reg.next_id.fetch_update(Ordering::Relaxed, Ordering::Relaxed, |current| {
+                if k >= current {
+                    Some(k + 1)
+                } else {
+                    None
+                }
+            });
+        }
+        reg
+    }
+}
+
+impl<V> Extend<(u64, V)> for Registry<V> {
+    fn extend<I: IntoIterator<Item = (u64, V)>>(&mut self, iter: I) {
+        for (k, v) in iter {
+            self.map.insert_sync(k, v).ok();
+            let _ = self.next_id.fetch_update(Ordering::Relaxed, Ordering::Relaxed, |current| {
+                if k >= current {
+                    Some(k + 1)
+                } else {
+                    None
+                }
+            });
+        }
+    }
 }

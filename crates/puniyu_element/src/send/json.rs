@@ -1,7 +1,7 @@
 use bon::Builder;
 use serde::{Deserialize, Serialize};
 
-use puniyu_core::element::Element;
+use crate::Element;
 use smol_str::SmolStr;
 
 use crate::ElementType;
@@ -61,9 +61,8 @@ impl AsRef<str> for JsonElement {
 }
 
 impl Element for JsonElement {
-	type ElementType = ElementType;
-	fn r#type(&self) -> Self::ElementType {
-		Self::ElementType::Json
+	fn r#type(&self) -> ElementType {
+		ElementType::Json
 	}
 }
 

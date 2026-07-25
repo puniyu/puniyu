@@ -2,9 +2,7 @@ use bon::Builder;
 use serde::{Deserialize, Serialize};
 use smol_str::SmolStr;
 
-use puniyu_core::sender::Sender;
-
-use crate::{Role, Sex};
+use crate::{Role, Sender, Sex};
 
 /// 群临时发送者信息。
 ///
@@ -17,13 +15,11 @@ pub struct GroupTempSender {
 	/// 用户昵称
 	nick: Option<SmolStr>,
 	/// 性别
-	#[builder(default)]
-	sex: Sex,
+	sex: Option<Sex>,
 	/// 年龄
 	age: Option<u32>,
 	/// 角色
-	#[builder(default)]
-	role: Role,
+	role: Option<Role>,
 	/// 群名片
 	card: Option<SmolStr>,
 	/// 等级
@@ -33,29 +29,13 @@ pub struct GroupTempSender {
 }
 
 impl GroupTempSender {
-	pub fn role(&self) -> &Role {
-		&self.role
-	}
-
-	pub fn card(&self) -> Option<&str> {
-		self.card.as_deref()
-	}
-
-	pub fn level(&self) -> Option<u32> {
-		self.level
-	}
-
-	pub fn title(&self) -> Option<&str> {
-		self.title.as_deref()
-	}
-
-	#[allow(clippy::too_many_arguments)]
+		#[allow(clippy::too_many_arguments)]
 	pub fn new<N>(
 		user_id: N,
 		nick: Option<N>,
-		sex: Sex,
+		sex: Option<Sex>,
 		age: Option<u32>,
-		role: Role,
+		role: Option<Role>,
 		card: Option<N>,
 		level: Option<u32>,
 		title: Option<N>,
@@ -74,17 +54,31 @@ impl GroupTempSender {
 			title: title.map(Into::into),
 		}
 	}
+	pub fn role(&self) -> Option<Role> {
+		self.role
+	}
+
+	pub fn card(&self) -> Option<&str> {
+		self.card.as_deref()
+	}
+
+	pub fn level(&self) -> Option<u32> {
+		self.level
+	}
+
+	pub fn title(&self) -> Option<&str> {
+		self.title.as_deref()
+	}
 }
 
 impl Sender for GroupTempSender {
-	type Sex = Sex;
 	fn user_id(&self) -> &str {
 		self.user_id.as_ref()
 	}
 	fn name(&self) -> Option<&str> {
 		self.nick.as_deref()
 	}
-	fn sex(&self) -> Sex {
+	fn sex(&self) -> Option<Sex> {
 		self.sex
 	}
 	fn age(&self) -> Option<u32> {
@@ -116,9 +110,9 @@ mod tests {
 		let sender = GroupTempSender::new(
 			"123456",
 			Some("Carol"),
-			Sex::Female,
+			Some(Sex::Female),
 			Some(22),
-			Role::Member,
+			Some(Role::Member),
 			Some("临时群员"),
 			Some(5),
 			Some("新人"),
@@ -126,9 +120,9 @@ mod tests {
 
 		assert_eq!(sender.user_id(), "123456");
 		assert_eq!(sender.name(), Some("Carol"));
-		assert_eq!(sender.sex(), Sex::Female);
+		assert_eq!(sender.sex(), Some(Sex::Female));
 		assert_eq!(sender.age(), Some(22));
-		assert_eq!(sender.role(), &Role::Member);
+		assert_eq!(sender.role(), Some(Role::Member));
 		assert_eq!(sender.card(), Some("临时群员"));
 		assert_eq!(sender.level(), Some(5));
 		assert_eq!(sender.title(), Some("新人"));
@@ -138,20 +132,20 @@ mod tests {
 	fn test_new_none_values() {
 		let sender = GroupTempSender::new(
 			"u1",
-			None::<&str>,
-			Sex::Unknown,
 			None,
-			Role::Member,
-			None::<&str>,
 			None,
-			None::<&str>,
+			None,
+			None,
+			None,
+			None,
+			None,
 		);
 
 		assert_eq!(sender.user_id(), "u1");
 		assert_eq!(sender.name(), None);
-		assert_eq!(sender.sex(), Sex::Unknown);
+		assert_eq!(sender.sex(), None);
 		assert_eq!(sender.age(), None);
-		assert_eq!(sender.role(), &Role::Member);
+		assert_eq!(sender.role(), None);
 		assert_eq!(sender.card(), None);
 		assert_eq!(sender.level(), None);
 		assert_eq!(sender.title(), None);
@@ -163,9 +157,9 @@ mod tests {
 
 		assert_eq!(sender.user_id(), "");
 		assert_eq!(sender.name(), None);
-		assert_eq!(sender.sex(), Sex::Unknown);
+		assert_eq!(sender.sex(), None);
 		assert_eq!(sender.age(), None);
-		assert_eq!(sender.role(), &Role::Unknown);
+		assert_eq!(sender.role(), None);
 		assert_eq!(sender.card(), None);
 		assert_eq!(sender.level(), None);
 		assert_eq!(sender.title(), None);
@@ -176,9 +170,9 @@ mod tests {
 		let sender = GroupTempSender::new(
 			String::from("123456"),
 			Some(String::from("Carol")),
-			Sex::Female,
+			Some(Sex::Female),
 			Some(22),
-			Role::Admin,
+			Some(Role::Admin),
 			Some(String::from("临时管理员")),
 			Some(7),
 			Some(String::from("活跃成员")),
@@ -195,9 +189,9 @@ mod tests {
 		let a = GroupTempSender::new(
 			"123456",
 			Some("Carol"),
-			Sex::Female,
+			Some(Sex::Female),
 			Some(22),
-			Role::Member,
+			Some(Role::Member),
 			Some("临时群员"),
 			Some(5),
 			Some("新人"),
@@ -221,9 +215,9 @@ mod tests {
 		let sender = GroupTempSender::new(
 			"123456",
 			Some("Carol"),
-			Sex::Female,
+			Some(Sex::Female),
 			Some(22),
-			Role::Member,
+			Some(Role::Member),
 			Some("临时群员"),
 			Some(5),
 			Some("新人"),

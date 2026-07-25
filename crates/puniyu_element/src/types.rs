@@ -1,8 +1,30 @@
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 
 use bytes::Bytes;
 use serde::{Deserialize, Serialize};
 use strum::{Display, EnumString, IntoStaticStr};
+use url::Url;
+
+use std::hash::Hash;
+
+pub trait Element: Send + Sync {
+	/// 元素类型
+	fn r#type(&self) -> ElementType;
+}
+
+impl<T: Element + ?Sized> Element for &T {
+	fn r#type(&self) -> ElementType {
+		(**self).r#type()
+	}
+}
+
+impl PartialEq for dyn Element {
+	fn eq(&self, other: &Self) -> bool {
+		self.r#type() == other.r#type()
+	}
+}
+
+impl Eq for dyn Element {}
 
 /// 元素类型枚举。
 #[derive(
@@ -43,14 +65,11 @@ pub enum ElementType {
 	Xml,
 }
 
-#[derive(
-	Debug, Clone, PartialEq, Eq, Hash, EnumString, Display, IntoStaticStr, Deserialize, Serialize,
-)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Deserialize, Serialize)]
 #[serde(rename_all = "lowercase", tag = "type", content = "field0")]
-#[strum(serialize_all = "lowercase")]
 pub enum File {
 	Bytes(Bytes),
-	Path(PathBuf),
+	Url(Url),
 }
 
 impl From<Bytes> for File {
@@ -61,7 +80,14 @@ impl From<Bytes> for File {
 
 impl From<PathBuf> for File {
 	fn from(value: PathBuf) -> Self {
-		Self::Path(value)
+		match Url::from_file_path(&value) {
+			Ok(url) => Self::Url(url),
+			Err(()) => {
+				let s = value.to_string_lossy();
+				let url = Url::parse(&format!("file:///{}", s)).expect("valid relative file url");
+				Self::Url(url)
+			}
+		}
 	}
 }
 
@@ -72,9 +98,17 @@ impl File {
 			_ => None,
 		}
 	}
-	pub fn as_path(&self) -> Option<&Path> {
+	pub fn as_url(&self) -> Option<&Url> {
 		match self {
-			Self::Path(path) => Some(path),
+			Self::Url(url) => Some(url),
+			_ => None,
+		}
+	}
+
+
+	pub fn as_path(&self) -> Option<PathBuf> {
+		match self {
+			Self::Url(url) if url.scheme() == "file" => url.to_file_path().ok(),
 			_ => None,
 		}
 	}

@@ -12,7 +12,7 @@ pub mod receive;
 pub mod send;
 mod types;
 #[doc(inline)]
-pub use puniyu_core::element::Element;
+pub use types::Element;
 #[doc(inline)]
 pub use types::{ElementType, File};
 

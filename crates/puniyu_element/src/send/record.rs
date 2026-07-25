@@ -21,10 +21,8 @@ impl RecordElement {
 }
 
 impl Element for RecordElement {
-	type ElementType = ElementType;
-
-	fn r#type(&self) -> Self::ElementType {
-		Self::ElementType::Record
+	fn r#type(&self) -> ElementType {
+		ElementType::Record
 	}
 }
 

@@ -1,14 +1,8 @@
-//! 好友联系人模块
-//!
-//! 提供好友联系人的类型定义和构建宏。
-
 use bon::Builder;
 use serde::{Deserialize, Serialize};
 use smol_str::SmolStr;
 
-use puniyu_core::contact::Contact;
-
-use crate::SceneType;
+use crate::{SceneType, Contact};
 
 /// 好友联系人
 ///
@@ -41,8 +35,7 @@ impl FriendContact {
 }
 
 impl Contact for FriendContact {
-	type Scene = SceneType;
-	fn scene(&self) -> Self::Scene {
+	fn scene(&self) -> SceneType {
 		SceneType::Friend
 	}
 
@@ -120,7 +113,7 @@ mod tests {
 
 	#[test]
 	fn test_new_none_name() {
-		let friend = FriendContact::new("u1", None::<&str>);
+		let friend = FriendContact::new("u1", None);
 
 		assert_eq!(friend.peer(), "u1");
 		assert_eq!(friend.name(), None);

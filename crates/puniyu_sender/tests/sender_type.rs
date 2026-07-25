@@ -14,7 +14,7 @@ fn test_from_friend() {
 	assert!(!sender.is_guild());
 	assert_eq!(sender.user_id(), "123456");
 	assert_eq!(sender.name(), Some("Alice"));
-	assert_eq!(sender.sex(), Sex::Female);
+	assert_eq!(sender.sex(), Some(Sex::Female));
 	assert_eq!(sender.age(), Some(25));
 }
 
@@ -106,7 +106,7 @@ fn test_trait_methods_on_enum() {
 
 	assert_eq!(sender.user_id(), "u2");
 	assert_eq!(sender.name(), Some("B"));
-	assert_eq!(sender.sex(), Sex::Male);
+	assert_eq!(sender.sex(), Some(Sex::Male));
 	assert_eq!(sender.age(), Some(30));
 }
 

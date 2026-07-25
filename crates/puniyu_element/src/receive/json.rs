@@ -40,10 +40,8 @@ impl From<SmolStr> for JsonElement {
 }
 
 impl Element for JsonElement {
-	type ElementType = ElementType;
-
-	fn r#type(&self) -> Self::ElementType {
-		Self::ElementType::Json
+	fn r#type(&self) -> ElementType {
+		ElementType::Json
 	}
 }
 

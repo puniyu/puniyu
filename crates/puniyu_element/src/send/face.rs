@@ -1,7 +1,7 @@
 use bon::Builder;
 use serde::{Deserialize, Serialize};
 
-use puniyu_core::element::Element;
+use crate::Element;
 
 use crate::ElementType;
 
@@ -18,9 +18,8 @@ impl FaceElement {
 }
 
 impl Element for FaceElement {
-	type ElementType = ElementType;
-	fn r#type(&self) -> Self::ElementType {
-		Self::ElementType::Face
+	fn r#type(&self) -> ElementType {
+		ElementType::Face
 	}
 }
 

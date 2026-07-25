@@ -1,6 +1,51 @@
 use serde::{Deserialize, Serialize};
 use strum::{Display, EnumString, IntoStaticStr};
 
+pub trait Contact: Send + Sync {
+
+	/// 获取场景类型
+	/// 
+	/// # 返回值
+	/// 
+	/// 返回场景类型 [`SceneType`]。
+	fn scene(&self) -> SceneType;
+
+	/// 获取联系人 ID
+	///
+	/// # 返回值
+	///
+	/// 返回联系人的唯一标识符 [`str`]。
+	fn peer(&self) -> &str;
+
+	/// 获取联系人名称
+	///
+	/// # 返回值
+	///
+	/// 返回联系人的名称 [`Option<&str>`],如果未设置则返回 [`None`]。
+	fn name(&self) -> Option<&str>;
+}
+
+impl<T: Contact + ?Sized> Contact for &T {
+	fn scene(&self) -> SceneType {
+		(**self).scene()
+	}
+	fn peer(&self) -> &str {
+		(**self).peer()
+	}
+	fn name(&self) -> Option<&str> {
+		(**self).name()
+	}
+}
+
+impl PartialEq for dyn Contact{
+	fn eq(&self, other: &Self) -> bool {
+		self.scene() == other.scene() && self.peer() == other.peer() && self.name() == other.name()
+	}
+}
+
+impl Eq for dyn Contact {}
+
+
 /// 场景类型
 ///
 /// 定义联系人所属的场景类型，用于区分好友、群聊、群临时和频道消息。
