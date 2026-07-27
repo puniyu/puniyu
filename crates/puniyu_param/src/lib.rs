@@ -228,6 +228,12 @@ impl FromParamValue for String {
 	}
 }
 
+impl FromParamValue for SmolStr {
+	fn from_param_value(value: &ParamValue) -> Option<Self> {
+		value.as_str().map(SmolStr::new)
+	}
+}
+
 macro_rules! impl_from_param_value_int {
 	($($t:ty),+) => {
 		$(
@@ -240,7 +246,7 @@ macro_rules! impl_from_param_value_int {
 	};
 }
 
-impl_from_param_value_int!(i8, i16, i32, i64, u8, u16, u32, u64);
+impl_from_param_value_int!(i8, i16, i32, i64, i128, isize, u8, u16, u32, u64, u128, usize);
 
 impl FromParamValue for f64 {
 	fn from_param_value(value: &ParamValue) -> Option<Self> {
@@ -263,5 +269,11 @@ impl FromParamValue for bool {
 impl<T: FromParamValue> FromParamValue for Vec<T> {
 	fn from_param_value(value: &ParamValue) -> Option<Self> {
 		value.as_list()?.iter().map(T::from_param_value).collect()
+	}
+}
+
+impl<T: FromParamValue> FromParamValue for Option<T> {
+	fn from_param_value(value: &ParamValue) -> Option<Self> {
+		Some(T::from_param_value(value))
 	}
 }

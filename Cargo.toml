@@ -1,7 +1,9 @@
 [workspace]
 members = [
     "crates/*",
+    "handlers/*",
     # "plugins/*",
+    "matchers/*",
     "puniyu_binaries",
 ]
 resolver = "2"
@@ -77,6 +79,7 @@ puniyu_permission = { version = "0.9.5", path = "./crates/puniyu_param" }
 
 puniyu_matcher = { version = "0.9.5", path = "./crates/puniyu_matcher" }
 
+puniyu_action = { version = "0.9.5", path = "./crates/puniyu_action" }
 puniyu_command = { version = "0.9.5", path = "./crates/puniyu_command" }
 puniyu_matcher_combinator = { version = "0.9.5", path = "./matchers/puniyu_matcher_combinator" }
 puniyu_matcher_keyword = { version = "0.9.5", path = "./matchers/puniyu_matcher_keyword" }

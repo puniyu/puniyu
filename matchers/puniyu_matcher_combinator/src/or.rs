@@ -1,7 +1,7 @@
 use async_trait::async_trait;
 use puniyu_matcher::Matcher;
 use puniyu_param::Params;
-use puniyu_session::MessageSession;
+use puniyu_session::EventSession;
 
 /// 组合匹配器：任一子匹配器匹配即成功。
 ///
@@ -19,7 +19,7 @@ impl<A: Matcher, B: Matcher> Or<A, B> {
 
 #[async_trait]
 impl<A: Matcher, B: Matcher> Matcher for Or<A, B> {
-	async fn matches(&self, session: &MessageSession) -> Option<Params> {
+	async fn matches(&self, session: &EventSession) -> Option<Params> {
 		self.a.matches(session).await.or(self.b.matches(session).await)
 	}
 }

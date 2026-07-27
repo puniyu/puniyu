@@ -1772,6 +1772,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "puniyu_action"
+version = "0.9.5"
+dependencies = [
+ "puniyu_handler",
+ "puniyu_matcher",
+ "puniyu_registry",
+]
+
+[[package]]
 name = "puniyu_adapter_core"
 version = "0.9.5"
 dependencies = [
@@ -1787,7 +1796,7 @@ dependencies = [
 name = "puniyu_api"
 version = "0.9.5"
 dependencies = [
- "puniyu_command",
+ "puniyu_action",
  "puniyu_contact",
  "puniyu_element",
  "puniyu_error",
@@ -1848,9 +1857,15 @@ name = "puniyu_command"
 version = "0.9.5"
 dependencies = [
  "async-trait",
+ "bon",
+ "puniyu_action",
  "puniyu_error",
- "puniyu_registry",
+ "puniyu_handler",
+ "puniyu_matcher",
+ "puniyu_matcher_combinator",
+ "puniyu_param",
  "puniyu_session",
+ "smol_str",
 ]
 
 [[package]]
@@ -1954,6 +1969,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "puniyu_handler_fn"
+version = "0.9.5"
+dependencies = [
+ "async-trait",
+ "puniyu_error",
+ "puniyu_handler",
+ "puniyu_param",
+ "puniyu_session",
+]
+
+[[package]]
 name = "puniyu_logger"
 version = "0.8.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1974,6 +2000,27 @@ dependencies = [
  "async-trait",
  "puniyu_param",
  "puniyu_session",
+]
+
+[[package]]
+name = "puniyu_matcher_combinator"
+version = "0.9.5"
+dependencies = [
+ "async-trait",
+ "puniyu_matcher",
+ "puniyu_param",
+ "puniyu_session",
+]
+
+[[package]]
+name = "puniyu_matcher_keyword"
+version = "0.9.5"
+dependencies = [
+ "async-trait",
+ "puniyu_matcher",
+ "puniyu_param",
+ "puniyu_session",
+ "smol_str",
 ]
 
 [[package]]

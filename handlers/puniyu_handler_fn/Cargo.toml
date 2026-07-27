@@ -1,5 +1,5 @@
 [package]
-name = "puniyu_api"
+name = "puniyu_handler_fn"
 version = "0.9.5"
 authors.workspace = true
 license.workspace = true
@@ -13,14 +13,9 @@ rust-version.workspace = true
 workspace = true
 
 [dependencies]
+async-trait.workspace = true
 puniyu_handler.workspace = true
-puniyu_action.workspace = true
-puniyu_event.workspace = true
-puniyu_session.workspace = true
-puniyu_sender.workspace = true
-puniyu_contact.workspace = true
-puniyu_element.workspace = true
-puniyu_message.workspace = true
 puniyu_error.workspace = true
-
+puniyu_session.workspace = true
+puniyu_param.workspace = true
 

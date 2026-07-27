@@ -1,7 +1,7 @@
 use async_trait::async_trait;
 use puniyu_matcher::Matcher;
 use puniyu_param::Params;
-use puniyu_session::MessageSession;
+use puniyu_session::EventSession;
 use smol_str::SmolStr;
 
 pub struct KeyWord {
@@ -15,7 +15,7 @@ impl KeyWord {
 }
 #[async_trait]
 impl Matcher for KeyWord {
-	async fn matches(&self, session: &MessageSession) -> Option<Params> {
+	async fn matches(&self, session: &EventSession) -> Option<Params> {
 		session.get_text().contains(&self.name.as_str()).then_some(Params::new())
 	}
 }

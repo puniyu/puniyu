@@ -180,7 +180,7 @@ impl EventEmitter {
 
 	/// 查询指定事件类型的监听器数量
 	pub fn len(&self, event_type: EventType) -> usize {
-		self.inner.listeners.read_sync(&event_type, |_, entries| entries.len()).unwrap_or(0)
+		self.inner.listeners.read_sync(&event_type, |_, entries| entries.len()).unwrap_or(0) 
 	}
 
 	fn register<L: Listener + 'static>(

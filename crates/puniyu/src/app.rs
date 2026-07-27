@@ -16,8 +16,6 @@ type AsyncFn = Box<dyn Fn() -> BoxFuture + Send + Sync>;
 #[derive(Builder)]
 pub struct App {
 	#[builder(field)]
-	loaders: Vec<Box<dyn puniyu_loader::Loader>>,
-	#[builder(field)]
 	on_start: Option<AsyncFn>,
 	#[builder(field)]
 	on_exit: Option<AsyncFn>,
