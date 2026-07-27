@@ -6,7 +6,8 @@
 //!
 //! - `Task` trait：统一定义任务名称、Cron 和执行逻辑
 //! - 标准 6 位 Cron：`秒 分 时 日 月 周`
-//! - 实例级 [`TaskRegistry`]：隔离管理任务定义与调度器生命周期
+//! - [`TaskRegistry`]：基于无锁并发的注册表，支持调度器生命周期管理
+//! - 使用 `tokio-cron-scheduler` 驱动定时调度
 //!
 //! ## 示例
 //!
@@ -38,6 +39,8 @@ pub use error::Error;
 
 mod registry;
 pub use registry::TaskRegistry;
+
+mod scheduler;
 
 mod types;
 #[doc(inline)]
@@ -98,8 +101,32 @@ pub trait Task: Send + Sync {
 	async fn execute(&self) -> AnyError;
 }
 
-impl PartialEq for dyn Task {
-	fn eq(&self, other: &Self) -> bool {
-		self.name() == other.name() && self.cron() == other.cron()
+#[async_trait]
+impl<T: Task + ?Sized> Task for Box<T> {
+	fn name(&self) -> &str {
+		self.as_ref().name()
+	}
+
+	fn cron(&self) -> &str {
+		self.as_ref().cron()
+	}
+
+	async fn execute(&self) -> AnyError {
+		self.as_ref().execute().await
+	}
+}
+
+#[async_trait]
+impl<T: Task + ?Sized> Task for std::sync::Arc<T> {
+	fn name(&self) -> &str {
+		self.as_ref().name()
+	}
+
+	fn cron(&self) -> &str {
+		self.as_ref().cron()
+	}
+
+	async fn execute(&self) -> AnyError {
+		self.as_ref().execute().await
 	}
 }

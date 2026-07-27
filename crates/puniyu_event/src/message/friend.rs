@@ -34,4 +34,20 @@ impl PartialEq for FriendMessage {
 
 impl Eq for FriendMessage {}
 
+impl FriendMessage {
+	/// 创建测试用 FriendMessage 实例。
+	#[cfg(feature = "test-support")]
+	pub fn new_for_test(
+		time: u64,
+		event_id: SmolStr,
+		message_id: SmolStr,
+		bot: Arc<dyn Bot>,
+		elements: EcoVec<Elements>,
+		contact: FriendContact,
+		sender: FriendSender,
+	) -> Self {
+		Self { time, event_id, message_id, bot, elements, contact, sender }
+	}
+}
+
 impl_message!(FriendMessage, crate::EventType::Message, SubEventType::Friend, FriendContact, FriendSender);

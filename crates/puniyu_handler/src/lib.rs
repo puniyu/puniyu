@@ -8,6 +8,7 @@
 //! - 支持处理 `puniyu_event::Event`
 //! - 支持前置、后置和短路的洋葱调用链
 //! - 支持优先级排序
+//! - `CommandHandler` trait 定义命令级处理器接口
 
 mod types;
 #[doc(inline)]
@@ -39,3 +40,14 @@ impl PartialEq for dyn Handler {
 }
 
 impl Eq for dyn Handler {}
+
+/// 命令处理器接口。
+#[async_trait]
+pub trait CommandHandler: Send + Sync {
+    /// 执行命令。
+    async fn handle(
+        &self,
+        session: &puniyu_session::MessageSession,
+        params: &puniyu_param::Params,
+    ) -> puniyu_error::AnyError;
+}

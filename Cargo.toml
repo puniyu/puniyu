@@ -1,9 +1,7 @@
 [workspace]
 members = [
     "crates/*",
-    "loaders/*",
-    "plugins/*",
-    "services/*",
+    # "plugins/*",
     "puniyu_binaries",
 ]
 resolver = "2"
@@ -31,11 +29,12 @@ serde_repr = { version = "0.1.20" }
 smol_str = { version = "0.3.6", features = ["serde"] }
 bon = { version = "3.9.3" }
 strum = { version = "0.28.0", features = ["derive"] }
+scc = { version = "3.8.5" }
 derive_more = { version = "2.1.1" }
 bytes = { version = "1.12.1" }
 ecow = { version = "0.3.0", features = ["serde"] }
 toml = { version = "1.1.2" }
-jiff = { version = "0.2.31", features = ["serde"] }
+jiff = { version = "0.2.35", features = ["serde"] }
 tokio = { version = "1.47.1" }
 futures = { version = "0.3.31" }
 arc-swap = { version = "1.7.1" }
@@ -66,32 +65,30 @@ puniyu_server = { version = "0.9.5", path = "./crates/puniyu_server" }
 
 puniyu_handler = { version = "0.9.5", path = "./crates/puniyu_handler" }
 
-puniyu_loader = { version = "0.9.5", path = "./crates/puniyu_loader" }
-puniyu_loader_builtin = { version = "0.9.5", path = "./loaders/puniyu_loader_builtin" }
+# puniyu_loader = { version = "0.9.5", path = "./crates/puniyu_loader" }
+# puniyu_loader_builtin = { version = "0.9.5", path = "./loaders/puniyu_loader_builtin" }
 
-puniyu_adapter_types = { version = "0.9.5", path = "./crates/puniyu_adapter_types" }
-puniyu_adapter_api = { version = "0.9.5", path = "./crates/puniyu_adapter_api" }
 puniyu_adapter_core = { version = "0.9.5", path = "./crates/puniyu_adapter_core" }
 
 puniyu_registry = { version = "0.9.5", path = "./crates/puniyu_registry" }
 
-puniyu_command_types = { version = "0.9.5", path = "./crates/puniyu_command_types" }
+puniyu_param = { version = "0.9.5", path = "./crates/puniyu_param" }
+puniyu_permission = { version = "0.9.5", path = "./crates/puniyu_param" }
+
+puniyu_matcher = { version = "0.9.5", path = "./crates/puniyu_matcher" }
+
 puniyu_command = { version = "0.9.5", path = "./crates/puniyu_command" }
-puniyu_command_parser = { version = "0.9.5", path = "./crates/puniyu_command_parser" }
+puniyu_matcher_combinator = { version = "0.9.5", path = "./matchers/puniyu_matcher_combinator" }
+puniyu_matcher_keyword = { version = "0.9.5", path = "./matchers/puniyu_matcher_keyword" }
+
 
 puniyu_plugin_core = { version = "0.9.5", path = "./crates/puniyu_plugin_core" }
-puniyu_plugin_config = { version = "0.9.5", path = "./plugins/puniyu_plugin_config" }
-puniyu_plugin_access = { version = "0.9.5", path = "./plugins/puniyu_plugin_access" }
-puniyu_plugin_command = { version = "0.9.5", path = "./plugins/puniyu_plugin_command" }
-puniyu_plugin_event = { version = "0.9.5", path = "./plugins/puniyu_plugin_event" }
-puniyu_plugin_logo = { version = "0.9.5", path = "./plugins/puniyu_plugin_logo" }
+# puniyu_plugin_config = { version = "0.9.5", path = "./plugins/puniyu_plugin_config" }
+# puniyu_plugin_access = { version = "0.9.5", path = "./plugins/puniyu_plugin_access" }
+# puniyu_plugin_command = { version = "0.9.5", path = "./plugins/puniyu_plugin_command" }
+# puniyu_plugin_event = { version = "0.9.5", path = "./plugins/puniyu_plugin_event" }
+# puniyu_plugin_logo = { version = "0.9.5", path = "./plugins/puniyu_plugin_logo" }
 
-puniyu_service = { version = "0.9.5", path = "./crates/puniyu_service" }
-puniyu_service_config = { version = "0.9.5", path = "./services/puniyu_service_config" }
-puniyu_service_event = { version = "0.9.5", path = "./services/puniyu_service_event" }
-puniyu_service_server = { version = "0.9.5", path = "./services/puniyu_service_server" }
-puniyu_service_task = { version = "0.9.5", path = "./services/puniyu_service_task" }
-puniyu_service_command = { version = "0.9.5", path = "./services/puniyu_service_command" }
 
 puniyu = { version = "0.9.5", path = "./crates/puniyu" }
 puniyu_context = { version = "0.9.5", path = "./crates/puniyu_context" }

@@ -17,7 +17,6 @@ impl<V> Default for Registry<V> {
 }
 
 impl<V> Registry<V> {
-    #[inline]
     pub fn new() -> Self {
         Self {
             map: HashMap::new(),
@@ -35,16 +34,11 @@ impl<V> Registry<V> {
 }
 
 impl<V> Registry<V> {
-    /// 插入键值对，返回被替换的旧值
-    #[inline]
-    pub fn insert(&self, id: u64, value: V) -> Option<V> {
-        match self.map.entry_sync(id) {
-            Entry::Occupied(mut entry) => Some(entry.insert(value)),
-            Entry::Vacant(entry) => {
-                entry.insert_entry(value);
-                None
-            }
-        }
+    /// 插入值，自动生成键，返回分配的键
+    pub fn insert(&self, value: V) -> u64 {
+        let id = self.next_id.fetch_add(1, Ordering::Relaxed);
+        self.map.insert_sync(id, value).ok();
+        id
     }
 
     /// 获取指定键的 Entry，用于就地操作
@@ -56,13 +50,11 @@ impl<V> Registry<V> {
 
 impl<V: Clone> Registry<V> {
     /// 按键获取值的克隆
-    #[inline]
     pub fn get(&self, id: u64) -> Option<V> {
         self.map.read_sync(&id, |_, v| v.clone())
     }
 
     /// 按键获取键值对的克隆
-    #[inline]
     pub fn get_key_value(&self, id: u64) -> Option<(u64, V)> {
         self.map.read_sync(&id, |&k, v| (k, v.clone()))
     }
@@ -70,7 +62,6 @@ impl<V: Clone> Registry<V> {
 
 impl<V> Registry<V> {
     /// 按键获取值的可变引用，通过回调修改
-    #[inline]
     pub fn get_mut<R, F>(&self, id: u64, f: F) -> Option<R>
     where
         F: FnOnce(&mut V) -> R,
@@ -87,7 +78,6 @@ impl<V> Registry<V> {
 
 impl<V> Registry<V> {
     /// 移除指定键的条目，返回值
-    #[inline]
     pub fn remove(&self, id: u64) -> Option<V> {
         self.map.remove_sync(&id).map(|(_, v)| v)
     }
@@ -99,7 +89,6 @@ impl<V> Registry<V> {
     }
 
     /// 保留满足谓词的条目，移除其余
-    #[inline]
     pub fn retain<F>(&self, mut f: F)
     where
         F: FnMut(u64, &V) -> bool,
@@ -129,6 +118,16 @@ impl<V> Registry<V> {
 }
 
 impl<V> Registry<V> {
+    fn update_next_id(&self, key: u64) {
+        let _ = self.next_id.fetch_update(Ordering::Relaxed, Ordering::Relaxed, |current| {
+            if key >= current {
+                Some(key + 1)
+            } else {
+                None
+            }
+        });
+    }
+
     /// 对每个键值对执行闭包
     pub fn for_each<F>(&self, mut f: F)
     where
@@ -213,13 +212,7 @@ impl<V> FromIterator<(u64, V)> for Registry<V> {
         let reg = Self::new();
         for (k, v) in iter {
             reg.map.insert_sync(k, v).ok();
-            let _ = reg.next_id.fetch_update(Ordering::Relaxed, Ordering::Relaxed, |current| {
-                if k >= current {
-                    Some(k + 1)
-                } else {
-                    None
-                }
-            });
+            reg.update_next_id(k);
         }
         reg
     }
@@ -229,13 +222,7 @@ impl<V> Extend<(u64, V)> for Registry<V> {
     fn extend<I: IntoIterator<Item = (u64, V)>>(&mut self, iter: I) {
         for (k, v) in iter {
             self.map.insert_sync(k, v).ok();
-            let _ = self.next_id.fetch_update(Ordering::Relaxed, Ordering::Relaxed, |current| {
-                if k >= current {
-                    Some(k + 1)
-                } else {
-                    None
-                }
-            });
+            self.update_next_id(k);
         }
     }
 }

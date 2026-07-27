@@ -13,15 +13,10 @@ rust-version.workspace = true
 workspace = true
 
 [dependencies]
-smol_str.workspace = true
-
-puniyu_adapter_types.workspace = true
 puniyu_bot.workspace = true
 puniyu_error.workspace = true
 puniyu_element.workspace = true
 puniyu_contact.workspace = true
-puniyu_command_types.workspace = true
-puniyu_path.workspace = true
 puniyu_event.workspace = true
 puniyu_message.workspace = true
 

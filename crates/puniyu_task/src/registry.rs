@@ -1,23 +1,54 @@
 use crate::error::Error;
-use crate::types::build_job;
-use crate::{TaskId, TaskInfo};
-use std::collections::HashMap;
-use std::sync::Arc;
-use tokio::sync::Mutex;
+use crate::scheduler::build_job;
+use crate::{Task, TaskId};
+use parking_lot::Mutex;
+use std::sync::{Arc, LazyLock};
 use tokio_cron_scheduler::JobScheduler;
 use uuid::Uuid;
 
-#[derive(Default)]
-struct State {
-	next_id: u64,
-	tasks: HashMap<u64, TaskInfo>,
-	job_ids: HashMap<u64, Uuid>,
-	scheduler: Option<JobScheduler>,
+
+/// 定时任务注册表。
+///
+/// 基于无锁并发 [`Registry`](puniyu_registry::Registry) 存储任务，
+/// 支持在调度器运行时动态注册/卸载任务。
+///
+/// # 示例
+///
+/// ```rust
+/// # use std::sync::Arc;
+/// # use puniyu_task::{Task, TaskRegistry};
+/// # use async_trait::async_trait;
+/// # use puniyu_error::AnyError;
+/// # struct MyTask;
+/// # #[async_trait]
+/// # impl Task for MyTask {
+/// #     fn name(&self) -> &str { "my_task" }
+/// #     fn cron(&self) -> &str { "0 * * * * *" }
+/// #     async fn execute(&self) -> AnyError { Ok(()) }
+/// # }
+/// # tokio_test::block_on(async {
+/// let registry = TaskRegistry::new();
+/// let task: Arc<dyn Task> = Arc::new(MyTask);
+/// registry.insert(task).await.unwrap();
+/// # })
+/// ```
+#[derive(Clone)]
+pub struct TaskRegistry {
+	tasks: puniyu_registry::Registry<Arc<dyn Task>>,
+	job_ids: Arc<scc::HashMap<u64, Uuid>>,
+	scheduler: Arc<Mutex<Option<JobScheduler>>>,
 }
 
-#[derive(Clone, Default)]
-pub struct TaskRegistry {
-	inner: Arc<Mutex<State>>,
+impl Default for TaskRegistry {
+	fn default() -> Self {
+		static TASKS: LazyLock<puniyu_registry::Registry<Arc<dyn Task>>> =
+			LazyLock::new(puniyu_registry::Registry::new);
+		static JOB_IDS: LazyLock<Arc<scc::HashMap<u64, Uuid>>> =
+			LazyLock::new(|| Arc::new(scc::HashMap::new()));
+		static SCHEDULER: LazyLock<Arc<Mutex<Option<JobScheduler>>>> =
+			LazyLock::new(|| Arc::new(Mutex::new(None)));
+		Self { tasks: TASKS.clone(), job_ids: JOB_IDS.clone(), scheduler: SCHEDULER.clone() }
+	}
 }
 
 impl TaskRegistry {
@@ -25,183 +56,149 @@ impl TaskRegistry {
 		Self::default()
 	}
 
-	/// 注册任务。调度器尚未启动时，任务会等待下一次启动统一装载。
-	pub async fn register(
-		&self,
-		scope_id: u64,
-		task: impl Into<Arc<dyn crate::Task>>,
-	) -> Result<u64, Error> {
-		let info = TaskInfo { scope_id, task: task.into() };
-		let job = build_job(&info)?;
-		let mut state = self.inner.lock().await;
-		if state.tasks.values().any(|registered| {
-			registered.scope_id == scope_id && registered.task.name() == info.task.name()
-		}) {
-			return Err(Error::Exists(format!("Task '{}' in scope {scope_id}", info.task.name())));
+	/// 注册任务，返回分配的任务 ID。
+	///
+	/// 如果调度器正在运行，任务会立即加入调度器。
+	/// 同名任务不允许重复注册。
+	pub async fn insert(&self, task: impl Into<Arc<dyn Task>>) -> Result<u64, Error> {
+		let task = task.into();
+		let id = puniyu_registry::Registry::insert(&self.tasks, task.clone());
+		let scheduler_ref = self.scheduler.lock().clone();
+		if let Some(scheduler) = scheduler_ref {
+			let job = build_job(&task)?;
+			let job_id = scheduler.add(job).await.map_err(|e| Error::InvalidSchedule {
+				task: task.name().to_string(),
+				message: e.to_string(),
+			})?;
+			self.job_ids.insert_sync(id, job_id).ok();
 		}
 
-		let id = state.next_id;
-		state.next_id = state.next_id.checked_add(1).ok_or(Error::IdExhausted)?;
-		if let Some(scheduler) = state.scheduler.as_ref() {
-			let job_id =
-				scheduler.add(job).await.map_err(|error| Error::Start(error.to_string()))?;
-			state.job_ids.insert(id, job_id);
-		}
-		state.tasks.insert(id, info);
 		Ok(id)
 	}
 
 	/// 卸载任务。
-	pub async fn unregister<'t, T>(&self, task: T) -> Result<(), Error>
+	pub async fn remove<'t, T>(&self, task: T) -> Result<(), Error>
 	where
 		T: Into<TaskId<'t>>,
 	{
-		let task = task.into();
-		match task {
-			TaskId::Index(id) => self.unregister_with_index(id).await,
-			TaskId::Name(name) => self.unregister_with_task_name(name.as_ref()).await,
+		match task.into() {
+			TaskId::Index(id) => self.remove_with_index(id).await,
+			TaskId::Name(name) => self.remove_with_name(name.as_ref()).await,
 		}
 	}
 
 	/// 通过索引卸载任务。
-	pub async fn unregister_with_index(&self, index: u64) -> Result<(), Error> {
-		let mut state = self.inner.lock().await;
-		Self::remove_locked(&mut state, index).await
+	pub async fn remove_with_index(&self, id: u64) -> Result<(), Error> {
+		self.tasks.remove(id);
+		if let Some((_, job_id)) = self.job_ids.remove_sync(&id) {
+			let scheduler = self.scheduler.lock().clone();
+			if let Some(scheduler) = scheduler {
+				scheduler.remove(&job_id).await.map_err(|e| Error::InvalidSchedule {
+					task: format!("index {id}"),
+					message: e.to_string(),
+				})?;
+			}
+		}
+		Ok(())
 	}
 
 	/// 通过任务名称卸载所有同名任务。
-	pub async fn unregister_with_task_name(&self, name: &str) -> Result<(), Error> {
-		let mut state = self.inner.lock().await;
-		let task_ids: Vec<u64> = state
+	pub async fn remove_with_name(&self, name: &str) -> Result<(), Error> {
+		let ids: Vec<u64> = self
 			.tasks
 			.iter()
-			.filter(|(_, info)| info.task.name() == name)
-			.map(|(id, _)| *id)
+			.into_iter()
+			.filter(|(_, task)| task.name() == name)
+			.map(|(id, _)| id)
 			.collect();
-		if task_ids.is_empty() {
-			return Err(Error::NotFound(format!("Task '{name}'")));
-		}
-		for id in task_ids {
-			Self::remove_locked(&mut state, id).await?;
+
+		let scheduler_ref = self.scheduler.lock().clone();
+		for id in ids {
+			self.tasks.remove(id);
+			if let Some((_, job_id)) = self.job_ids.remove_sync(&id)
+				&& let Some(ref scheduler) = scheduler_ref
+			{
+				scheduler.remove(&job_id).await.map_err(|e| Error::InvalidSchedule {
+					task: name.to_string(),
+					message: e.to_string(),
+				})?;
+			}
 		}
 		Ok(())
 	}
 
-	/// 卸载指定插件作用域注册的全部任务。
-	pub async fn remove_by_scope(&self, scope_id: u64) -> Result<(), Error> {
-		let mut state = self.inner.lock().await;
-		let task_ids: Vec<u64> = state
-			.tasks
-			.iter()
-			.filter(|(_, info)| info.scope_id == scope_id)
-			.map(|(id, _)| *id)
-			.collect();
-		for id in task_ids {
-			Self::remove_locked(&mut state, id).await?;
-		}
-		Ok(())
-	}
-
-	/// 查询任务。
-	pub async fn get<'t, T>(&self, task: T) -> Vec<TaskInfo>
+	pub fn get<'t, T>(&self, task: T) -> Vec<Arc<dyn Task>>
 	where
 		T: Into<TaskId<'t>>,
 	{
-		let task = task.into();
-		match task {
-			TaskId::Index(id) => self.get_with_index(id).await.into_iter().collect(),
-			TaskId::Name(name) => self.get_with_task_name(name.as_ref()).await,
+		match task.into() {
+			TaskId::Index(id) => self.get_with_index(id).into_iter().collect(),
+			TaskId::Name(name) => self.get_with_name(name.as_ref()),
 		}
 	}
 
-	pub async fn get_with_index(&self, index: u64) -> Option<TaskInfo> {
-		self.inner.lock().await.tasks.get(&index).cloned()
+	pub fn get_with_index(&self, index: u64) -> Option<Arc<dyn Task>> {
+		self.tasks.get(index)
 	}
 
-	pub async fn get_with_task_name(&self, name: &str) -> Vec<TaskInfo> {
-		self.inner
-			.lock()
-			.await
-			.tasks
-			.values()
-			.filter(|info| info.task.name() == name)
-			.cloned()
-			.collect()
+	pub fn get_with_name(&self, name: &str) -> Vec<Arc<dyn Task>> {
+		self.tasks.iter().into_iter().filter(|(_, t)| t.name() == name).map(|(_, t)| t).collect()
 	}
 
-	pub async fn get_by_scope(&self, scope_id: u64) -> Vec<TaskInfo> {
-		self.inner
-			.lock()
-			.await
-			.tasks
-			.values()
-			.filter(|info| info.scope_id == scope_id)
-			.cloned()
-			.collect()
+	pub fn values(&self) -> Vec<Arc<dyn Task>> {
+		self.tasks.values()
 	}
 
-	pub async fn all(&self) -> Vec<TaskInfo> {
-		self.inner.lock().await.tasks.values().cloned().collect()
-	}
-
-	/// 创建新的调度器实例并装载所有已登记任务。
 	pub async fn start(&self) -> Result<(), Error> {
-		let mut state = self.inner.lock().await;
-		if state.scheduler.is_some() {
-			return Ok(());
+		{
+			let guard = self.scheduler.lock();
+			if guard.is_some() {
+				return Ok(());
+			}
 		}
 
-		let mut scheduler =
-			JobScheduler::new().await.map_err(|error| Error::Create(error.to_string()))?;
-		let tasks: Vec<(u64, TaskInfo)> =
-			state.tasks.iter().map(|(id, info)| (*id, info.clone())).collect();
-		let mut job_ids = HashMap::with_capacity(tasks.len());
-		for (id, info) in tasks {
-			let job = build_job(&info)?;
-			let job_id =
-				scheduler.add(job).await.map_err(|error| Error::Start(error.to_string()))?;
-			job_ids.insert(id, job_id);
+		let mut scheduler = JobScheduler::new().await.map_err(|e| Error::InvalidSchedule {
+			task: String::new(),
+			message: format!("create scheduler: {e}"),
+		})?;
+
+		let tasks = self.tasks.iter();
+		for (id, task) in tasks {
+			let job = build_job(&task)?;
+			let job_id = scheduler.add(job).await.map_err(|e| Error::InvalidSchedule {
+				task: task.name().to_string(),
+				message: e.to_string(),
+			})?;
+			self.job_ids.insert_sync(id, job_id).ok();
 		}
-		if let Err(error) = scheduler.start().await {
+
+		if let Err(e) = scheduler.start().await {
 			let _ = scheduler.shutdown().await;
-			return Err(Error::Start(error.to_string()));
+			return Err(Error::InvalidSchedule {
+				task: String::new(),
+				message: format!("start scheduler: {e}"),
+			});
 		}
-		state.job_ids = job_ids;
-		state.scheduler = Some(scheduler);
+
+		*self.scheduler.lock() = Some(scheduler);
 		Ok(())
 	}
 
 	/// 停止并丢弃当前调度器，保留任务定义供下次重新启动。
 	pub async fn stop(&self) -> Result<(), Error> {
-		let mut scheduler = {
-			let mut state = self.inner.lock().await;
-			state.job_ids.clear();
-			state.scheduler.take()
-		};
-		if let Some(scheduler) = scheduler.as_mut() {
-			scheduler.shutdown().await.map_err(|error| Error::Shutdown(error.to_string()))?;
+		let mut scheduler = self.scheduler.lock().take();
+		self.job_ids.clear_sync();
+		if let Some(ref mut s) = scheduler {
+			s.shutdown().await.map_err(|e| Error::InvalidSchedule {
+				task: String::new(),
+				message: format!("shutdown scheduler: {e}"),
+			})?;
 		}
 		Ok(())
 	}
 
-	pub async fn is_running(&self) -> bool {
-		self.inner.lock().await.scheduler.is_some()
-	}
-
-	async fn remove_locked(state: &mut State, id: u64) -> Result<(), Error> {
-		if !state.tasks.contains_key(&id) {
-			return Err(Error::NotFound(format!("Task index {id}")));
-		}
-		if let Some(job_id) = state.job_ids.get(&id).copied() {
-			if let Some(scheduler) = state.scheduler.as_ref() {
-				scheduler
-					.remove(&job_id)
-					.await
-					.map_err(|error| Error::Shutdown(error.to_string()))?;
-			}
-			state.job_ids.remove(&id);
-		}
-		state.tasks.remove(&id);
-		Ok(())
+	/// 调度器是否正在运行
+	pub fn is_running(&self) -> bool {
+		self.scheduler.lock().is_some()
 	}
 }

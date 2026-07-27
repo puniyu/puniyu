@@ -15,5 +15,6 @@ workspace = true
 [dependencies]
 smol_str.workspace = true
 thiserror.workspace = true
+scc.workspace = true
 puniyu_handler.workspace = true
 puniyu_registry.workspace = true

@@ -4,7 +4,7 @@ pub use message::MessageSession;
 
 use crate::BotSession;
 use puniyu_event::Event;
-use std::{collections::HashMap, ops::Deref};
+use std::ops::Deref;
 
 /// 事件会话
 #[derive(Clone)]
@@ -26,7 +26,7 @@ impl<'c> EventSession<'c> {
 	pub fn as_message(&self) -> Option<MessageSession> {
 		self.inner
 			.as_message()
-			.map(|message| MessageSession::new(message, HashMap::new()))
+			.map(MessageSession::new)
 	}
 }
 
@@ -35,19 +35,5 @@ impl<'c> Deref for EventSession<'c> {
 
 	fn deref(&self) -> &Self::Target {
 		self.inner
-	}
-}
-
-impl<'c> From<&'c Event> for EventSession<'c> {
-	#[inline]
-	fn from(event: &'c Event) -> Self {
-		Self::new(event)
-	}
-}
-
-impl<'c> From<&'c EventSession<'c>> for &'c Event {
-	#[inline]
-	fn from(context: &'c EventSession<'c>) -> Self {
-		context.inner
 	}
 }

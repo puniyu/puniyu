@@ -1,41 +1,10 @@
 //! # puniyu_command
 //!
-//! 统一的 puniyu 命令库，覆盖命令定义、元信息与注册表管理场景。
+//! 统一的 puniyu 命令库，提供 [`Command`] trait 定义命令行为。
 //!
-//! ## 特性
-//!
-//! - 提供 [`Command`] trait 定义命令行为
-//! - 复用 `puniyu_command_types` 中的参数、权限和动作类型
-//! - 支持命令别名、优先级和权限控制
-//!
-//! ## 示例
-//!
-//! ```rust,ignore
-//! use async_trait::async_trait;
-//! use puniyu_command::{Arg, Command, CommandAction, Permission};
-//! use puniyu_session::MessageSession;
-//!
-//! struct HelloCommand;
-//!
-//! #[async_trait]
-//! impl Command for HelloCommand {
-//!     fn name(&self) -> &'static str {
-//!         "hello"
-//!     }
-//!
-//!     fn args(&self) -> Vec<Arg> {
-//!         vec![Arg::string("name").required()]
-//!     }
-//!
-//!     fn permission(&self) -> Permission {
-//!         Permission::All
-//!     }
-//!
-//!     async fn execute(&self, _ctx: &MessageSession) -> puniyu_error::Result<CommandAction> {
-//!         CommandAction::done()
-//!     }
-//! }
-//! ```
+//! 命令由 [`Matcher`](puniyu_matcher::Matcher) 和 [`CommandHandler`](puniyu_handler::CommandHandler) 组合而成：
+//! - **Matcher**：负责匹配消息、解析参数、检查权限
+//! - **Handler**：负责执行命令逻辑
 
 mod types;
 #[doc(inline)]
@@ -44,57 +13,30 @@ pub use types::*;
 pub type CommandRegistry = puniyu_registry::Registry<std::sync::Arc<dyn Command>>;
 
 use async_trait::async_trait;
-use puniyu_session::MessageSession;
 
 #[async_trait]
 pub trait Command: Send + Sync {
-	/// 返回命令名称。
+	/// 命令名称（用于日志/帮助）。
 	fn name(&self) -> &str;
 
-	/// 返回命令描述。
-	fn description(&self) -> Option<&str> {
-		None
-	}
-
-	/// 返回命令参数列表
-	fn args(&self) -> Vec<Arg<'_>> {
-		Vec::new()
-	}
-
-	/// 返回命令优先级，默认值为 `500`。
+	/// 优先级
 	fn priority(&self) -> u32 {
 		500
 	}
 
-	/// 返回命令别名列表。
-	fn alias(&self) -> Vec<&str> {
-		Vec::new()
-	}
-
-	/// 返回命令前缀，默认为 `None`
-	fn prefix(&self) -> Option<&str> {
+	/// 命令描述。
+	fn description(&self) -> Option<&str> {
 		None
 	}
 
-	/// 返回命令权限，默认为 [`Permission::All`]
-	fn permission(&self) -> Permission {
-		Permission::All
+	/// 匹配成功后是否阻断后续命令。默认 `false`。
+	fn block(&self) -> bool {
+		false
 	}
 
-	/// 执行命令。
-	async fn execute(&self, ctx: &MessageSession) -> puniyu_error::AnyError<CommandAction>;
+	/// 返回此命令的处理器。
+	async fn execute(
+		&self, 
+		session: &puniyu_session::MessageSession
+	) -> puniyu_error::AnyError;
 }
-
-impl PartialEq for dyn Command {
-	fn eq(&self, other: &Self) -> bool {
-		self.name() == other.name()
-			&& self.description() == other.description()
-			&& self.args() == other.args()
-			&& self.priority() == other.priority()
-			&& self.alias() == other.alias()
-			&& self.prefix() == other.prefix()
-			&& self.permission() == other.permission()
-	}
-}
-
-impl Eq for dyn Command {}

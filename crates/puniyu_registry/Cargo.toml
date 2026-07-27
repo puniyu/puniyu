@@ -13,4 +13,4 @@ rust-version.workspace = true
 workspace = true
 
 [dependencies]
-scc = "3.8.5"
+scc.workspace = true

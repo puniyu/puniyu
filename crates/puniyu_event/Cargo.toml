@@ -22,3 +22,6 @@ puniyu_contact.workspace = true
 puniyu_sender.workspace = true
 puniyu_element.workspace = true
 puniyu_bot.workspace = true
+
+[features]
+test-support = []

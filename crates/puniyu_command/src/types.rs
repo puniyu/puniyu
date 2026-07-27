@@ -1,5 +1,3 @@
-#[doc(inline)]
-pub use puniyu_command_types::*;
 use std::borrow::Cow;
 
 /// 命令标识符。

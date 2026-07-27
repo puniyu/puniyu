@@ -1,24 +1,20 @@
 use puniyu_bot::Bot;
-use std::ops::Deref;
+use std::{ops::Deref, sync::Arc};
 
-/// 机器人会话
+/// bot会话
 #[derive(Clone)]
 pub struct BotSession {
-	inner: Bot,
+	inner: Arc<dyn Bot>,
 }
 
 impl BotSession {
-	pub fn new(bot: &Bot) -> Self {
-		Self { inner: bot.clone() }
-	}
-
-	pub fn bot(&self) -> &Bot {
-		&self.inner
+	pub fn new(bot: impl Into<Arc<dyn Bot>>) -> Self {
+		Self { inner: bot.into() }
 	}
 }
 
 impl Deref for BotSession {
-	type Target = Bot;
+	type Target = Arc<dyn Bot>;
 	fn deref(&self) -> &Self::Target {
 		&self.inner
 	}

@@ -6,25 +6,28 @@ use puniyu_registry::{Entry, Registry};
 use crate::{Bot, BotId};
 
 pub struct BotRegistry {
-	inner: Registry<Arc<dyn Bot>>,
-	next_id: AtomicU64,
+	inner: Arc<Registry<Arc<dyn Bot>>>,
+	next_id: Arc<AtomicU64>,
 }
 
 impl Clone for BotRegistry {
 	fn clone(&self) -> Self {
 		Self {
 			inner: self.inner.clone(),
-			next_id: AtomicU64::new(self.next_id.load(Ordering::Relaxed)),
+			next_id: self.next_id.clone(),
 		}
 	}
 }
 
 impl Default for BotRegistry {
 	fn default() -> Self {
-		static STORE: LazyLock<Registry<Arc<dyn Bot>>> = LazyLock::new(Registry::new);
+		static INNER: LazyLock<Arc<Registry<Arc<dyn Bot>>>> =
+			LazyLock::new(|| Arc::new(Registry::new()));
+		static NEXT_ID: LazyLock<Arc<AtomicU64>> =
+			LazyLock::new(|| Arc::new(AtomicU64::new(0)));
 		Self {
-			inner: STORE.clone(),
-			next_id: AtomicU64::new(0),
+			inner: INNER.clone(),
+			next_id: NEXT_ID.clone(),
 		}
 	}
 }

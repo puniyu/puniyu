@@ -3,7 +3,7 @@ use bon::Builder;
 use convert_case::Casing;
 use log::info;
 use puniyu_adapter_core::Adapter;
-use puniyu_context::{AdapterContext, AppContext, PluginContext, ServiceContext};
+use puniyu_context::{AdapterContext, Context, PluginContext, ServiceContext};
 use puniyu_logger::owo_colors::OwoColorize;
 use puniyu_plugin_core::Plugin;
 use puniyu_service::Service;
@@ -59,7 +59,7 @@ impl App {
 			(cb)().await?;
 		}
 
-		let ctx = Arc::new(AppContext::new());
+		let ctx = Arc::new(Context::new());
 
 		let mut services: Runtime<Arc<dyn Service>, ServiceContext> = Runtime::new(Arc::clone(&ctx));
 		let mut plugins: Runtime<Arc<dyn Plugin>, PluginContext> = Runtime::new(Arc::clone(&ctx));

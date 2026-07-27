@@ -1,8 +1,10 @@
+pub mod adapter;
 mod app;
 pub mod runtime;
 
 use std::{path::PathBuf, sync::LazyLock};
 
+pub use adapter::AdapterPlugin;
 pub use app::{App, AppBuilder};
 use semver::Version;
 

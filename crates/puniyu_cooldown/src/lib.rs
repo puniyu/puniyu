@@ -28,6 +28,5 @@ mod types;
 #[doc(inline)]
 pub use types::*;
 mod cooldown;
-mod registry;
 #[doc(inline)]
 pub use cooldown::Cooldown;

@@ -1,14 +1,14 @@
-use crate::{AppContext, Error};
+use crate::{Context, Error};
 use smol_str::SmolStr;
 use std::{any::Any, sync::Arc};
 
 pub struct AdapterContext {
-	inner: Arc<AppContext>,
+	inner: Arc<Context>,
 	adapter_name: SmolStr,
 }
 
 impl AdapterContext {
-	pub fn new(app: Arc<AppContext>, adapter_name: impl Into<SmolStr>) -> Self {
+	pub fn new(app: Arc<Context>, adapter_name: impl Into<SmolStr>) -> Self {
 		Self { inner: app, adapter_name: adapter_name.into() }
 	}
 
@@ -17,7 +17,7 @@ impl AdapterContext {
 	}
 
 	pub fn get<V: Any + Send + Sync + Clone>(&self) -> Option<V> {
-		self.inner.get()
+		self.inner.depot.get()
 	}
 
 	pub fn require<V: Any + Send + Sync + Clone>(&self) -> Result<V, Error> {
@@ -28,6 +28,10 @@ impl AdapterContext {
 	}
 
 	pub fn contains<V: Any + Send + Sync>(&self) -> bool {
-		self.inner.contains::<V>()
+		self.inner.depot.contains::<V>()
+	}
+
+	pub fn insert<V: Any + Send + Sync>(&self, value: V) -> Result<(), Error> {
+		self.inner.depot.insert(value)
 	}
 }

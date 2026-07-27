@@ -1,14 +1,14 @@
-use crate::{AppContext, Error};
+use crate::{Context, Error};
 use smol_str::SmolStr;
 use std::{any::Any, sync::Arc};
 
 pub struct PluginContext {
-	inner: Arc<AppContext>,
+	inner: Arc<Context>,
 	plugin_name: SmolStr,
 }
 
 impl PluginContext {
-	pub fn new(app: Arc<AppContext>, plugin_name: impl Into<SmolStr>) -> Self {
+	pub fn new(app: Arc<Context>, plugin_name: impl Into<SmolStr>) -> Self {
 		Self { inner: app, plugin_name: plugin_name.into() }
 	}
 
@@ -17,7 +17,7 @@ impl PluginContext {
 	}
 
 	pub fn get<V: Any + Send + Sync + Clone>(&self) -> Option<V> {
-		self.inner.get()
+		self.inner.depot.get()
 	}
 
 	pub fn require<V: Any + Send + Sync + Clone>(&self) -> Result<V, Error> {
@@ -28,6 +28,6 @@ impl PluginContext {
 	}
 
 	pub fn contains<V: Any + Send + Sync>(&self) -> bool {
-		self.inner.contains::<V>()
+		self.inner.depot.contains::<V>()
 	}
 }

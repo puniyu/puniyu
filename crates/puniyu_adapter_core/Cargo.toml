@@ -13,10 +13,10 @@ rust-version.workspace = true
 workspace = true
 
 [dependencies]
-async-trait.workspace = true
 semver.workspace = true
+async-trait.workspace = true
+serde_json.workspace = true
 
 puniyu_context.workspace = true
-puniyu_adapter_api.workspace = true
-puniyu_error.workspace = true
 puniyu_version.workspace = true
+puniyu_error.workspace = true

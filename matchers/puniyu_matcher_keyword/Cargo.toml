@@ -1,0 +1,22 @@
+[package]
+name = "puniyu_matcher_keyword"
+version = "0.9.5"
+authors.workspace = true
+license.workspace = true
+readme.workspace = true
+homepage.workspace = true
+repository.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+async-trait.workspace = true
+smol_str.workspace = true
+
+puniyu_session.workspace = true
+puniyu_matcher.workspace = true
+puniyu_param.workspace = true
+

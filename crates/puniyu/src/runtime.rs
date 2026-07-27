@@ -1,5 +1,5 @@
 use puniyu_adapter_core::Adapter;
-use puniyu_context::{AdapterContext, AppContext, PluginContext, ServiceContext};
+use puniyu_context::{AdapterContext, Context, PluginContext, ServiceContext};
 use puniyu_plugin_core::Plugin;
 use puniyu_service::Service;
 use std::cmp::Reverse;
@@ -11,12 +11,12 @@ struct Entry<T, C> {
 }
 
 pub(crate) struct Runtime<T, C> {
-	app_context: Arc<AppContext>,
+	app_context: Arc<Context>,
 	components: Vec<Entry<T, C>>,
 }
 
 impl<T, C> Runtime<T, C> {
-	pub fn new(app_context: Arc<AppContext>) -> Self {
+	pub fn new(app_context: Arc<Context>) -> Self {
 		Self { app_context, components: Vec::new() }
 	}
 }
@@ -99,8 +99,9 @@ impl Runtime<Arc<dyn Plugin>, PluginContext> {
 
 impl Runtime<Arc<dyn Adapter>, AdapterContext> {
 	pub fn add(&mut self, component: Arc<dyn Adapter>) {
-		let name = component.adapter_info().name;
-		let context = AdapterContext::new(Arc::clone(&self.app_context), name.clone());
+		let name = component.name();
+		let context = AdapterContext::new(Arc::clone(&self.app_context), name);
+		let _ = context.insert(Arc::clone(&component));
 		self.components.push(Entry { component, context });
 	}
 
@@ -119,7 +120,7 @@ impl Runtime<Arc<dyn Adapter>, AdapterContext> {
 	pub async fn start(&self) {
 		for entry in self.sorted().await {
 			if let Err(e) = entry.component.on_start(&entry.context).await {
-				log::error!("adapter {} start failed: {e}", entry.component.adapter_info().name);
+				log::error!("adapter {} start failed: {e}", entry.component.name());
 			}
 		}
 	}
@@ -127,7 +128,7 @@ impl Runtime<Arc<dyn Adapter>, AdapterContext> {
 	pub async fn load(&self) {
 		for entry in self.sorted().await {
 			if let Err(e) = entry.component.on_load(&entry.context).await {
-				log::error!("adapter {} load failed: {e}", entry.component.adapter_info().name);
+				log::error!("adapter {} load failed: {e}", entry.component.name());
 			}
 		}
 	}
@@ -135,7 +136,7 @@ impl Runtime<Arc<dyn Adapter>, AdapterContext> {
 	pub async fn unload(&self) {
 		for entry in self.sorted_rev().await {
 			if let Err(e) = entry.component.on_unload(&entry.context).await {
-				log::error!("adapter {} unload failed: {e}", entry.component.adapter_info().name);
+				log::error!("adapter {} unload failed: {e}", entry.component.name());
 			}
 		}
 	}
@@ -143,7 +144,7 @@ impl Runtime<Arc<dyn Adapter>, AdapterContext> {
 	pub async fn stop(&self) {
 		for entry in self.sorted_rev().await {
 			if let Err(e) = entry.component.on_stop(&entry.context).await {
-				log::error!("adapter {} stop failed: {e}", entry.component.adapter_info().name);
+				log::error!("adapter {} stop failed: {e}", entry.component.name());
 			}
 		}
 	}
