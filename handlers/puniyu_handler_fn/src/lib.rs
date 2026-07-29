@@ -4,12 +4,11 @@ use std::pin::Pin;
 use async_trait::async_trait;
 use puniyu_error::AnyError;
 use puniyu_handler::Handler;
-use puniyu_param::ParamValue;
 use puniyu_session::EventSession;
 
 type BoxFuture = Pin<Box<dyn Future<Output = AnyError> + Send>>;
 
-type HandlerFn = Box<dyn Fn(EventSession, ParamValue) -> BoxFuture + Send + Sync>;
+type HandlerFn = Box<dyn Fn(EventSession) -> BoxFuture + Send + Sync>;
 
 pub struct FnHandler {
 	f: HandlerFn,
@@ -18,16 +17,16 @@ pub struct FnHandler {
 impl FnHandler {
 	pub fn new<F, Fut>(f: F) -> Self
 	where
-		F: Fn(EventSession, ParamValue) -> Fut + Send + Sync + 'static,
+		F: Fn(EventSession) -> Fut + Send + Sync + 'static,
 		Fut: Future<Output = AnyError> + Send + 'static,
 	{
-		Self { f: Box::new(move |s, p| Box::pin(f(s, p))) }
+		Self { f: Box::new(move |s| Box::pin(f(s))) }
 	}
 }
 
 #[async_trait]
 impl Handler for FnHandler {
-	async fn handle(&self, session: EventSession, params: ParamValue) -> AnyError {
-		(self.f)(session, params).await
+	async fn handle(&self, session: EventSession) -> AnyError {
+		(self.f)(session).await
 	}
 }

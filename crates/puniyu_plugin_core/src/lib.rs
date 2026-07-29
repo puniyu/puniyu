@@ -3,7 +3,7 @@ pub use registry::PluginRegistry;
 mod types;
 pub use types::*;
 use async_trait::async_trait;
-use puniyu_context::PluginContext;
+use puniyu_context::SubContext;
 use puniyu_error::AnyError;
 use semver::{Comparator, Op, Version, VersionReq};
 
@@ -40,22 +40,22 @@ pub trait Plugin: Send + Sync {
 	}
 
 	/// 插件启动回调。用于创建、发布并启动插件自己拥有的能力。
-	async fn on_start(&self, _ctx: &PluginContext) -> AnyError {
+	async fn on_start(&self, _ctx: &SubContext) -> AnyError {
 		Ok(())
 	}
 
 	/// 插件加载回调。用于取得其他能力并完成跨插件装配。
-	async fn on_load(&self, _ctx: &PluginContext) -> AnyError {
+	async fn on_load(&self, _ctx: &SubContext) -> AnyError {
 		Ok(())
 	}
 
 	/// 插件卸载回调。用于解除加载阶段完成的跨插件装配。
-	async fn on_unload(&self, _ctx: &PluginContext) -> AnyError {
+	async fn on_unload(&self, _ctx: &SubContext) -> AnyError {
 		Ok(())
 	}
 
 	/// 插件停止回调。用于停止插件自己拥有的运行时资源。
-	async fn on_stop(&self, _ctx: &PluginContext) -> AnyError {
+	async fn on_stop(&self, _ctx: &SubContext) -> AnyError {
 		Ok(())
 	}
 }

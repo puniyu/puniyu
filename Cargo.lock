@@ -1778,18 +1778,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "puniyu_adapter_core"
-version = "0.9.5"
-dependencies = [
- "async-trait",
- "puniyu_context",
- "puniyu_error",
- "puniyu_version",
- "semver",
- "serde_json",
-]
-
-[[package]]
 name = "puniyu_api"
 version = "0.9.5"
 dependencies = [
@@ -1842,9 +1830,9 @@ dependencies = [
  "puniyu_contact",
  "puniyu_error",
  "puniyu_message",
- "puniyu_registry",
  "semver",
  "serde",
+ "serde_json",
  "smol_str",
  "strum 0.28.0",
 ]
@@ -1900,6 +1888,7 @@ name = "puniyu_context"
 version = "0.9.5"
 dependencies = [
  "puniyu_action",
+ "puniyu_bot",
  "puniyu_path",
  "puniyu_registry",
  "puniyu_service",
@@ -1975,7 +1964,6 @@ version = "0.9.5"
 dependencies = [
  "async-trait",
  "puniyu_error",
- "puniyu_param",
  "puniyu_session",
  "thiserror",
 ]
@@ -1987,7 +1975,6 @@ dependencies = [
  "async-trait",
  "puniyu_error",
  "puniyu_handler",
- "puniyu_param",
  "puniyu_session",
 ]
 
@@ -1998,7 +1985,6 @@ dependencies = [
  "async-trait",
  "puniyu_error",
  "puniyu_handler",
- "puniyu_param",
  "puniyu_session",
 ]
 

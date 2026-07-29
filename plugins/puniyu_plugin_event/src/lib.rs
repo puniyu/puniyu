@@ -3,7 +3,7 @@ use event_log::EventLog;
 
 use async_trait::async_trait;
 use puniyu_api::{pkg_description, pkg_name, pkg_version};
-use puniyu_context::PluginContext;
+use puniyu_context::SubContext;
 use puniyu_error::AnyError;
 use puniyu_event::EventType;
 use puniyu_handler::Handler;
@@ -33,14 +33,14 @@ impl puniyu_plugin_core::Plugin for Plugin {
 		vec![puniyu_service_event::Service {}.name()]
 	}
 
-	async fn on_load(&self, ctx: &PluginContext) -> AnyError {
+	async fn on_load(&self, ctx: &SubContext) -> AnyError {
 		let emitter = ctx.require::<EventEmitter>()?;
 		let handler: Arc<dyn Handler> = Arc::new(EventLog);
 		emitter.on(EventType::Message, Arc::clone(&handler))?;
 		Ok(())
 	}
 
-	async fn on_unload(&self, ctx: &PluginContext) -> AnyError {
+	async fn on_unload(&self, ctx: &SubContext) -> AnyError {
 		let emitter = ctx.require::<EventEmitter>()?;
 		let handler: Arc<dyn Handler> = Arc::new(EventLog);
 		emitter.off(EventType::Message, handler);

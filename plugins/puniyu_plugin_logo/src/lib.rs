@@ -1,7 +1,7 @@
 use async_trait::async_trait;
 use bytes::Bytes;
 use puniyu_api::{pkg_name, pkg_version};
-use puniyu_context::PluginContext;
+use puniyu_context::SubContext;
 use puniyu_error::AnyError;
 use puniyu_server::Http;
 use puniyu_service::Service;
@@ -43,7 +43,7 @@ impl puniyu_plugin_core::Plugin for Plugin {
 		vec![puniyu_service_server::Service {}.name()]
 	}
 
-	async fn on_load(&self, ctx: &PluginContext) -> AnyError {
+	async fn on_load(&self, ctx: &SubContext) -> AnyError {
 		let data = DATA.get().cloned().unwrap_or_default();
 		tokio::fs::write(puniyu_path::assets_dir().join("logo.png"), data.0.clone()).await?;
 		let mut mount = ctx.require::<Http>()?.router(move || {

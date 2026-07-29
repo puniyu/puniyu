@@ -20,4 +20,5 @@ scc.workspace = true
 puniyu_path.workspace = true
 puniyu_service.workspace = true
 puniyu_action.workspace = true
+puniyu_bot.workspace = true
 puniyu_registry.workspace = true

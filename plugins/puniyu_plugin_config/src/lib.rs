@@ -10,7 +10,7 @@ use notify_debouncer_full::{
 };
 use puniyu_api::{pkg_name, pkg_version};
 use puniyu_config::{ConfigRegistry, Entry};
-use puniyu_context::PluginContext;
+use puniyu_context::SubContext;
 use puniyu_error::AnyError;
 use puniyu_service::Service;
 use semver::Version;
@@ -80,7 +80,7 @@ impl puniyu_plugin_core::Plugin for Plugin {
 		vec![puniyu_service_config::Service {}.name()]
 	}
 
-	async fn on_load(&self, ctx: &PluginContext) -> AnyError {
+	async fn on_load(&self, ctx: &SubContext) -> AnyError {
 		let registry = ctx.require::<ConfigRegistry>()?;
 
 		let path_ids = {

@@ -21,8 +21,8 @@ jiff.workspace = true
 bon.workspace = true
 async-trait.workspace = true
 bytes.workspace = true
+serde_json.workspace = true
 
 puniyu_contact.workspace = true
 puniyu_error.workspace = true
 puniyu_message.workspace = true
-puniyu_registry.workspace = true

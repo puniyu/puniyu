@@ -16,5 +16,4 @@ workspace = true
 async-trait.workspace = true
 thiserror.workspace = true
 puniyu_session.workspace = true
-puniyu_param.workspace = true
 puniyu_error.workspace = true

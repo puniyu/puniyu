@@ -5,13 +5,8 @@ pub use after::AfterHandler;
 
 use async_trait::async_trait;
 use puniyu_handler::Handler;
-use puniyu_param::ParamValue;
 
 /// 带钩子的处理器。
-///
-/// - `before` 失败时短路，`handler` 和 `after` 不执行
-/// - `after` 无论 `handler` 成功与否都会执行
-/// - 始终返回 `handler` 的结果
 pub struct HookHandler<B: Handler, H: Handler, A: Handler> {
 	before: Option<BeforeHandler<B>>,
 	handler: H,
@@ -39,14 +34,13 @@ impl<B: Handler, H: Handler, A: Handler> Handler for HookHandler<B, H, A> {
 	async fn handle(
 		&self,
 		session: puniyu_session::EventSession,
-		params: ParamValue,
 	) -> puniyu_error::AnyError {
 		if let Some(before) = &self.before {
-			before.handle(session.clone(), params.clone()).await?;
+			before.handle(session.clone()).await?;
 		}
-		let result = self.handler.handle(session.clone(), params.clone()).await;
+		let result = self.handler.handle(session.clone()).await;
 		if let Some(after) = &self.after {
-			after.handle(session, params).await.ok();
+			after.handle(session).await.ok();
 		}
 		result
 	}

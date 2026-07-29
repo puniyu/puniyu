@@ -6,8 +6,6 @@
 //! - **Matcher**：负责匹配事件
 //! - **Handler**：负责执行行为逻辑
 //!
-//! 可选包含：
-//! - **Extractor**：负责从事件中提取数据
 //!
 //! 执行流程由调度层内部处理：matcher.matches → handler.handle
 

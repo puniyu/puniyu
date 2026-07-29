@@ -1,5 +1,4 @@
 pub mod plugin;
-pub mod adapter;
 
 use convert_case::{Case, Casing};
 use std::path::PathBuf;
@@ -88,14 +87,6 @@ impl Path {
 	/// 获取插件子路径
 	pub fn plugin(&self, name: &str) -> plugin::Path {
 		plugin::Path {
-			name: SmolStr::new(name.to_case(Case::Kebab)),
-			base_dir: self.base_dir(),
-		}
-	}
-
-	/// 获取适配器子路径
-	pub fn adapter(&self, name: &str) -> adapter::Path {
-		adapter::Path {
 			name: SmolStr::new(name.to_case(Case::Kebab)),
 			base_dir: self.base_dir(),
 		}

@@ -71,7 +71,6 @@ puniyu_handler = { version = "0.9.5", path = "./crates/puniyu_handler" }
 # puniyu_loader = { version = "0.9.5", path = "./crates/puniyu_loader" }
 # puniyu_loader_builtin = { version = "0.9.5", path = "./loaders/puniyu_loader_builtin" }
 
-puniyu_adapter_core = { version = "0.9.5", path = "./crates/puniyu_adapter_core" }
 
 puniyu_registry = { version = "0.9.5", path = "./crates/puniyu_registry" }
 

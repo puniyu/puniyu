@@ -10,7 +10,7 @@ use puniyu_service::Service;
 use async_trait::async_trait;
 use handler::CommandHandler;
 use puniyu_api::{pkg_name, pkg_version};
-use puniyu_context::PluginContext;
+use puniyu_context::SubContext;
 use puniyu_error::AnyError;
 use puniyu_event::EventType;
 use puniyu_handler::Handler;
@@ -46,7 +46,7 @@ impl puniyu_plugin_core::Plugin for Plugin {
 		]
 	}
 
-	async fn on_load(&self, ctx: &PluginContext) -> AnyError {
+	async fn on_load(&self, ctx: &SubContext) -> AnyError {
 		let registry = ctx.require::<CommandRegistry>()?;
 		let emitter = ctx.require::<EventEmitter>()?;
 		let handler: Arc<dyn Handler> = Arc::new(CommandHandler::new(registry.clone()));
@@ -55,7 +55,7 @@ impl puniyu_plugin_core::Plugin for Plugin {
 		Ok(())
 	}
 
-	async fn on_unload(&self, ctx: &PluginContext) -> AnyError {
+	async fn on_unload(&self, ctx: &SubContext) -> AnyError {
 		let emitter = ctx.require::<EventEmitter>()?;
 		if let Some(inner) = self.inner.get() {
 			emitter.off(EventType::Message, Arc::clone(&inner.handler));

@@ -52,6 +52,12 @@ impl TypedDepot {
 		self.services.insert_sync(type_id, service).ok();
 	}
 
+	/// 插入已类型擦除的 Arc<dyn Service>
+	pub fn insert_dyn(&self, service: Arc<dyn Service>) {
+		let type_id = service.as_ref().type_id();
+		self.services.insert_sync(type_id, service).ok();
+	}
+
 	pub fn get<T: Any + Send + Sync>(&self) -> Option<Arc<T>> {
 		self.services.read_sync(&TypeId::of::<T>(), |_, v| v.clone()).and_then(|s| downcast(s))
 	}

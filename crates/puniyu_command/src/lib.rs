@@ -1,59 +1,55 @@
-mod handler;
-pub use handler::CommandHandler;
-
+use bon::Builder;
 use puniyu_action::Action;
-use puniyu_extractor::Extractor;
 use puniyu_handler::Handler;
 use puniyu_matcher::Matcher;
 use puniyu_matcher_combinator::AndMatcher;
 use puniyu_matcher_event::MessageMatcher;
 use smol_str::SmolStr;
 
-/// 命令行为。
+/// 命令行为
 ///
-/// 绑定 Matcher + Extractor + Handler
-pub struct Command<M: Matcher, H: Handler, E: Extractor> {
+///
+/// # 示例
+///
+/// ```ignore
+/// let cmd = Command::builder()
+///     .name("echo")
+///     .matcher(KeyWord::new("echo"))
+///     .handler(my_handler)
+///     .description("echo back")
+///     .priority(100)
+///     .build();
+/// ```
+#[derive(Builder)]
+pub struct Command<M: Matcher, H: Handler> {
+	#[builder(into)]
 	name: SmolStr,
+	#[builder(into)]
 	description: Option<SmolStr>,
 	matcher: AndMatcher<MessageMatcher, M>,
-	handler: CommandHandler<H, E>,
+	handler: H,
+	#[builder(default = 500)]
 	priority: u32,
+	#[builder(default = false)]
 	block: bool,
 }
 
-impl<M: Matcher, H: Handler, E: Extractor> Command<M, H, E> {
+impl<M: Matcher, H: Handler> Command<M, H> {
 	/// 创建命令。
 	pub fn new(
-		name: impl Into<SmolStr>, 
-		matcher: M, 
-		extractor: E, 
-		handler: H
+		name: impl Into<SmolStr>,
+		matcher: M,
+		handler: H,
 	) -> Self {
-		Self {
-			name: name.into(),
-			description: None,
-			matcher: AndMatcher::new(MessageMatcher, matcher),
-			handler: CommandHandler::new(handler, extractor),
-			priority: 500,
-			block: false,
-		}
-	}
-	pub fn description(mut self, description: impl Into<SmolStr>) -> Self {
-		self.description = Some(description.into());
-		self
-	}
-	pub fn priority(mut self, priority: u32) -> Self {
-		self.priority = priority;
-		self
-	}
-
-	pub fn block(mut self, block: bool) -> Self {
-		self.block = block;
-		self
+		Self::builder()
+			.name(name)
+			.matcher(AndMatcher::new(MessageMatcher, matcher))
+			.handler(handler)
+			.build()
 	}
 }
 
-impl<M: Matcher, H: Handler, E: Extractor> Action for Command<M, H, E> {
+impl<M: Matcher, H: Handler> Action for Command<M, H> {
 	fn name(&self) -> &str {
 		self.name.as_str()
 	}
