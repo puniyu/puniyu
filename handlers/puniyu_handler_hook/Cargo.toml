@@ -1,6 +1,6 @@
 [package]
-name = "puniyu_service_command"
-version = "0.9.5"
+name = "puniyu_handler_hook"
+version = "0.1.0"
 authors.workspace = true
 license.workspace = true
 readme.workspace = true
@@ -13,11 +13,11 @@ rust-version.workspace = true
 workspace = true
 
 [dependencies]
-semver.workspace = true
 async-trait.workspace = true
 
-puniyu_api.workspace = true
-puniyu_command.workspace = true
-puniyu_context.workspace = true
+puniyu_handler.workspace = true
 puniyu_error.workspace = true
-puniyu_service.workspace = true
+puniyu_session.workspace = true
+puniyu_param.workspace = true
+
+

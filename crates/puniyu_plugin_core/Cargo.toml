@@ -18,6 +18,7 @@ semver.workspace = true
 
 puniyu_context.workspace = true
 puniyu_error.workspace = true
+puniyu_registry.workspace = true
 puniyu_version.workspace = true
 
 

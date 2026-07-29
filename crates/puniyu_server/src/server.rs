@@ -1,124 +1,164 @@
-use crate::proxy::HttpServiceProxy;
-use crate::{Error, Http, ServerOptions};
-use salvo::conn::{Listener, TcpListener};
-use salvo::prelude::{Router, Service};
+use crate::{Error, HttpMount, ServerOptions};
+use arc_swap::ArcSwap;
+use parking_lot::Mutex;
+use salvo::conn::TcpListener;
+use salvo::prelude::{Handler, Router, Service};
 use salvo::server::ServerHandle;
+use salvo::Listener;
+use std::collections::BTreeMap;
 use std::net::SocketAddr;
-use tokio::sync::Mutex;
+use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
+use std::sync::Arc;
 use tokio::task::JoinHandle;
+
+type RouterFactory = Arc<dyn Fn() -> Router + Send + Sync + 'static>;
+
+#[derive(Clone)]
+pub(crate) enum MountContent {
+	Router(RouterFactory),
+	Hoop(Arc<dyn Handler>),
+}
 
 struct Running {
 	handle: ServerHandle,
 	task: JoinHandle<std::io::Result<()>>,
 }
 
-enum ServerState {
-	Idle,
-	Running(Running),
-	Draining(Running),
-}
-
 pub struct Server {
 	options: ServerOptions,
-	http: Http,
-	state: Mutex<ServerState>,
+	mounts: Mutex<BTreeMap<u64, MountContent>>,
+	next_id: AtomicU64,
+	service: Arc<ArcSwap<Service>>,
+	accepting: AtomicBool,
+	running: Mutex<Option<Running>>,
 }
 
 impl Server {
-	pub fn new(options: ServerOptions) -> Self {
-		Self { options, http: Http::new(), state: Mutex::new(ServerState::Idle) }
+	pub fn new(options: ServerOptions) -> Arc<Self> {
+		Arc::new(Self {
+			options,
+			mounts: Mutex::new(BTreeMap::new()),
+			next_id: AtomicU64::new(0),
+			service: Arc::new(ArcSwap::from_pointee(Service::new(Router::new()))),
+			accepting: AtomicBool::new(false),
+			running: Mutex::new(None),
+		})
 	}
 
-	pub fn http(&self) -> Http {
-		self.http.clone()
+	pub fn router<F>(self: &Arc<Self>, build: F) -> HttpMount
+	where
+		F: Fn() -> Router + Send + Sync + 'static,
+	{
+		HttpMount::new(Arc::downgrade(self), MountContent::Router(Arc::new(build)))
 	}
 
-	pub async fn start(&self) -> Result<(), Error> {
-		let mut state = self.state.lock().await;
-		if !matches!(*state, ServerState::Idle) {
-			return Err(Error::AlreadyRunning);
+	pub fn hoop<H>(self: &Arc<Self>, hoop: H) -> HttpMount
+	where
+		H: Handler,
+	{
+		HttpMount::new(Arc::downgrade(self), MountContent::Hoop(Arc::new(hoop)))
+	}
+
+	pub async fn start(self: &Arc<Self>) -> Result<(), Error> {
+		{
+			let running = self.running.lock();
+			if running.is_some() {
+				return Err(Error::AlreadyRunning);
+			}
 		}
-		self.http.begin_start()?;
 		let address = SocketAddr::new(self.options.host, self.options.port);
 		let listener = match TcpListener::new(address).try_bind().await {
-			Ok(listener) => listener,
-			Err(error) => {
-				self.http.abort_start();
-				return Err(Error::Bind(error.to_string()));
-			}
+			Ok(l) => l,
+			Err(e) => return Err(Error::Bind(e.to_string())),
 		};
-		let proxy = HttpServiceProxy::new(self.http.inner.clone());
-		let entry = Router::with_path("{**path}").goal(proxy);
-		let service = Service::new(entry);
+		let mut running = self.running.lock();
+		self.rebuild_service();
+		self.accepting.store(true, Ordering::Release);
+		let proxy = ServiceProxy(Arc::clone(&self.service));
 		let server = salvo::Server::new(listener);
 		let handle = server.handle();
-
-		if let Err(error) = self.http.mark_running() {
-			self.http.abort_start();
-			return Err(error);
-		}
-		let task = tokio::spawn(server.try_serve(service));
-		*state = ServerState::Running(Running { handle, task });
+		let task = tokio::spawn(server.try_serve(Service::new(Router::with_path("{**}").goal(proxy))));
+		*running = Some(Running { handle, task });
 		log::info!("Server running on {address}");
 		Ok(())
 	}
 
-	pub async fn drain(&self) -> Result<(), Error> {
-		let mut state = self.state.lock().await;
-		let current = std::mem::replace(&mut *state, ServerState::Idle);
-		match current {
-			ServerState::Idle => Err(Error::NotRunning),
-			ServerState::Draining(running) => {
-				*state = ServerState::Draining(running);
-				Ok(())
-			}
-			ServerState::Running(running) => {
-				if let Err(error) = self.http.drain() {
-					*state = ServerState::Running(running);
-					return Err(error);
-				}
-				running.handle.stop_graceful(Some(self.options.shutdown_timeout));
-				*state = ServerState::Draining(running);
-				Ok(())
-			}
+	pub async fn stop(&self) -> Result<(), Error> {
+		let running = self.running.lock().take();
+		let Some(running) = running else {
+			return Ok(());
+		};
+		self.accepting.store(false, Ordering::Release);
+		running.handle.stop_graceful(Some(self.options.shutdown_timeout));
+		match running.task.await {
+			Ok(Ok(())) => Ok(()),
+			Ok(Err(e)) => Err(Error::Serve(e)),
+			Err(e) => Err(Error::Task(e)),
 		}
 	}
 
-	pub async fn stop(&self) -> Result<(), Error> {
-		let mut state = self.state.lock().await;
-		let current = std::mem::replace(&mut *state, ServerState::Idle);
-		let running = match current {
-			ServerState::Idle => {
-				self.http.finish_stop();
-				return Ok(());
+	pub(crate) fn mount(&self, content: MountContent) -> Result<u64, Error> {
+		if !self.accepting.load(Ordering::Acquire) {
+			return Err(Error::NotRunning);
+		}
+		let id = self.next_id.fetch_add(1, Ordering::Relaxed);
+		self.mounts.lock().insert(id, content);
+		self.rebuild_service();
+		Ok(id)
+	}
+
+	pub(crate) fn unmount(&self, id: u64) {
+		self.mounts.lock().remove(&id);
+		self.rebuild_service();
+	}
+
+	fn rebuild_service(&self) {
+		let mounts = self.mounts.lock();
+		let mut root = Router::new();
+		let mut hoops = Vec::new();
+		for content in mounts.values() {
+			match content {
+				MountContent::Router(build) => root = root.push(build()),
+				MountContent::Hoop(hoop) => hoops.push(hoop.clone()),
 			}
-			ServerState::Draining(running) => running,
-			ServerState::Running(running) => {
-				if let Err(error) = self.http.drain() {
-					*state = ServerState::Running(running);
-					return Err(error);
-				}
-				running.handle.stop_graceful(Some(self.options.shutdown_timeout));
-				running
-			}
-		};
-		let result = match running.task.await {
-			Ok(Ok(())) => Ok(()),
-			Ok(Err(error)) => Err(Error::Serve(error)),
-			Err(error) => Err(Error::Task(error)),
-		};
-		self.http.finish_stop();
-		result
+		}
+		let mut svc = Service::new(root);
+		svc.hoops = hoops;
+		self.service.store(Arc::new(svc));
 	}
 }
 
 impl Drop for Server {
 	fn drop(&mut self) {
-		self.http.finish_stop();
-		let state = std::mem::replace(self.state.get_mut(), ServerState::Idle);
-		if let ServerState::Running(running) | ServerState::Draining(running) = state {
+		self.accepting.store(false, Ordering::Release);
+		if let Some(running) = self.running.get_mut().take() {
 			running.handle.stop_forceful();
 			running.task.abort();
 		}
+	}
+}
+
+struct ServiceProxy(Arc<ArcSwap<Service>>);
+
+#[salvo::async_trait]
+impl Handler for ServiceProxy {
+	async fn handle(
+		&self,
+		req: &mut salvo::Request,
+		_depot: &mut salvo::Depot,
+		res: &mut salvo::Response,
+		ctrl: &mut salvo::FlowCtrl,
+	) {
+		let service = self.0.load_full();
+		let handler = service.hyper_handler(
+			req.local_addr().clone(),
+			req.remote_addr().clone(),
+			req.scheme().clone(),
+			None,
+			ctrl.conn().clone(),
+			None,
+		);
+		*res = handler.handle(std::mem::take(req)).await;
+		ctrl.skip_rest();
 	}
 }

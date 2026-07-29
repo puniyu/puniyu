@@ -15,5 +15,4 @@ workspace = true
 [dependencies]
 async-trait.workspace = true
 
-puniyu_param.workspace = true
 puniyu_session.workspace = true

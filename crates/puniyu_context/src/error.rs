@@ -3,11 +3,11 @@ use thiserror::Error;
 
 #[derive(Debug, Error)]
 pub enum Error {
-	/// 能力已存在。
-	#[error("capability '{capability}' conflicts")]
-	Conflict { capability: &'static str },
+	/// 服务名冲突
+	#[error("service '{name}' already exists")]
+	Conflict { name: SmolStr },
 
-	/// 插件所需的能力不存在。
-	#[error("capability '{capability}' is missing for '{requester}'")]
-	Missing { requester: SmolStr, capability: &'static str },
+	/// 服务不存在。
+	#[error("service '{name}' is missing")]
+	Missing { name: SmolStr },
 }

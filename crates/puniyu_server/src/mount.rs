@@ -1,24 +1,24 @@
 use crate::Error;
-use crate::http::{HttpInner, MountContent, MountId};
-use std::sync::{Arc, Weak};
+use crate::server::{MountContent, Server};
+use std::sync::Weak;
 
 pub struct HttpMount {
-	inner: Weak<HttpInner>,
+	server: Weak<Server>,
 	content: MountContent,
-	id: Option<MountId>,
+	id: Option<u64>,
 }
 
 impl HttpMount {
-	pub(crate) fn new(inner: &Arc<HttpInner>, content: MountContent) -> Self {
-		Self { inner: Arc::downgrade(inner), content, id: None }
+	pub(crate) fn new(server: Weak<Server>, content: MountContent) -> Self {
+		Self { server, content, id: None }
 	}
 
 	pub fn mount(&mut self) -> Result<(), Error> {
 		if self.id.is_some() {
 			return Err(Error::AlreadyMounted);
 		}
-		let inner = self.inner.upgrade().ok_or(Error::HttpUnavailable)?;
-		self.id = Some(inner.mount(self.content.clone())?);
+		let server = self.server.upgrade().ok_or(Error::ServerUnavailable)?;
+		self.id = Some(server.mount(self.content.clone())?);
 		Ok(())
 	}
 
@@ -26,16 +26,14 @@ impl HttpMount {
 		let Some(id) = self.id else {
 			return;
 		};
-		let Some(inner) = self.inner.upgrade() else {
-			self.id = None;
-			return;
-		};
-		inner.unmount(id);
+		if let Some(server) = self.server.upgrade() {
+			server.unmount(id);
+		}
 		self.id = None;
 	}
 
 	pub fn is_mounted(&self) -> bool {
-		self.id.is_some() && self.inner.strong_count() > 0
+		self.id.is_some() && self.server.strong_count() > 0
 	}
 }
 

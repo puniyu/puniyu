@@ -15,6 +15,7 @@ async fn main() {
 
     puniyu_app::App::init(NAME, cwd_dir, VERSION);
     banner();
+    let p = puniyu_path::Path::new(NAME, std::env::current_dir().unwrap().as_path());
 
     let app = puniyu::App::builder()
         .name(NAME)

@@ -1,27 +1,22 @@
 //! # puniyu_handler
 //!
 //! 处理器库，提供统一的 `Handler` 接口。
-//!
-//! ## 特性
-//!
-//! - `Handler` trait 定义事件处理模型
-//! - 支持处理 `puniyu_event::Event`
-//! - 支持前置、后置和短路的洋葱调用链
-//! - 支持优先级排序
-//! - `Handler` trait 定义命令级处理器接口
 
 use std::sync::Arc;
 
 use async_trait::async_trait;
+use puniyu_param::ParamValue;
 
-/// 命令处理器接口。
+/// 处理器接口。
+///
+/// 接收 [`EventSession`](puniyu_session::EventSession) 和提取器产出的 [`ParamValue`]。
 #[async_trait]
 pub trait Handler: Send + Sync {
-	/// 执行命令。
+	/// 执行处理逻辑。
 	async fn handle(
 		&self,
-		session: puniyu_session::MessageSession,
-		params: puniyu_param::Params,
+		session: puniyu_session::EventSession,
+		params: ParamValue,
 	) -> puniyu_error::AnyError;
 }
 
@@ -29,8 +24,8 @@ pub trait Handler: Send + Sync {
 impl<H: Handler + ?Sized> Handler for &H {
 	async fn handle(
 		&self,
-		session: puniyu_session::MessageSession,
-		params: puniyu_param::Params,
+		session: puniyu_session::EventSession,
+		params: ParamValue,
 	) -> puniyu_error::AnyError {
 		(**self).handle(session, params).await
 	}
@@ -40,8 +35,8 @@ impl<H: Handler + ?Sized> Handler for &H {
 impl<H: Handler + ?Sized> Handler for Box<H> {
 	async fn handle(
 		&self,
-		session: puniyu_session::MessageSession,
-		params: puniyu_param::Params,
+		session: puniyu_session::EventSession,
+		params: ParamValue,
 	) -> puniyu_error::AnyError {
 		(**self).handle(session, params).await
 	}
@@ -51,8 +46,8 @@ impl<H: Handler + ?Sized> Handler for Box<H> {
 impl<H: Handler + ?Sized> Handler for Arc<H> {
 	async fn handle(
 		&self,
-		session: puniyu_session::MessageSession,
-		params: puniyu_param::Params,
+		session: puniyu_session::EventSession,
+		params: ParamValue,
 	) -> puniyu_error::AnyError {
 		(**self).handle(session, params).await
 	}

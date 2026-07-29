@@ -2,10 +2,14 @@ use indexmap::IndexMap;
 use serde::{Deserialize, Serialize};
 use smol_str::SmolStr;
 use std::fmt::{self, Display};
+use std::marker::PhantomData;
+use std::ops::Deref;
 
 /// 参数值。
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
 pub enum ParamValue {
+	/// 空值
+	Empty,
 	/// 字符串值。
 	String(String),
 	/// 整数值。
@@ -14,13 +18,16 @@ pub enum ParamValue {
 	Float(f64),
 	/// 布尔值。
 	Bool(bool),
-	/// 列表值
+	/// 列表值。
 	List(Vec<ParamValue>),
+	/// 映射值。
+	Map(IndexMap<SmolStr, ParamValue>),
 }
 
 impl Display for ParamValue {
 	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
 		match self {
+			Self::Empty => write!(f, "()"),
 			Self::String(v) => write!(f, "{}", v),
 			Self::Int(v) => write!(f, "{}", v),
 			Self::Float(v) => write!(f, "{}", v),
@@ -35,11 +42,27 @@ impl Display for ParamValue {
 				}
 				write!(f, "]")
 			}
+			Self::Map(v) => {
+				write!(f, "{{")?;
+				for (i, (k, val)) in v.iter().enumerate() {
+					if i > 0 {
+						write!(f, ", ")?;
+					}
+					write!(f, "{}: {}", k, val)?;
+				}
+				write!(f, "}}")
+			}
 		}
 	}
 }
 
 impl ParamValue {
+	pub fn as_empty(&self) -> Option<()> {
+		match self {
+			Self::Empty => Some(()),
+			_ => None,
+		}
+	}
 	/// 获取字符串值。
 	pub fn as_str(&self) -> Option<&str> {
 		match self {
@@ -79,7 +102,18 @@ impl ParamValue {
 			_ => None,
 		}
 	}
+
+	/// 获取映射值。
+	pub fn as_map(&self) -> Option<&IndexMap<SmolStr, ParamValue>> {
+		match self {
+			Self::Map(m) => Some(m),
+			_ => None,
+		}
+	}
+
 }
+
+
 
 impl From<String> for ParamValue {
 	fn from(s: String) -> Self {
@@ -117,107 +151,14 @@ impl From<Vec<ParamValue>> for ParamValue {
 	}
 }
 
-/// 通用参数集合。
-///
-/// 使用 `IndexMap` 存储有序的 key-value 参数，保持插入顺序。
-///
-/// # 示例
-///
-/// ```rust
-/// use puniyu_param::{Params, ParamValue};
-///
-/// let mut params = Params::new();
-/// params.push("name", "Alice")
-///      .push("age", 25i64)
-///      .push("active", true);
-///
-/// assert_eq!(params.get_as::<String>("name"), Some("Alice".into()));
-/// assert_eq!(params.get_as::<i64>("age"), Some(25));
-/// assert_eq!(params.get_as::<bool>("active"), Some(true));
-/// ```
-#[derive(Debug, Clone, Default, PartialEq, Deserialize, Serialize)]
-pub struct Params {
-	inner: IndexMap<SmolStr, ParamValue>,
-}
-
-impl Params {
-	/// 创建空参数集合。
-	pub fn new() -> Self {
-		Self::default()
-	}
-
-	/// 按名称获取参数值。
-	pub fn get(&self, name: &str) -> Option<&ParamValue> {
-		self.inner.get(name)
-	}
-
-	/// 按名称获取参数值并转换为目标类型。
-	pub fn get_as<T: FromParamValue>(&self, name: &str) -> Option<T> {
-		self.get(name).and_then(T::from_param_value)
-	}
-
-	/// 添加一个参数。支持链式调用。
-	pub fn push(&mut self, name: impl Into<SmolStr>, value: impl Into<ParamValue>) -> &mut Self {
-		self.inner.insert(name.into(), value.into());
-		self
-	}
-
-	/// 是否包含指定名称的参数。
-	pub fn contains(&self, name: &str) -> bool {
-		self.inner.contains_key(name)
-	}
-
-	/// 参数数量。
-	pub fn len(&self) -> usize {
-		self.inner.len()
-	}
-
-	/// 是否没有任何参数。
-	pub fn is_empty(&self) -> bool {
-		self.inner.is_empty()
-	}
-
-	/// 遍历所有参数。
-	pub fn iter(&self) -> impl Iterator<Item = (&str, &ParamValue)> {
-		self.inner.iter().map(|(k, v)| (k.as_str(), v))
-	}
-
-	/// 遍历所有参数名。
-	pub fn keys(&self) -> impl Iterator<Item = &str> {
-		self.inner.keys().map(|k| k.as_str())
-	}
-
-	/// 遍历所有参数值。
-	pub fn values(&self) -> impl Iterator<Item = &ParamValue> {
-		self.inner.values()
-	}
-}
-
-impl IntoIterator for Params {
-	type Item = (SmolStr, ParamValue);
-	type IntoIter = indexmap::map::IntoIter<SmolStr, ParamValue>;
-
-	fn into_iter(self) -> Self::IntoIter {
-		self.inner.into_iter()
-	}
-}
-
-impl<'a> IntoIterator for &'a Params {
-	type Item = (&'a str, &'a ParamValue);
-	type IntoIter = Box<dyn Iterator<Item = Self::Item> + 'a>;
-
-	fn into_iter(self) -> Self::IntoIter {
-		Box::new(self.inner.iter().map(|(k, v)| (k.as_str(), v)))
-	}
-}
-
-impl FromIterator<(SmolStr, ParamValue)> for Params {
-	fn from_iter<I: IntoIterator<Item = (SmolStr, ParamValue)>>(iter: I) -> Self {
-		Self { inner: iter.into_iter().collect() }
+impl From<IndexMap<SmolStr, ParamValue>> for ParamValue {
+	fn from(m: IndexMap<SmolStr, ParamValue>) -> Self {
+		Self::Map(m)
 	}
 }
 
 
+/// 从 [`ParamValue`] 转换为目标类型的 trait。
 pub trait FromParamValue: Sized {
 	fn from_param_value(value: &ParamValue) -> Option<Self>;
 }
@@ -272,8 +213,29 @@ impl<T: FromParamValue> FromParamValue for Vec<T> {
 	}
 }
 
-impl<T: FromParamValue> FromParamValue for Option<T> {
+impl FromParamValue for IndexMap<SmolStr, ParamValue> {
 	fn from_param_value(value: &ParamValue) -> Option<Self> {
-		Some(T::from_param_value(value))
+		value.as_map().cloned()
+	}
+}
+
+/// 编译期类型安全的参数键。
+///
+/// 键在编译时绑定名称和期望类型，消除运行时类型错误。
+pub struct ParamKey<T: FromParamValue> {
+	name: &'static str,
+	_phantom: PhantomData<T>,
+}
+
+impl<T: FromParamValue> ParamKey<T> {
+	pub const fn new(name: &'static str) -> Self {
+		Self { name, _phantom: PhantomData }
+	}
+}
+
+impl<T: FromParamValue> Deref for ParamKey<T> {
+	type Target = str;
+	fn deref(&self) -> &str {
+		self.name
 	}
 }

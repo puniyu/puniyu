@@ -1,33 +1,32 @@
-use crate::{Context, Error};
-use smol_str::SmolStr;
-use std::{any::Any, sync::Arc};
+use std::any::Any;
+use std::sync::Arc;
+use puniyu_action::{Action, ActionRegistry};
+use puniyu_service::Service;
+
+use crate::depot::TypedDepot;
 
 pub struct PluginContext {
-	inner: Arc<Context>,
-	plugin_name: SmolStr,
+	pub(crate) depot: TypedDepot,
+	pub(crate) actions: ActionRegistry,
+    pub(crate) path: puniyu_path::Path,
 }
 
 impl PluginContext {
-	pub fn new(app: Arc<Context>, plugin_name: impl Into<SmolStr>) -> Self {
-		Self { inner: app, plugin_name: plugin_name.into() }
+    pub fn path(&self) -> &puniyu_path::Path {
+		&self.path
+	}
+	/// 注册 Action。
+	pub fn action<A: Action + 'static>(&self, action: A) {
+		self.actions.insert(action);
 	}
 
-	pub fn plugin_name(&self) -> &str {
-		self.plugin_name.as_str()
+	/// 注入服务
+	pub fn inject(&self, service: Arc<dyn Service>) {
+		self.depot.insert(service);
 	}
 
-	pub fn get<V: Any + Send + Sync + Clone>(&self) -> Option<V> {
-		self.inner.depot.get()
-	}
-
-	pub fn require<V: Any + Send + Sync + Clone>(&self) -> Result<V, Error> {
-		self.get().ok_or_else(|| Error::Missing {
-			requester: self.plugin_name.clone(),
-			capability: std::any::type_name::<V>(),
-		})
-	}
-
-	pub fn contains<V: Any + Send + Sync>(&self) -> bool {
-		self.inner.depot.contains::<V>()
+	/// 按类型查找服务。
+	pub fn require<T: Any + Send + Sync>(&self) -> Option<Arc<T>> {
+		self.depot.get::<T>()
 	}
 }

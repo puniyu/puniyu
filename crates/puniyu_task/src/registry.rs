@@ -66,7 +66,7 @@ impl TaskRegistry {
 		let scheduler_ref = self.scheduler.lock().clone();
 		if let Some(scheduler) = scheduler_ref {
 			let job = build_job(&task)?;
-			let job_id = scheduler.add(job).await.map_err(|e| Error::InvalidSchedule {
+			let job_id = scheduler.add(job).await.map_err(|e| Error::JobAdd {
 				task: task.name().to_string(),
 				message: e.to_string(),
 			})?;
@@ -93,7 +93,7 @@ impl TaskRegistry {
 		if let Some((_, job_id)) = self.job_ids.remove_sync(&id) {
 			let scheduler = self.scheduler.lock().clone();
 			if let Some(scheduler) = scheduler {
-				scheduler.remove(&job_id).await.map_err(|e| Error::InvalidSchedule {
+				scheduler.remove(&job_id).await.map_err(|e| Error::JobRemove {
 					task: format!("index {id}"),
 					message: e.to_string(),
 				})?;
@@ -118,7 +118,7 @@ impl TaskRegistry {
 			if let Some((_, job_id)) = self.job_ids.remove_sync(&id)
 				&& let Some(ref scheduler) = scheduler_ref
 			{
-				scheduler.remove(&job_id).await.map_err(|e| Error::InvalidSchedule {
+				scheduler.remove(&job_id).await.map_err(|e| Error::JobRemove {
 					task: name.to_string(),
 					message: e.to_string(),
 				})?;
@@ -157,15 +157,12 @@ impl TaskRegistry {
 			}
 		}
 
-		let mut scheduler = JobScheduler::new().await.map_err(|e| Error::InvalidSchedule {
-			task: String::new(),
-			message: format!("create scheduler: {e}"),
-		})?;
+		let mut scheduler = JobScheduler::new().await.map_err(|e| Error::SchedulerCreate(e.to_string()))?;
 
 		let tasks = self.tasks.iter();
 		for (id, task) in tasks {
 			let job = build_job(&task)?;
-			let job_id = scheduler.add(job).await.map_err(|e| Error::InvalidSchedule {
+			let job_id = scheduler.add(job).await.map_err(|e| Error::JobAdd {
 				task: task.name().to_string(),
 				message: e.to_string(),
 			})?;
@@ -174,10 +171,7 @@ impl TaskRegistry {
 
 		if let Err(e) = scheduler.start().await {
 			let _ = scheduler.shutdown().await;
-			return Err(Error::InvalidSchedule {
-				task: String::new(),
-				message: format!("start scheduler: {e}"),
-			});
+			return Err(Error::SchedulerStart(e.to_string()));
 		}
 
 		*self.scheduler.lock() = Some(scheduler);
@@ -189,10 +183,7 @@ impl TaskRegistry {
 		let mut scheduler = self.scheduler.lock().take();
 		self.job_ids.clear_sync();
 		if let Some(ref mut s) = scheduler {
-			s.shutdown().await.map_err(|e| Error::InvalidSchedule {
-				task: String::new(),
-				message: format!("shutdown scheduler: {e}"),
-			})?;
+			s.shutdown().await.map_err(|e| Error::SchedulerShutdown(e.to_string()))?;
 		}
 		Ok(())
 	}

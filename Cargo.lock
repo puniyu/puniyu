@@ -1748,15 +1748,12 @@ dependencies = [
 name = "puniyu"
 version = "0.9.5"
 dependencies = [
- "bon",
- "convert_case",
  "log",
- "puniyu_adapter_core",
  "puniyu_context",
- "puniyu_logger",
+ "puniyu_path",
  "puniyu_plugin_core",
- "puniyu_version",
- "semver",
+ "puniyu_service",
+ "smol_str",
  "tokio",
 ]
 
@@ -1860,9 +1857,11 @@ dependencies = [
  "bon",
  "puniyu_action",
  "puniyu_error",
+ "puniyu_extractor",
  "puniyu_handler",
  "puniyu_matcher",
  "puniyu_matcher_combinator",
+ "puniyu_matcher_event",
  "puniyu_param",
  "puniyu_session",
  "smol_str",
@@ -1900,8 +1899,10 @@ dependencies = [
 name = "puniyu_context"
 version = "0.9.5"
 dependencies = [
- "puniyu_handler",
+ "puniyu_action",
+ "puniyu_path",
  "puniyu_registry",
+ "puniyu_service",
  "scc",
  "smol_str",
  "thiserror",
@@ -1958,6 +1959,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "puniyu_extractor"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "puniyu_param",
+ "puniyu_session",
+ "smol_str",
+ "thiserror",
+]
+
+[[package]]
 name = "puniyu_handler"
 version = "0.9.5"
 dependencies = [
@@ -1980,6 +1992,31 @@ dependencies = [
 ]
 
 [[package]]
+name = "puniyu_handler_hook"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "puniyu_error",
+ "puniyu_handler",
+ "puniyu_param",
+ "puniyu_session",
+]
+
+[[package]]
+name = "puniyu_ipc"
+version = "0.1.0"
+dependencies = [
+ "bytes",
+ "const-str",
+ "rmp-serde",
+ "serde",
+ "serde_repr",
+ "smol_str",
+ "thiserror",
+ "tokio",
+]
+
+[[package]]
 name = "puniyu_logger"
 version = "0.8.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1998,7 +2035,6 @@ name = "puniyu_matcher"
 version = "0.9.5"
 dependencies = [
  "async-trait",
- "puniyu_param",
  "puniyu_session",
 ]
 
@@ -2008,8 +2044,17 @@ version = "0.9.5"
 dependencies = [
  "async-trait",
  "puniyu_matcher",
- "puniyu_param",
  "puniyu_session",
+]
+
+[[package]]
+name = "puniyu_matcher_event"
+version = "0.9.5"
+dependencies = [
+ "async-trait",
+ "puniyu_matcher",
+ "puniyu_session",
+ "smol_str",
 ]
 
 [[package]]
@@ -2018,7 +2063,6 @@ version = "0.9.5"
 dependencies = [
  "async-trait",
  "puniyu_matcher",
- "puniyu_param",
  "puniyu_session",
  "smol_str",
 ]
@@ -2050,7 +2094,8 @@ name = "puniyu_path"
 version = "0.9.5"
 dependencies = [
  "convert_case",
- "puniyu_app",
+ "smol_str",
+ "sugar_path",
 ]
 
 [[package]]
@@ -2069,6 +2114,7 @@ dependencies = [
  "async-trait",
  "puniyu_context",
  "puniyu_error",
+ "puniyu_registry",
  "puniyu_version",
  "semver",
 ]
@@ -2109,10 +2155,6 @@ name = "puniyu_service"
 version = "0.9.5"
 dependencies = [
  "async-trait",
- "puniyu_context",
- "puniyu_error",
- "puniyu_version",
- "semver",
 ]
 
 [[package]]
@@ -2373,6 +2415,25 @@ dependencies = [
  "libc",
  "untrusted",
  "windows-sys 0.52.0",
+]
+
+[[package]]
+name = "rmp"
+version = "0.8.15"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4ba8be72d372b2c9b35542551678538b562e7cf86c3315773cae48dfbfe7790c"
+dependencies = [
+ "num-traits",
+]
+
+[[package]]
+name = "rmp-serde"
+version = "1.3.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "72f81bee8c8ef9b577d1681a70ebbc962c232461e397b22c208c43c04b67a155"
+dependencies = [
+ "rmp",
+ "serde",
 ]
 
 [[package]]
@@ -2930,6 +2991,16 @@ name = "subtle"
 version = "2.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "13c2bddecc57b384dee18652358fb23172facb8a2c51ccc10d74c157bdea3292"
+
+[[package]]
+name = "sugar_path"
+version = "3.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b75b52e25042df94d848c33b7048a6726e728fa649c561c7510784ed11c1ffd2"
+dependencies = [
+ "memchr",
+ "smallvec",
+]
 
 [[package]]
 name = "syn"

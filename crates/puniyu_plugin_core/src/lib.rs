@@ -1,3 +1,7 @@
+mod registry;
+pub use registry::PluginRegistry;
+mod types;
+pub use types::*;
 use async_trait::async_trait;
 use puniyu_context::PluginContext;
 use puniyu_error::AnyError;
@@ -9,15 +13,11 @@ pub trait Plugin: Send + Sync {
 	fn name(&self) -> &str;
 	/// 插件版本
 	fn version(&self) -> Version;
-	/// 生命周期优先级，数值越小越先执行。
-	fn priority(&self) -> u32 {
-		500
-	}
-	/// 依赖项, 表示所依赖的service
-	fn using(&self) -> Vec<&str> {
+	/// 依赖项, 表示所依赖的service所对应的plugin
+	fn dependencies(&self) -> Vec<&str> {
 		vec![]
 	}
-	/// 核心版本范围
+	/// 版本范围
 	fn required_version(&self) -> VersionReq {
 		const VERSION: Version = puniyu_version::VERSION;
 		VersionReq {

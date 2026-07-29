@@ -35,6 +35,8 @@
 //! ```
 
 mod error;
+use std::sync::Arc;
+
 pub use error::Error;
 
 mod registry;
@@ -102,31 +104,46 @@ pub trait Task: Send + Sync {
 }
 
 #[async_trait]
-impl<T: Task + ?Sized> Task for Box<T> {
-	fn name(&self) -> &str {
-		self.as_ref().name()
+impl<T: Task + ?Sized> Task for &T  {
+		fn name(&self) -> &str {
+		(**self).name()
 	}
 
 	fn cron(&self) -> &str {
-		self.as_ref().cron()
+		(**self).cron()
 	}
 
 	async fn execute(&self) -> AnyError {
-		self.as_ref().execute().await
+		(**self).execute().await
 	}
 }
 
 #[async_trait]
-impl<T: Task + ?Sized> Task for std::sync::Arc<T> {
+impl<T: Task + ?Sized> Task for Box<T> {
 	fn name(&self) -> &str {
-		self.as_ref().name()
+		(**self).name()
 	}
 
 	fn cron(&self) -> &str {
-		self.as_ref().cron()
+		(**self).cron()
 	}
 
 	async fn execute(&self) -> AnyError {
-		self.as_ref().execute().await
+		(**self).execute().await
+	}
+}
+
+#[async_trait]
+impl<T: Task + ?Sized> Task for Arc<T> {
+	fn name(&self) -> &str {
+		(**self).name()
+	}
+
+	fn cron(&self) -> &str {
+		(**self).cron()
+	}
+
+	async fn execute(&self) -> AnyError {
+		(**self).execute().await
 	}
 }

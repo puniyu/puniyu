@@ -1,8 +1,5 @@
 mod context;
-pub use context::*;
+pub use context::{AdapterContext, Context, PluginContext};
 mod depot;
-pub(crate) use depot::Depot;
 mod error;
 pub use error::Error;
-mod scope;
-pub use scope::ScopeId;

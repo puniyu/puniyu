@@ -17,4 +17,3 @@ async-trait.workspace = true
 
 puniyu_session.workspace = true
 puniyu_matcher.workspace = true
-puniyu_param.workspace = true

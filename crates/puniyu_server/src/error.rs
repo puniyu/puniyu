@@ -6,14 +6,10 @@ pub enum Error {
 	AlreadyRunning,
 	#[error("http component is already mounted")]
 	AlreadyMounted,
-	#[error("http capability is no longer available")]
-	HttpUnavailable,
-	#[error("http capability is not running")]
+	#[error("server is not available")]
+	ServerUnavailable,
+	#[error("server is not running")]
 	NotRunning,
-	#[error("server is draining")]
-	Draining,
-	#[error("http mount id exhausted")]
-	MountIdExhausted,
 	#[error("server bind failed: {0}")]
 	Bind(String),
 	#[error("server failed: {0}")]

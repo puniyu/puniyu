@@ -37,13 +37,13 @@ impl ActionRegistry {
 		Self::default()
 	}
 
-	pub fn insert(&self, action: Arc<dyn Action>) -> u64 {
+	pub fn insert<A: Action + 'static>(&self, action: A) -> u64 {
 		loop {
 			let id = self.next_id.fetch_add(1, Ordering::Relaxed);
 			match self.inner.entry(id) {
 				Entry::Occupied(_) => continue,
 				Entry::Vacant(entry) => {
-					entry.insert_entry(action);
+					entry.insert_entry(Arc::new(action));
 					return id;
 				}
 			}

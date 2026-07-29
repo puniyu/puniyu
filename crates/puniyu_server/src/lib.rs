@@ -1,11 +1,8 @@
 mod error;
 pub use error::Error;
-mod http;
-pub use http::Http;
 mod mount;
 pub use mount::HttpMount;
 mod options;
 pub use options::ServerOptions;
-mod proxy;
 mod server;
 pub use server::Server;

@@ -16,7 +16,9 @@ doctest = false
 workspace = true
 
 [dependencies]
+smol_str.workspace = true
 convert_case.workspace = true
-puniyu_app.workspace = true
+
+sugar_path = { workspace = true, features = ["cached_current_dir"] }
 
 [dev-dependencies]

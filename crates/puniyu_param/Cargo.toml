@@ -17,4 +17,3 @@ serde.workspace = true
 smol_str.workspace = true
 
 indexmap = { version = "2.14.0", features = ["serde"] }
-

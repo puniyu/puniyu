@@ -1,37 +1,9 @@
-use crate::{Context, Error};
-use smol_str::SmolStr;
-use std::{any::Any, sync::Arc};
-
 pub struct AdapterContext {
-	inner: Arc<Context>,
-	adapter_name: SmolStr,
+    pub(crate) path: puniyu_path::Path
 }
 
 impl AdapterContext {
-	pub fn new(app: Arc<Context>, adapter_name: impl Into<SmolStr>) -> Self {
-		Self { inner: app, adapter_name: adapter_name.into() }
-	}
-
-	pub fn adapter_name(&self) -> &str {
-		self.adapter_name.as_str()
-	}
-
-	pub fn get<V: Any + Send + Sync + Clone>(&self) -> Option<V> {
-		self.inner.depot.get()
-	}
-
-	pub fn require<V: Any + Send + Sync + Clone>(&self) -> Result<V, Error> {
-		self.get().ok_or_else(|| Error::Missing {
-			requester: self.adapter_name.clone(),
-			capability: std::any::type_name::<V>(),
-		})
-	}
-
-	pub fn contains<V: Any + Send + Sync>(&self) -> bool {
-		self.inner.depot.contains::<V>()
-	}
-
-	pub fn insert<V: Any + Send + Sync>(&self, value: V) -> Result<(), Error> {
-		self.inner.depot.insert(value)
-	}
+    pub fn path(&self) -> &puniyu_path::Path {
+        &self.path
+    }
 }

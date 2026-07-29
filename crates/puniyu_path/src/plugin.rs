@@ -1,25 +1,29 @@
 use std::path::PathBuf;
+use smol_str::SmolStr;
 
-use convert_case::{Case, Casing};
-
-pub(crate) const NAME: &str = "plugins";
-
-/// 获取插件配置目录，格式为 `{CONFIG_DIR}/plugins/{plugin_name}`。
-pub fn config_dir(plugin_name: &str) -> PathBuf {
-	crate::config_dir().join(NAME).join(plugin_name.to_case(Case::Kebab))
+pub struct Path {
+	pub(crate) name: SmolStr,
+	pub(crate) base_dir: PathBuf,
 }
 
-/// 获取插件数据目录，格式为 `{DATA_DIR}/plugins/{plugin_name}`。
-pub fn data_dir(plugin_name: &str) -> PathBuf {
-	crate::data_dir().join(NAME).join(plugin_name.to_case(Case::Kebab))
-}
+impl Path {
+	/// 插件配置目录：`{base_dir}/config/plugins/{name}`
+	pub fn config_dir(&self) -> PathBuf {
+		self.base_dir.join("config").join("plugins").join(&self.name)
+	}
 
-/// 获取插件资源目录，格式为 `{ASSETS_DIR}/plugins/{plugin_name}`。
-pub fn assets_dir(plugin_name: &str) -> PathBuf {
-	crate::assets_dir().join(NAME).join(plugin_name.to_case(Case::Kebab))
-}
+	/// 插件数据目录：`{base_dir}/data/plugins/{name}`
+	pub fn data_dir(&self) -> PathBuf {
+		self.base_dir.join("data").join("plugins").join(&self.name)
+	}
 
-/// 获取插件临时目录，格式为 `{TEMP_DIR}/plugins/{plugin_name}`。
-pub fn temp_dir(plugin_name: &str) -> PathBuf {
-	crate::temp_dir().join(NAME).join(plugin_name.to_case(Case::Kebab))
+	/// 插件资源目录：`{base_dir}/assets/plugins/{name}`
+	pub fn assets_dir(&self) -> PathBuf {
+		self.base_dir.join("assets").join("plugins").join(&self.name)
+	}
+
+	/// 插件临时目录：`{base_dir}/temp/plugins/{name}`
+	pub fn temp_dir(&self) -> PathBuf {
+		self.base_dir.join("temp").join("plugins").join(&self.name)
+	}
 }

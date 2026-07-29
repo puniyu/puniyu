@@ -3,8 +3,11 @@
 //! 统一的 puniyu 行为库，提供 [`Action`] trait 定义行为。
 //!
 //! 每个 Action 必然包含：
-//! - **Matcher**：负责匹配事件、解析参数
+//! - **Matcher**：负责匹配事件
 //! - **Handler**：负责执行行为逻辑
+//!
+//! 可选包含：
+//! - **Extractor**：负责从事件中提取数据
 //!
 //! 执行流程由调度层内部处理：matcher.matches → handler.handle
 
@@ -17,7 +20,6 @@ pub use registry::ActionRegistry;
 use std::sync::Arc;
 
 use puniyu_handler::Handler;
-
 use puniyu_matcher::Matcher;
 
 

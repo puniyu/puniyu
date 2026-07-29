@@ -1,61 +1,103 @@
-//! # puniyu_path
-//!
-//! 路径管理库，统一提供应用、插件与适配器目录路径。
-//!
-//! ## 特性
-//!
-//! - 提供基础目录路径函数（`cwd_dir`、`config_dir`、`data_dir` 等）
-//! - 提供 `plugin` / `adapter` 子模块目录路径
-//! - 所有路径基于 `App` 当前应用信息生成
-
-pub mod adapter;
 pub mod plugin;
+pub mod adapter;
 
-use puniyu_app::App;
+use convert_case::{Case, Casing};
 use std::path::PathBuf;
+use sugar_path::SugarPath;
 
-/// 获取工作目录
-pub fn cwd_dir() -> PathBuf {
-	App::cwd_dir().to_path_buf()
+use smol_str::SmolStr;
+
+/// 应用路径管理器。
+///
+/// 基于 `cwd_dir` 和 `name` 构建统一的目录结构：
+/// ```text
+/// {cwd_dir}/
+/// └── {name}/
+///     ├── logs/
+///     ├── config/
+///     ├── data/
+///     ├── assets/
+///     ├── temp/
+///     ├── plugins/
+///     └── adapters/
+/// ```
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Path {
+	name: SmolStr,
+	cwd_dir: PathBuf,
 }
 
-/// 获取应用目录，格式为 `{cwd_dir}/@{app_name}`。
-pub fn app_dir() -> PathBuf {
-	let name = App::name();
-	cwd_dir().join(format!("@{name}"))
-}
+impl Path {
+	/// 创建路径管理器。
+	///
+	/// - `name`：应用名称，作为基础目录名
+	/// - `base_dir`：工作目录
+	pub fn new(name: impl Into<SmolStr>, base_dir: impl Into<PathBuf>) -> Self {
+		Self { 
+			name: name.into(), 
+			cwd_dir: PathBuf::from(base_dir.into().to_slash().as_ref()) 
+		}
+	}
 
-/// 获取日志目录，格式为 `{app_dir}/logs`。
-pub fn log_dir() -> PathBuf {
-	app_dir().join("logs")
-}
+	/// 工作目录。
+	pub fn cwd_dir(&self) -> PathBuf {
+		self.cwd_dir.clone()
+	}
 
-/// 获取配置目录，格式为 `{app_dir}/config`。
-pub fn config_dir() -> PathBuf {
-	app_dir().join("config")
-}
+	/// 基础目录：`{cwd_dir}/{name}`
+	pub fn base_dir(&self) -> PathBuf {
+		self.cwd_dir.join(&self.name)
+	}
 
-/// 获取临时目录，格式为 `{app_dir}/temp`。
-pub fn temp_dir() -> PathBuf {
-	app_dir().join("temp")
-}
+	/// 日志目录：`{base_dir}/logs`
+	pub fn log_dir(&self) -> PathBuf {
+		self.base_dir().join("logs")
+	}
 
-/// 获取插件目录，格式为 `{cwd_dir}/plugins`。
-pub fn plugin_dir() -> PathBuf {
-	cwd_dir().join("plugins")
-}
+	/// 配置目录：`{base_dir}/config`
+	pub fn config_dir(&self) -> PathBuf {
+		self.base_dir().join("config")
+	}
 
-/// 获取适配器目录，格式为 `{cwd_dir}/adapters`。
-pub fn adapter_dir() -> PathBuf {
-	cwd_dir().join("adapters")
-}
+	/// 数据目录：`{base_dir}/data`
+	pub fn data_dir(&self) -> PathBuf {
+		self.base_dir().join("data")
+	}
 
-/// 获取数据目录，格式为 `{app_dir}/data`。
-pub fn data_dir() -> PathBuf {
-	app_dir().join("data")
-}
+	/// 资源目录：`{base_dir}/assets`
+	pub fn assets_dir(&self) -> PathBuf {
+		self.base_dir().join("assets")
+	}
 
-/// 获取资源目录，格式为 `{app_dir}/assets`。
-pub fn assets_dir() -> PathBuf {
-	app_dir().join("assets")
+	/// 临时目录：`{base_dir}/temp`
+	pub fn temp_dir(&self) -> PathBuf {
+		self.base_dir().join("temp")
+	}
+
+	/// 插件根目录：`{base_dir}/plugins`
+	pub fn plugins_dir(&self) -> PathBuf {
+		self.base_dir().join("plugins")
+	}
+
+	/// 适配器根目录：`{base_dir}/adapters`
+	pub fn adapters_dir(&self) -> PathBuf {
+		self.base_dir().join("adapters")
+	}
+
+	/// 获取插件子路径
+	pub fn plugin(&self, name: &str) -> plugin::Path {
+		plugin::Path {
+			name: SmolStr::new(name.to_case(Case::Kebab)),
+			base_dir: self.base_dir(),
+		}
+	}
+
+	/// 获取适配器子路径
+	pub fn adapter(&self, name: &str) -> adapter::Path {
+		adapter::Path {
+			name: SmolStr::new(name.to_case(Case::Kebab)),
+			base_dir: self.base_dir(),
+		}
+	}
 }

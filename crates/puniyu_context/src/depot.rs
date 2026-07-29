@@ -1,53 +1,70 @@
+#![allow(dead_code)]
+
 use crate::Error;
-use puniyu_registry::Registry;
-use std::any::{Any, TypeId, type_name};
+use puniyu_service::Service;
+use smol_str::SmolStr;
+use std::any::{Any, TypeId};
 use std::sync::Arc;
 
 
-#[derive(Clone)]
-struct Entry {
-	value: Arc<dyn Any + Send + Sync>,
+#[derive(Default, Clone)]
+pub(crate) struct NamedDepot {
+	services: scc::HashMap<SmolStr, Arc<dyn Service>>,
 }
 
-#[derive(Default)]
-pub(crate) struct Depot {
-	entries: Registry<Entry>,
-	type_index: scc::HashMap<TypeId, u64>,
-}
-
-#[allow(dead_code)]
-impl Depot {
+impl NamedDepot {
 	pub fn new() -> Self {
 		Self::default()
 	}
 
-	pub fn insert<V: Any + Send + Sync>(&self, value: V) -> Result<(), Error> {
-		let type_id = TypeId::of::<V>();
-		if self.type_index.contains_sync(&type_id) {
-			return Err(Error::Conflict { capability: type_name::<V>() });
+	pub fn insert(&self, service: Arc<dyn Service>) -> Result<(), Error> {
+		let name = SmolStr::new(service.name());
+		if self.services.contains_sync(&name) {
+			return Err(Error::Conflict { name });
 		}
-		let id = self.entries.insert(Entry { value: Arc::new(value) });
-		self.type_index.insert_sync(type_id, id).ok();
+		self.services.insert_sync(name, service).ok();
 		Ok(())
 	}
 
-	pub fn get<V: Any + Send + Sync + Clone>(&self) -> Option<V> {
-		let type_id = TypeId::of::<V>();
-		self.type_index.read_sync(&type_id, |_, &id| id).and_then(|id| {
-			self.entries.get(id).and_then(|e| e.value.downcast_ref::<V>().cloned())
-		})
+	pub fn get(&self, name: &str) -> Option<Arc<dyn Service>> {
+		self.services.read_sync(&SmolStr::new(name), |_, v| v.clone())
 	}
 
-	pub fn contains<V: Any + Send + Sync>(&self) -> bool {
-		self.type_index.contains_sync(&TypeId::of::<V>())
+	pub fn contains(&self, name: &str) -> bool {
+		self.services.contains_sync(&SmolStr::new(name))
+	}
+}
+
+
+#[derive(Default, Clone)]
+pub(crate) struct TypedDepot {
+	services: scc::HashMap<TypeId, Arc<dyn Service>>,
+}
+
+impl TypedDepot {
+	pub fn new() -> Self {
+		Self::default()
 	}
 
-	pub fn remove<V: Any + Send + Sync>(&self) -> Option<V> {
-		let type_id = TypeId::of::<V>();
-		self.type_index.remove_sync(&type_id).and_then(|(_, id)| {
-			self.entries.remove(id).and_then(|e| {
-				e.value.downcast::<V>().ok().and_then(|arc| Arc::try_unwrap(arc).ok())
-			})
-		})
+	pub fn insert<S: Service>(&self, service: S) {
+		let service = Arc::new(service);
+		let type_id = service.as_ref().type_id();
+		self.services.insert_sync(type_id, service).ok();
+	}
+
+	pub fn get<T: Any + Send + Sync>(&self) -> Option<Arc<T>> {
+		self.services.read_sync(&TypeId::of::<T>(), |_, v| v.clone()).and_then(|s| downcast(s))
+	}
+
+	pub fn contains<T: Any>(&self) -> bool {
+		self.services.contains_sync(&TypeId::of::<T>())
+	}
+}
+
+fn downcast<T: Any + Send + Sync>(service: Arc<dyn Service>) -> Option<Arc<T>> {
+	if service.as_ref().type_id() == TypeId::of::<T>() {
+		Some(unsafe { Arc::from_raw(Arc::into_raw(service) as *const T) })
+	} else {
+		None
 	}
 }
