@@ -195,7 +195,7 @@ macro_rules! impl_message {
 				self.bot.clone()
 			}
 			fn self_id(&self) -> &str {
-				self.bot.id()
+				self.bot.self_id()
 			}
 			fn user_id(&self) -> &str {
 				self.sender.user_id()

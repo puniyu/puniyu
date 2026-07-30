@@ -19,32 +19,20 @@ pub trait Handler: Send + Sync {
 	) -> puniyu_error::AnyError;
 }
 
-#[async_trait]
-impl<H: Handler + ?Sized> Handler for &H {
-	async fn handle(
-		&self,
-		session: puniyu_session::EventSession,
-	) -> puniyu_error::AnyError {
-		(**self).handle(session).await
-	}
+macro_rules! impl_handler_deref {
+	($wrapper:ty) => {
+		#[async_trait]
+		impl<H: Handler + ?Sized> Handler for $wrapper {
+			async fn handle(
+				&self,
+				session: puniyu_session::EventSession,
+			) -> puniyu_error::AnyError {
+				(**self).handle(session).await
+			}
+		}
+	};
 }
 
-#[async_trait]
-impl<H: Handler + ?Sized> Handler for Box<H> {
-	async fn handle(
-		&self,
-		session: puniyu_session::EventSession,
-	) -> puniyu_error::AnyError {
-		(**self).handle(session).await
-	}
-}
-
-#[async_trait]
-impl<H: Handler + ?Sized> Handler for Arc<H> {
-	async fn handle(
-		&self,
-		session: puniyu_session::EventSession,
-	) -> puniyu_error::AnyError {
-		(**self).handle(session).await
-	}
-}
+impl_handler_deref!(&H);
+impl_handler_deref!(Box<H>);
+impl_handler_deref!(Arc<H>);

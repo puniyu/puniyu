@@ -1828,6 +1828,7 @@ dependencies = [
  "bytes",
  "jiff",
  "puniyu_contact",
+ "puniyu_element",
  "puniyu_error",
  "puniyu_message",
  "semver",
@@ -1992,9 +1993,12 @@ dependencies = [
 name = "puniyu_ipc"
 version = "0.1.0"
 dependencies = [
+ "async-trait",
  "bytes",
  "const-str",
+ "puniyu_error",
  "rmp-serde",
+ "scc",
  "serde",
  "serde_repr",
  "smol_str",

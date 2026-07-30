@@ -17,7 +17,7 @@ impl BotContext {
     pub fn get(&self, id: &str) -> Option<Arc<dyn Bot>> {
         let mut result = None;
         self.inner.for_each(|_, b| {
-            if b.id() == id {
+            if b.self_id() == id {
                 result = Some(b.clone());
             }
         });
@@ -38,7 +38,7 @@ impl BotContext {
     pub fn remove(&self, id: &str) -> Option<Arc<dyn Bot>> {
         let mut key = None;
         self.inner.for_each(|k, b| {
-            if b.id() == id {
+            if b.self_id() == id {
                 key = Some(k);
             }
         });

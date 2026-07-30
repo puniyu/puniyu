@@ -24,5 +24,6 @@ bytes.workspace = true
 serde_json.workspace = true
 
 puniyu_contact.workspace = true
+puniyu_element.workspace = true
 puniyu_error.workspace = true
 puniyu_message.workspace = true
