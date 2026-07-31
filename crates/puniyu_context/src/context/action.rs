@@ -2,6 +2,7 @@ use std::sync::Arc;
 
 use puniyu_action::Action;
 use puniyu_registry::Registry;
+use puniyu_session::EventSession;
 
 pub struct ActionConetxt {
 	inner: Registry<Arc<dyn Action>>,
@@ -26,7 +27,21 @@ impl ActionConetxt {
 		result
 	}
 
-    pub fn values(&self) -> Vec<Arc<dyn Action>> {
-        self.inner.values()
-    }
+	pub fn values(&self) -> Vec<Arc<dyn Action>> {
+		self.inner.values()
+	}
+
+	pub async fn dispatch(&self, session: &EventSession) {
+		let mut actions = self.values();
+		actions.sort_by_key(|a| a.priority());
+
+		for action in actions {
+			if action.matcher().matches(session).await {
+				let _ = action.handler().handle(session.clone()).await;
+				if action.block() {
+					break;
+				}
+			}
+		}
+	}
 }

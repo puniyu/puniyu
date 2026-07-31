@@ -19,5 +19,5 @@ tokio = { workspace = true, features = ["rt", "signal"] }
 
 puniyu_path.workspace = true
 puniyu_context.workspace = true
-puniyu_plugin_core.workspace = true
+puniyu_plugin.workspace = true
 puniyu_service.workspace = true

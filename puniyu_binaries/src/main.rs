@@ -3,6 +3,7 @@
 use std::{io, str::FromStr};
 
 use convert_case::{Case, Casing};
+use puniyu::Puniyu;
 use semver::Version;
 
 const NAME: &str = "puniyu";
@@ -10,34 +11,13 @@ const VERSION: Version = puniyu_version::VERSION;
 const ASSETS: &[u8] = include_bytes!(concat!(env!("CARGO_MANIFEST_DIR"), "/assets/logo.png"));
 
 #[tokio::main]
-async fn main() {
-    let cwd_dir = Box::leak(Box::new(std::env::current_dir().unwrap()));
+async fn main() -> io::Result<()> {
+    let cwd_dir = std::env::current_dir().unwrap();
+    log_init();
 
-    puniyu_app::App::init(NAME, cwd_dir, VERSION);
-    banner();
-    let p = puniyu_path::Path::new(NAME, std::env::current_dir().unwrap().as_path());
-
-    let app = puniyu::App::builder()
-        .name(NAME)
-        .on_start(load)
-        .loader(
-            puniyu_loader_builtin::Loader::new()
-                .with_service(puniyu_service_config::Service)
-                .with_service(puniyu_service_server::Service)
-                .with_service(puniyu_service_event::Service)
-                .with_service(puniyu_service_command::Service)
-                .with_service(puniyu_service_task::Service)
-                .with_plugin(puniyu_plugin_config::Plugin)
-                .with_plugin(puniyu_plugin_event::Plugin)
-                .with_plugin(puniyu_plugin_logo::Plugin::with_logo(ASSETS))
-                .with_plugin(puniyu_plugin_access::Plugin::new())
-                .with_plugin(puniyu_plugin_command::Plugin::new()),
-        )
-        .build();
-
-    if let Err(error) = app.run().await {
-        log::error!("{error}");
-    }
+    let mut app = Puniyu::new(NAME, cwd_dir);
+    app.load_plugin(puniyu_adapter_console::Plugin);
+    app.run().await
 }
 
 fn banner() {
@@ -56,46 +36,46 @@ fn banner() {
     println!("Github: {}", env!("CARGO_PKG_REPOSITORY"));
 }
 
-async fn load() -> io::Result<()> {
-    init_dir().await?;
-	log_init();
-	Ok(())
-}
+// async fn load() -> io::Result<()> {
+//     init_dir().await?;
+// 	log_init();
+// 	Ok(())
+// }
 
-async fn init_dir() -> io::Result<()> {
-    let dirs = [
-        puniyu_path::app_dir(),
-        puniyu_path::adapter_dir(),
-        puniyu_path::data_dir(),
-        puniyu_path::config_dir(),
-        puniyu_path::assets_dir(),
-        puniyu_path::plugin_dir(),
-        puniyu_path::log_dir(),
-        puniyu_path::temp_dir(),
-    ];
-    for dir in dirs {
-        tokio::fs::create_dir_all(dir).await?;
-    }
-    Ok(())
-}
+// async fn init_dir() -> io::Result<()> {
+//     let dirs = [
+//         puniyu_path::app_dir(),
+//         puniyu_path::adapter_dir(),
+//         puniyu_path::data_dir(),
+//         puniyu_path::config_dir(),
+//         puniyu_path::assets_dir(),
+//         puniyu_path::plugin_dir(),
+//         puniyu_path::log_dir(),
+//         puniyu_path::temp_dir(),
+//     ];
+//     for dir in dirs {
+//         tokio::fs::create_dir_all(dir).await?;
+//     }
+//     Ok(())
+// }
 fn log_init() {
 	use log::LevelFilter;
 	use puniyu_config::app::AppConfig;
 	use puniyu_logger::LoggerOptions;
-	use puniyu_path::log_dir;
+	// use puniyu_path::log_dir;
 	use std::env;
 
-	let config =
-		AppConfig::from_path(puniyu_path::config_dir().join("app").with_extension("toml")).logger();
-	let log_level = env::var("LOGGER_LEVEL").unwrap_or(config.level().to_string());
-	let log_path = log_dir().to_string_lossy().to_string();
-	let log_retention_days = config.retention_days();
-	let is_file_logging = config.enable_file();
+	// let config =
+	// 	AppConfig::from_path(puniyu_path::config_dir().join("app").with_extension("toml")).logger();
+	// let log_level = env::var("LOGGER_LEVEL").unwrap_or(config.level().to_string());
+	// let log_path = log_dir().to_string_lossy().to_string();
+	// let log_retention_days = config.retention_days();
+	// let is_file_logging = config.enable_file();
 	let options = LoggerOptions::default()
-		.with_prefix(puniyu_app::App::name())
-		.with_level(LevelFilter::from_str(log_level.as_str()).unwrap_or(LevelFilter::Info))
-		.with_file_logging(is_file_logging)
-		.with_log_directory(log_path)
-		.with_retention_days(log_retention_days);
+		.with_prefix(NAME);
+		// .with_level(LevelFilter::from_str(log_level.as_str()).unwrap_or(LevelFilter::Info))
+		// .with_file_logging(is_file_logging)
+		// .with_log_directory(log_path)
+		// .with_retention_days(log_retention_days);
 	puniyu_logger::init(Some(options));
 }

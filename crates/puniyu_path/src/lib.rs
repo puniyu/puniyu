@@ -79,11 +79,6 @@ impl Path {
 		self.base_dir().join("plugins")
 	}
 
-	/// 适配器根目录：`{base_dir}/adapters`
-	pub fn adapters_dir(&self) -> PathBuf {
-		self.base_dir().join("adapters")
-	}
-
 	/// 获取插件子路径
 	pub fn plugin(&self, name: &str) -> plugin::Path {
 		plugin::Path {

@@ -21,4 +21,7 @@ puniyu_path.workspace = true
 puniyu_service.workspace = true
 puniyu_action.workspace = true
 puniyu_bot.workspace = true
+puniyu_handler.workspace = true
+puniyu_matcher.workspace = true
 puniyu_registry.workspace = true
+puniyu_session.workspace = true

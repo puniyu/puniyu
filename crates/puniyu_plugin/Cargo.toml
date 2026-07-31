@@ -1,5 +1,5 @@
 [package]
-name = "puniyu_event_emitter"
+name = "puniyu_plugin"
 version = "0.9.5"
 authors.workspace = true
 license.workspace = true
@@ -13,9 +13,12 @@ rust-version.workspace = true
 workspace = true
 
 [dependencies]
-puniyu_event.workspace = true
 async-trait.workspace = true
-scc.workspace = true
-thiserror.workspace = true
-smol_str.workspace = true
+semver.workspace = true
+
+puniyu_context.workspace = true
+puniyu_error.workspace = true
+puniyu_registry.workspace = true
+puniyu_version.workspace = true
+
 

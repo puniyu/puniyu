@@ -1,5 +1,5 @@
 [workspace]
-members = [
+members = ["adapters/puniyu_adapter_console",
     "crates/*",
     "handlers/*",
     # "plugins/*",
@@ -42,7 +42,7 @@ tokio = { version = "1.47.1" }
 futures = { version = "0.3.31" }
 arc-swap = { version = "1.7.1" }
 parking_lot = { version = "0.12.5" }
-salvo = { version = "0.95.0" }
+salvo = { version = "0.95.1" }
 const-str = { version = "1.1.0" }
 convert_case = { version = "0.11.0" }
 
@@ -55,7 +55,6 @@ puniyu_message = { version = "0.9.5", path = "./crates/puniyu_message" }
 puniyu_account = { version = "0.9.5", path = "./crates/puniyu_account" }
 puniyu_bot = { version = "0.9.5", path = "./crates/puniyu_bot" }
 puniyu_api = { version = "0.9.5", path = "./crates/puniyu_api" }
-puniyu_app = { version = "0.9.5", path = "./crates/puniyu_app" }
 puniyu_path = { version = "0.9.5", path = "./crates/puniyu_path" }
 puniyu_event = { version = "0.9.5", path = "./crates/puniyu_event" }
 puniyu_session = { version = "0.9.5", path = "./crates/puniyu_session" }
@@ -67,9 +66,6 @@ puniyu_task = { version = "0.9.5", path = "./crates/puniyu_task" }
 puniyu_server = { version = "0.9.5", path = "./crates/puniyu_server" }
 
 puniyu_handler = { version = "0.9.5", path = "./crates/puniyu_handler" }
-
-# puniyu_loader = { version = "0.9.5", path = "./crates/puniyu_loader" }
-# puniyu_loader_builtin = { version = "0.9.5", path = "./loaders/puniyu_loader_builtin" }
 
 
 puniyu_registry = { version = "0.9.5", path = "./crates/puniyu_registry" }
@@ -89,19 +85,13 @@ puniyu_command = { version = "0.9.5", path = "./crates/puniyu_command" }
 puniyu_service = { version = "0.9.5", path = "./crates/puniyu_service" }
 
 
-puniyu_plugin_core = { version = "0.9.5", path = "./crates/puniyu_plugin_core" }
-# puniyu_plugin_config = { version = "0.9.5", path = "./plugins/puniyu_plugin_config" }
-# puniyu_plugin_access = { version = "0.9.5", path = "./plugins/puniyu_plugin_access" }
-# puniyu_plugin_command = { version = "0.9.5", path = "./plugins/puniyu_plugin_command" }
-# puniyu_plugin_event = { version = "0.9.5", path = "./plugins/puniyu_plugin_event" }
-# puniyu_plugin_logo = { version = "0.9.5", path = "./plugins/puniyu_plugin_logo" }
+puniyu_plugin = { version = "0.9.5", path = "./crates/puniyu_plugin" }
+
 
 
 puniyu = { version = "0.9.5", path = "./crates/puniyu" }
 puniyu_context = { version = "0.9.5", path = "./crates/puniyu_context" }
 puniyu_cooldown = { version = "0.9.5", path = "./crates/puniyu_cooldown" }
-
-# puniyu_macros = { version = "0.9.0", path = "./crates/puniyu_macros" }
 
 
 [profile.release]
