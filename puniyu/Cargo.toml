@@ -24,7 +24,7 @@ puniyu_core.workspace = true
 puniyu_logger.workspace = true
 
 puniyu_adapter_console = { version = "0.8.4" }
-puniyu_handler_command = { version = "0.9.0", path = "../crates/puniyu_handler_command" }
+puniyu_handler_command = { version = "0.10.0", path = "../crates/puniyu_handler_command" }
 puniyu_plugin_basic = { version = "0.8.3" }
 puniyu_common = { version = "0.9.0" }
 puniyu_loader_builtin = { version = "0.9.0" }
