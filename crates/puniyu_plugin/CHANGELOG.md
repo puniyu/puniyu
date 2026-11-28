@@ -1,4 +1,15 @@
 # Changelog
+# 变更日志
+
+## [0.9.1](https://github.com/puniyu/puniyu/compare/puniyu_plugin-v0.9.0...puniyu_plugin-v0.9.1)
+
+### ⚙️ 杂项
+
+
+- 更新 core ([#65](https://github.com/puniyu/puniyu/pull/65)) - ([4d1ff73](https://github.com/puniyu/puniyu/commit/4d1ff7359d0d6d8a50fdaf2469f1d053aecd653c))
+
+
+
 
 ## [0.8.8](https://github.com/puniyu/puniyu/compare/puniyu-plugin-v0.8.7...puniyu-plugin-v0.8.8) (2026-05-09)
 
